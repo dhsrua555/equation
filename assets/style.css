@@ -381,7 +381,7 @@ body[data-view="home"] main { padding-top: 0; }
 .footer-base { margin-top: 36px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* ---------- chapter ---------- */
-.ch-hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 460px; border-bottom: 1px solid var(--rule); }
+.ch-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 460px; border-bottom: 1px solid var(--rule); }
 .ch-plate { position: relative; background: var(--paper-2); overflow: hidden; min-height: 300px; }
 .ch-plate canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ch-plate .plate-num {
@@ -491,6 +491,11 @@ table.tbl td { border-bottom: 1px solid var(--rule); padding: 10px 12px 10px 0; 
 .tally { font-size: 0.86rem; color: var(--ink-2); }
 .tally b { color: var(--ink); font-weight: 600; }
 
+.sec-filter { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-block: 16px 4px; }
+.sec-filter .caps { color: var(--ink-3); margin-right: 6px; white-space: nowrap; flex: none; }
+.sec-filter .n { font-family: var(--f-caps); font-size: 0.7rem; color: var(--ink-3); margin-left: 2px; }
+.sec-filter [aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
+.chip.sec { font-family: var(--f-caps); letter-spacing: 0.08em; border-color: var(--camel); color: var(--camel-ink); }
 .problems { display: grid; }
 .prob { padding-block: 36px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px clamp(16px, 3vw, 40px); }
 .prob-no { font-family: var(--f-display); font-size: 2.1rem; line-height: 1; font-weight: 500; font-variant-numeric: lining-nums; }
@@ -695,6 +700,10 @@ body[data-view="exam-live"] main { padding-top: 0; }
   background: var(--ink); color: var(--paper); padding: 10px 18px; font-size: 0.86rem; box-shadow: var(--shadow);
 }
 
+/* vertical grid stacks: never let a wide formula, table or chip row widen the column past the screen */
+.sheet-item, .pf-item, .pf-page, .pf-head, .prob-main, .page-head, .ch-intro, .exam-info,
+.result-meta, .builder-side, .field, .qnav, .mode, .tile, .tile-meta, .breakdown, .choices { grid-template-columns: minmax(0, 1fr); }
+
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   .tiles { grid-auto-columns: calc((100% - 2 * var(--tg)) / 3.3); }
@@ -703,38 +712,61 @@ body[data-view="exam-live"] main { padding-top: 0; }
   :root { --header-h: 64px; }
   .nav-left a:not(.menu-keep), .nav-right a.hide-sm { display: none; }
   .menu-btn { display: block; }
-  .modes { grid-template-columns: 1fr; }
+  .modes { grid-template-columns: minmax(0, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .stat:nth-child(3) { border-left: 0; }
   .stat:nth-child(n+3) { border-top: 1px solid var(--rule); }
-  .ch-hero { grid-template-columns: 1fr; }
+  .ch-hero { grid-template-columns: minmax(0, 1fr); }
   .ch-plate { min-height: 260px; }
-  .ch-body { grid-template-columns: 1fr; }
+  .ch-body { grid-template-columns: minmax(0, 1fr); }
   .toc { display: none; }
-  .exam-cards { grid-template-columns: 1fr; }
-  .builder { grid-template-columns: 1fr; }
-  .exam-layout { grid-template-columns: 1fr; }
+  .exam-cards { grid-template-columns: minmax(0, 1fr); }
+  .builder { grid-template-columns: minmax(0, 1fr); }
+  .exam-layout { grid-template-columns: minmax(0, 1fr); }
   .qnav { position: static; }
   .qnav-grid { grid-template-columns: repeat(10, 1fr); }
-  .footer-grid { grid-template-columns: 1fr; }
-  .sheet { grid-template-columns: 1fr; }
-  .pf-list { grid-template-columns: 1fr; }
-  .result-hero { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: minmax(0, 1fr); }
+  .sheet { grid-template-columns: minmax(0, 1fr); }
+  .pf-list { grid-template-columns: minmax(0, 1fr); }
+  .result-hero { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
   .tiles { grid-auto-columns: 62%; }
-  .prob, .paper .prob { grid-template-columns: 1fr; }
+  .prob, .paper .prob { grid-template-columns: minmax(0, 1fr); }
   .prob-no { display: flex; gap: 12px; align-items: baseline; font-size: 1.7rem; }
   .prob-no small { margin: 0; }
   .exam-row { grid-template-columns: 56px 1fr auto; }
   .exam-row .meta { display: none; }
-  .exam-card { grid-template-columns: 1fr; }
+  .exam-card { grid-template-columns: minmax(0, 1fr); }
   .exam-cover { min-height: 130px; }
   .ch-next a b { font-size: 2.2rem; }
   .qnav-grid { grid-template-columns: repeat(5, 1fr); }
   .bd-row { grid-template-columns: 1fr 60px; }
   .bd-row .bar { grid-column: 1 / -1; grid-row: 2; }
   .wordmark span { display: none; }
+  /* phones: keep controls on single scrolling rows so problems start sooner */
+  .practice-head { padding-block: 24px 14px; gap: 12px; }
+  .filters, .sec-filter, .jump { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+  .filters::-webkit-scrollbar, .sec-filter::-webkit-scrollbar, .jump::-webkit-scrollbar { display: none; }
+  .jump a { flex: none; white-space: nowrap; }
+  .filters { width: calc(100% + 2 * var(--gutter)); gap: 10px; }
+  .seg { flex: none; }
+  .seg button { padding: 7px 10px; white-space: nowrap; }
+  .sec-filter { padding-block: 12px 2px; }
+  .sec-filter .pf-chip, .jump .pf-chip { flex: none; white-space: nowrap; }
+  .prob { padding-block: 28px; }
+  .hero-en { letter-spacing: 0.26em; margin-right: -0.26em; font-size: 0.68rem; }
+  .hero-num { font-size: clamp(6.5rem, 34vw, 9rem); }
+  .ch-plate { min-height: 220px; }
+  .blk { padding: 16px 14px; }
+  .blk-tip, .blk-warn { padding: 12px 0 12px 14px; }
+  .solution { padding: 14px; }
+  .katex-display { font-size: 0.94em; }
+  .sec + .sec { margin-top: 48px; padding-top: 32px; }
+  .sec-title { gap: 12px; }
+  .sec-title span { font-size: 1.45rem; }
+  .page-head h1 { font-size: clamp(2.2rem, 11vw, 3rem); }
+  .pf-search input { min-height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }

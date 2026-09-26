@@ -24,6 +24,14 @@
   };
 
   // ---------- data index ----------
+  // extra problem sets (data/more-*.js) are appended after the original ones so stored progress ids stay valid
+  (EM.more || []).forEach((m) => {
+    const c = EM.chapters.find((x) => x.n === m.n);
+    if (!c) return;
+    if (m.secs) c.problems.forEach((p, k) => { if (!p.sec && m.secs[k]) p.sec = m.secs[k]; });
+    c.secTitles = Object.assign(c.secTitles || {}, m.secTitles || {});
+    c.problems.push(...(m.problems || []));
+  });
   const CH = EM.chapters.slice().sort((a, b) => a.n - b.n);
   const chById = new Map();
   const PBY = new Map();
@@ -476,7 +484,7 @@
     if (ctx === 'result') return resultProbHTML(p, o);
     const u = uiOf(p.id);
     const no = o.label || pad(p.no);
-    const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
+    const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? `<span class="chip sec">Kreyszig ${esc(p.sec)}</span>` : ''}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
     let body = '';
     if (p.type === 'mc') {
       body = `<div class="choices" role="group" aria-label="보기">${p.choices.map((c, k) => {
@@ -717,7 +725,7 @@
     return list.length ? Math.max(...list.map((h) => scoreOf(h).got)) : null;
   }
 
-  let filters = Object.assign({ lv: 'all', type: 'all', st: 'all' }, S.prefs.filters || {});
+  let filters = Object.assign({ lv: 'all', type: 'all', st: 'all', sec: 'all' }, S.prefs.filters || {});
   function viewChapter(c, tab) {
     S.prefs.lastCh = c.id;
     save();
@@ -772,8 +780,14 @@
     </nav>
     ${footer()}`;
   }
-  function filtered(list) {
+  const secSort = (a, b) => { const [a1, a2] = a.split('.').map(Number); const [b1, b2] = b.split('.').map(Number); return a1 - b1 || a2 - b2; };
+  function chapterSecs(c) {
+    return [...new Set(c.problems.map((p) => p.sec).filter(Boolean))].sort(secSort);
+  }
+  function filtered(list, secs) {
+    const sec = secs && secs.includes(filters.sec) ? filters.sec : 'all';
     return list.filter((p) => {
+      if (sec !== 'all' && p.sec !== sec) return false;
       if (filters.lv !== 'all' && String(p.lv) !== filters.lv) return false;
       if (filters.type !== 'all' && p.type !== filters.type) return false;
       const r = S.prog[p.id];
@@ -790,7 +804,10 @@
     return `<b>${s.total}</b>문제 중 정답 <b>${s.right}</b> · 오답 <b>${s.wrong}</b>${s.partial ? ` · 부분 <b>${s.partial}</b>` : ''} · 남은 문제 <b>${s.total - s.tried}</b>`;
   }
   function practiceBody(c) {
-    const list = filtered(c.problems);
+    const secs = chapterSecs(c);
+    const curSec = secs.includes(filters.sec) ? filters.sec : 'all';
+    const list = filtered(c.problems, secs);
+    const titles = c.secTitles || {};
     return `
       <div class="practice-head">
         <div style="display:grid;gap:6px"><span class="caps" style="color:var(--camel-ink)">Exercises</span>
@@ -801,6 +818,11 @@
           ${seg('st', [['all', '전체'], ['todo', '안 푼 문제'], ['wrong', '틀린 문제']])}
         </div>
       </div>
+      ${secs.length ? `<div class="sec-filter" role="group" aria-label="Kreyszig 절로 거르기">
+        <span class="caps">Kreyszig 절</span>
+        <button class="pf-chip" data-act="filter" data-k="sec" data-v="all" aria-pressed="${curSec === 'all'}">전체 ${c.problems.length}</button>
+        ${secs.map((s) => `<button class="pf-chip" data-act="filter" data-k="sec" data-v="${s}" aria-pressed="${curSec === s}">${s}${titles[s] ? ` ${esc(titles[s])}` : ''} <span class="n">${c.problems.filter((p) => p.sec === s).length}</span></button>`).join('')}
+      </div>` : ''}
       <div class="problems">
         ${list.length ? list.map((p) => withOpts(probHTML(p, { ctx: 'practice' }), {})).join('')
           : `<div class="empty"><b>Voilà</b><p>조건에 맞는 문제가 없습니다. 필터를 바꿔 보세요.</p></div>`}
