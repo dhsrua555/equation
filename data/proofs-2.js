@@ -53,7 +53,7 @@ $$\det(A-\lambda I)=(a_{11}-\lambda)(a_{22}-\lambda)-a_{12}a_{21}=\lambda^2-(a_{
 - $\Delta<0$: $\lambda=\tfrac p2\pm i\omega$. 해는 $e^{pt/2}(\cos\omega t,\sin\omega t)$의 결합이므로 $p\ne0$이면 **나선점**, $p=0$이면 주기해인 **중심**.
 
 모든 해가 0으로 가려면 두 고유값의 실수부가 모두 음수여야 하고, 이는 $p<0$, $q>0$과 같습니다.` },
-  { ch: 'ch03', id: 'linearization', title: '비선형계의 선형화', keys: [],
+  { ch: 'ch03', id: 'linearization', title: '비선형계의 선형화', keys: ['선형화 (교재 Theorem 1)'],
     tags: 'linearization jacobian nonlinear 선형화 야코비 비선형 진자',
     sketch: R`선형화 정리(푸앵카레–랴푸노프)의 증명은 길어 생략하고, 선형화 식의 유도와 중심이 보존되지 않는 예를 보입니다.`,
     stmt: R`$\mathbf f(\mathbf y_0)=\mathbf 0$일 때 $\tilde{\mathbf y}=\mathbf y-\mathbf y_0$는 $\tilde{\mathbf y}'=J\tilde{\mathbf y}+\mathbf h(\tilde{\mathbf y})$, $|\mathbf h|=o(|\tilde{\mathbf y}|)$를 만족한다. 선형화한 계가 마디·안장·나선이면 원래 계도 같은 종류이지만, 중심은 보존되지 않을 수 있다.`,
@@ -172,21 +172,25 @@ $$\mathcal L\{f(t-a)u(t-a)\}=\int_a^\infty e^{-st}f(t-a)\,dt$$
 $\tau=t-a$로 치환하면
 $$\int_0^\infty e^{-s(\tau+a)}f(\tau)\,d\tau=e^{-as}F(s)$$
 $f=1$이면 $\mathcal L\{u(t-a)\}=e^{-as}/s$. 다른 꼴 $\mathcal L\{g(t)u(t-a)\}=e^{-as}\mathcal L\{g(t+a)\}$는 $f(\tau)=g(\tau+a)$로 두면 같은 식입니다.` },
-  { ch: 'ch05', id: 'delta', title: '디랙 델타의 라플라스 변환', keys: [],
+  { ch: 'ch05', id: 'delta', title: '디랙 델타의 라플라스 변환', keys: ['디랙 델타'],
     tags: 'dirac delta impulse 디랙 델타 충격',
     stmt: R`$\mathcal L\{\delta(t-a)\}=e^{-as}$.`,
     body: R`
 델타를 넓이 1인 짧은 펄스 $f_k=\dfrac1k\big[u(t-a)-u(t-a-k)\big]$의 극한($k\to0$)으로 봅니다.
 $$\mathcal L(f_k)=\frac1{ks}\big(e^{-as}-e^{-(a+k)s}\big)=e^{-as}\,\frac{1-e^{-ks}}{ks}$$
 로피탈 정리로 $\dfrac{1-e^{-ks}}{ks}\to1$이므로 극한은 $e^{-as}$입니다. 선별성질 $\int g(t)\delta(t-a)\,dt=g(a)$에 $g=e^{-st}$를 넣어도 같은 결과입니다.` },
-  { ch: 'ch05', id: 'partial-fraction', title: '부분분수 계수의 가림법', keys: [],
+  { ch: 'ch05', id: 'partial-fraction', title: '부분분수 계수의 가림법', keys: ['부분분수 분해'],
     tags: 'partial fraction cover-up heaviside inverse laplace 부분분수 가림법 헤비사이드 역변환',
     stmt: R`$a$가 분모의 단순근이면 $F(s)$의 부분분수 전개에서 $\dfrac{A}{s-a}$의 계수는 $A=\big[(s-a)F(s)\big]_{s=a}$. 특히 $F=P/Q$이면 $A=P(a)/Q'(a)$.`,
     body: R`
 $F(s)=\dfrac{A}{s-a}+R(s)$로 쓰면 $R$은 $s=a$에서 유한합니다. 양변에 $s-a$를 곱하면
 $$(s-a)F(s)=A+(s-a)R(s)$$
 $s\to a$로 보내면 $A$만 남습니다. $Q(a)=0$이면 $\dfrac{s-a}{Q(s)}\to\dfrac1{Q'(a)}$이므로 $A=\dfrac{P(a)}{Q'(a)}$. 따라서 서로 다른 단순근만 있으면
-$$\mathcal L^{-1}\Big\{\frac{P}{Q}\Big\}=\sum_k\frac{P(a_k)}{Q'(a_k)}e^{a_kt}$$` },
+$$\mathcal L^{-1}\Big\{\frac{P}{Q}\Big\}=\sum_k\frac{P(a_k)}{Q'(a_k)}e^{a_kt}$$
+
+**반복근.** $a$가 $m$중근이면 $F=\dfrac{A_m}{(s-a)^m}+\cdots+\dfrac{A_1}{s-a}+R(s)$로 쓰고 $(s-a)^m$을 곱합니다.
+$$(s-a)^mF(s)=A_m+A_{m-1}(s-a)+\cdots+A_1(s-a)^{m-1}+(s-a)^mR(s)$$
+좌변을 $s=a$에서 테일러 전개한 계수와 비교하면 $A_{m-k}=\dfrac1{k!}\dfrac{d^k}{ds^k}\big[(s-a)^mF(s)\big]_{s=a}$. 역변환은 $s$-이동 정리로 $\mathcal L^{-1}\{(s-a)^{-k}\}=\dfrac{t^{k-1}}{(k-1)!}e^{at}$.` },
   { ch: 'ch05', id: 'convolution', title: '합성곱 정리', keys: ['합성곱 정리'],
     tags: 'convolution theorem 합성곱 정리 적분 순서',
     stmt: R`$\mathcal L(f*g)=F(s)G(s)$, $(f*g)(t)=\displaystyle\int_0^tf(\tau)g(t-\tau)\,d\tau$.`,

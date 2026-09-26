@@ -266,6 +266,47 @@
       ctx.fillStyle = c.b;
       [[0, 1], [0, 2.2], [1.4, 0.8]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(T.X(x), T.Y(y), 3.5, 0, TAU); ctx.fill(); });
     },
+    // 15 — Joukowski map w = z + 1/z: circles |z| = r → confocal ellipses, rays → hyperbolas
+    joukowski(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -3.4 * asp, 3.4 * asp, -3.4, 3.4);
+      ctx.lineWidth = 1.2;
+      [1.08, 1.2, 1.36, 1.55, 1.8, 2.1, 2.5].forEach((r, k) => {
+        ctx.strokeStyle = k === 3 ? c.b : c.a;
+        param(ctx, (t) => (r + 1 / r) * Math.cos(t), (t) => (r - 1 / r) * Math.sin(t), 0, TAU, 200, T);
+      });
+      ctx.strokeStyle = c.faint2;
+      for (let k = 1; k < 16; k++) {
+        const th = (k * Math.PI) / 16;
+        [th, -th].forEach((a) => param(ctx, (r) => (r + 1 / r) * Math.cos(a), (r) => (r - 1 / r) * Math.sin(a), 1, 3.2, 80, T));
+      }
+      ctx.strokeStyle = c.b; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(T.X(-2), T.Y(0)); ctx.lineTo(T.X(2), T.Y(0)); ctx.stroke();
+    },
+    // 16 — potential flow around a cylinder: streamlines (r − 1/r) sin θ = c and equipotentials
+    potential(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -3 * asp, 3 * asp, -3, 3);
+      const stream = (cc, lo, hi) => param(ctx, (t) => {
+        const k = cc / Math.sin(t); const r = (k + Math.sqrt(k * k + 4)) / 2; return r * Math.cos(t);
+      }, (t) => {
+        const k = cc / Math.sin(t); const r = (k + Math.sqrt(k * k + 4)) / 2; return r * Math.sin(t);
+      }, lo, hi, 400, T);
+      ctx.lineWidth = 1.2;
+      [0.15, 0.35, 0.6, 0.9, 1.25, 1.7, 2.3, 3].forEach((cc, k) => {
+        ctx.strokeStyle = k === 2 ? c.b : c.a;
+        stream(cc, 0.004, Math.PI - 0.004);
+        stream(-cc, -Math.PI + 0.004, -0.004);
+      });
+      ctx.strokeStyle = c.faint;
+      [-3.2, -2.6, -2.2, 2.2, 2.6, 3.2].forEach((cc) => {
+        param(ctx, (t) => {
+          const k = cc / Math.cos(t); const r = (k + Math.sqrt(Math.max(k * k - 4, 0))) / 2; return r * Math.cos(t);
+        }, (t) => {
+          const k = cc / Math.cos(t); const r = (k + Math.sqrt(Math.max(k * k - 4, 0))) / 2; return r * Math.sin(t);
+        }, cc > 0 ? -Math.acos(Math.min(1, cc / 3.6 * 0.999)) + 0.0 : Math.PI - Math.acos(Math.min(1, -cc / 3.6)), cc > 0 ? Math.acos(Math.min(1, cc / 3.6 * 0.999)) : Math.PI + Math.acos(Math.min(1, -cc / 3.6)), 200, T);
+      });
+      ctx.strokeStyle = c.b; ctx.lineWidth = 1.8;
+      param(ctx, (t) => Math.cos(t), (t) => Math.sin(t), 0, TAU, 120, T);
+    },
     // exams — a sine carrier, used on exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);

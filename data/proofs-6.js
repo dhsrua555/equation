@@ -146,7 +146,7 @@ $$\left|\frac{a_{n+1}(z-z_0)^{n+1}}{a_n(z-z_0)^n}\right|=\left|\frac{a_{n+1}}{a_
 이 극한이 1보다 작으면 절대수렴, 크면 항이 0으로 가지 않아 발산합니다.
 
 항별로 미분한 급수 $\sum na_n(z-z_0)^{n-1}$의 비는 $\frac{n}{n+1}\left|\frac{a_n}{a_{n+1}}\right|\to R$이므로 수렴반경이 같습니다.` },
-  { ch: 'ch14', id: 'taylor', title: '테일러 정리: 해석함수는 멱급수로 전개된다', keys: ['기본 매클로린 급수', '수렴반경'],
+  { ch: 'ch14', id: 'taylor', title: '테일러 정리: 해석함수는 멱급수로 전개된다', keys: ['테일러 정리', '기본 매클로린 급수', '수렴반경'],
     tags: 'taylor theorem analytic power series expansion geometric series 테일러 정리 해석함수 멱급수 전개 등비급수',
     stmt: R`$f$가 $|z-z_0|<r$에서 해석적이면 그 원판에서 $f(z)=\sum\frac{f^{(n)}(z_0)}{n!}(z-z_0)^n$이 성립한다. 따라서 수렴반경은 가장 가까운 특이점까지의 거리 이상이다.`,
     body: R`

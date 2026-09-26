@@ -12,7 +12,7 @@
     A: { name: '상미분방정식', en: 'Ordinary Differential Equations', desc: '1계부터 연립 ODE, 급수해, 라플라스 변환까지. 공학수학 1의 중심입니다.' },
     B: { name: '선형대수 · 벡터 미적분', en: 'Linear Algebra & Vector Calculus', desc: '행렬과 고유값, 그리고 기울기·발산·회전과 적분 정리.' },
     C: { name: '푸리에 해석 · 편미분방정식', en: 'Fourier Analysis & PDEs', desc: '주기함수의 분해와 파동·열·라플라스 방정식.' },
-    D: { name: '복소해석', en: 'Complex Analysis', desc: '해석함수, 코시 적분, 로랑 급수와 유수 정리.' },
+    D: { name: '복소해석', en: 'Complex Analysis', desc: '해석함수, 코시 적분, 로랑 급수와 유수 정리, 등각사상과 퍼텐셜 이론.' },
   };
   const TYPE = { mc: '객관식', num: '단답형', open: '서술형' };
   const LV = ['', '기초', '표준', '심화'];
@@ -24,6 +24,12 @@
   };
 
   // ---------- data index ----------
+  // detailed, Kreyszig-aligned learning content (data/learn-*.js) replaces the short chapter text
+  (EM.learn || []).forEach((l) => {
+    const c = EM.chapters.find((x) => x.n === l.n);
+    if (!c) return;
+    ['sections', 'summary', 'goals', 'tagline'].forEach((k) => { if (l[k]) c[k] = l[k]; });
+  });
   // extra problem sets (data/more-*.js) are appended after the original ones so stored progress ids stay valid
   (EM.more || []).forEach((m) => {
     const c = EM.chapters.find((x) => x.n === m.n);
@@ -62,6 +68,12 @@
   PROOFS.forEach((p) => (p.keys || []).forEach((k) => {
     if (!proofsByKey.has(k)) proofsByKey.set(k, []);
     proofsByKey.get(k).push(p);
+  }));
+  // cross-references between chapters: [[ch05:6.2|note text]] inside content
+  const XREF_RE = /\[\[(ch\d{2})(?::(\d+\.\d+[a-z]?))?\|([\s\S]+?)\]\]/g;
+  const XLINKS = [];
+  CH.forEach((c) => c.sections.forEach((s) => {
+    String(s.body).replace(XREF_RE, (_, ch, k) => { XLINKS.push({ from: c.id, fromK: s.k || '', to: ch, toK: k || '' }); return ''; });
   }));
   const normText = (s) => String(s || '').toLowerCase()
     .replace(/\\([a-z]+)/g, '$1')
@@ -112,8 +124,71 @@
     let t = String(s)
       .replace(/\$\$([\s\S]+?)\$\$/g, (_, m) => { math.push([m, true]); return `\u0000${math.length - 1}\u0000`; })
       .replace(/\$([^$]+?)\$/g, (_, m) => { math.push([m, false]); return `\u0000${math.length - 1}\u0000`; });
+    const restore = (x) => x.replace(/\u0000(\d+)\u0000/g, (_, k) => tex(math[k][0], math[k][1]));
     t = esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    return t.replace(/\u0000(\d+)\u0000/g, (_, k) => tex(math[k][0], math[k][1]));
+    t = t.replace(XREF_RE, (_, ch, k, text) => xref(ch, k, restore(text)));
+    return restore(t);
+  }
+  // footnote-style link to another chapter; collected per section while NOTES is active
+  let NOTES = null;
+  let NOTEKEY = '';
+  function xrefTarget(ch, k) {
+    const c = chById.get(ch);
+    if (!c) return null;
+    const sec = k ? c.sections.find((s) => s.k === k) : null;
+    return {
+      route: sec ? `${ch}-k${k}` : ch,
+      label: `${pad(c.n)} ${c.title}${sec ? ` · §${sec.label || k} ${sec.title}` : ''}`,
+    };
+  }
+  function xref(ch, k, textHtml) {
+    const tg = xrefTarget(ch, k);
+    if (!tg) return textHtml;
+    if (NOTES) {
+      const n = NOTES.push({ route: tg.route, label: tg.label, text: textHtml });
+      return `<sup class="fn" id="fnref-${NOTEKEY}-${n}"><a href="#${tg.route}" data-act="scroll" data-target="fn-${NOTEKEY}-${n}" aria-label="연결 주석 ${n}: ${esc(tg.label)}">※${n}</a></sup>`;
+    }
+    return `<a class="xref" href="#${tg.route}" data-route="${tg.route}" title="${esc(tg.label)}">→ ${esc(tg.label)}</a>`;
+  }
+  function sectionHTML(c, sec, idx) {
+    NOTES = [];
+    NOTEKEY = `${c.id}-${idx}`;
+    const body = md(sec.body);
+    const notes = NOTES;
+    const key = NOTEKEY;
+    NOTES = null;
+    const num = sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
+    return `<section class="sec" id="sec-${sec.k || idx}">
+      <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}</h2></div>
+      ${sec.p ? `<p class="sec-page caps">Kreyszig 10판 p.${esc(sec.p)}</p>` : ''}
+      ${body}
+      ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
+        <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">※${i + 1}</button>
+          <div><a href="#${n.route}" data-route="${n.route}">${esc(n.label)} →</a><span class="fn-t">${n.text}</span></div></li>`).join('')}</ol></aside>` : ''}
+    </section>`;
+  }
+  function connectionMap(c) {
+    const out = new Map();
+    const inc = new Map();
+    XLINKS.forEach((l) => {
+      if (l.from === c.id && l.to !== c.id) {
+        const tg = xrefTarget(l.to, l.toK);
+        if (tg) out.set(tg.route, tg.label);
+      }
+      if (l.to === c.id && l.from !== c.id) {
+        const tg = xrefTarget(l.from, l.fromK);
+        if (tg) inc.set(tg.route, tg.label);
+      }
+    });
+    if (!out.size && !inc.size) return '';
+    const list = (m) => [...m.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([r, lb]) => `<li><a href="#${r}" data-route="${r}">${esc(lb)}</a></li>`).join('');
+    return `<section class="sec connmap" id="sec-links">
+      <div class="sec-title"><span>↔</span><h2>다른 단원과의 연결</h2></div>
+      <div class="connmap-grid">
+        ${out.size ? `<div><span class="caps">이 단원이 가져다 쓰는 내용</span><ul>${list(out)}</ul></div>` : ''}
+        ${inc.size ? `<div><span class="caps">이 단원을 이어받는 내용</span><ul>${list(inc)}</ul></div>` : ''}
+      </div>
+    </section>`;
   }
   function dedent(src) {
     const lines = String(src).replace(/\r/g, '').split('\n');
@@ -125,6 +200,7 @@
   const BLOCK_LABEL = {
     key: ['Key', 'blk-key'], thm: ['Theorem', 'blk-thm'], ex: ['Example', 'blk-ex'],
     tip: ['Exam tip', 'blk-tip'], warn: ['Pitfall', 'blk-warn'], note: ['Note', 'blk-thm'],
+    def: ['Definition', 'blk-def'], idea: ['Idea', 'blk-idea'],
   };
   function isBlockStart(l) {
     const t = l.trim();
@@ -233,8 +309,10 @@
       </svg><figcaption>고유값의 합 p와 곱 q만으로 원점의 종류가 결정됩니다. 포물선 위쪽은 복소 고유값(나선), 아래쪽은 실수 고유값(마디)입니다.</figcaption></figure>`;
     },
   };
-  function proofLinks(title) {
-    const list = proofsByKey.get(String(title || '').trim());
+  let CUR_CH = null; // chapter whose content is being rendered, so key titles only match that chapter's proofs
+  function proofLinks(title, ch) {
+    const scope = ch || CUR_CH;
+    const list = (proofsByKey.get(String(title || '').trim()) || []).filter((p) => !scope || p.ch === scope);
     if (!list || !list.length) return '';
     return `<div class="pf-links"><span class="caps">Proof</span>${list.map((p) =>
       `<a href="#pf-${p.pid}" data-route="pf-${p.pid}">${inline(p.title)}</a>`).join('')}</div>`;
@@ -271,7 +349,7 @@
           inner.push(L[i]);
           i++;
         }
-        found.push({ title: m[1] || s.title, body: inner.join('\n'), sec: `${c.n}.${si + 1} ${s.title}` });
+        found.push({ title: m[1] || s.title, body: inner.join('\n'), sec: `${s.k ? `§${s.k}` : `${c.n}.${si + 1}`} ${s.title}` });
       }
     });
     c._keys = found;
@@ -484,7 +562,9 @@
     if (ctx === 'result') return resultProbHTML(p, o);
     const u = uiOf(p.id);
     const no = o.label || pad(p.no);
-    const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? `<span class="chip sec">Kreyszig ${esc(p.sec)}</span>` : ''}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
+    const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? (chById.get(p.ch) && chById.get(p.ch).sections.some((s) => s.k === p.sec)
+      ? `<a class="chip sec" href="#${p.ch}-k${p.sec}" data-route="${p.ch}-k${p.sec}" title="이 절의 개념 정리로 이동">Kreyszig ${esc(p.sec)} →</a>`
+      : `<span class="chip sec">Kreyszig ${esc(p.sec)}</span>`) : ''}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
     let body = '';
     if (p.type === 'mc') {
       body = `<div class="choices" role="group" aria-label="보기">${p.choices.map((c, k) => {
@@ -727,6 +807,7 @@
 
   let filters = Object.assign({ lv: 'all', type: 'all', st: 'all', sec: 'all' }, S.prefs.filters || {});
   function viewChapter(c, tab) {
+    CUR_CH = c.id;
     S.prefs.lastCh = c.id;
     save();
     const s = chStats(c);
@@ -736,10 +817,12 @@
     if (tab === 'learn') {
       body = `<div class="ch-body">
         <nav class="toc" aria-label="단원 목차"><span class="caps">Contents</span>
-          ${c.sections.map((sec, k) => `<a href="#${c.id}" data-act="scroll" data-target="sec-${k + 1}"><span>${c.n}.${k + 1}</span>${esc(sec.title)}</a>`).join('')}
+          ${c.sections.map((sec, k) => `<a href="#${sec.k ? `${c.id}-k${sec.k}` : c.id}" data-act="scroll" data-target="sec-${sec.k || k + 1}"><span>${sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${k + 1}`}</span>${esc(sec.title)}</a>`).join('')}
+          ${XLINKS.some((l) => (l.from === c.id) !== (l.to === c.id)) ? `<a href="#${c.id}" data-act="scroll" data-target="sec-links"><span>↔</span>다른 단원과의 연결</a>` : ''}
         </nav>
         <article class="prose">
-          ${c.sections.map((sec, k) => `<section class="sec" id="sec-${k + 1}"><div class="sec-title"><span>${c.n}.${k + 1}</span><h2>${esc(sec.title)}</h2></div>${md(sec.body)}</section>`).join('')}
+          ${c.sections.map((sec, k) => sectionHTML(c, sec, k + 1)).join('')}
+          ${connectionMap(c)}
           <div class="sec"><div class="btn-row"><a class="btn" href="#${c.id}-practice" data-route="${c.id}-practice">연습문제 ${c.problems.length}개 풀기</a><a class="btn ghost" href="#${c.id}-formulas" data-route="${c.id}-formulas">핵심 공식만 보기</a></div></div>
         </article>
       </div>`;
@@ -748,7 +831,7 @@
     } else if (tab === 'formulas') {
       const keys = keyBlocks(c);
       body = `<div class="section tight" style="padding-top:40px"><div class="sheet">${keys.map((k) => `
-        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}</h4><div class="body">${md(k.body)}</div>${proofLinks(k.title)}</div>`).join('')}</div></div>`;
+        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}</h4><div class="body">${md(k.body)}</div>${proofLinks(k.title, c.id)}</div>`).join('')}</div></div>`;
     } else if (tab === 'proofs') {
       const list = PROOFS.filter((p) => p.ch === c.id);
       body = `<div class="section tight" style="padding-top:40px">
@@ -926,7 +1009,7 @@
             ${CH.filter((c) => c.part === k).map((c) => `
               <div id="f-${c.id}" style="margin-bottom:44px">
                 <h3 style="font-family:var(--f-serif);font-size:1.2rem;margin-bottom:16px"><span class="num-display" style="margin-right:12px">${pad(c.n)}</span><a href="#${c.id}" data-route="${c.id}" style="text-decoration:none">${esc(c.title)}</a></h3>
-                <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div>${proofLinks(b.title)}</div>`).join('')}</div>
+                <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div>${proofLinks(b.title, c.id)}</div>`).join('')}</div>
               </div>`).join('')}
           </div>`).join('')}
       </div>
@@ -1237,12 +1320,14 @@
   function render(to, opts) {
     const prevRoute = route;
     route = to;
+    CUR_CH = null;
     stopHero();
     let m;
     let view = 'page';
     let html = '';
     if (to === 'home') { view = 'home'; html = viewHome(); }
     else if ((m = /^(ch\d{2})(?:-(practice|formulas|proofs))?$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), m[2] || 'learn'); }
+    else if ((m = /^(ch\d{2})-k(\d+\.\d+[a-z]?)$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), 'learn'); opts = Object.assign({}, opts, { anchor: `sec-${m[2]}` }); }
     else if (to === 'formulas') html = viewFormulas();
     else if (to === 'proofs') html = viewProofs();
     else if ((m = /^pf-(ch\d{2}-[\w-]+)$/.exec(to)) && proofById.get(m[1])) html = viewProof(proofById.get(m[1]));
@@ -1266,7 +1351,9 @@
     document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · Équation 공학수학` : title[route] ? `${title[route]} · Équation 공학수학` : 'Équation 공학수학';
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
-    else if (samePage) {
+    else if (opts.anchor && document.getElementById(opts.anchor)) {
+      document.getElementById(opts.anchor).scrollIntoView();
+    } else if (samePage) {
       const tabs = $('#tabs');
       if (tabs) {
         const y = tabs.getBoundingClientRect().top + window.scrollY - (document.querySelector('.site-header').offsetHeight);

@@ -5,7 +5,7 @@ EM.proofs = EM.proofs || [];
   const R = String.raw;
   EM.proofs.push(
   // ───── 08
-  { ch: 'ch08', id: 'dot', title: '내적의 코사인 공식', keys: ['내적·외적·삼중곱'],
+  { ch: 'ch08', id: 'dot', title: '내적의 코사인 공식', keys: ['내적과 정사영'],
     tags: 'dot product inner product cosine law 내적 코사인 법칙 각',
     stmt: R`$\mathbf a\cdot\mathbf b=a_1b_1+a_2b_2+a_3b_3=|\mathbf a||\mathbf b|\cos\gamma$.`,
     body: R`
@@ -104,7 +104,7 @@ $$\iint_R\frac{\partial F_1}{\partial y}\,dy\,dx=\int_a^b\big[F_1(x,v(x))-F_1(x,
 경계를 반시계로 돌면 아래 곡선 $y=u(x)$는 $a\to b$, 위 곡선 $y=v(x)$는 $b\to a$ 방향이고, 세로 변에서는 $dx=0$입니다. 따라서
 $$\oint_CF_1\,dx=\int_a^bF_1(x,u(x))\,dx-\int_a^bF_1(x,v(x))\,dx=-\iint_R\frac{\partial F_1}{\partial y}\,dx\,dy$$
 $R$을 $\{c\le y\le d,\ p(y)\le x\le q(y)\}$로 써서 같은 계산을 하면 $\oint_CF_2\,dy=\iint_R\dfrac{\partial F_2}{\partial x}\,dx\,dy$. 두 식을 더하면 정리입니다.` },
-  { ch: 'ch09', id: 'area', title: '그린 정리의 넓이 공식과 야코비안', keys: ['그린 정리'],
+  { ch: 'ch09', id: 'area', title: '그린 정리의 넓이 공식과 야코비안', keys: ['그린 정리', '이중적분의 변수변환'],
     tags: 'area formula green jacobian polar coordinates change of variables 넓이 공식 야코비안 극좌표 변수변환',
     stmt: R`$A=\dfrac12\displaystyle\oint_C(x\,dy-y\,dx)$. 또 극좌표에서 $dx\,dy=r\,dr\,d\theta$.`,
     body: R`
@@ -112,7 +112,7 @@ $R$을 $\{c\le y\le d,\ p(y)\le x\le q(y)\}$로 써서 같은 계산을 하면 $
 
 변수변환 $(u,v)\mapsto(x,y)$에서 작은 직사각형 $du\times dv$는 변 $\mathbf x_u\,du$, $\mathbf x_v\,dv$인 평행사변형으로 옮겨지고, 넓이는 $\Big|\det\dfrac{\partial(x,y)}{\partial(u,v)}\Big|du\,dv$입니다. 극좌표 $x=r\cos\theta$, $y=r\sin\theta$에서
 $$\det\begin{pmatrix}\cos\theta&-r\sin\theta\\ \sin\theta&r\cos\theta\end{pmatrix}=r$$` },
-  { ch: 'ch09', id: 'surface-area', title: '면적 요소와 법선벡터', keys: ['면적분'],
+  { ch: 'ch09', id: 'surface-area', title: '면적 요소와 법선벡터', keys: ['면적분', '곡면의 법선벡터'],
     tags: 'surface area element normal vector flux parametric surface sphere 면적 요소 법선 유량 매개변수 곡면 구면',
     stmt: R`매개변수 곡면의 면적 요소는 $dA=|\mathbf r_u\times\mathbf r_v|\,du\,dv$이다. 그래프 $z=f(x,y)$이면 $\mathbf N=(-f_x,-f_y,1)$, 반지름 $a$인 구면이면 $dA=a^2\sin\phi\,d\phi\,d\theta$.`,
     body: R`

@@ -85,7 +85,7 @@ $$|y_{n+1}(x)-y_n(x)|\le\frac{KL^{n}|x-x_0|^{n+1}}{(n+1)!}$$
 $$w(x)\le M\frac{\big(L|x-x_0|\big)^{n}}{n!}\xrightarrow{n\to\infty}0$$
 이므로 $y=z$입니다.` },
   // ───── 02
-  { ch: 'ch02', id: 'superposition', title: '중첩 원리와 일반해의 구조', keys: [],
+  { ch: 'ch02', id: 'superposition', title: '중첩 원리와 일반해의 구조', keys: ['동차 선형 ODE의 기본 정리 (교재 Theorem 1)', '비동차 ODE의 일반해 (교재 Theorem 2)'],
     tags: 'superposition linear homogeneous nonhomogeneous 중첩 선형 동차 비동차 일반해',
     stmt: R`동차 선형 방정식의 해의 일차결합은 해이다. 비동차 방정식의 모든 해는 $y=y_h+y_p$ 꼴이다.`,
     body: R`
@@ -161,7 +161,7 @@ $$u_1'=\frac{\begin{vmatrix}0&y_2\\r&y_2'\end{vmatrix}}{W}=-\frac{y_2r}{W},\qqua
 - 중근: $P(D)=(D-\gamma)^2$, $(D-\gamma)^2(x^2e^{\gamma x})=(D-\gamma)(2xe^{\gamma x})=2e^{\gamma x}$이므로 $C=\dfrac k2$.
 
 동차해에는 $P(D)$가 0을 돌려주어 우변을 만들 수 없으므로 $x$를 곱해야 합니다. 삼각함수 우변은 $\gamma=i\omega$로 두고 같은 논리를 씁니다.` },
-  { ch: 'ch02', id: 'damping', title: '감쇠의 세 경우', keys: ['감쇠와 공진'],
+  { ch: 'ch02', id: 'damping', title: '감쇠의 세 경우', keys: ['자유진동: 감쇠의 세 경우'],
     tags: 'damping overdamped critical underdamped 과감쇠 임계감쇠 부족감쇠 질량 스프링',
     stmt: R`$my''+cy'+ky=0$은 $c^2>4mk$이면 과감쇠, $c^2=4mk$이면 임계감쇠, $c^2<4mk$이면 $e^{-\alpha t}(A\cos\omega^*t+B\sin\omega^*t)$ 꼴의 감쇠 진동이다.`,
     body: R`
@@ -181,7 +181,7 @@ $$my''+ky=2m\omega_0\cos\omega_0t$$
 **감쇠 진폭.** 복소 입력 $F_0e^{i\omega t}$에 $y=Ae^{i\omega t}$를 넣으면 $(k-m\omega^2+ic\omega)A=F_0$.
 $$|A|=\frac{F_0}{\big|m(\omega_0^2-\omega^2)+ic\omega\big|}=\frac{F_0}{\sqrt{m^2(\omega_0^2-\omega^2)^2+\omega^2c^2}}$$
 실제 입력 $F_0\cos\omega t=\Re(F_0e^{i\omega t})$의 응답은 $\Re(Ae^{i\omega t})$이고 진폭은 $|A|$입니다. 동차해는 $e^{-ct/2m}$으로 사라지므로 이것이 정상상태 진폭입니다.` },
-  { ch: 'ch02', id: 'multiroot', title: R`중복근에서 $x^ke^{\lambda x}$가 해인 이유`, keys: [],
+  { ch: 'ch02', id: 'multiroot', title: R`중복근에서 $x^ke^{\lambda x}$가 해인 이유`, keys: ['고계 상수계수 방정식'],
     tags: 'higher order multiple root operator 고계 중복근 연산자',
     stmt: R`상수계수 방정식 $P(D)y=0$에서 $\lambda_0$가 특성다항식의 $m$중근이면 $x^ke^{\lambda_0x}$ ($k=0,\dots,m-1$)는 해이다.`,
     body: R`

@@ -24,7 +24,7 @@ $\cos\cdot\sin$은 기함수이므로 대칭 구간에서 적분이 0입니다.`
 양변에 $\cos\frac{m\pi x}L$을 곱해 적분하면 직교성에 의해 $n=m$인 코사인 항만 남습니다.
 $$\int_{-L}^Lf\cos\frac{m\pi x}{L}\,dx=a_m\cdot L$$
 사인을 곱하면 같은 방법으로 $b_m$이 나옵니다. 급수의 "좌표"를 내적으로 뽑아내는 것과 같습니다.` },
-  { ch: 'ch10', id: 'convergence', title: '푸리에 급수의 수렴 정리', keys: ['푸리에 계수 (주기 2L)'],
+  { ch: 'ch10', id: 'convergence', title: '푸리에 급수의 수렴 정리', keys: ['푸리에 계수 (주기 2L)', '수렴 정리 (교재 Theorem 1)'],
     tags: 'convergence dirichlet kernel riemann lebesgue jump average 수렴 정리 디리클레 핵 리만 르베그 불연속 평균',
     sketch: R`디리클레 핵과 리만–르베그 보조정리를 이용한 증명의 개요입니다 ($L=\pi$).`,
     stmt: R`$f$가 구간별 연속이고 각 점에서 좌우 미분계수가 있으면, 푸리에 급수는 각 점에서 $\tfrac12\big[f(x^+)+f(x^-)\big]$로 수렴한다.`,
@@ -60,7 +60,7 @@ $\int_{-L}^Le^{i(m-n)\pi x/L}dx=2L\delta_{mn}$ (직교성)을 쓰면 급수에�
 $f^2=f\cdot\big(a_0+\sum(a_n\cos+b_n\sin)\big)$를 적분하고 계수 공식을 쓰면
 $$\int_{-L}^Lf^2dx=a_0\int f+\sum\Big(a_n\int f\cos+b_n\int f\sin\Big)=a_0\cdot2La_0+\sum\big(a_n\cdot La_n+b_n\cdot Lb_n\big)$$
 양변을 $L$로 나누면 항등식입니다. 기하학적으로는 직교 기저에서의 피타고라스 정리입니다. 부분합만 쓰면 등호 대신 $\le$가 성립하는데(베셀 부등식), 이 때문에 $a_n,b_n\to0$입니다.` },
-  { ch: 'ch10', id: 'fourier-integral', title: '푸리에 적분 공식의 유도', keys: ['푸리에 적분'],
+  { ch: 'ch10', id: 'fourier-integral', title: '푸리에 적분 공식의 유도', keys: ['푸리에 적분', '존재 조건 (교재 Theorem 1)'],
     tags: 'fourier integral limit period to infinity 푸리에 적분 주기 무한대',
     sketch: R`$L\to\infty$ 극한을 형식적으로 취하는 유도입니다. $\int|f|\,dx<\infty$를 가정합니다.`,
     stmt: R`$f(x)=\displaystyle\int_0^\infty\big[A(w)\cos wx+B(w)\sin wx\big]dw$, $A=\frac1\pi\int f(v)\cos wv\,dv$, $B=\frac1\pi\int f(v)\sin wv\,dv$.`,
@@ -88,6 +88,33 @@ $$-ax^2-iwx=-a\Big(x+\frac{iw}{2a}\Big)^2-\frac{w^2}{4a}$$
 적분 경로를 실수축에서 $\Im z=w/2a$인 평행선으로 옮겨도 값이 같으므로(피적분함수가 해석적이고 양 끝에서 빠르게 사라짐, 13단원 코시 정리)
 $$\int_{-\infty}^{\infty}e^{-a(x+iw/2a)^2}dx=\int_{-\infty}^\infty e^{-ax^2}dx=\sqrt{\frac\pi a}$$
 따라서 $\hat f=\dfrac1{\sqrt{2\pi}}\sqrt{\dfrac\pi a}\,e^{-w^2/4a}=\dfrac1{\sqrt{2a}}e^{-w^2/(4a)}$. 가우스 함수는 변환해도 가우스 함수입니다.` },
+  { ch: 'ch10', id: 'min-square-error', title: '푸리에 부분합이 제곱 오차를 최소로 한다', keys: ['최소 제곱 오차 (교재 Theorem 1)'],
+    tags: 'minimum square error approximation trigonometric polynomial best 최소 제곱 오차 근사 삼각다항식',
+    stmt: R`차수 $N$ 삼각다항식 $F=A_0+\sum_{n\le N}(A_n\cos nx+B_n\sin nx)$ 중 $E=\int_{-\pi}^{\pi}(f-F)^2dx$를 최소로 하는 것은 계수가 푸리에 계수일 때이고, 최솟값은 $E^*=\int f^2-\pi\big[2a_0^2+\sum(a_n^2+b_n^2)\big]$이다.`,
+    body: R`
+$E=\int f^2-2\int fF+\int F^2$. 직교성으로 $\int F^2=\pi\big[2A_0^2+\sum(A_n^2+B_n^2)\big]$, 오일러 공식으로 $\int fF=\pi\big[2A_0a_0+\sum(A_na_n+B_nb_n)\big]$. 따라서 계수가 푸리에 계수일 때의 값 $E^*$를 빼면
+$$E-E^*=\pi\Big[2(A_0-a_0)^2+\sum_{n=1}^N\big((A_n-a_n)^2+(B_n-b_n)^2\big)\Big]\ge0$$
+이고 등호는 $A_n=a_n$, $B_n=b_n$일 때뿐입니다. 이것은 내적공간에서 정사영이 최선 근사라는 정리의 한 경우입니다.` },
+  { ch: 'ch10', id: 'sl-orthogonality', title: '스투름–리우빌 고유함수의 직교성', keys: ['고유함수의 직교성 (교재 Theorem 1)'],
+    tags: 'sturm liouville orthogonality eigenfunction weight self-adjoint 스투름 리우빌 직교성 고유함수 가중함수 자기수반',
+    stmt: R`스투름–리우빌 문제의 서로 다른 고유값 $\lambda_m\ne\lambda_n$에 대응하는 고유함수는 $\int_a^b r\,y_my_n\,dx=0$을 만족한다.`,
+    body: R`
+두 방정식 $(py_m')'+(q+\lambda_mr)y_m=0$에 $y_n$을, $(py_n')'+(q+\lambda_nr)y_n=0$에 $y_m$을 곱해 빼면 $q$ 항이 지워지고
+$$(\lambda_m-\lambda_n)\,r\,y_my_n=y_m(py_n')'-y_n(py_m')'=\Big[p\,(y_my_n'-y_ny_m')\Big]'$$
+$a$에서 $b$까지 적분하면
+$$(\lambda_m-\lambda_n)\int_a^br\,y_my_n\,dx=\Big[p\,(y_my_n'-y_ny_m')\Big]_a^b$$
+**경계항이 0인 이유.** $x=b$에서 두 함수 모두 $l_1y+l_2y'=0$을 만족합니다. $l_2\ne0$이면 $y'=-\frac{l_1}{l_2}y$라 괄호가 $-\frac{l_1}{l_2}(y_my_n-y_ny_m)=0$, $l_2=0$이면 $y_m(b)=y_n(b)=0$. $x=a$도 같습니다. $p(a)=0$이면(특이 문제) 그 끝의 항은 조건 없이 0이고, $p(a)=p(b)$와 주기 조건이면 두 끝의 항이 상쇄됩니다.
+
+$\lambda_m\ne\lambda_n$이므로 적분이 0입니다. 행렬에서 대칭행렬의 고유벡터가 직교하는 증명과 같은 구조입니다.` },
+  { ch: 'ch10', id: 'gen-coeff', title: '일반화된 푸리에 계수 공식', keys: ['일반화된 푸리에 급수'],
+    tags: 'generalized fourier series coefficient fourier legendre fourier bessel 일반화된 푸리에 급수 계수 르장드르 베셀',
+    sketch: R`급수가 수렴하고 항별 적분이 가능하다고 가정합니다.`,
+    stmt: R`직교계 $\{y_m\}$ (가중함수 $r$)에 대해 $f=\sum a_my_m$이면 $a_m=\dfrac{(f,y_m)}{\|y_m\|^2}$.`,
+    body: R`
+양변과 $y_n$의 가중 내적을 취하면 직교성 때문에 한 항만 남습니다.
+$$(f,y_n)=\sum_ma_m(y_m,y_n)=a_n(y_n,y_n)=a_n\|y_n\|^2$$
+르장드르 다항식은 $r=1$, $\|P_m\|^2=\frac2{2m+1}$이므로 $a_m=\frac{2m+1}2\int_{-1}^1fP_m\,dx$.
+베셀 함수 $J_n(k_{n,m}x)$는 $r=x$, $\|J_n(k_{n,m}x)\|^2=\frac{R^2}2J_{n+1}^2(\alpha_{n,m})$이므로 푸리에–베셀 계수 공식이 나옵니다.` },
   // ───── 11
   { ch: 'ch11', id: 'classify', title: '2계 PDE 분류와 특성선', keys: ['2계 선형 PDE의 분류'],
     tags: 'classification characteristics hyperbolic parabolic elliptic normal form 분류 특성선 쌍곡형 포물형 타원형 표준형',

@@ -75,6 +75,45 @@ $$\big(A\,\operatorname{adj}A\big)_{jk}=\sum_la_{jl}C_{kl}$$
 크래머 공식: $\mathbf x=A^{-1}\mathbf b=\frac1D\operatorname{adj}A\,\mathbf b$이므로 $x_k=\frac1D\sum_lC_{lk}b_l$. 이 합은 $A$의 $k$열을 $\mathbf b$로 바꾼 행렬을 $k$열로 전개한 것이므로 $D_k$입니다.
 
 2×2이면 여인수가 $C_{11}=d$, $C_{12}=-c$, $C_{21}=-b$, $C_{22}=a$이므로 $\operatorname{adj}A=\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$.` },
+  { ch: 'ch06', id: 'dimension-thm', title: '선형사상의 차원정리', keys: ['선형사상과 차원정리'],
+    tags: 'dimension theorem rank nullity kernel image linear map 차원정리 커널 이미지 선형사상',
+    stmt: R`유한차원 $V$에서 정의된 선형사상 $L:V\to W$에 대해 $\dim\ker L+\dim\operatorname{im}L=\dim V$.`,
+    body: R`
+$\ker L$의 기저 $\{u_1,\dots,u_k\}$를 $V$의 기저 $\{u_1,\dots,u_k,w_1,\dots,w_r\}$로 확장합니다($k+r=\dim V$). $\{L(w_1),\dots,L(w_r)\}$이 $\operatorname{im}L$의 기저임을 보이면 됩니다.
+
+**생성.** $v=\sum a_iu_i+\sum b_jw_j$이면 $L(u_i)=0$이므로 $L(v)=\sum b_jL(w_j)$.
+
+**일차독립.** $\sum b_jL(w_j)=0$이면 $L\big(\sum b_jw_j\big)=0$, 즉 $\sum b_jw_j\in\ker L$이므로 $\sum b_jw_j=\sum c_iu_i$. 전체가 $V$의 기저이므로 모든 $b_j=c_i=0$.
+
+따라서 $\dim\operatorname{im}L=r=\dim V-k$. 행렬 $L_A$에 적용하면 $\operatorname{rank}A+\operatorname{nullity}A=n$입니다.` },
+  { ch: 'ch06', id: 'cauchy-schwarz', title: '코시–슈바르츠 부등식, 삼각부등식, 평행사변형 등식', keys: ['노름과 기본 부등식'],
+    tags: 'cauchy schwarz triangle inequality parallelogram law inner product norm 코시 슈바르츠 삼각부등식 평행사변형 내적 노름',
+    stmt: R`내적공간에서 $|\langle u,v\rangle|\le\|u\|\|v\|$, $\|u+v\|\le\|u\|+\|v\|$, $\|u+v\|^2+\|u-v\|^2=2(\|u\|^2+\|v\|^2)$.`,
+    body: R`
+**코시–슈바르츠.** $v=0$이면 자명합니다. $v\ne0$이면 $w=u-\dfrac{\langle u,v\rangle}{\|v\|^2}v$는 $v$와 직교하므로(정사영의 나머지)
+$$0\le\|w\|^2=\langle w,u\rangle=\|u\|^2-\frac{|\langle u,v\rangle|^2}{\|v\|^2}$$
+정리하면 $|\langle u,v\rangle|^2\le\|u\|^2\|v\|^2$. 등호는 $w=0$, 즉 $u$와 $v$가 평행할 때입니다.
+
+**삼각부등식.**
+$$\|u+v\|^2=\|u\|^2+2\Re\langle u,v\rangle+\|v\|^2\le\|u\|^2+2\|u\|\|v\|+\|v\|^2=(\|u\|+\|v\|)^2$$
+
+**평행사변형 등식.** $\|u\pm v\|^2=\|u\|^2\pm2\Re\langle u,v\rangle+\|v\|^2$을 더하면 교차항이 상쇄됩니다.` },
+  { ch: 'ch06', id: 'projection', title: '정사영이 최선 근사인 이유', keys: ['정사영과 최선 근사'],
+    tags: 'orthogonal projection best approximation pythagoras least squares 정사영 최선 근사 피타고라스 최소제곱',
+    stmt: R`$\{v_1,\dots,v_m\}$이 부분공간 $W$의 정규직교기저이고 $w=\sum\langle v,v_i\rangle v_i$이면 $v-w\perp W$이고, 모든 $u\in W$에 대해 $\|v-w\|\le\|v-u\|$ (등호는 $u=w$일 때만).`,
+    body: R`
+**직교.** 각 $j$에 대해 $\langle v-w,v_j\rangle=\langle v,v_j\rangle-\sum_i\langle v,v_i\rangle\langle v_i,v_j\rangle=\langle v,v_j\rangle-\langle v,v_j\rangle=0$. $W$의 모든 벡터는 $v_j$의 일차결합이므로 $v-w\perp W$.
+
+**최소성.** $u\in W$이면 $w-u\in W$이므로 $(v-w)\perp(w-u)$. 피타고라스 정리로
+$$\|v-u\|^2=\|(v-w)+(w-u)\|^2=\|v-w\|^2+\|w-u\|^2\ge\|v-w\|^2$$
+등호는 $\|w-u\|=0$일 때뿐이므로 가장 가까운 벡터는 유일합니다. 함수공간에서는 이것이 "제곱 오차 최소"이고, 삼각함수계에 적용하면 푸리에 부분합이 최선 근사라는 정리가 됩니다.` },
+  { ch: 'ch06', id: 'bessel-ineq', title: '베셀 부등식', keys: ['정사영과 최선 근사'],
+    tags: 'bessel inequality orthonormal parseval hilbert 베셀 부등식 정규직교 파세발 힐베르트',
+    stmt: R`정규직교집합 $\{v_1,\dots,v_m\}$과 $v$에 대해 $\sum_{i=1}^m|\langle v,v_i\rangle|^2\le\|v\|^2$.`,
+    body: R`
+$w=\sum\langle v,v_i\rangle v_i$라 하면 정규직교성에서 $\|w\|^2=\sum|\langle v,v_i\rangle|^2$이고, 앞 정리에서 $v-w\perp w$이므로
+$$\|v\|^2=\|v-w\|^2+\|w\|^2\ge\|w\|^2=\sum_{i=1}^m|\langle v,v_i\rangle|^2$$
+$m$에 관계없이 성립하므로 무한 정규직교집합에서도 $\sum_{i=1}^\infty|\langle v,v_i\rangle|^2\le\|v\|^2$이고, 특히 $\langle v,v_i\rangle\to0$입니다. 기저가 완비이면 $\|v-w\|\to0$이 되어 등호(파세발 항등식)가 성립합니다.` },
   // ───── 07
   { ch: 'ch07', id: 'traceprod', title: '고유값의 합은 대각합, 곱은 행렬식', keys: ['고유값의 기본 성질'],
     tags: 'eigenvalue trace determinant characteristic polynomial 고유값 대각합 행렬식 특성다항식',
