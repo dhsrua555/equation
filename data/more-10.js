@@ -1,0 +1,76 @@
+/* 추가 연습문제 — 10 푸리에 해석 (Kreyszig 11.1–11.9). 같은 유형으로 새로 만든 문제입니다. */
+window.EM = window.EM || { chapters: [], exams: [] };
+EM.more = EM.more || [];
+(function () {
+  const R = String.raw;
+  EM.more.push({
+    n: 10,
+    secTitles: { '11.1': '푸리에 급수', '11.2': '임의 주기·반구간', '11.3': '강제진동', '11.4': '근사·파세발', '11.5': '스투름–리우빌', '11.7': '푸리에 적분', '11.8': '코사인·사인 변환', '11.9': '푸리에 변환' },
+    secs: ['11.2', '11.1', '11.2', '11.1', '11.1', '11.2', '11.4', '11.7', '11.9', '11.9', '11.1'],
+    problems: [
+      { sec: '11.1', type: 'num', lv: 1, q: R`$\sin\dfrac{2\pi x}{3}$의 기본주기는?`, ans: '3', ansTex: R`3`,
+        sol: R`$\sin kx$의 주기는 $2\pi/k$이므로 $2\pi\big/\tfrac{2\pi}3=3$.` },
+      { sec: '11.1', type: 'num', lv: 2, q: R`$f(x)=x^2\ (-\pi<x<\pi)$의 푸리에 계수 $a_2$는?`, ans: '1', ansTex: R`1`,
+        sol: R`$a_n=\dfrac2\pi\int_0^\pi x^2\cos nx\,dx=\dfrac{4(-1)^n}{n^2}$. $n=2$이면 1.` },
+      { sec: '11.1', type: 'num', lv: 2, q: R`$f(x)=0\ (-\pi<x<0)$, $f(x)=1\ (0<x<\pi)$의 푸리에 계수 $b_1$은?`, ans: '2/pi', ansTex: R`\tfrac2\pi`,
+        sol: R`$b_n=\dfrac1\pi\int_0^\pi\sin nx\,dx=\dfrac{1-\cos n\pi}{n\pi}$, $b_1=\tfrac2\pi$. ($a_0=\tfrac12$, $a_n=0$)` },
+      { sec: '11.1', type: 'mc', lv: 1, q: R`$f(x)=|\sin x|$의 푸리에 급수의 모양은?`,
+        choices: [R`상수항과 코사인항만 있다`, R`사인항만 있다`, R`상수항이 0이다`, R`사인항과 코사인항이 모두 있다`], ans: 0,
+        sol: R`$|\sin x|$는 우함수이므로 $b_n=0$이고, 평균이 $\tfrac2\pi>0$이라 상수항이 있습니다. (주기는 $\pi$라 짝수 $n$의 코사인만 나타남)` },
+      { sec: '11.1', type: 'num', lv: 3, q: R`$f(x)=e^x\ (-\pi<x<\pi)$의 푸리에 계수 $a_0$는? (Kreyszig 표기)`, ans: 'sinh(pi)/pi', ansTex: R`\tfrac{\sinh\pi}{\pi}\approx3.676`,
+        sol: R`$a_0=\dfrac1{2\pi}\int_{-\pi}^{\pi}e^x\,dx=\dfrac{e^\pi-e^{-\pi}}{2\pi}=\dfrac{\sinh\pi}\pi$.` },
+      { sec: '11.2', type: 'num', lv: 2, q: R`주기 4인 함수 $f(x)=x\ (-2<x<2)$의 푸리에 계수 $b_1$은?`, ans: '4/pi', ansTex: R`\tfrac4\pi`,
+        sol: R`$L=2$, 기함수. $b_n=\int_0^2x\sin\dfrac{n\pi x}2dx=\dfrac{4(-1)^{n+1}}{n\pi}$, $b_1=\tfrac4\pi$.` },
+      { sec: '11.2', type: 'mc', lv: 1, q: R`다음 중 기함수는?`,
+        choices: [R`$x\cos x$`, R`$x\sin x$`, R`$|x|$`, R`$\cos2x$`], ans: 0,
+        sol: R`기함수×우함수 = 기함수. $x\sin x$는 기×기 = 우함수입니다.` },
+      { sec: '11.2', type: 'num', lv: 1, q: R`$f(x)=x\ (0<x<1)$의 코사인 반구간 전개에서 $a_0$는?`, ans: '1/2', ansTex: R`\tfrac12`,
+        sol: R`$a_0=\dfrac1L\int_0^Lf\,dx=\int_0^1x\,dx=\tfrac12$.` },
+      { sec: '11.2', type: 'num', lv: 2, q: R`같은 전개에서 $a_1$은?`, ans: '-4/pi^2', ansTex: R`-\tfrac4{\pi^2}`,
+        sol: R`$a_n=2\int_0^1x\cos n\pi x\,dx=\dfrac{2(\cos n\pi-1)}{n^2\pi^2}$. $n=1$이면 $-\dfrac4{\pi^2}$.` },
+      { sec: '11.2', type: 'open', lv: 3, q: R`$f(x)=\pi-x\ (0<x<\pi)$의 사인 반구간 전개를 구하세요.`,
+        sol: R`
+$b_n=\dfrac2\pi\int_0^\pi(\pi-x)\sin nx\,dx$. $\int_0^\pi\pi\sin nx\,dx=\dfrac{\pi(1-\cos n\pi)}n$, $\int_0^\pi x\sin nx\,dx=-\dfrac{\pi\cos n\pi}n$.
+차는 $\dfrac\pi n$이므로 $b_n=\dfrac2n$.
+$$\pi-x=2\Big(\sin x+\frac{\sin2x}2+\frac{\sin3x}3+\cdots\Big)\qquad(0<x<\pi)$$` },
+      { sec: '11.2', type: 'mc', lv: 2, q: R`사각파의 급수 $\frac4\pi(\sin x+\frac{\sin3x}3+\cdots)$에 $x=\frac\pi2$를 넣어 얻는 $\displaystyle\sum_{n=1}^\infty\frac{(-1)^{n+1}}{2n-1}$의 값은?`,
+        choices: [R`$\dfrac\pi4$`, R`$\dfrac\pi2$`, R`$\dfrac{\pi^2}8$`, R`$1$`], ans: 0,
+        sol: R`$1=\frac4\pi\big(1-\frac13+\frac15-\cdots\big)$이므로 $\frac\pi4$ (라이프니츠 급수).` },
+      { sec: '11.3', type: 'num', lv: 2, q: R`$y''+9y=\displaystyle\sum_{n=1}^\infty\frac{\cos nt}{n^2}$의 정상상태 해에서 $\cos2t$ 성분의 진폭은?`, ans: '1/20', ansTex: R`\tfrac1{20}`,
+        sol: R`입력 $\frac1{n^2}\cos nt$의 응답은 $\dfrac{1/n^2}{9-n^2}\cos nt$ ($n\ne3$). $n=2$이면 $\dfrac{1/4}{5}=\tfrac1{20}$.` },
+      { sec: '11.3', type: 'mc', lv: 2, q: R`$y''+25.1y=r(t)$, $r$은 사인항이 홀수 $n$에만 있는 사각파($\omega=1$)이다. 응답에서 가장 크게 증폭되는 성분은?`,
+        choices: [R`$n=5$`, R`$n=1$`, R`$n=3$`, R`$n=25$`], ans: 0,
+        sol: R`고유진동수 $\sqrt{25.1}\approx5.01$과 가까운 $n=5$ 성분의 분모 $25.1-25=0.1$이 가장 작아 크게 증폭됩니다. 입력의 기본진동수가 달라도 고조파가 공진할 수 있습니다.` },
+      { sec: '11.4', type: 'num', lv: 3, q: R`$x^2=\frac{\pi^2}3+4\sum\frac{(-1)^n}{n^2}\cos nx$에 파세발 항등식을 적용해 $\displaystyle\sum_{n=1}^\infty\frac1{n^4}$을 구하세요.`, ans: 'pi^4/90', ansTex: R`\tfrac{\pi^4}{90}`,
+        sol: R`
+$2a_0^2+\sum a_n^2=\dfrac1\pi\int_{-\pi}^\pi x^4dx=\dfrac{2\pi^4}5$. $2\cdot\frac{\pi^4}9+16\sum\frac1{n^4}=\frac{2\pi^4}5$.
+$16\sum\frac1{n^4}=2\pi^4\big(\tfrac15-\tfrac19\big)=\frac{8\pi^4}{45}$이므로 $\sum\frac1{n^4}=\frac{\pi^4}{90}$.` },
+      { sec: '11.4', type: 'mc', lv: 2, q: R`차수 $N$ 이하의 삼각다항식 중 $f$와의 제곱 오차 $\int(f-F)^2dx$를 최소로 하는 것은?`,
+        choices: [R`$f$의 푸리에 급수의 $N$차 부분합`, R`$f$의 테일러 다항식`, R`$f$를 $N+1$개 점에서 보간한 삼각다항식`, R`계수가 모두 1인 삼각다항식`], ans: 0,
+        sol: R`직교성 때문에 제곱 오차는 계수를 푸리에 계수로 고를 때 최소가 됩니다(최소 제곱 근사).` },
+      { sec: '11.5', type: 'num', lv: 2, q: R`$y''+\lambda y=0$, $y(0)=0$, $y(\pi)=0$의 가장 작은 고유값 $\lambda$는?`, ans: '1', ansTex: R`1`,
+        sol: R`자명하지 않은 해는 $\lambda=n^2$일 때 $\sin nx$뿐입니다. 최솟값 $\lambda=1$. 이 고유함수들이 사인 급수의 직교계입니다.` },
+      { sec: '11.7', type: 'num', lv: 2, q: R`$f(x)=e^{-x}\ (x>0)$, $f(x)=0\ (x<0)$의 푸리에 적분은 $x=0$에서 어떤 값으로 수렴하는가?`, ans: '1/2', ansTex: R`\tfrac12`,
+        sol: R`불연속점이므로 좌우 극한의 평균 $\tfrac12(0+1)$.` },
+      { sec: '11.7', type: 'num', lv: 3, q: R`$e^{-|x|}$의 푸리에 적분 표현을 이용해 $\displaystyle\int_0^\infty\frac{\cos w}{1+w^2}\,dw$를 구하세요.`, ans: 'pi/(2*e)', ansTex: R`\tfrac{\pi}{2e}\approx0.578`,
+        sol: R`우함수이므로 $A(w)=\dfrac2\pi\int_0^\infty e^{-v}\cos wv\,dv=\dfrac2\pi\cdot\dfrac1{1+w^2}$. 따라서 $e^{-x}=\dfrac2\pi\int_0^\infty\dfrac{\cos wx}{1+w^2}dw$ ($x\ge0$). $x=1$이면 적분값은 $\dfrac\pi2e^{-1}$.` },
+      { sec: '11.7', type: 'mc', lv: 1, q: R`디리클레 적분 $\displaystyle\int_0^\infty\frac{\sin w}{w}\,dw$의 값은?`,
+        choices: [R`$\dfrac\pi2$`, R`$\pi$`, R`$1$`, R`발산한다`], ans: 0,
+        sol: R`사각 펄스의 푸리에 적분에서 $x=0$을 넣어 얻습니다.` },
+      { sec: '11.8', type: 'num', lv: 2, q: R`$f(x)=1\ (0<x<1)$, $0\ (x>1)$의 푸리에 코사인 변환 $\hat f_c(w)=\sqrt{\tfrac2\pi}\int_0^\infty f\cos wx\,dx$의 $w=\pi/2$에서의 값은?`, ans: '(2/pi)*sqrt(2/pi)', ansTex: R`\tfrac2\pi\sqrt{\tfrac2\pi}\approx0.508`,
+        sol: R`$\hat f_c=\sqrt{\tfrac2\pi}\,\dfrac{\sin w}{w}$. $w=\frac\pi2$이면 $\sqrt{\tfrac2\pi}\cdot\dfrac{1}{\pi/2}$.` },
+      { sec: '11.8', type: 'num', lv: 2, q: R`$f(x)=e^{-x}\ (x>0)$의 푸리에 사인 변환 $\hat f_s(w)=\sqrt{\tfrac2\pi}\int_0^\infty f\sin wx\,dx$의 $w=1$에서의 값은?`, ans: '1/sqrt(2*pi)', ansTex: R`\tfrac1{\sqrt{2\pi}}\approx0.399`,
+        sol: R`$\int_0^\infty e^{-x}\sin wx\,dx=\dfrac{w}{1+w^2}$이므로 $\hat f_s=\sqrt{\tfrac2\pi}\dfrac{w}{1+w^2}$. $w=1$이면 $\tfrac12\sqrt{\tfrac2\pi}=\dfrac1{\sqrt{2\pi}}$.` },
+      { sec: '11.9', type: 'num', lv: 2, q: R`$\mathcal F\{e^{-x^2/2}\}$의 $w=2$에서의 값은? (Kreyszig 규약)`, ans: 'e^(-2)', ansTex: R`e^{-2}`,
+        sol: R`$\mathcal F\{e^{-ax^2}\}=\dfrac1{\sqrt{2a}}e^{-w^2/4a}$에 $a=\tfrac12$: $e^{-w^2/2}$. 가우스 함수가 자기 자신으로 변환됩니다.` },
+      { sec: '11.9', type: 'num', lv: 2, q: R`$f(x)=1\ (|x|<1)$, $0\ (|x|>1)$의 푸리에 변환의 $w=0$에서의 값 $\hat f(0)$은?`, ans: 'sqrt(2/pi)', ansTex: R`\sqrt{\tfrac2\pi}\approx0.798`,
+        sol: R`$\hat f(w)=\dfrac1{\sqrt{2\pi}}\int_{-1}^1e^{-iwx}dx=\sqrt{\tfrac2\pi}\,\dfrac{\sin w}w$. $\hat f(0)=\dfrac{1}{\sqrt{2\pi}}\int_{-1}^11\,dx=\dfrac2{\sqrt{2\pi}}$.` },
+      { sec: '11.9', type: 'mc', lv: 2, q: R`$\mathcal F\{f(x-3)\}$는?`,
+        choices: [R`$e^{-3iw}\hat f(w)$`, R`$e^{3iw}\hat f(w)$`, R`$\hat f(w-3)$`, R`$3\hat f(w)$`], ans: 0,
+        sol: R`$u=x-3$으로 치환하면 $e^{-iw\cdot3}$이 밖으로 나옵니다. 이동은 위상 변화입니다.` },
+      { sec: '11.9', type: 'num', lv: 3, q: R`$\mathcal F\{xe^{-x^2/2}\}$의 $w=1$에서의 값은? (복소수로 입력)`, ans: '-i*e^(-1/2)', ansTex: R`-ie^{-1/2}`,
+        hint: R`$\big(e^{-x^2/2}\big)'=-xe^{-x^2/2}$와 $\mathcal F\{f'\}=iw\hat f$를 쓰세요.`,
+        sol: R`$\mathcal F\{-xe^{-x^2/2}\}=iw\,e^{-w^2/2}$이므로 $\mathcal F\{xe^{-x^2/2}\}=-iw\,e^{-w^2/2}$. $w=1$이면 $-ie^{-1/2}$.` },
+    ],
+  });
+})();
