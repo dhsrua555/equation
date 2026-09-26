@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Équation banner</title>
+<!-- README 배너와 공유 미리보기 이미지의 원본. 1280×640으로 스크린샷해서 assets/banner.png, assets/og.png를 만듭니다. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Jost:wght@400;500;600&family=Noto+Sans+KR:wght@500;700&display=swap">
+<style>
+  :root {
+    --linen: #ebe2d4;
+    --ink: #0c1c28;
+    --ink-2: #45525e;
+    --camel-ink: #86562f;
+    --plot-a: rgba(45, 95, 143, 0.5);
+    --plot-b: rgba(168, 118, 75, 0.9);
+    --plot-faint: rgba(12, 28, 40, 0.16);
+    --plot-faint2: rgba(12, 28, 40, 0.24);
+  }
+  html, body { margin: 0; background: var(--linen); }
+  .b { position: relative; width: 1280px; height: 640px; overflow: hidden; background: var(--linen); color: var(--ink); isolation: isolate; }
+  /* curves live in a band between the header and the timeline so the ripples never cross the small text */
+  .b canvas { position: absolute; left: 0; top: 60px; width: 100%; height: 520px; z-index: -2; }
+  .b::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(ellipse 46% 50% at 50% 50%, rgba(235, 226, 212, 0.93) 0%, rgba(235, 226, 212, 0.55) 55%, transparent 80%);
+  }
+  .top { position: absolute; top: 40px; left: 56px; right: 56px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; }
+  .corner { font-family: "Jost", sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; padding-top: 6px; }
+  .corner.r { text-align: right; }
+  .mark { display: grid; justify-items: center; gap: 9px; }
+  .mark b { font-family: "Jost", sans-serif; font-weight: 500; font-size: 27px; letter-spacing: 0.42em; margin-right: -0.42em; }
+  .mark span { font-family: "Jost", sans-serif; font-weight: 500; font-size: 10.5px; letter-spacing: 0.36em; margin-right: -0.36em; color: var(--ink-2); text-transform: uppercase; }
+  .center { position: absolute; left: 0; right: 0; top: 214px; display: grid; justify-items: center; gap: 16px; }
+  .eq {
+    font-family: "Bodoni Moda", Didot, serif; font-weight: 600; font-size: 166px; line-height: 1; letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 96; white-space: nowrap;
+  }
+  .eq i { font-style: italic; font-weight: 600; }
+  .eq sup { font-size: 0.42em; vertical-align: 0; position: relative; top: -1.05em; margin-left: 0.02em; font-style: italic; }
+  .eq .op { font-weight: 700; margin: 0 0.1em; }
+  .sub { font-family: "Noto Sans KR", sans-serif; font-weight: 500; font-size: 17px; letter-spacing: 0.62em; margin-right: -0.62em; }
+  .cap { font-family: "Jost", sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.34em; margin-right: -0.34em; text-transform: uppercase; color: var(--camel-ink); }
+  .arrow { position: absolute; top: 300px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(12, 28, 40, 0.32); display: grid; place-items: center; }
+  .arrow.l { left: 56px; } .arrow.r { right: 56px; }
+  .tl { position: absolute; left: 56px; right: 56px; bottom: 34px; display: flex; justify-content: space-between; }
+  .tl::before { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 1px; background: rgba(12, 28, 40, 0.32); }
+  .tl span { position: relative; display: grid; justify-items: center; padding-bottom: 20px; font-family: "Jost", sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 0.24em; color: var(--ink-2); min-width: 22px; }
+  .tl span::after { content: ""; position: absolute; bottom: 2px; left: 50%; translate: -50% 0; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-2); }
+  .tl span.on { color: var(--ink); }
+  .tl span.on::after { width: 13px; height: 13px; bottom: -1px; background: var(--linen); border: 2px solid var(--ink); box-sizing: border-box; }
+  .tl span em { position: absolute; bottom: 32px; font-style: normal; font-size: 10px; letter-spacing: 0.2em; color: var(--camel-ink); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="b" id="banner">
+  <canvas data-plot="fourier" aria-hidden="true"></canvas>
+  <div class="top">
+    <div class="corner">Kreyszig · 10th ed.</div>
+    <div class="mark"><b>ÉQUATION</b><span>Engineering Mathematics</span></div>
+    <div class="corner r">147 exercises · 102 proofs</div>
+  </div>
+  <div class="arrow l"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M11 3 5 9l6 6"/></svg></div>
+  <div class="arrow r"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M7 3l6 6-6 6"/></svg></div>
+  <div class="center">
+    <div class="eq"><i>e</i><sup>iπ</sup><span class="op">+</span>1<span class="op">=</span>0</div>
+    <div class="sub">공학수학 시험 대비</div>
+    <div class="cap">Concepts · Exercises · Proofs · Mock exams</div>
+  </div>
+  <div class="tl">
+    <span><em>Part A</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+    <span><em>Part B</em>06</span><span>07</span><span>08</span><span>09</span>
+    <span><em>Part C</em>10</span><span>11</span>
+    <span class="on"><em>Part D</em>12</span><span>13</span><span>14</span>
+  </div>
+</div>
+<script src="../assets/plots.js"></script>
+<script>
+  // draw after fonts settle so the screenshot is final
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => window.EMPlots.mount(document));
+</script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+<p align="center"><a href="https://dhsrua555.github.io/engineering-math/"><img src="assets/banner.png" alt="Équation 공학수학 — 개념, 연습문제, 증명, 모의고사" width="100%"></a></p>
+
 # Équation 공학수학
 
 공학수학 시험 대비 사이트입니다. Kreyszig, *Advanced Engineering Mathematics* (10판)의 장 구성을 따라 14개 단원을 정리했습니다.
@@ -37,6 +39,7 @@ assets/katex.css    KaTeX 스타일 (폰트 내장, MIT)
 data/partA–D.js     단원별 개념과 연습문제
 data/exams.js       모의고사 문항
 data/proofs-1..6.js  단원별 증명 (01–02, 03–05, 06–07, 08–09, 10–11, 12–14)
+tools/banner.html   배너 원본 (1280×640 스크린샷 → assets/banner.png, assets/og.png)
 ```
 
 문제를 추가하거나 고치려면 `data/` 파일만 수정하면 됩니다. 내용은 `String.raw` 템플릿 문자열이라 LaTeX 안에 `${`를 쓰지 않도록 주의하세요.
