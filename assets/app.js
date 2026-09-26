@@ -1612,6 +1612,46 @@
   window.addEventListener('popstate', () => { const h = parseHash(); if (h !== route) render(h, {}); });
   window.addEventListener('hashchange', () => { const h = parseHash(); if (h !== route) render(h, {}); });
 
+  // Korean words inside tracked uppercase labels look letter-spaced with the Latin tracking;
+  // wrap each Hangul run in .ko-caps so the stylesheet can give it normal spacing
+  const CAPS_SEL = '.caps, .blk-label, details.sol > summary, .tile-done, .prob-no small, .pts';
+  const HANGUL = /[ㄱ-ㆎ가-힣]/;
+  const HANGUL_RUN = /[ㄱ-ㆎ가-힣](?:[ㄱ-ㆎ가-힣\s·]*[ㄱ-ㆎ가-힣])?/g;
+  function tuneCaps(node) {
+    const els = [];
+    const up = node.closest && node.closest(CAPS_SEL);
+    if (up) els.push(up);
+    else if (node.querySelectorAll) els.push(...node.querySelectorAll(CAPS_SEL));
+    els.forEach((el) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const texts = [];
+      while (walker.nextNode()) {
+        const t = walker.currentNode;
+        if (HANGUL.test(t.nodeValue) && !t.parentElement.closest('.ko-caps, .katex, em')) texts.push(t);
+      }
+      texts.forEach((t) => {
+        const s = t.nodeValue;
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        s.replace(HANGUL_RUN, (m, i) => {
+          if (i > last) frag.append(s.slice(last, i));
+          const span = document.createElement('span');
+          span.className = 'ko-caps';
+          span.textContent = m;
+          frag.append(span);
+          last = i + m.length;
+          return m;
+        });
+        if (last < s.length) frag.append(s.slice(last));
+        t.replaceWith(frag);
+      });
+    });
+  }
+  new MutationObserver((muts) => muts.forEach((m) => m.addedNodes.forEach((n) => {
+    if (n.nodeType === 1) tuneCaps(n);
+    else if (n.nodeType === 3 && n.parentElement) tuneCaps(n.parentElement);
+  }))).observe(document.body, { childList: true, subtree: true });
+
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }
   else render(parseHash(), {});
