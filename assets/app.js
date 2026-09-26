@@ -45,6 +45,19 @@
     });
   });
   const examById = new Map(EXAMS.map((x) => [x.id, x]));
+  // proofs: searchable, linked from the key-formula boxes they prove
+  const PROOFS = (EM.proofs || []).filter((p) => chById.has(p.ch));
+  PROOFS.forEach((p) => { p.pid = `${p.ch}-${p.id}`; });
+  PROOFS.sort((a, b) => a.ch.localeCompare(b.ch));
+  const proofById = new Map(PROOFS.map((p) => [p.pid, p]));
+  const proofsByKey = new Map();
+  PROOFS.forEach((p) => (p.keys || []).forEach((k) => {
+    if (!proofsByKey.has(k)) proofsByKey.set(k, []);
+    proofsByKey.get(k).push(p);
+  }));
+  const normText = (s) => String(s || '').toLowerCase()
+    .replace(/\\([a-z]+)/g, '$1')
+    .replace(/[\s{}$^_\\()[\],.·:;'"`~!?=+*/|<>–—-]/g, '');
   const PRACTICE_TOTAL = CH.reduce((s, c) => s + c.problems.length, 0);
 
   // ---------- storage ----------
@@ -212,10 +225,17 @@
       </svg><figcaption>고유값의 합 p와 곱 q만으로 원점의 종류가 결정됩니다. 포물선 위쪽은 복소 고유값(나선), 아래쪽은 실수 고유값(마디)입니다.</figcaption></figure>`;
     },
   };
+  function proofLinks(title) {
+    const list = proofsByKey.get(String(title || '').trim());
+    if (!list || !list.length) return '';
+    return `<div class="pf-links"><span class="caps">Proof</span>${list.map((p) =>
+      `<a href="#pf-${p.pid}" data-route="pf-${p.pid}">${inline(p.title)}</a>`).join('')}</div>`;
+  }
   function container(type, title, inner) {
     if (type === 'fig') return FIGS[title.trim()] ? FIGS[title.trim()]() : '';
     const [label, cls] = BLOCK_LABEL[type] || ['Note', 'blk-thm'];
     const head = `<div class="blk-label">${label}${title ? `<em>${inline(title)}</em>` : ''}</div>`;
+    if (type === 'key' || type === 'thm') return `<div class="blk ${cls}">${head}${md(inner)}${proofLinks(title)}</div>`;
     if (type === 'ex') {
       const parts = inner.split(/\n\s*---\s*\n/);
       const q = parts[0];
@@ -344,6 +364,7 @@
           <button class="menu-btn" data-act="menu" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
+          <a href="#proofs" class="ko" data-route="proofs">증명</a>
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="Équation 홈"><b>ÉQUATION</b><span>Engineering Mathematics</span></a>
         <nav class="nav nav-right" aria-label="학습 도구">
@@ -372,7 +393,7 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-'))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-'))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
@@ -384,6 +405,7 @@
           <h4 class="caps">바로가기</h4>
           <a href="#home" data-route="home">홈</a>
           <a href="#formulas" data-route="formulas">공식집</a>
+          <a href="#proofs" data-route="proofs">증명 찾기</a>
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
           ${Object.keys(PARTS).map((k) => `
@@ -416,7 +438,7 @@
         </div>
         <div class="footer-base caps">
           <span>Équation · 공학수학</span>
-          <span>${CH.length} chapters · ${PRACTICE_TOTAL} exercises · ${EXAMS.length} mock exams</span>
+          <span>${CH.length} chapters · ${PRACTICE_TOTAL} exercises · ${PROOFS.length} proofs · ${EXAMS.length} mock exams</span>
         </div>
       </div>
     </footer>`;
@@ -623,8 +645,8 @@
           <p class="lede">한 단원은 개념 정리 → 연습문제 → 모의고사 순서로 공부하도록 짜여 있습니다. 틀린 문제는 오답노트에 자동으로 모입니다.</p></div>
         <div class="modes">
           <div class="mode"><div class="step"><b>1</b><span class="caps">Learn</span></div><h3>개념 정리</h3>
-            <p>정의와 풀이법을 시험에 나오는 형태로 정리했습니다. 핵심 공식 상자, 예제 풀이, 시험 포인트, 자주 하는 실수를 단원마다 담았습니다.</p>
-            <a class="link-u ko" href="#${CH[0].id}" data-route="${CH[0].id}">1단원부터 읽기</a></div>
+            <p>정의와 풀이법을 시험에 나오는 형태로 정리했습니다. 핵심 공식 상자마다 증명이 연결되어 있고, 증명 ${PROOFS.length}개는 따로 검색할 수 있습니다.</p>
+            <div class="btn-row" style="gap:22px"><a class="link-u ko" href="#${CH[0].id}" data-route="${CH[0].id}">1단원부터 읽기</a><a class="link-u ko" href="#proofs" data-route="proofs">증명 찾기</a></div></div>
           <div class="mode"><div class="step"><b>2</b><span class="caps">Practice</span></div><h3>연습문제</h3>
             <p>객관식·단답형은 바로 채점되고, 서술형은 모범 풀이와 비교해 스스로 채점합니다. 단답형은 <code>3/2</code>, <code>2*pi</code>, <code>1+2i</code>처럼 식으로 입력합니다.</p>
             <a class="link-u ko" href="#${CH[0].id}-practice" data-route="${CH[0].id}-practice">연습문제 풀기</a></div>
@@ -715,10 +737,15 @@
       </div>`;
     } else if (tab === 'practice') {
       body = practiceBody(c);
-    } else {
+    } else if (tab === 'formulas') {
       const keys = keyBlocks(c);
       body = `<div class="section tight" style="padding-top:40px"><div class="sheet">${keys.map((k) => `
-        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}</h4><div class="body">${md(k.body)}</div></div>`).join('')}</div></div>`;
+        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}</h4><div class="body">${md(k.body)}</div>${proofLinks(k.title)}</div>`).join('')}</div></div>`;
+    } else if (tab === 'proofs') {
+      const list = PROOFS.filter((p) => p.ch === c.id);
+      body = `<div class="section tight" style="padding-top:40px">
+        <p class="lede" style="margin-bottom:24px">이 단원의 공식과 정리 ${list.length}개의 증명입니다. 다른 단원까지 검색하려면 <a href="#proofs" data-route="proofs">증명 찾기</a>를 쓰세요.</p>
+        <div class="pf-list">${list.map(proofCard).join('')}</div></div>`;
     }
     return `
     <section class="ch-hero">
@@ -736,6 +763,7 @@
       <a class="tab" role="tab" href="#${c.id}" data-route="${c.id}" data-keep aria-selected="${tab === 'learn'}">개념 정리</a>
       <a class="tab" role="tab" href="#${c.id}-practice" data-route="${c.id}-practice" data-keep aria-selected="${tab === 'practice'}">연습문제<sup>${c.problems.length}</sup></a>
       <a class="tab" role="tab" href="#${c.id}-formulas" data-route="${c.id}-formulas" data-keep aria-selected="${tab === 'formulas'}">핵심 공식</a>
+      <a class="tab" role="tab" href="#${c.id}-proofs" data-route="${c.id}-proofs" data-keep aria-selected="${tab === 'proofs'}">증명<sup>${PROOFS.filter((p) => p.ch === c.id).length}</sup></a>
     </div></div></div>
     <div class="wrap">${body}</div>
     <nav class="ch-next" aria-label="단원 이동">
@@ -783,6 +811,85 @@
     $$('[data-ch-right]').forEach((el) => { const c = chById.get(route.slice(0, 4)); if (c) { const s = chStats(c); el.textContent = `${s.right}/${s.total}`; } });
   }
 
+  // ---------- proofs ----------
+  function proofSearchText(p) {
+    const c = chById.get(p.ch);
+    return normText([p.title, p.tags, p.stmt, (p.keys || []).join(' '), c.title, c.en, `${c.n}단원`].join(' '));
+  }
+  function proofCard(p) {
+    const c = chById.get(p.ch);
+    return `<a class="pf-item" href="#pf-${p.pid}" data-route="pf-${p.pid}" data-pf-ch="${p.ch}" data-pf-text="${esc(proofSearchText(p))}">
+      <span class="pf-ch"><b>${pad(c.n)}</b>${esc(c.title)}</span>
+      <span class="pf-title">${inline(p.title)}${p.sketch ? ' <span class="chip">개요</span>' : ''}</span>
+      <span class="pf-stmt">${md(p.stmt)}</span>
+    </a>`;
+  }
+  let pfFilter = { q: S.prefs.pfq || '', ch: 'all' };
+  function viewProofs() {
+    return `
+    <div class="wrap">
+      <header class="page-head"><span class="caps">Proofs</span><h1>Démonstrations<span class="ko">증명 찾기</span></h1>
+        <p class="lede">단원에 나오는 공식과 정리 ${PROOFS.length}개의 증명을 모았습니다. 공식 이름, 사람 이름, 영어 용어로 검색할 수 있습니다. 예: 라플라스 합성곱, 코시, Green, 파세발, 고유값.</p>
+        <div class="pf-search">
+          <label class="sr-only" for="pf-q">증명 검색</label>
+          <input id="pf-q" type="search" autocomplete="off" spellcheck="false" placeholder="찾을 공식이나 정리 (예: 매개변수 변환법, residue)" value="${esc(pfFilter.q)}">
+          <span class="pf-count" id="pf-count" aria-live="polite"></span>
+        </div>
+        <div class="jump" role="group" aria-label="단원으로 거르기">
+          <button class="pf-chip" data-act="pf-ch" data-ch="all" aria-pressed="${pfFilter.ch === 'all'}">전체</button>
+          ${CH.map((c) => `<button class="pf-chip" data-act="pf-ch" data-ch="${c.id}" aria-pressed="${pfFilter.ch === c.id}">${pad(c.n)} ${esc(c.title)}</button>`).join('')}
+        </div>
+      </header>
+      <section class="section tight">
+        <div class="pf-list" id="pf-list">${PROOFS.map(proofCard).join('')}</div>
+        <div class="empty" id="pf-empty" hidden><b>Rien</b><p>찾는 증명이 없습니다. 다른 이름이나 영어 용어로 검색해 보세요.</p></div>
+      </section>
+    </div>
+    ${footer()}`;
+  }
+  function filterProofs() {
+    const list = $('#pf-list');
+    if (!list) return;
+    const terms = pfFilter.q.split(/\s+/).map(normText).filter(Boolean);
+    let shown = 0;
+    $$('.pf-item', list).forEach((el) => {
+      const ok = (pfFilter.ch === 'all' || el.dataset.pfCh === pfFilter.ch) && terms.every((t) => el.dataset.pfText.includes(t));
+      el.hidden = !ok;
+      if (ok) shown++;
+    });
+    $('#pf-count').textContent = `${shown}개`;
+    $('#pf-empty').hidden = shown > 0;
+  }
+  function viewProof(p) {
+    const c = chById.get(p.ch);
+    const same = PROOFS.filter((x) => x.ch === p.ch);
+    const i = same.indexOf(p);
+    const prev = same[i - 1], next = same[i + 1];
+    return `
+    <div class="wrap">
+      <nav class="pf-crumb caps" aria-label="위치"><a href="#proofs" data-route="proofs">증명 찾기</a><span>/</span><a href="#${c.id}-proofs" data-route="${c.id}-proofs">${pad(c.n)} ${esc(c.title)}</a></nav>
+      <article class="pf-page">
+        <header class="pf-head">
+          <span class="num-display pf-num">${pad(c.n)}.${i + 1}</span>
+          <h1>${inline(p.title)}</h1>
+        </header>
+        <div class="blk blk-key"><div class="blk-label">Statement<em>명제</em></div>${md(p.stmt)}</div>
+        <div class="prose pf-body">
+          <div class="blk-label pf-label">Proof<em>증명</em></div>
+          ${p.sketch ? `<p class="pf-sketch">${inline(p.sketch === true ? '엄밀한 증명은 길어 핵심 아이디어만 보입니다.' : p.sketch)}</p>` : ''}
+          ${md(p.body)}
+          <p class="qed" aria-label="증명 끝">∎</p>
+        </div>
+        ${(p.keys || []).length ? `<p class="pf-rel">관련 공식: ${p.keys.map((k) => `<a href="#${c.id}-formulas" data-route="${c.id}-formulas">${inline(k)}</a>`).join(' · ')}</p>` : ''}
+      </article>
+    </div>
+    <nav class="ch-next" aria-label="증명 이동">
+      ${prev ? `<a href="#pf-${prev.pid}" data-route="pf-${prev.pid}"><span class="caps">← 이전 증명</span><span>${inline(prev.title)}</span></a>` : `<a href="#${c.id}" data-route="${c.id}"><span class="caps">← 단원으로</span><span>${esc(c.title)} 개념 정리</span></a>`}
+      ${next ? `<a href="#pf-${next.pid}" data-route="pf-${next.pid}"><span class="caps">다음 증명 →</span><span>${inline(next.title)}</span></a>` : `<a href="#proofs" data-route="proofs"><span class="caps">증명 찾기 →</span><span>다른 증명 검색하기</span></a>`}
+    </nav>
+    ${footer()}`;
+  }
+
   function viewFormulas() {
     return `
     <div class="wrap">
@@ -797,7 +904,7 @@
             ${CH.filter((c) => c.part === k).map((c) => `
               <div id="f-${c.id}" style="margin-bottom:44px">
                 <h3 style="font-family:var(--f-serif);font-size:1.2rem;margin-bottom:16px"><span class="num-display" style="margin-right:12px">${pad(c.n)}</span><a href="#${c.id}" data-route="${c.id}" style="text-decoration:none">${esc(c.title)}</a></h3>
-                <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div></div>`).join('')}</div>
+                <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div>${proofLinks(b.title)}</div>`).join('')}</div>
               </div>`).join('')}
           </div>`).join('')}
       </div>
@@ -1113,8 +1220,10 @@
     let view = 'page';
     let html = '';
     if (to === 'home') { view = 'home'; html = viewHome(); }
-    else if ((m = /^(ch\d{2})(?:-(practice|formulas))?$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), m[2] || 'learn'); }
+    else if ((m = /^(ch\d{2})(?:-(practice|formulas|proofs))?$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), m[2] || 'learn'); }
     else if (to === 'formulas') html = viewFormulas();
+    else if (to === 'proofs') html = viewProofs();
+    else if ((m = /^pf-(ch\d{2}-[\w-]+)$/.exec(to)) && proofById.get(m[1])) html = viewProof(proofById.get(m[1]));
     else if (to === 'exams') html = viewExams();
     else if (to === 'exam-live' && S.live) { view = 'exam-live'; html = viewExamLive(); }
     else if (to === 'exam-live') { route = 'exams'; html = viewExams(); }
@@ -1128,9 +1237,11 @@
     window.EMPlots.mount(main);
     if (view === 'home') startHero();
     if (view === 'chapter') watchToc();
-    const title = { home: '', formulas: '공식집', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중' };
+    if (route === 'proofs') filterProofs();
+    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중' };
     const ch = chById.get(route.slice(0, 4));
-    document.title = view === 'chapter' && ch ? `${ch.title} · Équation 공학수학` : title[route] ? `${title[route]} · Équation 공학수학` : 'Équation 공학수학';
+    const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
+    document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · Équation 공학수학` : title[route] ? `${title[route]} · Équation 공학수학` : 'Équation 공학수학';
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
     else if (samePage) {
@@ -1188,6 +1299,11 @@
         e.preventDefault();
         if (route !== 'home') go('home', { anchor: 'catalogue' });
         else { const el = $('#catalogue'); if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); }
+        break;
+      case 'pf-ch':
+        pfFilter.ch = t.dataset.ch;
+        $$('[data-act="pf-ch"]').forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
+        filterProofs();
         break;
       case 'menu': openDrawer(); break;
       case 'menu-close': $('#drawer-root').innerHTML = ''; break;
@@ -1321,6 +1437,13 @@
 
   document.addEventListener('input', (e) => {
     const el = e.target;
+    if (el.id === 'pf-q') {
+      pfFilter.q = el.value;
+      S.prefs.pfq = el.value;
+      save();
+      filterProofs();
+      return;
+    }
     const role = el.dataset && el.dataset.role;
     if (!role) return;
     const pid = el.dataset.pid;
