@@ -6,7 +6,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
   // ───────────────────────── 01
   {
     n: 1, part: 'A', title: '1계 상미분방정식', en: 'First-Order ODEs', ref: 'Kreyszig Ch.1', plot: 'slope',
-    fig: R`y' = x − y의 방향장과 해곡선`,
+    fig: R`$y'=x-y$의 방향장과 해곡선`,
     tagline: R`변수분리, 완전미분, 선형, 베르누이. 네 가지 꼴을 알아보는 눈이 풀이의 절반입니다.`,
     summary: R`1계 ODE $y'=f(x,y)$를 푸는 표준 기법과 모델링, 그리고 해의 존재·유일성을 다룹니다. 문제를 보자마자 어떤 꼴인지 판별하는 것이 핵심입니다.`,
     goals: [
@@ -54,7 +54,7 @@ $g(y)$로 나누기 전에 $g(y)=0$을 만족하는 상수해를 따로 적어 �
 $M(x,y)\,dx+N(x,y)\,dy=0$의 좌변이 어떤 함수 $u(x,y)$의 전미분 $du=u_x\,dx+u_y\,dy$와 같으면 **완전(exact)**하다고 하고, 해는 $u(x,y)=c$입니다.
 
 :::key 완전성 조건과 적분인자
-$$M\,dx+N\,dy=0\ \text{이 완전}\iff \frac{\partial M}{\partial y}=\frac{\partial N}{\partial x}$$
+$$M\,dx+N\,dy=0\text{이 완전}\;\iff\;\frac{\partial M}{\partial y}=\frac{\partial N}{\partial x}$$
 $$F(x)=\exp\!\int R\,dx,\qquad R=\frac{1}{N}\Big(\frac{\partial M}{\partial y}-\frac{\partial N}{\partial x}\Big)$$
 $$F^*(y)=\exp\!\int R^*\,dy,\qquad R^*=\frac{1}{M}\Big(\frac{\partial N}{\partial x}-\frac{\partial M}{\partial y}\Big)$$
 :::
@@ -97,7 +97,7 @@ $$y=e^{2x}+ce^{x}$$
 :::
 ` },
       { title: '모델링: 성장, 냉각, 혼합', body: R`
-공학 문제는 대부분 "변화율 = 들어오는 양 − 나가는 양" 한 줄에서 시작합니다.
+공학 문제는 대부분 “변화율 = 들어오는 양 − 나가는 양” 한 줄에서 시작합니다.
 
 :::key 대표 모델
 $$y'=ky\;\Rightarrow\;y=y_0e^{kt},\qquad t_{1/2}=\frac{\ln2}{|k|}$$
@@ -126,7 +126,7 @@ $f(x,y)$가 초기점 $(x_0,y_0)$을 포함하는 직사각형 $R$에서 연속�
 예를 들어 $y'=\sqrt{|y|},\ y(0)=0$은 $y\equiv0$과 $y=x^2/4\ (x\ge0)$을 모두 해로 가집니다. $\partial f/\partial y$가 $y=0$에서 발산하기 때문입니다.
 
 :::tip 시험 포인트
-"해가 유일한가?"를 물으면 초기점 근처에서 $f$와 $\partial f/\partial y$의 연속성을 확인합니다. 정리의 조건은 충분조건이므로, 조건이 깨졌다고 해서 해가 반드시 여러 개인 것은 아닙니다.
+“해가 유일한가?”를 물으면 초기점 근처에서 $f$와 $\partial f/\partial y$의 연속성을 확인합니다. 정리의 조건은 충분조건이므로, 조건이 깨졌다고 해서 해가 반드시 여러 개인 것은 아닙니다.
 :::
 ` },
     ],
@@ -191,14 +191,14 @@ $$y(e)=e\cdot1+e=2e$$` },
   // ───────────────────────── 02
   {
     n: 2, part: 'A', title: '2계·고계 선형 ODE', en: 'Second- and Higher-Order Linear ODEs', ref: 'Kreyszig Ch.2–3', plot: 'damped',
-    fig: R`감쇠비 ζ = 0.04 … 0.39의 자유 감쇠 진동`,
+    fig: R`감쇠비 $\zeta=0.04,\dots,0.39$의 자유 감쇠 진동`,
     tagline: R`특성방정식 하나로 동차해를, 미정계수법과 매개변수 변환법으로 특수해를 구합니다.`,
-    summary: R`$y''+p y'+q y=r(x)$의 일반해는 동차해와 특수해의 합입니다. 상수계수·오일러–코시 방정식, 론스키안, 미정계수법, 매개변수 변환법, 진동 모델까지 공학수학 1의 가장 큰 단원입니다.`,
+    summary: R`$y''+p y'+q y=r(x)$의 일반해는 동차해와 특수해의 합입니다. 상수계수·오일러-코시 방정식, 론스키안, 미정계수법, 매개변수 변환법, 진동 모델까지 공학수학 1의 가장 큰 단원입니다.`,
     goals: [
       R`특성방정식의 세 경우(실근·중근·복소근)로 동차해를 쓸 수 있다`,
-      R`오일러–코시 방정식의 보조방정식을 세울 수 있다`,
+      R`오일러-코시 방정식의 보조방정식을 세울 수 있다`,
       R`미정계수법의 수정 규칙과 매개변수 변환법 공식을 쓸 수 있다`,
-      R`감쇠·공진을 판별하고 질량–스프링과 RLC 회로를 대응시킬 수 있다`,
+      R`감쇠·공진을 판별하고 질량-스프링과 RLC 회로를 대응시킬 수 있다`,
     ],
     sections: [
       { title: '선형 방정식과 중첩 원리', body: R`
@@ -238,10 +238,10 @@ $y(0)=A=1$, $y'(0)=-A+2B=-1$에서 $B=0$.
 $$y=e^{-x}\cos2x$$
 :::
 ` },
-      { title: '오일러–코시 방정식', body: R`
+      { title: '오일러-코시 방정식', body: R`
 $x^2y''+axy'+by=0$은 $y=x^m$을 대입해 풉니다. $x^m$을 약분하면 **보조방정식**이 나옵니다.
 
-:::key 오일러–코시 방정식
+:::key 오일러-코시 방정식
 $$x^2y''+axy'+by=0,\qquad m^2+(a-1)m+b=0$$
 | 경우 | 일반해 |
 |---|---|
@@ -314,7 +314,7 @@ $x^2y''+\cdots=r(x)$ 꼴이면 $x^2$으로 나눈 뒤의 우변 $r(x)/x^2$을 �
 :::
 ` },
       { title: '진동과 전기회로', body: R`
-질량–스프링–감쇠기는 $my''+cy'+ky=F(t)$로, RLC 직렬회로는 $LI''+RI'+\tfrac1CI=E'(t)$로 모델링됩니다. 두 식은 $m\leftrightarrow L$, $c\leftrightarrow R$, $k\leftrightarrow 1/C$로 정확히 대응합니다.
+질량-스프링-감쇠기는 $my''+cy'+ky=F(t)$로, RLC 직렬회로는 $LI''+RI'+\tfrac1CI=E'(t)$로 모델링됩니다. 두 식은 $m\leftrightarrow L$, $c\leftrightarrow R$, $k\leftrightarrow 1/C$로 정확히 대응합니다.
 
 :::key 감쇠와 공진
 $$\omega_0=\sqrt{k/m},\qquad c^2>4mk:\ \text{과감쇠},\quad c^2=4mk:\ \text{임계감쇠},\quad c^2<4mk:\ \text{부족감쇠}$$
@@ -373,7 +373,7 @@ $y_p=2x^2-1$이므로 $y_p(2)=7$.` },
 $$y_p=-e^{x}\int\frac{xe^{x}\cdot e^{x}/x}{e^{2x}}dx+xe^{x}\int\frac{e^{x}\cdot e^{x}/x}{e^{2x}}dx=-xe^{x}+xe^{x}\ln x$$
 $-xe^{x}$는 동차해에 흡수되므로
 $$y=(c_1+c_2x)e^{x}+xe^{x}\ln x$$` },
-      { type: 'num', lv: 2, q: R`$m=2$, $k=8$인 질량–스프링계가 임계감쇠가 되는 감쇠계수 $c$는?`, ans: '8', ansTex: R`8`,
+      { type: 'num', lv: 2, q: R`$m=2$, $k=8$인 질량-스프링계가 임계감쇠가 되는 감쇠계수 $c$는?`, ans: '8', ansTex: R`8`,
         sol: R`임계감쇠 조건 $c^2=4mk=64$에서 $c=8$.` },
       { type: 'mc', lv: 2, q: R`$y''+16y=8\cos4t$의 특수해는?`,
         choices: [R`$t\sin4t$`, R`$\tfrac12t\cos4t$`, R`$\tfrac12\sin4t$`, R`$2t\sin4t$`], ans: 0,
@@ -393,7 +393,7 @@ $$y(\ln3)=3+\tfrac13=\tfrac{10}{3}$$` },
   // ───────────────────────── 03
   {
     n: 3, part: 'A', title: '연립 ODE와 상평면', en: 'Systems of ODEs, Phase Plane', ref: 'Kreyszig Ch.4', plot: 'phase',
-    fig: R`y₁′ = −0.18y₁ − y₂, y₂′ = y₁ − 0.18y₂의 궤적 (안정 나선점)`,
+    fig: R`$y_1'=-0.18y_1-y_2,\ y_2'=y_1-0.18y_2$의 궤적 (안정 나선점)`,
     tagline: R`고유값이 곧 해입니다. 대각합과 행렬식만 보고 임계점의 종류를 말할 수 있어야 합니다.`,
     summary: R`$\mathbf y'=A\mathbf y$를 고유값 문제로 풀고, 상평면에서 임계점을 마디점·안장점·중심·나선점으로 분류합니다. 비선형계는 야코비 행렬로 선형화합니다.`,
     goals: [
@@ -412,7 +412,7 @@ $$y_1'=y_2,\ \dots,\ y_{n-1}'=y_n,\ y_n'=F(t,y_1,\dots,y_n)$$
 :::
 
 :::ex 예제 1
-질량–스프링계 $my''+cy'+ky=0$을 연립 ODE로 쓰세요.
+질량-스프링계 $my''+cy'+ky=0$을 연립 ODE로 쓰세요.
 ---
 $y_1=y$, $y_2=y'$로 두면
 $$\mathbf y'=\begin{pmatrix}0&1\\-k/m&-c/m\end{pmatrix}\mathbf y$$
@@ -535,7 +535,7 @@ $y_2=0$, $y_1-y_1^3=0$에서 임계점은 $(0,0)$, $(\pm1,0)$. $J=\begin{pmatrix
   // ───────────────────────── 04
   {
     n: 4, part: 'A', title: '급수해와 특수함수', en: 'Series Solutions, Special Functions', ref: 'Kreyszig Ch.5', plot: 'bessel',
-    fig: R`베셀 함수 J₀ … J₄, 0 ≤ x ≤ 22`,
+    fig: R`베셀 함수 $J_0,\dots,J_4$ ($0\le x\le22$)`,
     tagline: R`계수가 변수인 방정식은 급수로 풉니다. 르장드르와 베셀이 그 대표입니다.`,
     summary: R`거듭제곱급수 방법과 프로베니우스 방법으로 변수계수 ODE를 풀고, 그 결과로 르장드르 다항식과 베셀 함수, 감마 함수를 다룹니다.`,
     goals: [
@@ -577,7 +577,7 @@ $$P_0=1,\quad P_1=x,\quad P_2=\tfrac12(3x^2-1),\quad P_3=\tfrac12(5x^3-3x)$$
 $$\int_{-1}^{1}P_mP_n\,dx=\begin{cases}0,&m\ne n\\[2pt] \dfrac{2}{2n+1},&m=n\end{cases}$$
 :::
 
-직교성 덕분에 $[-1,1]$의 함수를 $f=\sum a_mP_m$으로 전개할 수 있고, 계수는 $a_m=\frac{2m+1}{2}\int_{-1}^{1}fP_m\,dx$입니다(푸리에–르장드르 급수).
+직교성 덕분에 $[-1,1]$의 함수를 $f=\sum a_mP_m$으로 전개할 수 있고, 계수는 $a_m=\frac{2m+1}{2}\int_{-1}^{1}fP_m\,dx$입니다(푸리에-르장드르 급수).
 ` },
       { title: '프로베니우스 방법', body: R`
 $x=0$이 **정칙 특이점**이면, 즉 방정식을 $x^2y''+xb(x)y'+c(x)y=0$ ($b,c$는 해석적) 꼴로 쓸 수 있으면 $y=x^r\sum a_mx^m$ 꼴의 해가 있습니다.
@@ -671,7 +671,7 @@ $$m^2a_m=a_{m-1}\;\Rightarrow\;a_m=\frac{a_0}{(m!)^2},\qquad y_1=\sum_{m=0}^\inf
   // ───────────────────────── 05
   {
     n: 5, part: 'A', title: '라플라스 변환', en: 'Laplace Transforms', ref: 'Kreyszig Ch.6', plot: 'laplace',
-    fig: R`2계 시스템의 단위계단 응답, ζ = 0.08 … 1.6`,
+    fig: R`2계 시스템의 단위계단 응답 ($\zeta=0.08,\dots,1.6$)`,
     tagline: R`미분방정식을 대수방정식으로 바꿉니다. 계단 입력과 충격 입력을 가장 자연스럽게 다루는 도구입니다.`,
     summary: R`변환표와 두 이동정리, 도함수의 변환, 단위계단함수·델타함수, 합성곱으로 초기값 문제와 적분방정식을 풉니다. 부분분수 분해가 계산의 대부분을 차지합니다.`,
     goals: [
@@ -723,7 +723,7 @@ $$y=e^{t}+\sinh t-t$$
       { title: '부분분수와 역변환', body: R`
 - 서로 다른 일차인수 $(s-a)$: $\dfrac{A}{s-a}$, 계수는 가림법(cover-up)으로 $A=\big[(s-a)F(s)\big]_{s=a}$
 - 반복 인수 $(s-a)^m$: $\dfrac{A_m}{(s-a)^m}+\cdots+\dfrac{A_1}{s-a}$, 역변환은 $\dfrac{t^{k-1}}{(k-1)!}e^{at}$
-- 기약 이차인수: 완전제곱 $(s-\alpha)^2+\beta^2$로 고쳐 $e^{\alpha t}\cos\beta t$, $e^{\alpha t}\sin\beta t$
+- 기약 이차인수: 완전제곱 $(s-\alpha)^2+\beta^2$으로 고쳐 $e^{\alpha t}\cos\beta t$, $e^{\alpha t}\sin\beta t$
 
 :::ex 예제 2
 $\mathcal L^{-1}\Big\{\dfrac{s+3}{s^2+4s+13}\Big\}$을 구하세요.
@@ -740,7 +740,7 @@ $$\mathcal L\{f(t-a)u(t-a)\}=e^{-as}F(s),\qquad \mathcal L\{u(t-a)\}=\frac{e^{-a
 $$\text{다른 꼴: }\ \mathcal L\{g(t)u(t-a)\}=e^{-as}\,\mathcal L\{g(t+a)\}$$
 :::
 
-구간별 함수는 "새 식 − 옛 식"에 계단을 곱해 더합니다. $0<t<a$에서 $f_1$, $t>a$에서 $f_2$이면 $f=f_1+(f_2-f_1)u(t-a)$.
+구간별 함수는 “새 식 − 옛 식”에 계단을 곱해 더합니다. $0<t<a$에서 $f_1$, $t>a$에서 $f_2$이면 $f=f_1+(f_2-f_1)u(t-a)$.
 
 :::ex 예제 3
 $f(t)=t\ (0<t<1)$, $f(t)=1\ (t>1)$의 라플라스 변환은?

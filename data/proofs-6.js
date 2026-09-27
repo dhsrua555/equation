@@ -16,7 +16,7 @@ $$z_1z_2=r_1r_2\big[(\cos\theta_1\cos\theta_2-\sin\theta_1\sin\theta_2)+i(\sin\t
 **거듭제곱근.** $w=\rho e^{i\varphi}$가 $w^n=z$를 만족하려면 $\rho^n=r$이고 $n\varphi=\theta+2k\pi$. 따라서 $\varphi=\frac{\theta+2k\pi}n$이고, $k$와 $k+n$은 같은 점을 주므로 서로 다른 근은 $k=0,\dots,n-1$의 $n$개입니다.
 
 **삼각부등식.** $|z_1+z_2|^2=|z_1|^2+|z_2|^2+2\Re(z_1\bar z_2)\le|z_1|^2+|z_2|^2+2|z_1||z_2|=(|z_1|+|z_2|)^2$.` },
-  { ch: 'ch12', id: 'cr-necessary', title: '코시–리만 방정식 (필요조건)', keys: ['코시–리만 방정식'],
+  { ch: 'ch12', id: 'cr-necessary', title: '코시-리만 방정식 (필요조건)', keys: ['코시-리만 방정식'],
     tags: 'cauchy riemann equations necessary analytic derivative 코시 리만 필요조건 해석함수 도함수',
     stmt: R`$f=u+iv$가 $z_0$에서 미분 가능하면 그 점에서 $u_x=v_y$, $u_y=-v_x$이고 $f'=u_x+iv_x$.`,
     body: R`
@@ -27,29 +27,29 @@ $$f'(z_0)=\lim\frac{\Delta u+i\Delta v}{\Delta x}=u_x+iv_x$$
 허수축 방향 $\Delta z=i\Delta y$:
 $$f'(z_0)=\lim\frac{\Delta u+i\Delta v}{i\Delta y}=-iu_y+v_y$$
 두 값의 실수부와 허수부를 비교하면 $u_x=v_y$, $v_x=-u_y$.` },
-  { ch: 'ch12', id: 'cr-sufficient', title: '코시–리만 방정식 (충분조건)', keys: ['코시–리만 방정식'],
+  { ch: 'ch12', id: 'cr-sufficient', title: '코시-리만 방정식 (충분조건)', keys: ['코시-리만 방정식'],
     tags: 'cauchy riemann sufficient continuous partial derivatives 코시 리만 충분조건 편도함수 연속',
-    stmt: R`$u,v$의 1계 편도함수가 연속이고 코시–리만 방정식을 만족하면 $f=u+iv$는 미분 가능하다.`,
+    stmt: R`$u,v$의 1계 편도함수가 연속이고 코시-리만 방정식을 만족하면 $f=u+iv$는 미분 가능하다.`,
     body: R`
 편도함수가 연속이면 $u,v$는 전미분 가능합니다.
 $$\Delta u=u_x\Delta x+u_y\Delta y+\varepsilon_1|\Delta z|,\qquad \Delta v=v_x\Delta x+v_y\Delta y+\varepsilon_2|\Delta z|\qquad(\varepsilon_i\to0)$$
 $u_y=-v_x$, $v_y=u_x$를 넣으면
 $$\Delta u+i\Delta v=u_x(\Delta x+i\Delta y)+iv_x(\Delta x+i\Delta y)+(\varepsilon_1+i\varepsilon_2)|\Delta z|$$
 $\Delta z=\Delta x+i\Delta y$로 나누면 $\dfrac{\Delta f}{\Delta z}=u_x+iv_x+(\varepsilon_1+i\varepsilon_2)\dfrac{|\Delta z|}{\Delta z}$이고, 마지막 항의 크기는 $|\varepsilon_1+i\varepsilon_2|\to0$이므로 $f'=u_x+iv_x$가 존재합니다.` },
-  { ch: 'ch12', id: 'cr-polar', title: '극좌표 코시–리만 방정식', keys: ['코시–리만 방정식'],
+  { ch: 'ch12', id: 'cr-polar', title: '극좌표 코시-리만 방정식', keys: ['코시-리만 방정식'],
     tags: 'cauchy riemann polar form 코시 리만 극좌표',
     stmt: R`$u_r=\dfrac1rv_\theta$, $v_r=-\dfrac1ru_\theta$.`,
     body: R`
 $x=r\cos\theta$, $y=r\sin\theta$에서 연쇄법칙으로
 $$u_r=u_x\cos\theta+u_y\sin\theta,\qquad u_\theta=r(-u_x\sin\theta+u_y\cos\theta)$$
-$v$도 같습니다. 직교좌표 코시–리만 방정식 $v_x=-u_y$, $v_y=u_x$를 쓰면
+$v$도 같습니다. 직교좌표 코시-리만 방정식 $v_x=-u_y$, $v_y=u_x$를 쓰면
 $$v_\theta=r(-v_x\sin\theta+v_y\cos\theta)=r(u_y\sin\theta+u_x\cos\theta)=ru_r$$
 $$v_r=v_x\cos\theta+v_y\sin\theta=-u_y\cos\theta+u_x\sin\theta=-\frac1ru_\theta$$` },
-  { ch: 'ch12', id: 'harmonic', title: '해석함수의 실수부·허수부는 조화함수', keys: ['코시–리만 방정식'],
+  { ch: 'ch12', id: 'harmonic', title: '해석함수의 실수부·허수부는 조화함수', keys: ['코시-리만 방정식'],
     tags: 'harmonic function conjugate laplace equation 조화함수 켤레 라플라스',
     stmt: R`$f=u+iv$가 해석적이면 $\nabla^2u=\nabla^2v=0$이고, 단순연결 영역의 조화함수 $u$는 켤레 조화함수 $v$를 가진다.`,
     body: R`
-해석함수는 무한 번 미분 가능하므로(13단원 도함수 공식) 2계 편도함수가 연속입니다. 코시–리만 방정식을 미분하면
+해석함수는 무한 번 미분 가능하므로(13단원 도함수 공식) 2계 편도함수가 연속입니다. 코시-리만 방정식을 미분하면
 $$u_{xx}=v_{yx},\qquad u_{yy}=-v_{xy}$$
 혼합편미분의 순서를 바꿀 수 있으므로 $u_{xx}+u_{yy}=0$. $v$도 같습니다.
 
@@ -97,7 +97,7 @@ $$\Big|\int_Cf\,dz\Big|=\Big|\int_a^bf(z(t))z'(t)\,dt\Big|\le\int_a^b|f||z'|\,dt
     body: R`
 $f\,dz=(u+iv)(dx+i\,dy)=(u\,dx-v\,dy)+i(v\,dx+u\,dy)$입니다. 그린 정리를 각각 적용하면 ($R$은 $C$의 내부)
 $$\oint_C(u\,dx-v\,dy)=\iint_R(-v_x-u_y)\,dx\,dy,\qquad \oint_C(v\,dx+u\,dy)=\iint_R(u_x-v_y)\,dx\,dy$$
-코시–리만 방정식 $u_y=-v_x$, $u_x=v_y$에 의해 두 피적분함수가 모두 0입니다.` },
+코시-리만 방정식 $u_y=-v_x$, $u_x=v_y$에 의해 두 피적분함수가 모두 0입니다.` },
   { ch: 'ch13', id: 'deformation', title: '경로 변형 원리', keys: ['코시 적분 정리'],
     tags: 'deformation of path multiply connected 경로 변형 다중연결',
     stmt: R`$C_2$가 $C_1$ 안에 있고 $f$가 두 경로 사이의 고리 영역(과 경로 위)에서 해석적이면 $\oint_{C_1}f\,dz=\oint_{C_2}f\,dz$ (같은 방향).`,

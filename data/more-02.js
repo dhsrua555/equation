@@ -5,7 +5,7 @@ EM.more = EM.more || [];
   const R = String.raw;
   EM.more.push({
     n: 2,
-    secTitles: { '2.1': '동차 2계', '2.2': '상수계수', '2.3': '미분연산자', '2.4': '자유진동', '2.5': '오일러–코시', '2.6': '론스키안', '2.7': '미정계수법', '2.8': '강제진동', '2.9': '전기회로', '2.10': '매개변수 변환법', '3.2': '고계 상수계수', '3.3': '고계 비동차' },
+    secTitles: { '2.1': '동차 2계', '2.2': '상수계수', '2.3': '미분연산자', '2.4': '자유진동', '2.5': '오일러-코시', '2.6': '론스키안', '2.7': '미정계수법', '2.8': '강제진동', '2.9': '전기회로', '2.10': '매개변수 변환법', '3.2': '고계 상수계수', '3.3': '고계 비동차' },
     secs: ['2.2', '2.2', '2.2', '2.5', '2.7', '2.7', '2.10', '2.4', '2.8', '3.2', '2.6'],
     problems: [
       { sec: '2.1', type: 'mc', lv: 2, q: R`$y_1=x$가 $x^2y''-xy'+y=0\ (x>0)$의 해일 때, 계수 내림법으로 얻는 두 번째 해는?`,
@@ -62,9 +62,9 @@ $$y=\Big(c_1+c_2x+\frac{x^2}2\Big)e^{-x}$$` },
       { sec: '2.8', type: 'num', lv: 3, q: R`$y''+2y'+5y=10\cos t$의 정상상태 진폭은?`, ans: 'sqrt(5)', ansTex: R`\sqrt5\approx2.236`,
         sol: R`$C^*=\dfrac{F_0}{\sqrt{(\omega_0^2-\omega^2)^2+\omega^2c^2}}=\dfrac{10}{\sqrt{(5-1)^2+4}}=\dfrac{10}{\sqrt{20}}=\sqrt5$ ($m=1$).` },
       { sec: '2.8', type: 'num', lv: 3, q: R`$y''+2y'+5y=\cos\omega t$의 정상상태 진폭이 최대가 되는 $\omega$는?`, ans: 'sqrt(3)', ansTex: R`\sqrt3`,
-        hint: R`진폭의 분모 $(\omega_0^2-\omega^2)^2+\omega^2c^2$를 최소로 만드세요.`,
-        sol: R`$g(\omega^2)=(5-\omega^2)^2+4\omega^2$을 $\omega^2$로 미분하면 $-2(5-\omega^2)+4=0$, $\omega^2=3$. 일반식 $\omega_{\max}^2=\omega_0^2-\dfrac{c^2}{2m^2}=5-2=3$과 같습니다.` },
-      { sec: '2.9', type: 'mc', lv: 1, q: R`RLC 회로 $LI''+RI'+\dfrac1CI=E'(t)$와 질량–스프링계 $my''+cy'+ky=F$를 대응시킬 때 스프링 상수 $k$에 해당하는 것은?`,
+        hint: R`진폭의 분모 $(\omega_0^2-\omega^2)^2+\omega^2c^2$을 최소로 만드세요.`,
+        sol: R`$g(\omega^2)=(5-\omega^2)^2+4\omega^2$을 $\omega^2$으로 미분하면 $-2(5-\omega^2)+4=0$, $\omega^2=3$. 일반식 $\omega_{\max}^2=\omega_0^2-\dfrac{c^2}{2m^2}=5-2=3$과 같습니다.` },
+      { sec: '2.9', type: 'mc', lv: 1, q: R`RLC 회로 $LI''+RI'+\dfrac1CI=E'(t)$와 질량-스프링계 $my''+cy'+ky=F$를 대응시킬 때 스프링 상수 $k$에 해당하는 것은?`,
         choices: [R`$L$`, R`$R$`, R`$\dfrac1C$`, R`$E$`], ans: 2,
         sol: R`$m\leftrightarrow L$, $c\leftrightarrow R$, $k\leftrightarrow1/C$, $F\leftrightarrow E'$.` },
       { sec: '2.9', type: 'num', lv: 2, q: R`$L=0.5$ H, $C=0.02$ F인 LC 회로의 고유각진동수 (rad/s)는?`, ans: '10', ansTex: R`10`,

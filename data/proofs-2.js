@@ -55,7 +55,7 @@ $$\det(A-\lambda I)=(a_{11}-\lambda)(a_{22}-\lambda)-a_{12}a_{21}=\lambda^2-(a_{
 모든 해가 0으로 가려면 두 고유값의 실수부가 모두 음수여야 하고, 이는 $p<0$, $q>0$과 같습니다.` },
   { ch: 'ch03', id: 'linearization', title: '비선형계의 선형화', keys: ['선형화 (교재 Theorem 1)'],
     tags: 'linearization jacobian nonlinear 선형화 야코비 비선형 진자',
-    sketch: R`선형화 정리(푸앵카레–랴푸노프)의 증명은 길어 생략하고, 선형화 식의 유도와 중심이 보존되지 않는 예를 보입니다.`,
+    sketch: R`선형화 정리(푸앵카레-랴푸노프)의 증명은 길어 생략하고, 선형화 식의 유도와 중심이 보존되지 않는 예를 보입니다.`,
     stmt: R`$\mathbf f(\mathbf y_0)=\mathbf 0$일 때 $\tilde{\mathbf y}=\mathbf y-\mathbf y_0$는 $\tilde{\mathbf y}'=J\tilde{\mathbf y}+\mathbf h(\tilde{\mathbf y})$, $|\mathbf h|=o(|\tilde{\mathbf y}|)$를 만족한다. 선형화한 계가 마디·안장·나선이면 원래 계도 같은 종류이지만, 중심은 보존되지 않을 수 있다.`,
     body: R`
 테일러 전개로 $\mathbf f(\mathbf y)=\mathbf f(\mathbf y_0)+J(\mathbf y-\mathbf y_0)+\mathbf h$이고 $\mathbf f(\mathbf y_0)=\mathbf 0$이므로 위 식이 나옵니다. 임계점 근처에서는 $\mathbf h$가 $J\tilde{\mathbf y}$보다 훨씬 작아 선형 항이 궤적의 모양을 정합니다.

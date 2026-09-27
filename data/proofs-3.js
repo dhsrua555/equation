@@ -24,7 +24,7 @@ $$(AB)(B^{-1}A^{-1})=A(BB^{-1})A^{-1}=AA^{-1}=I$$
 - 한 행에 다른 행의 $k$배 더하기: $-k$배를 더하면 되돌아옵니다.
 
 $E$가 가역이므로 $A\mathbf x=\mathbf b\iff EA\mathbf x=E\mathbf b$입니다. 여러 번 적용해도 마찬가지이므로 사다리꼴의 해가 원래 해입니다.` },
-  { ch: 'ch06', id: 'ranknullity', title: '계수–퇴화차수 정리', keys: ['계수와 영공간'],
+  { ch: 'ch06', id: 'ranknullity', title: '계수-퇴화차수 정리', keys: ['계수와 영공간'],
     tags: 'rank nullity theorem null space dimension 계수 퇴화차수 영공간 차원',
     stmt: R`행 연산은 계수를 바꾸지 않으며, $m\times n$ 행렬에서 $\operatorname{rank}A+\operatorname{nullity}A=n$이다.`,
     body: R`
@@ -86,11 +86,11 @@ $\ker L$의 기저 $\{u_1,\dots,u_k\}$를 $V$의 기저 $\{u_1,\dots,u_k,w_1,\do
 **일차독립.** $\sum b_jL(w_j)=0$이면 $L\big(\sum b_jw_j\big)=0$, 즉 $\sum b_jw_j\in\ker L$이므로 $\sum b_jw_j=\sum c_iu_i$. 전체가 $V$의 기저이므로 모든 $b_j=c_i=0$.
 
 따라서 $\dim\operatorname{im}L=r=\dim V-k$. 행렬 $L_A$에 적용하면 $\operatorname{rank}A+\operatorname{nullity}A=n$입니다.` },
-  { ch: 'ch06', id: 'cauchy-schwarz', title: '코시–슈바르츠 부등식, 삼각부등식, 평행사변형 등식', keys: ['노름과 기본 부등식'],
+  { ch: 'ch06', id: 'cauchy-schwarz', title: '코시-슈바르츠 부등식, 삼각부등식, 평행사변형 등식', keys: ['노름과 기본 부등식'],
     tags: 'cauchy schwarz triangle inequality parallelogram law inner product norm 코시 슈바르츠 삼각부등식 평행사변형 내적 노름',
     stmt: R`내적공간에서 $|\langle u,v\rangle|\le\|u\|\|v\|$, $\|u+v\|\le\|u\|+\|v\|$, $\|u+v\|^2+\|u-v\|^2=2(\|u\|^2+\|v\|^2)$.`,
     body: R`
-**코시–슈바르츠.** $v=0$이면 자명합니다. $v\ne0$이면 $w=u-\dfrac{\langle u,v\rangle}{\|v\|^2}v$는 $v$와 직교하므로(정사영의 나머지)
+**코시-슈바르츠.** $v=0$이면 자명합니다. $v\ne0$이면 $w=u-\dfrac{\langle u,v\rangle}{\|v\|^2}v$는 $v$와 직교하므로(정사영의 나머지)
 $$0\le\|w\|^2=\langle w,u\rangle=\|u\|^2-\frac{|\langle u,v\rangle|^2}{\|v\|^2}$$
 정리하면 $|\langle u,v\rangle|^2\le\|u\|^2\|v\|^2$. 등호는 $w=0$, 즉 $u$와 $v$가 평행할 때입니다.
 
@@ -106,7 +106,7 @@ $$\|u+v\|^2=\|u\|^2+2\Re\langle u,v\rangle+\|v\|^2\le\|u\|^2+2\|u\|\|v\|+\|v\|^2
 
 **최소성.** $u\in W$이면 $w-u\in W$이므로 $(v-w)\perp(w-u)$. 피타고라스 정리로
 $$\|v-u\|^2=\|(v-w)+(w-u)\|^2=\|v-w\|^2+\|w-u\|^2\ge\|v-w\|^2$$
-등호는 $\|w-u\|=0$일 때뿐이므로 가장 가까운 벡터는 유일합니다. 함수공간에서는 이것이 "제곱 오차 최소"이고, 삼각함수계에 적용하면 푸리에 부분합이 최선 근사라는 정리가 됩니다.` },
+등호는 $\|w-u\|=0$일 때뿐이므로 가장 가까운 벡터는 유일합니다. 함수공간에서는 이것이 “제곱 오차 최소”이고, 삼각함수계에 적용하면 푸리에 부분합이 최선 근사라는 정리가 됩니다.` },
   { ch: 'ch06', id: 'bessel-ineq', title: '베셀 부등식', keys: ['정사영과 최선 근사'],
     tags: 'bessel inequality orthonormal parseval hilbert 베셀 부등식 정규직교 파세발 힐베르트',
     stmt: R`정규직교집합 $\{v_1,\dots,v_m\}$과 $v$에 대해 $\sum_{i=1}^m|\langle v,v_i\rangle|^2\le\|v\|^2$.`,

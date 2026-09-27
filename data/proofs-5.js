@@ -23,17 +23,17 @@ $\cos\cdot\sin$은 기함수이므로 대칭 구간에서 적분이 0입니다.`
 
 양변에 $\cos\frac{m\pi x}L$을 곱해 적분하면 직교성에 의해 $n=m$인 코사인 항만 남습니다.
 $$\int_{-L}^Lf\cos\frac{m\pi x}{L}\,dx=a_m\cdot L$$
-사인을 곱하면 같은 방법으로 $b_m$이 나옵니다. 급수의 "좌표"를 내적으로 뽑아내는 것과 같습니다.` },
+사인을 곱하면 같은 방법으로 $b_m$이 나옵니다. 급수의 “좌표”를 내적으로 뽑아내는 것과 같습니다.` },
   { ch: 'ch10', id: 'convergence', title: '푸리에 급수의 수렴 정리', keys: ['푸리에 계수 (주기 2L)', '수렴 정리 (교재 Theorem 1)'],
     tags: 'convergence dirichlet kernel riemann lebesgue jump average 수렴 정리 디리클레 핵 리만 르베그 불연속 평균',
-    sketch: R`디리클레 핵과 리만–르베그 보조정리를 이용한 증명의 개요입니다 ($L=\pi$).`,
+    sketch: R`디리클레 핵과 리만-르베그 보조정리를 이용한 증명의 개요입니다 ($L=\pi$).`,
     stmt: R`$f$가 구간별 연속이고 각 점에서 좌우 미분계수가 있으면, 푸리에 급수는 각 점에서 $\tfrac12\big[f(x^+)+f(x^-)\big]$로 수렴한다.`,
     body: R`
 부분합에 계수 공식을 넣고 정리하면
 $$S_N(x)=\frac1\pi\int_{-\pi}^{\pi}f(x+t)D_N(t)\,dt,\qquad D_N(t)=\frac12+\sum_{k=1}^N\cos kt=\frac{\sin\big((N+\tfrac12)t\big)}{2\sin(t/2)}$$
 $\int_0^\pi D_N\,dt=\frac\pi2$이므로
 $$S_N(x)-\frac{f(x^+)+f(x^-)}2=\frac1\pi\int_0^\pi\big[f(x+t)-f(x^+)\big]D_N\,dt+\frac1\pi\int_{-\pi}^0\big[f(x+t)-f(x^-)\big]D_N\,dt$$
-첫 적분을 $\int_0^\pi g(t)\sin\big((N+\tfrac12)t\big)dt$, $g(t)=\dfrac{f(x+t)-f(x^+)}{2\sin(t/2)}$로 쓰면, 오른쪽 미분계수가 있어 $g$는 $t\to0^+$에서 유계입니다. 리만–르베그 보조정리(적분가능한 $g$에 대해 $\int g(t)\sin\lambda t\,dt\to0$)에 의해 0으로 갑니다. 둘째 적분도 같습니다.` },
+첫 적분을 $\int_0^\pi g(t)\sin\big((N+\tfrac12)t\big)dt$, $g(t)=\dfrac{f(x+t)-f(x^+)}{2\sin(t/2)}$로 쓰면, 오른쪽 미분계수가 있어 $g$는 $t\to0^+$에서 유계입니다. 리만-르베그 보조정리(적분가능한 $g$에 대해 $\int g(t)\sin\lambda t\,dt\to0$)에 의해 0으로 갑니다. 둘째 적분도 같습니다.` },
   { ch: 'ch10', id: 'evenodd', title: '우함수·기함수와 반구간 전개', keys: ['우함수·기함수 급수'],
     tags: 'even odd function half-range expansion cosine sine series 우함수 기함수 반구간 전개',
     stmt: R`$f$가 우함수이면 $b_n=0$, $a_0=\frac1L\int_0^Lf$, $a_n=\frac2L\int_0^Lf\cos\frac{n\pi x}L$. 기함수이면 $a_n=0$, $b_n=\frac2L\int_0^Lf\sin\frac{n\pi x}L$.`,
@@ -95,9 +95,9 @@ $$\int_{-\infty}^{\infty}e^{-a(x+iw/2a)^2}dx=\int_{-\infty}^\infty e^{-ax^2}dx=\
 $E=\int f^2-2\int fF+\int F^2$. 직교성으로 $\int F^2=\pi\big[2A_0^2+\sum(A_n^2+B_n^2)\big]$, 오일러 공식으로 $\int fF=\pi\big[2A_0a_0+\sum(A_na_n+B_nb_n)\big]$. 따라서 계수가 푸리에 계수일 때의 값 $E^*$를 빼면
 $$E-E^*=\pi\Big[2(A_0-a_0)^2+\sum_{n=1}^N\big((A_n-a_n)^2+(B_n-b_n)^2\big)\Big]\ge0$$
 이고 등호는 $A_n=a_n$, $B_n=b_n$일 때뿐입니다. 이것은 내적공간에서 정사영이 최선 근사라는 정리의 한 경우입니다.` },
-  { ch: 'ch10', id: 'sl-orthogonality', title: '스투름–리우빌 고유함수의 직교성', keys: ['고유함수의 직교성 (교재 Theorem 1)'],
+  { ch: 'ch10', id: 'sl-orthogonality', title: '스투름-리우빌 고유함수의 직교성', keys: ['고유함수의 직교성 (교재 Theorem 1)'],
     tags: 'sturm liouville orthogonality eigenfunction weight self-adjoint 스투름 리우빌 직교성 고유함수 가중함수 자기수반',
-    stmt: R`스투름–리우빌 문제의 서로 다른 고유값 $\lambda_m\ne\lambda_n$에 대응하는 고유함수는 $\int_a^b r\,y_my_n\,dx=0$을 만족한다.`,
+    stmt: R`스투름-리우빌 문제의 서로 다른 고유값 $\lambda_m\ne\lambda_n$에 대응하는 고유함수는 $\int_a^b r\,y_my_n\,dx=0$을 만족한다.`,
     body: R`
 두 방정식 $(py_m')'+(q+\lambda_mr)y_m=0$에 $y_n$을, $(py_n')'+(q+\lambda_nr)y_n=0$에 $y_m$을 곱해 빼면 $q$ 항이 지워지고
 $$(\lambda_m-\lambda_n)\,r\,y_my_n=y_m(py_n')'-y_n(py_m')'=\Big[p\,(y_my_n'-y_ny_m')\Big]'$$
@@ -114,7 +114,7 @@ $\lambda_m\ne\lambda_n$이므로 적분이 0입니다. 행렬에서 대칭행렬
 양변과 $y_n$의 가중 내적을 취하면 직교성 때문에 한 항만 남습니다.
 $$(f,y_n)=\sum_ma_m(y_m,y_n)=a_n(y_n,y_n)=a_n\|y_n\|^2$$
 르장드르 다항식은 $r=1$, $\|P_m\|^2=\frac2{2m+1}$이므로 $a_m=\frac{2m+1}2\int_{-1}^1fP_m\,dx$.
-베셀 함수 $J_n(k_{n,m}x)$는 $r=x$, $\|J_n(k_{n,m}x)\|^2=\frac{R^2}2J_{n+1}^2(\alpha_{n,m})$이므로 푸리에–베셀 계수 공식이 나옵니다.` },
+베셀 함수 $J_n(k_{n,m}x)$는 $r=x$, $\|J_n(k_{n,m}x)\|^2=\frac{R^2}2J_{n+1}^2(\alpha_{n,m})$이므로 푸리에-베셀 계수 공식이 나옵니다.` },
   // ───── 11
   { ch: 'ch11', id: 'classify', title: '2계 PDE 분류와 특성선', keys: ['2계 선형 PDE의 분류'],
     tags: 'classification characteristics hyperbolic parabolic elliptic normal form 분류 특성선 쌍곡형 포물형 타원형 표준형',

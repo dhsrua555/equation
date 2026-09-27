@@ -7,13 +7,15 @@ EM.proofs = EM.proofs || [];
   // ───── 01
   { ch: 'ch01', id: 'separable', title: '변수분리형 풀이의 정당성', keys: ['변수분리와 동차형 치환'],
     tags: 'separable variables 변수분리 연쇄법칙 chain rule',
-    stmt: R`$y'=f(x)g(y)$, $g(y)\ne0$이면 해는 $\displaystyle\int\frac{dy}{g(y)}=\int f(x)\,dx+c$를 만족한다.`,
+    stmt: R`$g(y)\,y'=f(x)$의 해는 $\displaystyle\int g(y)\,dy=\int f(x)\,dx+c$를 만족한다.`,
     body: R`
-$G(y)=\displaystyle\int\frac{dy}{g(y)}$라 두면 $G'(y)=\dfrac1{g(y)}$입니다. $y=y(x)$가 해일 때 연쇄법칙으로
-$$\frac{d}{dx}G(y(x))=G'(y)\,y'=\frac{y'}{g(y)}=f(x)$$
-양변을 $x$로 적분하면 $G(y(x))=\int f(x)\,dx+c$입니다.
+$G$를 $g$의 원시함수, 곧 $G'(y)=g(y)$인 함수라 합시다. $y=y(x)$가 해일 때 연쇄법칙으로
+$$\frac{d}{dx}G(y(x))=G'(y)\,y'=g(y)\,y'=f(x)$$
+양변을 $x$로 적분하면 $G(y(x))=\int f(x)\,dx+c$, 곧 $\int g(y)\,dy=\int f(x)\,dx+c$입니다.
 
-거꾸로 이 관계를 만족하는 미분가능한 $y(x)$는 같은 계산을 거꾸로 따라가 $y'=f(x)g(y)$를 만족합니다. "$dy$와 $dx$를 양변으로 나누는" 계산은 이 연쇄법칙을 줄여 쓴 것입니다.` },
+거꾸로 이 관계를 만족하는 미분가능한 $y(x)$는 같은 계산을 거꾸로 따라가 $g(y)\,y'=f(x)$를 만족합니다. $dy$와 $dx$를 양변으로 갈라 놓는 계산은 이 연쇄법칙을 줄여 쓴 것입니다.
+
+$y'=f(x)\,h(y)$ 꼴이면 $h(y)\ne0$인 곳에서 $g=1/h$로 두어 $\int\frac{dy}{h(y)}=\int f(x)\,dx+c$를 얻습니다. $h(y_0)=0$인 상수해 $y\equiv y_0$은 이 나눗셈에서 빠지므로 따로 확인해야 합니다.` },
   { ch: 'ch01', id: 'homog', title: '동차형 방정식의 치환 $u=y/x$', keys: ['변수분리와 동차형 치환'],
     tags: 'homogeneous substitution 동차형 치환',
     stmt: R`$y'=f(y/x)$에서 $u=y/x$로 두면 $\dfrac{du}{f(u)-u}=\dfrac{dx}{x}$로 변수분리된다.`,
@@ -116,7 +118,7 @@ $$y''+ay'+by=x(\lambda^2+a\lambda+b)e^{\lambda x}+(2\lambda+a)e^{\lambda x}=0$$
 **복소근.** $\lambda=\alpha\pm i\omega$, $\alpha=-a/2$. 오일러 공식으로 복소해
 $$e^{\lambda x}=e^{\alpha x}(\cos\omega x+i\sin\omega x)$$
 를 얻습니다. 계수가 실수이므로 $L[\Re y]=\Re L[y]=0$, $L[\Im y]=\Im L[y]=0$이고, 실수부와 허수부가 각각 실해입니다. 둘의 비가 $\tan\omega x$로 상수가 아니므로 독립입니다.` },
-  { ch: 'ch02', id: 'eulercauchy', title: '오일러–코시 방정식의 보조방정식', keys: ['오일러–코시 방정식'],
+  { ch: 'ch02', id: 'eulercauchy', title: '오일러-코시 방정식의 보조방정식', keys: ['오일러-코시 방정식'],
     tags: 'euler cauchy auxiliary equation 오일러 코시 보조방정식 로그',
     stmt: R`$x^2y''+axy'+by=0$에 $y=x^m$을 넣으면 $m^2+(a-1)m+b=0$을 얻는다. 중근이면 $x^m\ln x$도 해이다.`,
     body: R`
@@ -136,7 +138,7 @@ $W'=(y_1y_2'-y_2y_1')'=y_1y_2''-y_2y_1''$. $y_i''=-py_i'-qy_i$를 넣으면 $q$ 
 $$W'=-p\,(y_1y_2'-y_2y_1')=-pW\quad\Longrightarrow\quad W=c\,e^{-\int p\,dx}$$
 지수함수는 0이 아니므로 $W$는 항상 0이거나 한 번도 0이 아닙니다.
 
-**종속 ⇒ W=0.** $y_2=ky_1$이면 $W=y_1\cdot ky_1'-ky_1\cdot y_1'=0$.
+**종속 ⇒ $W=0$.** $y_2=ky_1$이면 $W=y_1\cdot ky_1'-ky_1\cdot y_1'=0$.
 
 **W=0 ⇒ 종속.** $W(x_0)=0$이면 연립방정식 $c_1y_1(x_0)+c_2y_2(x_0)=0$, $c_1y_1'(x_0)+c_2y_2'(x_0)=0$의 계수 행렬식이 0이라 자명하지 않은 해 $(c_1,c_2)$가 있습니다. $y=c_1y_1+c_2y_2$는 $y(x_0)=y'(x_0)=0$인 해이고, 유일성 정리에 의해 $y\equiv0$. 즉 종속입니다.` },
   { ch: 'ch02', id: 'varparam', title: '매개변수 변환법 공식', keys: ['매개변수 변환법'],

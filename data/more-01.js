@@ -64,7 +64,7 @@ $$u=\frac{x^4}4+\frac{x^2y^2}2+\frac{x^3}3=c$$` },
         sol: R`
 $h=\int\tan x\,dx=-\ln\cos x$, $e^{h}=\dfrac1{\cos x}$. $y=\cos x\Big(\int\dfrac{2\sin x\cos x}{\cos x}dx+c\Big)=\cos x(c-2\cos x)$.
 $y(0)=c-2=1$에서 $c=3$. $y=3\cos x-2\cos^2x$, $y(\pi/3)=\tfrac32-\tfrac12=1$.` },
-      { sec: '1.5', type: 'num', lv: 2, q: R`로지스틱 방정식 $y'=y(1-y),\ y(0)=\tfrac12$일 때 $y(\ln3)$는?`, ans: '3/4', ansTex: R`\tfrac34`,
+      { sec: '1.5', type: 'num', lv: 2, q: R`로지스틱 방정식 $y'=y(1-y),\ y(0)=\tfrac12$일 때 $y(\ln3)$은?`, ans: '3/4', ansTex: R`\tfrac34`,
         sol: R`베르누이 치환 $u=1/y$로 $u'+u=1$, $u=1+ce^{-t}$, $c=1$. $y=\dfrac1{1+e^{-t}}$, $y(\ln3)=\dfrac1{1+1/3}=\tfrac34$.` },
       { sec: '1.5', type: 'num', lv: 2, q: R`RL 회로에서 $L=0.1$ H, $R=5\ \Omega$, $E=12$ V, $I(0)=0$이다. $t=\dfrac{\ln2}{50}$ 초에서의 전류(A)는?`, ans: '1.2', ansTex: R`1.2`,
         sol: R`$0.1I'+5I=12$, 즉 $I'+50I=120$. $I=2.4\big(1-e^{-50t}\big)$. $t=\frac{\ln2}{50}$이면 $e^{-50t}=\tfrac12$이므로 $I=1.2$.` },

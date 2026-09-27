@@ -81,7 +81,7 @@ $\dfrac1z=\dfrac1{2+(z-2)}=\dfrac12\cdot\dfrac1{1+\frac{z-2}2}=\sum_{n=0}^\infty
 :::
 ` },
       { k: '15.5', p: '698', title: '고른 수렴 (선택)', body: R`
-"급수가 수렴한다"는 점마다의 성질이지만, 연속성이나 항별 적분이 보장되려면 **고른 수렴**(uniform convergence)이 필요합니다. 영역 $G$에서 $\sup_{z\in G}|f(z)-s_n(z)|\to0$이면 고르게 수렴한다고 합니다.
+“급수가 수렴한다”는 점마다의 성질이지만, 연속성이나 항별 적분이 보장되려면 **고른 수렴**(uniform convergence)이 필요합니다. 영역 $G$에서 $\sup_{z\in G}|f(z)-s_n(z)|\to0$이면 고르게 수렴한다고 합니다.
 
 - 연속함수들의 고른 수렴 극한은 연속이고, 적분과 극한의 순서를 바꿀 수 있습니다.
 - **바이어슈트라스 M-판정법**: $|f_n(z)|\le M_n$이고 $\sum M_n$이 수렴하면 $\sum f_n$은 고르게 수렴합니다.
@@ -153,7 +153,7 @@ $$\oint=2\pi i(e-2)$$
 :::key 실적분의 세 유형
 $$\int_0^{2\pi}F(\cos\theta,\sin\theta)\,d\theta=\oint_{|z|=1}F\Big(\frac{z+z^{-1}}2,\frac{z-z^{-1}}{2i}\Big)\frac{dz}{iz}$$
 $$\int_{-\infty}^{\infty}f(x)\,dx=2\pi i\sum_{\Im z_j>0}\Res_{z=z_j}f\qquad(f=p/q,\ \deg q\ge\deg p+2)$$
-$$\int_{-\infty}^{\infty}f(x)\cos sx\,dx=\Re\Big[2\pi i\sum_{\Im z_j>0}\Res\,f(z)e^{isz}\Big],\quad \sin sx\ \text{이면}\ \Im\qquad(s>0,\ \deg q\ge\deg p+1)$$
+$$\int_{-\infty}^{\infty}f(x)\cos sx\,dx=\Re\Big[2\pi i\sum_{\Im z_j>0}\Res\,f(z)e^{isz}\Big],\quad \sin sx\text{이면}\ \Im\qquad(s>0,\ \deg q\ge\deg p+1)$$
 :::
 
 - 유형 1은 **단위원 안**의 극만, 유형 2·3은 **위쪽 반평면**의 극만 셉니다.

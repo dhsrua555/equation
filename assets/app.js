@@ -118,14 +118,25 @@
     texCache.set(key, html);
     return html;
   }
+  // put the text right after an inline formula (…$x$로) inside its last box so the line can't break between them;
+  // the box is aria-hidden, so screen readers get a hidden copy
+  function glueTail(html, tail, display) {
+    const i = html.lastIndexOf('</span></span></span>');
+    if (display || i < 0 || !html.startsWith('<span class="katex">')) return html + tail;
+    return `${html.slice(0, i)}<span class="kp">${tail}</span>${html.slice(i)}<span class="sr-only">${tail}</span>`;
+  }
   function inline(s) {
     if (!s) return '';
     const math = [];
     let t = String(s)
       .replace(/\$\$([\s\S]+?)\$\$/g, (_, m) => { math.push([m, true]); return `\u0000${math.length - 1}\u0000`; })
       .replace(/\$([^$]+?)\$/g, (_, m) => { math.push([m, false]); return `\u0000${math.length - 1}\u0000`; });
-    const restore = (x) => x.replace(/\u0000(\d+)\u0000/g, (_, k) => tex(math[k][0], math[k][1]));
-    t = esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    const restore = (x) => x
+      .replace(/\u0001(\d+)\u0001([^\u0002]*)\u0002/g, (_, k, tail) => glueTail(tex(math[k][0], math[k][1]), tail, math[k][1]))
+      .replace(/\u0000(\d+)\u0000/g, (_, k) => tex(math[k][0], math[k][1]));
+    t = esc(t)
+      .replace(/\u0000(\d+)\u0000([^\s\u0000[*<]+)/g, '\u0001$1\u0001$2\u0002')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     t = t.replace(XREF_RE, (_, ch, k, text) => xref(ch, k, restore(text)));
     return restore(t);
   }
@@ -160,7 +171,7 @@
     const num = sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
     return `<section class="sec" id="sec-${sec.k || idx}">
       <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}</h2></div>
-      ${sec.p ? `<p class="sec-page caps">Kreyszig 10판 p.${esc(sec.p)}</p>` : ''}
+      ${sec.p ? `<p class="sec-page caps">Kreyszig 10판 · ${esc(sec.p)}쪽</p>` : ''}
       ${body}
       ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
         <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">※${i + 1}</button>
@@ -840,7 +851,7 @@
     }
     return `
     <section class="ch-hero">
-      <div class="ch-plate"><canvas data-plot="${c.plot}" aria-hidden="true"></canvas><span class="plate-num" aria-hidden="true">${pad(c.n)}</span><span class="plate-cap caps">Fig. ${esc(c.fig)}</span></div>
+      <div class="ch-plate"><canvas data-plot="${c.plot}" aria-hidden="true"></canvas><span class="plate-num" aria-hidden="true">${pad(c.n)}</span><span class="plate-cap caps">Fig. ${inline(c.fig)}</span></div>
       <div class="ch-intro">
         <span class="caps">Chapter ${pad(c.n)} · Part ${c.part} ${esc(PARTS[c.part].name)}</span>
         <h1>${esc(c.title)}</h1>
@@ -1008,7 +1019,7 @@
             <div class="part-head"><span class="part-letter">${k}</span><h3>${esc(PARTS[k].name)}</h3><p>${esc(PARTS[k].en)}</p></div>
             ${CH.filter((c) => c.part === k).map((c) => `
               <div id="f-${c.id}" style="margin-bottom:44px">
-                <h3 style="font-family:var(--f-serif);font-size:1.2rem;margin-bottom:16px"><span class="num-display" style="margin-right:12px">${pad(c.n)}</span><a href="#${c.id}" data-route="${c.id}" style="text-decoration:none">${esc(c.title)}</a></h3>
+                <h3 style="font-family:var(--f-serif);font-size:1.2rem;margin-bottom:16px"><span class="num-text" style="margin-right:12px">${pad(c.n)}</span><a href="#${c.id}" data-route="${c.id}" style="text-decoration:none">${esc(c.title)}</a></h3>
                 <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div>${proofLinks(b.title, c.id)}</div>`).join('')}</div>
               </div>`).join('')}
           </div>`).join('')}

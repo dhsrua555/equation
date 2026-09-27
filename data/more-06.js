@@ -22,7 +22,7 @@ EM.more = EM.more || [];
         sol: R`①: 각 행 $(1,1)$과 각 열 $(1,-1)^T$의 내적이 0이라 $AB=0$. ③은 $AB=I$입니다. 행렬에서는 $AB=0$이어도 $A=0$ 또는 $B=0$이 아닐 수 있습니다.` },
       { sec: '7.2', type: 'num', lv: 2, q: R`$A=\begin{pmatrix}1&2\\0&1\end{pmatrix}$, $B=\begin{pmatrix}3&0\\1&2\end{pmatrix}$일 때 $\tr(BA)$는?`, ans: '7', ansTex: R`7`,
         sol: R`$BA=\begin{pmatrix}3&6\\1&4\end{pmatrix}$이므로 7. $AB=\begin{pmatrix}5&4\\1&2\end{pmatrix}$도 대각합 7로, $AB\ne BA$여도 $\tr(AB)=\tr(BA)$입니다.` },
-      { sec: '7.2', type: 'mc', lv: 2, q: R`정사각행렬 $A,B$에 대해 $(A+B)^2$와 항상 같은 것은?`,
+      { sec: '7.2', type: 'mc', lv: 2, q: R`정사각행렬 $A,B$에 대해 $(A+B)^2$과 항상 같은 것은?`,
         choices: [R`$A^2+2AB+B^2$`, R`$A^2+AB+BA+B^2$`, R`$A^2+B^2$`, R`$A^2+2BA+B^2$`], ans: 1,
         sol: R`$(A+B)(A+B)=A^2+AB+BA+B^2$. $AB=BA$일 때만 $2AB$로 합칠 수 있습니다.` },
       { sec: '7.3', type: 'num', lv: 1, q: R`$x+2y=5,\ 3x-y=1$의 해에서 $x+y$는?`, ans: '3', ansTex: R`3`,
@@ -70,7 +70,7 @@ $D=\det\begin{pmatrix}1&1&0\\0&1&1\\1&0&1\end{pmatrix}=2$, $D_2=\det\begin{pmatr
 (세 식을 더하면 $x+y+z=6$이라 $x=1$, $y=2$, $z=3$으로도 확인)` },
       { sec: '7.8', type: 'num', lv: 2, q: R`$A=\begin{pmatrix}1&2&0\\0&1&0\\0&0&2\end{pmatrix}$일 때 $A^{-1}$의 (1,2) 성분은?`, ans: '-2', ansTex: R`-2`,
         sol: R`블록 대각: $\begin{pmatrix}1&2\\0&1\end{pmatrix}^{-1}=\begin{pmatrix}1&-2\\0&1\end{pmatrix}$, 나머지 블록은 $\tfrac12$.` },
-      { sec: '7.8', type: 'open', lv: 2, q: R`가우스–조르단 소거로 $A=\begin{pmatrix}2&1\\1&1\end{pmatrix}$의 역행렬을 구하세요.`,
+      { sec: '7.8', type: 'open', lv: 2, q: R`가우스-조르단 소거로 $A=\begin{pmatrix}2&1\\1&1\end{pmatrix}$의 역행렬을 구하세요.`,
         sol: R`
 $$\left[\begin{array}{cc|cc}2&1&1&0\\1&1&0&1\end{array}\right]\to\left[\begin{array}{cc|cc}1&1&0&1\\2&1&1&0\end{array}\right]\to\left[\begin{array}{cc|cc}1&1&0&1\\0&-1&1&-2\end{array}\right]\to\left[\begin{array}{cc|cc}1&0&1&-1\\0&1&-1&2\end{array}\right]$$
 $A^{-1}=\begin{pmatrix}1&-1\\-1&2\end{pmatrix}$. ($\det A=1$이므로 2×2 공식과 일치)` },

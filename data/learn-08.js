@@ -38,7 +38,7 @@ $$p=|\mathbf a|\cos\gamma=\frac{\mathbf a\cdot\mathbf b}{|\mathbf b|}\ (\mathbf 
 
 - **직교 판정**(교재 Theorem 1): $\mathbf a\cdot\mathbf b=0\iff\mathbf a\perp\mathbf b$ (영벡터가 아닐 때).
 - $|\mathbf a|=\sqrt{\mathbf a\cdot\mathbf a}$이고, 각은 $\cos\gamma=\dfrac{\mathbf a\cdot\mathbf b}{|\mathbf a||\mathbf b|}$.
-- **부등식**: 코시–슈바르츠 $|\mathbf a\cdot\mathbf b|\le|\mathbf a||\mathbf b|$, 삼각부등식 $|\mathbf a+\mathbf b|\le|\mathbf a|+|\mathbf b|$, 평행사변형 등식 $|\mathbf a+\mathbf b|^2+|\mathbf a-\mathbf b|^2=2(|\mathbf a|^2+|\mathbf b|^2)$. 이 부등식들은 일반 내적공간에서도 성립합니다[[ch06:7.9|내적공간과 코시–슈바르츠 부등식.]].
+- **부등식**: 코시-슈바르츠 $|\mathbf a\cdot\mathbf b|\le|\mathbf a||\mathbf b|$, 삼각부등식 $|\mathbf a+\mathbf b|\le|\mathbf a|+|\mathbf b|$, 평행사변형 등식 $|\mathbf a+\mathbf b|^2+|\mathbf a-\mathbf b|^2=2(|\mathbf a|^2+|\mathbf b|^2)$. 이 부등식들은 일반 내적공간에서도 성립합니다[[ch06:7.9|내적공간과 코시-슈바르츠 부등식.]].
 - **평면의 법선**: 평면 $ax+by+cz=d$의 법선벡터는 $[a,b,c]$. 평면 위 두 점을 잇는 벡터와 내적이 0이기 때문입니다.
 
 :::ex 예제 1 (일과 정사영)
@@ -53,7 +53,7 @@ $W=\mathbf F\cdot\mathbf d=6+5=11$ J. 이동 방향 성분 $\dfrac{11}{|\mathbf 
 단위법선 $\mathbf n=\frac13[2,-1,2]$. 평면 위의 점 $(0,-5,0)$에서 $(1,1,1)$로 가는 벡터 $[1,6,1]$을 $\mathbf n$에 정사영하면 $\frac13(2-6+2)=-\frac23$. 거리 $\frac23$.
 :::
 
-함수의 **내적** $\int fg\,dx$도 같은 발상입니다. 삼각함수들이 서로 "직교"한다는 것이 푸리에 급수의 기초입니다[[ch10:11.5|함수의 직교성.]].
+함수의 **내적** $\int fg\,dx$도 같은 발상입니다. 삼각함수들이 서로 “직교”한다는 것이 푸리에 급수의 기초입니다[[ch10:11.5|함수의 직교성.]].
 ` },
       { k: '9.3', p: '368', title: '외적과 삼중곱', body: R`
 :::def 외적
@@ -194,7 +194,7 @@ $\mathbf v=(x^2y,\ xyz,\ -xz^2)$의 발산과 점 $(1,2,1)$에서의 값
 $\operatorname{div}\mathbf v=2xy+xz-2xz=2xy-xz$. $(1,2,1)$에서 $4-1=3>0$ (샘).
 :::
 
-발산이 "단위 부피당 유출량"이라는 뜻은 발산 정리로 정확해집니다[[ch09:10.7|발산 정리.]].
+발산이 “단위 부피당 유출량”이라는 뜻은 발산 정리로 정확해집니다[[ch09:10.7|발산 정리.]].
 ` },
       { k: '9.9', p: '406', title: '벡터장의 회전', body: R`
 $$\operatorname{curl}\mathbf v=\nabla\times\mathbf v=\begin{vmatrix}\mathbf i&\mathbf j&\mathbf k\\ \partial_x&\partial_y&\partial_z\\ v_1&v_2&v_3\end{vmatrix}=\Big(\frac{\partial v_3}{\partial y}-\frac{\partial v_2}{\partial z},\ \frac{\partial v_1}{\partial z}-\frac{\partial v_3}{\partial x},\ \frac{\partial v_2}{\partial x}-\frac{\partial v_1}{\partial y}\Big)$$
@@ -207,7 +207,7 @@ $$\operatorname{div}\mathbf v=\nabla\cdot\mathbf v,\qquad \operatorname{curl}\ma
 $$\operatorname{curl}(\nabla f)=\mathbf 0,\qquad \operatorname{div}(\operatorname{curl}\mathbf v)=0$$
 :::
 
-두 항등식(Theorem 2)은 혼합편미분의 대칭성 $f_{xy}=f_{yx}$에서 나옵니다. $\operatorname{curl}\mathbf v=\mathbf 0$인 장을 **비회전장**이라 합니다. 기울기장은 항상 비회전이고, 단순연결 영역에서는 그 역도 성립합니다(비회전 ⟹ 기울기장)[[ch09:10.2|회전이 0이면 퍼텐셜 존재.]]. 회전이 "단위 넓이당 순환"이라는 뜻은 스토크스 정리로 정확해집니다[[ch09:10.9|스토크스 정리.]].
+두 항등식(Theorem 2)은 혼합편미분의 대칭성 $f_{xy}=f_{yx}$에서 나옵니다. $\operatorname{curl}\mathbf v=\mathbf 0$인 장을 **비회전장**이라 합니다. 기울기장은 항상 비회전이고, 단순연결 영역에서는 그 역도 성립합니다(비회전 ⟹ 기울기장)[[ch09:10.2|회전이 0이면 퍼텐셜 존재.]]. 회전이 “단위 넓이당 순환”이라는 뜻은 스토크스 정리로 정확해집니다[[ch09:10.9|스토크스 정리.]].
 
 :::ex 예제 1 (강체 회전)
 $z$축 둘레로 각속도 3으로 도는 강체의 속도장과 회전은?

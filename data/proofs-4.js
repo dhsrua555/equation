@@ -11,7 +11,7 @@ EM.proofs = EM.proofs || [];
     body: R`
 $\mathbf a$, $\mathbf b$, $\mathbf a-\mathbf b$가 만드는 삼각형에 코사인 법칙을 쓰면
 $$|\mathbf a-\mathbf b|^2=|\mathbf a|^2+|\mathbf b|^2-2|\mathbf a||\mathbf b|\cos\gamma$$
-좌변을 성분으로 전개하면 $\sum(a_i-b_i)^2=|\mathbf a|^2+|\mathbf b|^2-2\sum a_ib_i$. 두 식을 비교하면 $\sum a_ib_i=|\mathbf a||\mathbf b|\cos\gamma$. 여기서 $|\mathbf a\cdot\mathbf b|\le|\mathbf a||\mathbf b|$ (코시–슈바르츠 부등식)도 바로 나옵니다.` },
+좌변을 성분으로 전개하면 $\sum(a_i-b_i)^2=|\mathbf a|^2+|\mathbf b|^2-2\sum a_ib_i$. 두 식을 비교하면 $\sum a_ib_i=|\mathbf a||\mathbf b|\cos\gamma$. 여기서 $|\mathbf a\cdot\mathbf b|\le|\mathbf a||\mathbf b|$ (코시-슈바르츠 부등식)도 바로 나옵니다.` },
   { ch: 'ch08', id: 'cross', title: '외적의 크기와 삼중곱의 부피', keys: ['내적·외적·삼중곱'],
     tags: 'cross product magnitude triple product volume lagrange identity 외적 크기 삼중곱 부피 라그랑주 항등식',
     stmt: R`$|\mathbf a\times\mathbf b|=|\mathbf a||\mathbf b|\sin\gamma$이고 $\mathbf a\times\mathbf b$는 $\mathbf a$, $\mathbf b$에 수직이다. $|\mathbf a\cdot(\mathbf b\times\mathbf c)|$는 평행육면체의 부피이다.`,
@@ -53,7 +53,7 @@ $$\operatorname{div}\operatorname{curl}\mathbf v=\partial_x(v_{3,y}-v_{2,z})+\pa
     stmt: R`$\mathbf v=\boldsymbol\omega\times\mathbf r$ ($\boldsymbol\omega$ 상수)이면 $\operatorname{curl}\mathbf v=2\boldsymbol\omega$, $\operatorname{div}\mathbf v=0$.`,
     body: R`
 $$\mathbf v=\boldsymbol\omega\times\mathbf r=(\omega_2z-\omega_3y,\ \omega_3x-\omega_1z,\ \omega_1y-\omega_2x)$$
-회전의 첫 성분은 $\partial_y(\omega_1y-\omega_2x)-\partial_z(\omega_3x-\omega_1z)=\omega_1+\omega_1=2\omega_1$이고, 나머지도 같아 $2\boldsymbol\omega$. 각 성분이 자기 변수를 포함하지 않으므로 발산은 0입니다. 회전이 "소용돌이의 세기"라는 해석이 여기서 나옵니다.` },
+회전의 첫 성분은 $\partial_y(\omega_1y-\omega_2x)-\partial_z(\omega_3x-\omega_1z)=\omega_1+\omega_1=2\omega_1$이고, 나머지도 같아 $2\boldsymbol\omega$. 각 성분이 자기 변수를 포함하지 않으므로 발산은 0입니다. 회전이 “소용돌이의 세기”라는 해석이 여기서 나옵니다.` },
   { ch: 'ch08', id: 'product', title: '곱의 미분 공식', keys: ['곱의 미분 공식'],
     tags: 'product rule gradient divergence curl identity 곱의 미분 기울기 발산 회전',
     stmt: R`$\nabla(fg)=f\nabla g+g\nabla f$, $\nabla\cdot(f\mathbf v)=f\nabla\cdot\mathbf v+\mathbf v\cdot\nabla f$, $\nabla\times(f\mathbf v)=\nabla f\times\mathbf v+f\nabla\times\mathbf v$.`,

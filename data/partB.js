@@ -6,14 +6,14 @@ window.EM = window.EM || { chapters: [], exams: [] };
   // ───────────────────────── 06
   {
     n: 6, part: 'B', title: '행렬과 연립일차방정식', en: 'Matrices, Linear Systems', ref: 'Kreyszig Ch.7', plot: 'grid',
-    fig: R`행렬 [[1, 0.55], [0.25, 0.9]]가 격자를 옮기는 모습`,
+    fig: R`행렬 $\left[\begin{smallmatrix}1&0.55\\0.25&0.9\end{smallmatrix}\right]$에 의한 격자의 변형`,
     tagline: R`가우스 소거법 하나로 계수, 해의 개수, 역행렬까지 모두 판단합니다.`,
     summary: R`행렬 연산, 가우스 소거법, 일차독립과 계수, 해의 존재·유일성, 행렬식과 크래머 공식, 역행렬을 다룹니다. 이후 고유값·연립 ODE의 바탕이 되는 단원입니다.`,
     goals: [
       R`행 연산으로 첨가행렬을 사다리꼴로 만들고 해를 구할 수 있다`,
       R`계수(rank)로 해가 없음/유일/무수히 많음을 판정할 수 있다`,
       R`행렬식의 성질과 크래머 공식을 쓸 수 있다`,
-      R`2×2 공식과 가우스–조르단으로 역행렬을 구할 수 있다`,
+      R`2×2 공식과 가우스-조르단으로 역행렬을 구할 수 있다`,
     ],
     sections: [
       { title: '행렬과 벡터의 연산', body: R`
@@ -77,7 +77,7 @@ $$\operatorname{rank}A=(\text{행사다리꼴에서 0이 아닌 행의 수}),\qq
 
 동차계 $A\mathbf x=\mathbf 0$은 항상 자명해 $\mathbf x=\mathbf 0$을 가지고, $\operatorname{rank}A<n$일 때만 자명하지 않은 해가 있습니다. 정사각행렬이면 이 조건은 $\det A=0$과 같습니다.
 
-비동차계의 일반해는 "특수해 하나 + 동차계의 일반해"입니다. 사다리꼴에서 자유변수를 $t$ 등으로 두고 나머지를 $t$로 표현하세요.
+비동차계의 일반해는 “특수해 하나 + 동차계의 일반해”입니다. 사다리꼴에서 자유변수를 $t$ 등으로 두고 나머지를 $t$로 표현하세요.
 ` },
       { title: '행렬식과 크래머 공식', body: R`
 행렬식은 한 행(또는 열)을 따라 여인수 전개합니다: $\det A=\sum_k(-1)^{j+k}a_{jk}M_{jk}$. 0이 많은 행을 고르면 계산이 짧아집니다.
@@ -103,7 +103,7 @@ $A^{-1}$이 존재할 필요충분조건은 $\det A\ne0$, 즉 $\operatorname{ran
 $$\begin{pmatrix}a&b\\c&d\end{pmatrix}^{-1}=\frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix},\qquad A^{-1}=\frac{1}{\det A}\operatorname{adj}A,\quad(\operatorname{adj}A)_{jk}=C_{kj}$$
 :::
 
-큰 행렬은 **가우스–조르단**으로 구합니다. $[A\ \ I]$에 행 연산을 적용해 왼쪽을 $I$로 만들면 오른쪽이 $A^{-1}$이 됩니다.
+큰 행렬은 **가우스-조르단**으로 구합니다. $[A\ \ I]$에 행 연산을 적용해 왼쪽을 $I$로 만들면 오른쪽이 $A^{-1}$이 됩니다.
 
 :::ex 예제 4
 $A=\begin{pmatrix}1&2\\3&4\end{pmatrix}$의 역행렬은?
@@ -276,7 +276,7 @@ $3x_1^2+6x_1x_2+2x_2^2$의 행렬은 $\begin{pmatrix}3&3\\3&2\end{pmatrix}$입�
 $\lambda=5$: $-2x_2+4x_3=0$ → $(0,2,1)^T$. $\lambda=-5$: $8x_2+4x_3=0$ → $(0,1,-2)^T$.
 대칭행렬이므로 세 고유벡터가 서로 직교함을 확인할 수 있습니다.` },
       { type: 'num', lv: 2, q: R`$A=\begin{pmatrix}1&2\\2&1\end{pmatrix}$일 때 $A^4$의 (1,1) 성분은?`, ans: '41', ansTex: R`41`,
-        hint: R`고유값 $3,-1$로 대각화하거나 $A^2$를 두 번 곱하세요.`,
+        hint: R`고유값 $3,-1$로 대각화하거나 $A^2$을 두 번 곱하세요.`,
         sol: R`
 $A^n=\dfrac{3^n}{2}\begin{pmatrix}1&1\\1&1\end{pmatrix}+\dfrac{(-1)^n}{2}\begin{pmatrix}1&-1\\-1&1\end{pmatrix}$이므로 (1,1) 성분은 $\dfrac{81+1}{2}=41$.
 직접 계산: $A^2=\begin{pmatrix}5&4\\4&5\end{pmatrix}$, $A^4=\begin{pmatrix}41&40\\40&41\end{pmatrix}$.` },
@@ -302,7 +302,7 @@ $(1,-1)$ 방향으로 반지름 3, $(1,1)$ 방향으로 반지름 1인 타원입
   // ───────────────────────── 08
   {
     n: 8, part: 'B', title: '벡터 미분', en: 'Vector Differential Calculus', ref: 'Kreyszig Ch.9', plot: 'field',
-    fig: R`f = sin x cos y의 기울기 벡터장`,
+    fig: R`$f=\sin x\cos y$의 기울기 벡터장`,
     tagline: R`기울기는 가장 가파른 방향, 발산은 샘의 세기, 회전은 소용돌이의 세기입니다.`,
     summary: R`내적과 외적, 공간곡선의 호의 길이와 곡률, 기울기와 방향도함수, 발산과 회전을 다룹니다. 다음 단원의 적분 정리들이 이 연산자들 위에 세워집니다.`,
     goals: [
@@ -497,7 +497,7 @@ $$z=f(x,y)\ (\text{위쪽}):\ \mathbf N=(-f_x,\,-f_y,\,1),\qquad \text{반지름
 :::ex 예제 3
 $\mathbf F=(x,y,z)$가 반지름 $a$인 구면을 바깥으로 통과하는 유량은?
 ---
-구면에서 $\mathbf n=\mathbf r/a$이므로 $\mathbf F\cdot\mathbf n=|\mathbf r|^2/a=a$. 넓이 $4\pi a^2$를 곱하면 $4\pi a^3$.
+구면에서 $\mathbf n=\mathbf r/a$이므로 $\mathbf F\cdot\mathbf n=|\mathbf r|^2/a=a$. 넓이 $4\pi a^2$을 곱하면 $4\pi a^3$.
 :::
 ` },
       { title: '발산 정리', body: R`

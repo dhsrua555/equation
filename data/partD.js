@@ -6,12 +6,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
   // ───────────────────────── 12
   {
     n: 12, part: 'D', title: '복소수와 해석함수', en: 'Complex Numbers, Analytic Functions', ref: 'Kreyszig Ch.13', plot: 'conformal',
-    fig: R`w = z²이 직교 격자를 포물선 격자로 옮기는 모습`,
-    tagline: R`코시–리만 방정식 두 줄이 복소 미분 가능성의 전부입니다.`,
-    summary: R`복소수의 극형식과 거듭제곱근, 복소함수의 도함수와 해석성, 코시–리만 방정식과 조화함수, 지수·삼각·로그 함수와 일반 거듭제곱을 다룹니다.`,
+    fig: R`$w=z^2$이 직교 격자를 포물선 격자로 옮기는 모습`,
+    tagline: R`코시-리만 방정식 두 줄이 복소 미분 가능성의 전부입니다.`,
+    summary: R`복소수의 극형식과 거듭제곱근, 복소함수의 도함수와 해석성, 코시-리만 방정식과 조화함수, 지수·삼각·로그 함수와 일반 거듭제곱을 다룹니다.`,
     goals: [
       R`극형식으로 곱셈·거듭제곱·거듭제곱근을 계산할 수 있다`,
-      R`코시–리만 방정식으로 해석성을 판정하고 도함수를 구할 수 있다`,
+      R`코시-리만 방정식으로 해석성을 판정하고 도함수를 구할 수 있다`,
       R`조화함수의 켤레 조화함수를 구할 수 있다`,
       R`$e^z$, $\sin z$, $\Ln z$, $z^c$의 값을 계산할 수 있다`,
     ],
@@ -51,13 +51,13 @@ $f(z)=\bar z$는 미분 가능한가?
 $\dfrac{\overline{\Delta z}}{\Delta z}$는 $\Delta z$가 실수축을 따라오면 1, 허수축을 따라오면 $-1$입니다. 극한이 존재하지 않으므로 어디에서도 미분 불가능합니다.
 :::
 ` },
-      { title: '코시–리만 방정식', body: R`
-:::key 코시–리만 방정식
+      { title: '코시-리만 방정식', body: R`
+:::key 코시-리만 방정식
 $$u_x=v_y,\qquad u_y=-v_x,\qquad f'(z)=u_x+iv_x=v_y-iu_y$$
 $$\text{극좌표: }\ u_r=\frac1rv_\theta,\qquad v_r=-\frac1ru_\theta$$
 :::
 
-$u,v$의 1계 편도함수가 연속이고 코시–리만 방정식을 만족하면 $f$는 해석적입니다. 해석함수의 실수부와 허수부는 모두 라플라스 방정식 $\nabla^2u=0$을 만족하는 **조화함수**이며, $v$를 $u$의 **켤레 조화함수**라고 합니다.
+$u,v$의 1계 편도함수가 연속이고 코시-리만 방정식을 만족하면 $f$는 해석적입니다. 해석함수의 실수부와 허수부는 모두 라플라스 방정식 $\nabla^2u=0$을 만족하는 **조화함수**이며, $v$를 $u$의 **켤레 조화함수**라고 합니다.
 
 :::ex 예제 3
 $u=x^2-y^2+y$의 켤레 조화함수 $v$와 $f$를 구하세요.
@@ -119,7 +119,7 @@ $\Ln(z_1z_2)=\Ln z_1+\Ln z_2$는 일반적으로 성립하지 않습니다. 편�
         sol: R`$-8=8e^{i\pi}$이므로 근은 $2e^{i(\pi+2k\pi)/3}$: $1+i\sqrt3$, $-2$, $1-i\sqrt3$. $-1+i\sqrt3=2e^{2\pi i/3}$은 세제곱하면 $8$입니다.` },
       { type: 'mc', lv: 2, q: R`다음 중 전평면에서 해석적인 함수는?`,
         choices: [R`$\bar z$`, R`$x^2+iy^2$`, R`$e^{x}(\cos y+i\sin y)$`, R`$|z|^2$`], ans: 2,
-        sol: R`③은 $e^z$입니다: $u_x=e^x\cos y=v_y$, $u_y=-e^x\sin y=-v_x$. ②는 $u_x=2x$, $v_y=2y$라 직선 $y=x$ 위에서만 코시–리만 조건을 만족하므로 해석적이지 않습니다.` },
+        sol: R`③은 $e^z$입니다: $u_x=e^x\cos y=v_y$, $u_y=-e^x\sin y=-v_x$. ②는 $u_x=2x$, $v_y=2y$라 직선 $y=x$ 위에서만 코시-리만 조건을 만족하므로 해석적이지 않습니다.` },
       { type: 'open', lv: 2, q: R`$u=x^3-3xy^2$가 조화함수임을 보이고, 켤레 조화함수 $v$와 해석함수 $f=u+iv$를 구하세요.`,
         sol: R`
 $u_{xx}=6x$, $u_{yy}=-6x$이므로 $\nabla^2u=0$.
@@ -340,7 +340,7 @@ $$2\pi i(-4+1)=-6\pi i$$
 :::key 실적분의 세 유형
 $$\int_0^{2\pi}F(\cos\theta,\sin\theta)\,d\theta=\oint_{|z|=1}F\Big(\frac{z+z^{-1}}2,\frac{z-z^{-1}}{2i}\Big)\frac{dz}{iz}$$
 $$\int_{-\infty}^{\infty}f(x)\,dx=2\pi i\sum_{\Im z_j>0}\Res_{z=z_j}f\qquad(f=p/q,\ \deg q\ge\deg p+2)$$
-$$\int_{-\infty}^{\infty}f(x)\cos sx\,dx=\Re\Big[2\pi i\sum_{\Im z_j>0}\Res\,f(z)e^{isz}\Big],\quad \sin sx\ \text{이면}\ \Im\qquad(s>0,\ \deg q\ge\deg p+1)$$
+$$\int_{-\infty}^{\infty}f(x)\cos sx\,dx=\Re\Big[2\pi i\sum_{\Im z_j>0}\Res\,f(z)e^{isz}\Big],\quad \sin sx\text{이면}\ \Im\qquad(s>0,\ \deg q\ge\deg p+1)$$
 :::
 
 - 유형 1은 단위원 **안**의 극만, 유형 2·3은 **위쪽 반평면**의 극만 셉니다.

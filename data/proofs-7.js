@@ -7,15 +7,28 @@ EM.proofs = EM.proofs || [];
   // ───── 01·02 (보충)
   { ch: 'ch01', id: 'euler-method', title: '오일러 방법의 오차', keys: ['오일러 방법'],
     tags: 'euler method error local global truncation taylor numerical 오일러 방법 오차 수치해법 테일러',
-    stmt: R`오일러 방법 $y_{n+1}=y_n+hf(x_n,y_n)$의 한 걸음 오차는 $O(h^2)$, 고정된 구간에서의 전체 오차는 $O(h)$이다.`,
+    stmt: R`해 $y$가 두 번 연속 미분가능하고 $f$가 $y$에 대해 립시츠 조건을 만족하면, 오일러 방법 $y_{n+1}=y_n+hf(x_n,y_n)$의 한 걸음 오차는 $O(h^2)$, 고정된 구간 $[x_0,X]$에서의 전체 오차는 $O(h)$이다.`,
     body: R`
-**한 걸음 오차.** 정확한 해를 테일러 전개하면
-$$y(x_n+h)=y(x_n)+hy'(x_n)+\frac{h^2}2y''(\xi)=y(x_n)+hf(x_n,y(x_n))+\frac{h^2}2y''(\xi)$$
-오일러 방법은 앞의 두 항만 쓰므로, 정확한 값에서 출발한 한 걸음의 오차는 $\frac{h^2}2y''(\xi)$, 즉 $O(h^2)$입니다.
+**증명에 쓰는 도구 세 가지.**
+- **$O(h^p)$ 기호**: $h\to0$일 때 크기가 $Ch^p$ 이하로 줄어드는 양입니다($C$는 $h$와 무관한 상수). 오차가 $O(h)$이면 $h$를 반으로 줄일 때 오차도 대략 반, $O(h^2)$이면 대략 4분의 1이 됩니다.
+- **나머지항이 있는 테일러 정리**(미적분학): $y$가 두 번 미분가능하면 $x$와 $x+h$ 사이의 어떤 점 $\xi$(크사이)에서 $y(x+h)=y(x)+hy'(x)+\tfrac12h^2y''(\xi)$가 성립합니다. 앞의 두 항이 접선으로 어림한 값이고, 마지막 항은 곡선이 휘어서 생기는 차이입니다. 평균값 정리 $y(x+h)=y(x)+hy'(\xi)$를 한 차수 늘린 것입니다.
+- **립시츠 조건**(1.7절): $\lvert f(x,y)-f(x,z)\rvert\le L\lvert y-z\rvert$. $y$ 값이 $\delta$만큼 틀려도 기울기 $f$는 많아야 $L\delta$만큼만 틀린다는 뜻입니다. $\lvert f_y\rvert\le L$이면 평균값 정리로 성립합니다.
 
-**전체 오차.** 구간 $[x_0,X]$를 가려면 $N=(X-x_0)/h$걸음이 필요합니다. 한 걸음마다 $O(h^2)$씩 쌓이므로 대략 $N\cdot O(h^2)=O(h)$. (앞 걸음의 오차가 전파되는 효과는 $f$가 $y$에 대해 립시츠이면 $e^{L(X-x_0)}$ 배 이내로 억제됩니다.)
+**한 걸음 오차.** 정확한 해에 테일러 정리를 쓰고 $y'=f(x,y)$를 대입하면
+$$y(x_{n+1})=y(x_n)+hf\big(x_n,y(x_n)\big)+\frac{h^2}{2}y''(\xi_n)$$
+오일러 방법은 앞의 두 항만 쓰므로, 정확한 값에서 출발한 한 걸음의 오차는 $\tfrac12h^2y''(\xi_n)$입니다. 구간에서 $\lvert y''\rvert\le M$이면 그 크기는 $\tfrac12Mh^2$ 이하, 곧 $O(h^2)$입니다.
 
-그래서 $h$를 반으로 줄이면 오차도 대략 반으로 줄어듭니다. 더 정확한 방법(개량 오일러, 룽게–쿠타)은 테일러 전개의 더 높은 항까지 맞춥니다.` },
+**전체 오차.** 실제 계산은 앞 걸음들의 오차를 안고 출발합니다. $e_n=y(x_n)-y_n$이라 하고 위 식에서 오일러 식을 빼면
+$$e_{n+1}=e_n+h\big[f(x_n,y(x_n))-f(x_n,y_n)\big]+\frac{h^2}{2}y''(\xi_n)$$
+대괄호에 립시츠 조건을 쓰면
+$$\lvert e_{n+1}\rvert\le(1+hL)\lvert e_n\rvert+\frac{M}{2}h^2$$
+한 걸음마다 이전 오차는 많아야 $(1+hL)$배로 불어나고, 새 오차가 $\tfrac12Mh^2$ 이하로 더해집니다. $e_0=0$에서 $N=(X-x_0)/h$번 반복하면 등비급수의 합으로
+$$\lvert e_N\rvert\le\frac{M}{2}h^2\cdot\frac{(1+hL)^N-1}{hL}\le\frac{Mh}{2L}\left(e^{L(X-x_0)}-1\right)$$
+마지막 단계에서는 $1+u\le e^u$에서 나오는 $(1+hL)^N\le e^{hLN}=e^{L(X-x_0)}$을 썼습니다. 오른쪽은 ($h$와 무관한 상수)$\times h$이므로 전체 오차는 $O(h)$입니다.
+
+직관적으로는 $N$번 걸으면서 한 번에 $O(h^2)$씩 쌓여 $N\cdot O(h^2)=O(h)$가 되는 것이고, 립시츠 조건은 쌓인 오차가 걸음마다 폭주하지 않고 $e^{L(X-x_0)}$배 안에 머문다는 것을 보장합니다.
+
+그래서 $h$를 반으로 줄이면 전체 오차도 대략 반으로 줄어듭니다. 개량 오일러 방법과 룽게-쿠타 방법은 테일러 전개의 더 높은 차수 항까지 맞춰서 전체 오차를 각각 $O(h^2)$, $O(h^4)$로 줄입니다.` },
   { ch: 'ch01', id: 'orthogonal-traj', title: '직교 궤적의 미분방정식', keys: ['직교 궤적 구하기'],
     tags: 'orthogonal trajectories slope perpendicular family of curves 직교 궤적 곡선족 기울기 수직',
     stmt: R`곡선족이 ODE $y'=f(x,y)$를 만족하면 그 직교 궤적은 $\tilde y'=-1/f(x,\tilde y)$를 만족한다.`,
@@ -39,7 +52,7 @@ $$LI'+RI+\frac1C\int I\,dt=E(t)$$
 $$-Sa+Rb=E_0,\qquad Ra+Sb=0$$
 풀면 $a=\dfrac{-E_0S}{R^2+S^2}$, $b=\dfrac{E_0R}{R^2+S^2}$. 진폭 $I_0=\sqrt{a^2+b^2}=\dfrac{E_0}{\sqrt{R^2+S^2}}$이고 $I_p=I_0\sin(\omega t-\theta)$, $\tan\theta=\dfrac{-a}{b}=\dfrac SR$.
 
-$\sqrt{R^2+S^2}$를 **임피던스**라 하며, $S=0$ ($\omega=1/\sqrt{LC}$)일 때 최소가 되어 전류가 최대(공진)입니다.` },
+$\sqrt{R^2+S^2}$을 **임피던스**라 하며, $S=0$ ($\omega=1/\sqrt{LC}$)일 때 최소가 되어 전류가 최대(공진)입니다.` },
   // ───── 09 (보충)
   { ch: 'ch09', id: 'green-identities', title: '그린 항등식과 라플라스 방정식의 해의 유일성', keys: ['그린 항등식과 유일성'],
     tags: 'green identities first second uniqueness dirichlet laplace harmonic divergence theorem 그린 항등식 유일성 디리클레 라플라스 조화함수',
@@ -93,7 +106,7 @@ $$\nu^2=\Big(\frac{m\pi}a\Big)^2+\Big(\frac{n\pi}b\Big)^2,\qquad\lambda_{mn}=c\p
 **초기조건.** $u(x,y,0)=f$이려면 $f=\sum\sum B_{mn}\sin\frac{m\pi x}a\sin\frac{n\pi y}b$. 직교성 $\int_0^a\sin\frac{m\pi x}a\sin\frac{m'\pi x}a\,dx=\frac a2\delta_{mm'}$을 $x$, $y$에 각각 쓰면
 $$B_{mn}=\frac4{ab}\int_0^b\!\!\int_0^af\sin\frac{m\pi x}a\sin\frac{n\pi y}b\,dx\,dy$$
 $u_t(x,y,0)=g$에서는 같은 식에 $g$를 넣고 $\lambda_{mn}$으로 나눈 것이 $B^*_{mn}$입니다.` },
-  { ch: 'ch11', id: 'membrane-circ', title: '원형 막: 베셀 방정식과 푸리에–베셀 계수', keys: ['원형 막'],
+  { ch: 'ch11', id: 'membrane-circ', title: '원형 막: 베셀 방정식과 푸리에-베셀 계수', keys: ['원형 막'],
     tags: 'circular membrane drum bessel J0 fourier bessel radial 원형 막 북 베셀 푸리에 베셀',
     stmt: R`반지름 $R$인 원형 막의 축대칭 진동은 $J_0(\alpha_mr/R)$ 모드의 중첩이고 $\lambda_m=c\alpha_m/R$.`,
     body: R`
@@ -105,7 +118,7 @@ $s=kr$로 두면 $\frac{d^2W}{ds^2}+\frac1s\frac{dW}{ds}+W=0$, 0차 베셀 방�
 
 **경계조건** $u(R,t)=0$: $J_0(kR)=0$, 즉 $kR=\alpha_m$ ($J_0$의 $m$번째 양의 영점). $\lambda_m=ck_m=\frac{c\alpha_m}R$.
 
-**초기조건** $f(r)=\sum A_mJ_0(k_mr)$. 베셀 함수는 스투름–리우빌 문제의 고유함수이므로 가중함수 $r$에 대해 직교하고
+**초기조건** $f(r)=\sum A_mJ_0(k_mr)$. 베셀 함수는 스투름-리우빌 문제의 고유함수이므로 가중함수 $r$에 대해 직교하고
 $$\int_0^Rr\,J_0(k_mr)J_0(k_nr)\,dr=\begin{cases}0&m\ne n\\ \frac{R^2}2J_1^2(\alpha_m)&m=n\end{cases}$$
 양변에 $rJ_0(k_nr)$을 곱해 적분하면 $A_m=\dfrac2{R^2J_1^2(\alpha_m)}\displaystyle\int_0^Rrf(r)J_0(k_mr)\,dr$.` },
   { ch: 'ch11', id: 'sphere-dirichlet', title: '구의 디리클레 문제: 르장드르 방정식의 등장', keys: ['구의 디리클레 문제 (축대칭)'],
@@ -118,7 +131,7 @@ $u=G(r)H(\phi)$로 분리하면 공통 상수 $k$에 대해
 $$(r^2G')'=kG,\qquad\frac1{\sin\phi}(\sin\phi H')'+kH=0$$
 **각 방정식.** $w=\cos\phi$로 바꾸면 $(1-w^2)H''-2wH'+kH=0$. 르장드르 방정식이고 $w=\pm1$ (극)에서 유계인 해는 $k=n(n+1)$일 때의 $P_n(w)$뿐입니다.
 
-**반지름 방정식.** $r^2G''+2rG'-n(n+1)G=0$은 오일러–코시 방정식이고 해는 $r^n$, $r^{-(n+1)}$. 안쪽에서는 원점에서 유계인 $r^n$, 바깥쪽에서는 무한대에서 0으로 가는 $r^{-(n+1)}$을 고릅니다.
+**반지름 방정식.** $r^2G''+2rG'-n(n+1)G=0$은 오일러-코시 방정식이고 해는 $r^n$, $r^{-(n+1)}$. 안쪽에서는 원점에서 유계인 $r^n$, 바깥쪽에서는 무한대에서 0으로 가는 $r^{-(n+1)}$을 고릅니다.
 
 **경계조건.** $r=R$에서 $f(\phi)=\sum A_nP_n(\cos\phi)$. 직교성 $\int_{-1}^1P_mP_n\,dw=\frac2{2n+1}\delta_{mn}$과 $dw=-\sin\phi\,d\phi$로 계수 공식이 나옵니다.` },
   // ───── 15
@@ -132,7 +145,7 @@ $f'(z_0)\ne0$이므로 $\arg\dot w=\arg f'(z_0)+\arg\dot z$. 즉 $z_0$에서 나
 
 **확대율.** $|\dot w|=|f'(z_0)||\dot z|$이므로 짧은 선분의 길이는 $|f'(z_0)|$배가 됩니다.
 
-**넓이.** 사상 $(x,y)\mapsto(u,v)$의 야코비안은 코시–리만 방정식으로
+**넓이.** 사상 $(x,y)\mapsto(u,v)$의 야코비안은 코시-리만 방정식으로
 $$u_xv_y-u_yv_x=u_x^2+v_x^2=|f'(z)|^2$$
 **임계점.** $f'(z_0)=\dots=f^{(k-1)}(z_0)=0\ne f^{(k)}(z_0)$이면 $f(z)-f(z_0)\approx a(z-z_0)^k$이므로 각이 $k$배가 되어 등각이 아닙니다. $z^2$이 원점에서 직각을 평각으로 만드는 이유입니다.` },
   { ch: 'ch15', id: 'lft-basic', title: '1차 분수변환의 도함수, 역변환, 분해', keys: ['1차 분수변환'],
@@ -156,7 +169,7 @@ $$\frac ac-\frac{ad-bc}{c}\cdot\frac1{cz+d}=\frac{a(cz+d)-(ad-bc)}{c(cz+d)}=\fra
 
 **반전.** 원과 직선은 모두
 $$A(x^2+y^2)+Bx+Cy+D=0\qquad(A=0\text{이면 직선})$$
-꼴입니다. $z=1/w$이면 $x=\dfrac u{u^2+v^2}$, $y=\dfrac{-v}{u^2+v^2}$, $x^2+y^2=\dfrac1{u^2+v^2}$. 대입하고 $u^2+v^2$를 곱하면
+꼴입니다. $z=1/w$이면 $x=\dfrac u{u^2+v^2}$, $y=\dfrac{-v}{u^2+v^2}$, $x^2+y^2=\dfrac1{u^2+v^2}$. 대입하고 $u^2+v^2$을 곱하면
 $$A+Bu-Cv+D(u^2+v^2)=0$$
 다시 같은 꼴입니다. 따라서 원·직선은 원·직선으로 갑니다. 특히 $D=0$ (원점을 지나는 원이나 직선)이면 상은 직선이고, $A=0$ (직선)이면 상은 원점을 지나는 원 또는 직선입니다.` },
   { ch: 'ch15', id: 'lft-fixed', title: '1차 분수변환의 고정점은 많아야 두 개', keys: ['고정점 (교재 Theorem 2)'],
@@ -197,9 +210,9 @@ $x=c$ ($\sin c\cos c\ne0$)이면 $\dfrac{u^2}{\sin^2c}-\dfrac{v^2}{\cos^2c}=\cos
     tags: 'complex potential conjugate harmonic equipotential lines of force orthogonal 복소 퍼텐셜 켤레 조화함수 등퍼텐셜선 힘선 직교',
     stmt: R`단순연결 영역의 조화함수 $\Phi$에는 $F=\Phi+i\Psi$가 해석적이 되는 $\Psi$가 있고, $\Phi=$상수와 $\Psi=$상수인 곡선은 직교한다.`,
     body: R`
-**존재.** 코시–리만 방정식 $\Psi_x=-\Phi_y$, $\Psi_y=\Phi_x$를 만족하는 $\Psi$를 선적분으로 정의합니다.
+**존재.** 코시-리만 방정식 $\Psi_x=-\Phi_y$, $\Psi_y=\Phi_x$를 만족하는 $\Psi$를 선적분으로 정의합니다.
 $$\Psi(x,y)=\int_{(x_0,y_0)}^{(x,y)}\big(-\Phi_y\,dx+\Phi_x\,dy\big)$$
-경로 독립 조건은 $\dfrac{\partial(-\Phi_y)}{\partial y}=\dfrac{\partial\Phi_x}{\partial x}$, 즉 $\Phi_{xx}+\Phi_{yy}=0$으로, $\Phi$가 조화함수라서 성립합니다(단순연결 영역). 따라서 $\Psi$는 잘 정의되고 $F=\Phi+i\Psi$는 코시–리만 방정식을 만족하므로 해석적입니다.
+경로 독립 조건은 $\dfrac{\partial(-\Phi_y)}{\partial y}=\dfrac{\partial\Phi_x}{\partial x}$, 즉 $\Phi_{xx}+\Phi_{yy}=0$으로, $\Phi$가 조화함수라서 성립합니다(단순연결 영역). 따라서 $\Psi$는 잘 정의되고 $F=\Phi+i\Psi$는 코시-리만 방정식을 만족하므로 해석적입니다.
 
 **직교성.** $\nabla\Phi\cdot\nabla\Psi=\Phi_x\Psi_x+\Phi_y\Psi_y=\Phi_x(-\Phi_y)+\Phi_y\Phi_x=0$. 등고선은 기울기에 수직이므로 $F'\ne0$인 곳에서 두 곡선족은 직교합니다. (또는 $F$가 등각이고 $w$평면의 직선 $u=$상수, $v=$상수가 직교하기 때문이라고 봐도 됩니다.)` },
   { ch: 'ch16', id: 'harmonic-conformal', title: '등각사상은 조화성을 보존한다', keys: ['등각사상에서의 조화함수 (교재 Theorem 1)'],
@@ -210,7 +223,7 @@ $$\Psi(x,y)=\int_{(x_0,y_0)}^{(x,y)}\big(-\Phi_y\,dx+\Phi_x\,dy\big)$$
 
 **방법 2 (직접 계산).** 연쇄법칙으로
 $$\Phi_{xx}=\Phi^*_{uu}u_x^2+2\Phi^*_{uv}u_xv_x+\Phi^*_{vv}v_x^2+\Phi^*_uu_{xx}+\Phi^*_vv_{xx}$$
-$\Phi_{yy}$도 같은 꼴입니다. 더하고 코시–리만 방정식을 쓰면
+$\Phi_{yy}$도 같은 꼴입니다. 더하고 코시-리만 방정식을 쓰면
 - $u_x^2+u_y^2=v_x^2+v_y^2=|f'|^2$
 - $u_xv_x+u_yv_y=u_xv_x-v_xu_x=0$
 - $\nabla^2u=\nabla^2v=0$
@@ -226,7 +239,7 @@ $\mathbf V=(V_1,V_2)$.
 
 **비압축** $\partial_xV_1+\partial_yV_2=0$: $\Phi_{xx}+\Phi_{yy}=0$, 즉 $\Phi$는 조화함수입니다.
 
-따라서 켤레 조화함수 $\Psi$가 있어 $F=\Phi+i\Psi$가 해석적입니다. $F'=\Phi_x+i\Psi_x=\Phi_x-i\Phi_y$ (코시–리만)이므로
+따라서 켤레 조화함수 $\Psi$가 있어 $F=\Phi+i\Psi$가 해석적입니다. $F'=\Phi_x+i\Psi_x=\Phi_x-i\Phi_y$ (코시-리만)이므로
 $$\overline{F'(z)}=\Phi_x+i\Phi_y=V_1+iV_2=V$$
 **유선.** $\nabla\Psi\perp\nabla\Phi=\mathbf V$이므로 속도는 $\Psi=$상수인 곡선에 접합니다. 즉 그 곡선이 유체 입자의 경로입니다. 벽(고체 경계)은 유체가 가로지를 수 없으므로 반드시 유선이어야 하고, 그래서 원기둥 흐름에서 단위원이 $\Psi=0$이 되도록 $F$를 고릅니다.` },
   { ch: 'ch16', id: 'poisson', title: '푸아송 적분 공식의 유도', keys: ['푸아송 적분 공식'],
@@ -251,7 +264,7 @@ $$F(z_0)=\frac1{2\pi i}\int_0^{2\pi}\frac{F(z_0+re^{i\alpha})}{re^{i\alpha}}\,ir
 
 **최대 절댓값 원리.** $|F|$가 내부 점 $z_0$에서 최댓값 $M$을 가진다고 합시다. 작은 $r$에 대해
 $$M=|F(z_0)|\le\frac1{2\pi}\int_0^{2\pi}|F(z_0+re^{i\alpha})|\,d\alpha\le M$$
-등호가 성립하려면 연속함수 $|F|$가 그 원 위에서 모두 $M$이어야 합니다. 모든 작은 $r$에 대해 그러므로 $z_0$ 주변 원판에서 $|F|\equiv M$. 절댓값이 일정한 해석함수는 상수이고(코시–리만), 영역이 연결되어 있으므로 $F$는 전체에서 상수입니다.
+등호가 성립하려면 연속함수 $|F|$가 그 원 위에서 모두 $M$이어야 합니다. 모든 작은 $r$에 대해 그러므로 $z_0$ 주변 원판에서 $|F|\equiv M$. 절댓값이 일정한 해석함수는 상수이고(코시-리만), 영역이 연결되어 있으므로 $F$는 전체에서 상수입니다.
 
 **조화함수의 최대 원리.** $\Phi=\Re F$이면 $|e^F|=e^\Phi$. $\Phi$의 내부 최댓값은 $|e^F|$의 내부 최댓값이므로 $e^F$, 따라서 $\Phi$가 상수입니다. 최솟값은 $-\Phi$에 적용합니다.
 
