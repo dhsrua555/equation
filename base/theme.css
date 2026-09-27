@@ -1,83 +1,23 @@
-/* Fondements — 기초 수학 분야의 색. 공통 스타일은 core/style.css.
-   칠판 대신 오래된 해석학 교과서: 먹빛 보라와 황토색 밑줄. */
+/* 기초 수학의 강조색. 종이·잉크·글꼴·상자 모양은 모든 분야가 core/style.css의 것을 함께 씁니다. */
 :root {
-  --paper: #f3f1ec;
-  --paper-2: #e6e2da;
-  --paper-3: #fbfaf7;
-  --ink: #1d1a26;
-  --ink-2: #4d4858;
-  --ink-3: #736e7e;
-  --rule: rgba(29, 26, 38, 0.14);
-  --rule-strong: rgba(29, 26, 38, 0.32);
   --denim: #4b3f8c;
   --denim-2: #6456ad;
-  --camel: #b07a24;
-  --camel-ink: #82540f;
-  --band: #1d1a2e;
-  --band-ink: #f3f1ec;
-  --band-ink-2: #b7b2c6;
-  --band-rule: rgba(243, 241, 236, 0.18);
   --plot-a: rgba(75, 63, 140, 0.55);
-  --plot-b: rgba(176, 122, 36, 0.9);
-  --plot-faint: rgba(29, 26, 38, 0.15);
-  --plot-faint2: rgba(29, 26, 38, 0.24);
-  --shadow: 0 18px 50px -24px rgba(29, 26, 38, 0.36);
-  --scrim: rgba(29, 26, 38, 0.38);
   --selection: rgba(100, 86, 173, 0.22);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #13111a;
-    --paper-2: #1d1a27;
-    --paper-3: #17151f;
-    --ink: #efedf4;
-    --ink-2: #c3bfcf;
-    --ink-3: #928da0;
-    --rule: rgba(239, 237, 244, 0.13);
-    --rule-strong: rgba(239, 237, 244, 0.3);
     --denim: #b3a8f0;
     --denim-2: #978be0;
-    --camel: #e0b163;
-    --camel-ink: #e8bf76;
-    --band: #201c30;
-    --band-ink: #efedf4;
-    --band-ink-2: #b1abc4;
-    --band-rule: rgba(239, 237, 244, 0.16);
     --plot-a: rgba(179, 168, 240, 0.5);
-    --plot-b: rgba(224, 177, 99, 0.85);
-    --plot-faint: rgba(239, 237, 244, 0.12);
-    --plot-faint2: rgba(239, 237, 244, 0.2);
-    --shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.7);
-    --scrim: rgba(0, 0, 0, 0.55);
     --selection: rgba(179, 168, 240, 0.28);
-    color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #13111a;
-  --paper-2: #1d1a27;
-  --paper-3: #17151f;
-  --ink: #efedf4;
-  --ink-2: #c3bfcf;
-  --ink-3: #928da0;
-  --rule: rgba(239, 237, 244, 0.13);
-  --rule-strong: rgba(239, 237, 244, 0.3);
   --denim: #b3a8f0;
   --denim-2: #978be0;
-  --camel: #e0b163;
-  --camel-ink: #e8bf76;
-  --band: #201c30;
-  --band-ink: #efedf4;
-  --band-ink-2: #b1abc4;
-  --band-rule: rgba(239, 237, 244, 0.16);
   --plot-a: rgba(179, 168, 240, 0.5);
-  --plot-b: rgba(224, 177, 99, 0.85);
-  --plot-faint: rgba(239, 237, 244, 0.12);
-  --plot-faint2: rgba(239, 237, 244, 0.2);
-  --shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.7);
-  --scrim: rgba(0, 0, 0, 0.55);
   --selection: rgba(179, 168, 240, 0.28);
-  color-scheme: dark;
 }
 /* the "used by" box is this field's main export, so it gets the accent rule */
 .usedby { border-left: 3px solid var(--camel); }

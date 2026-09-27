@@ -3,10 +3,8 @@
   window.SITE = {
     field: 'em',
     key: 'equation-em-v1',
-    name: 'Équation 공학수학',
+    name: '공학수학',
     title: 'Équation 공학수학',
-    wordmark: 'ÉQUATION',
-    sub: 'Engineering Mathematics',
     parts: {
       A: { name: '상미분방정식', en: 'Ordinary Differential Equations', desc: '1계부터 연립 ODE, 급수해, 라플라스 변환까지. 공학수학 1의 중심입니다.' },
       B: { name: '선형대수 · 벡터 미적분', en: 'Linear Algebra & Vector Calculus', desc: '행렬과 고유값, 그리고 기울기·발산·회전과 적분 정리.' },

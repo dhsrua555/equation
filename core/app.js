@@ -89,7 +89,7 @@
   // sister sites outside the network keep opening in a new tab; fields inside it open in place
   const SISTERS = Object.assign({}, SITE.sisters || {}, Object.fromEntries(netFields.filter((f) => f.id !== FIELD).map((f) => {
     const ix = (NET.index || {})[f.id] || {};
-    return [f.id, { name: f.name, mark: f.mark, url: fieldUrl(f), desc: f.desc, chapters: ix.chapters || {}, secs: ix.secs || {}, net: true }];
+    return [f.id, { name: f.name, mark: f.en, url: fieldUrl(f), desc: f.desc, chapters: ix.chapters || {}, secs: ix.secs || {}, net: true }];
   })));
   // links from other fields into this one (collected by tools/netindex.sh), for "이 단원을 이어받는 내용"
   const NET_IN = NET && NET.links ? NET.links.filter((l) => l.to === FIELD && l.from !== FIELD) : [];
@@ -513,6 +513,9 @@
     </div></div>`;
   }
   const netName = (f) => (f.tiny && f.tiny !== f.short ? `<span class="nf-l">${esc(f.short)}</span><span class="nf-s">${esc(f.tiny)}</span>` : esc(f.short));
+  // the centre of the header names this field inside Équation; the only wordmark is ÉQUATION in the bar above
+  const ME = netFields.find((f) => f.id === FIELD);
+  const HEAD = ME ? { t: ME.short, s: ME.en } : { t: SITE.wordmark || SITE.name || '', s: SITE.sub || '' };
   function renderHeader() {
     document.documentElement.classList.toggle('has-net', !!NET);
     $('#site-header').innerHTML = `${netBar()}
@@ -523,7 +526,7 @@
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
         </nav>
-        <a class="wordmark" href="#home" data-route="home" aria-label="${esc(SITE.name || '')} 홈"><b>${esc(SITE.wordmark || '')}</b><span>${esc(SITE.sub || '')}</span></a>
+        <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
         <nav class="nav nav-right" aria-label="학습 도구">
           <a href="#exams" class="ko hide-sm" data-route="exams">모의고사</a>
           <a href="#review" class="ko hide-sm" data-route="review">오답노트</a>

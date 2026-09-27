@@ -31,5 +31,6 @@ for pass in 1 2; do
   cp "$TMP/index.js" core/net-index.js
   cp "$TMP/search.js" core/net-search.js
 done
+bash tools/build.sh > /dev/null  # 새 색인의 해시를 페이지 주소에 반영
 echo "core/net-index.js $(wc -c < core/net-index.js) bytes, core/net-search.js $(wc -c < core/net-search.js) bytes"
 rm -rf "$TMP"

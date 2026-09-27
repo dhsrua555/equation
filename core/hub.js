@@ -32,7 +32,7 @@
     const right = FIELDS.reduce((s, f) => s + progressOf(f), 0);
     const total = FIELDS.reduce((s, f) => s + counts(f).problems, 0);
     return `<div class="netbar"><div class="wrap netbar-row">
-        <a class="net-home" aria-current="page">${esc(NET.mark)}</a>
+        <a class="net-home" href="#top" aria-current="page">${esc(NET.mark)}</a>
         <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => `<a href="${esc(url(f))}">${netName(f)}</a>`).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
       </div></div>
       <div class="wrap header-row">
@@ -41,7 +41,7 @@
           <a href="#map" class="ko hide-sm">연결 지도</a>
           <a href="#find" class="ko">찾기</a>
         </nav>
-        <a class="wordmark" href="#top" aria-label="Équation 처음으로"><b>${esc(NET.mark)}</b><span>Notes de mathématiques</span></a>
+        <a class="wordmark" href="#top" aria-label="수학 노트 처음으로"><b>수학 노트</b><span>Notes de mathématiques</span></a>
         <nav class="nav nav-right" aria-label="진도"><span class="progress-pill" title="모든 분야의 연습문제 정답 수">정답 ${right}/${total}</span></nav>
       </div>`;
   }
@@ -125,9 +125,9 @@
     const heads = cols.map((c) => {
       const one = c.fields.length === 1 ? c.fields[0] : null;
       const anchor = c.last ? 'end' : 'middle', hx = c.last ? c.x + 8 : c.x;
-      return `<text class="colhead" x="${hx}" y="24" text-anchor="${anchor}">${esc(one ? one.mark : (c.g.fr || c.g.en).toUpperCase())}</text><text class="colsub" x="${hx}" y="44" text-anchor="${anchor}">${esc(one ? one.short : c.g.name)}</text>`;
+      return `<text class="colhead" x="${hx}" y="24" text-anchor="${anchor}">${esc((c.g.fr || c.g.en).toUpperCase())}</text><text class="colsub" x="${hx}" y="44" text-anchor="${anchor}">${esc(one ? one.short : c.g.name)}</text>`;
     }).join('');
-    const subheads = subs.map((s) => `<text class="colpart f-${s.f.id}" x="${s.last ? s.x + 8 : s.x - 8}" y="${s.y + 4}" text-anchor="${s.last ? 'end' : 'start'}">${esc(s.f.mark)} · ${esc(s.f.short)}</text>`).join('');
+    const subheads = subs.map((s) => `<text class="colpart f-${s.f.id}" x="${s.last ? s.x + 8 : s.x - 8}" y="${s.y + 4}" text-anchor="${s.last ? 'end' : 'start'}">${esc(s.f.short)}</text>`).join('');
     const nodes = Object.keys(pos).map((k) => {
       const p = pos[k];
       const side = p.last ? 'end' : 'start';
@@ -143,7 +143,7 @@
     const all = NET.fields;
     return `<section class="hub-fields" id="fields"><div class="wrap">
       <div class="section-head"><div><span class="caps">Les domaines</span><h2>분야</h2></div>
-        <p class="lede">분야마다 개념 정리, 연습문제, 증명, 모의고사가 따로 있고 진도도 따로 저장됩니다. 색이 다른 것은 서로 다른 노트라는 표시입니다.</p></div>
+        <p class="lede">분야마다 개념 정리, 연습문제, 증명, 모의고사가 있고, 진도는 분야별로 저장됩니다.</p></div>
       ${NET.groups.map((g) => {
         const fs = all.filter((f) => f.group === g.id);
         if (!fs.length) return '';
@@ -157,14 +157,14 @@
   function card(f) {
     if (!f.live) {
       return `<div class="hub-card soon" data-field="${f.id}"><div class="hub-card-plate"></div><div class="hub-card-body">
-        <b class="mark">${esc(f.mark)}</b><h4>${esc(f.name)}</h4><p>${esc(f.desc)}</p><span class="caps soon-tag">준비 중</span></div></div>`;
+        <b class="mark">${esc(f.en)}</b><h4>${esc(f.name)}</h4><p>${esc(f.desc)}</p><span class="caps soon-tag">준비 중</span></div></div>`;
     }
     const c = counts(f), r = progressOf(f);
     const pct = c.problems ? Math.round((100 * r) / c.problems) : 0;
     return `<a class="hub-card" href="${esc(url(f))}" data-field="${f.id}">
       <div class="hub-card-plate"><canvas data-plot="${esc(f.plot)}" aria-hidden="true"></canvas></div>
       <div class="hub-card-body">
-        <b class="mark">${esc(f.mark)}</b>
+        <b class="mark">${esc(f.en)}</b>
         <h4>${esc(f.name)}</h4>
         <p>${esc(f.desc)}</p>
         <ul class="hub-card-facts"><li><b>${c.units}</b>단원</li><li><b>${c.sections}</b>절</li><li><b>${c.problems}</b>문제</li><li><b>${c.proofs}</b>증명</li></ul>
@@ -242,7 +242,7 @@
         <div><h5 class="caps">분야</h5>${FIELDS.map((f) => `<p><a href="${esc(url(f))}">${esc(f.name)}</a></p>`).join('')}</div>
         <div><h5 class="caps">기록</h5><p>풀이 기록과 점수는 분야별로 지금 쓰는 브라우저에만 저장됩니다. 지우려면 각 분야 아래쪽의 ‘기록 모두 지우기’를 쓰세요.</p></div>
       </div>
-      <div class="footer-base caps"><span>Équation · Notes de mathématiques</span><span>${FIELDS.map((f) => esc(f.mark)).join(' · ')}</span></div>
+      <div class="footer-base caps"><span>Équation · Notes de mathématiques</span><span>${FIELDS.map((f) => esc(f.short)).join(' · ')}</span></div>
     </div></footer>`;
   }
 

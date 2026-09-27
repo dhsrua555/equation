@@ -1,12 +1,10 @@
-/* 분야 설정 — Réseau: 심층 신경망의 수학적 기초 (2026-2, 홍영준 교수) · Équation 네트워크의 인공지능 분야 */
+/* 분야 설정 — Équation 심층 신경망: 심층 신경망의 수학적 기초 (2026-2, 홍영준 교수) · 인공지능 묶음 */
 (function () {
   window.SITE = {
     field: 'dnn',
     key: 'reseau-dnn-v1',
-    name: 'Réseau 심층 신경망',
-    title: 'Réseau 심층 신경망의 수학적 기초',
-    wordmark: 'RÉSEAU',
-    sub: 'Neural Network Mathematics',
+    name: '심층 신경망',
+    title: 'Équation 심층 신경망',
     parts: {
       A: { name: '회귀·확률·정보', en: 'Regression, Probability, Information', desc: '정규방정식과 경사하강법, MLE·베이즈·MAP, 엔트로피와 KL, 릿지와 커널 릿지 회귀. 1–2주차.' },
       B: { name: '선형 분류', en: 'Linear Classifiers', desc: '로지스틱 회귀의 볼록성, 소프트맥스 회귀의 기울기, 서포트 벡터 머신의 마진과 쌍대 문제. 3주차 월요일.' },

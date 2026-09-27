@@ -3,10 +3,8 @@
   window.SITE = {
     field: 'base',
     key: 'equation-base-v1',
-    name: 'Équation 기초 수학',
+    name: '기초 수학',
     title: 'Équation 기초 수학',
-    wordmark: 'FONDEMENTS',
-    sub: 'Foundations of Calculus',
     parts: {
       A: { name: '한 변수 미적분', en: 'Single-Variable Calculus', desc: 'O 기호와 평균값 정리, 테일러 정리, 그리고 적분의 도구. 오차를 말하는 언어입니다.' },
       B: { name: '수열과 급수', en: 'Sequences & Series', desc: '등비급수와 수렴 판정, 거듭제곱급수의 수렴반지름, 테일러 급수와 오일러 공식.' },

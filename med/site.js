@@ -1,12 +1,10 @@
-/* 분야 설정 — Diagnostic: 의료 인공지능 및 소프트웨어 시스템 (2026-2, 이재성 교수, Bishop & Bishop 교재) · Équation 네트워크의 인공지능 분야 */
+/* 분야 설정 — Équation 의료 인공지능: 의료 인공지능 및 소프트웨어 시스템 (2026-2, 이재성 교수, Bishop & Bishop 교재) · 인공지능 묶음 */
 (function () {
   window.SITE = {
     field: 'med',
     key: 'diagnostic-medai-v1',
-    name: 'Diagnostic 의료 인공지능',
-    title: 'Diagnostic 의료 인공지능 및 소프트웨어 시스템',
-    wordmark: 'DIAGNOSTIC',
-    sub: 'Medical AI & Software Systems',
+    name: '의료 인공지능',
+    title: 'Équation 의료 인공지능',
     parts: {
       A: { name: '도입', en: 'Introduction', desc: '의료 데이터와 의료 AI의 응용, 그리고 곡선 적합으로 보는 딥러닝의 기본 개념(교재 1장).' },
       B: { name: '확률', en: 'Probabilities', desc: '합·곱의 규칙과 베이즈 정리, 확률밀도와 가우시안, 최대가능도, 밀도의 변환, 정보이론, 베이지안 추론(교재 2장).' },

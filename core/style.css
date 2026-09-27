@@ -1,6 +1,6 @@
 /* Équation — 수학 노트 네트워크의 공통 스타일 (기본 색은 공학수학의 것)
    Direction: Parisian lookbook. Linen ground, navy-ink Didone numerals, tracked caps, hairlines.
-   분야마다 <분야>/theme.css에서 색 토큰과 작은 차이만 덮어씁니다. */
+   모든 분야가 같은 종이·잉크·글꼴을 쓰고, <분야>/theme.css에서는 강조색만 바꿉니다. */
 
 :root {
   --paper: #f5f0e8;
@@ -191,15 +191,16 @@ body[data-view="home"]:not(.scrolled) .site-header { background: transparent; bo
 }
 .nav a:hover, .nav a[aria-current="page"] { border-bottom-color: currentColor; }
 .nav .ko { font-family: var(--f-body); letter-spacing: 0.08em; font-weight: 500; }
-.wordmark { text-align: center; text-decoration: none; line-height: 1; display: grid; gap: 7px; justify-items: center; }
+/* the centre of the second row names the page's field; the site's one wordmark (ÉQUATION) sits in the bar above */
+.wordmark { text-align: center; text-decoration: none; line-height: 1; display: grid; gap: 8px; justify-items: center; }
 .wordmark b {
-  font-family: var(--f-caps);
+  font-family: var(--f-serif);
   font-weight: 500;
-  font-size: clamp(1.1rem, 1.9vw, 1.55rem);
-  letter-spacing: 0.42em;
-  margin-right: -0.42em;
+  font-size: clamp(1.1rem, 1.6vw, 1.34rem);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
-.wordmark span { font-family: var(--f-caps); font-size: 0.64rem; letter-spacing: 0.34em; margin-right: -0.34em; font-weight: 500; color: var(--ink-2); }
+.wordmark span { font-family: var(--f-caps); font-size: 0.6rem; letter-spacing: 0.28em; margin-right: -0.28em; font-weight: 500; color: var(--ink-2); text-transform: uppercase; white-space: nowrap; }
 .menu-btn { display: none; background: none; border: 0; padding: 8px 0; }
 .menu-btn i { display: block; width: 22px; height: 1.5px; background: currentColor; margin: 5px 0; }
 .progress-pill {
@@ -883,35 +884,35 @@ a.xref.ext { color: var(--denim); }
   border-radius: var(--radius); transition: border-color 0.2s, background 0.2s;
 }
 .sister:hover { border-color: var(--ink); background: var(--paper-3); }
-.sister b { font-family: var(--f-caps); font-weight: 500; font-size: 0.9rem; letter-spacing: 0.32em; color: var(--ink); }
+.sister b { font-family: var(--f-caps); font-weight: 500; font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
 .sister em { font-style: normal; font-family: var(--f-serif); font-weight: 500; font-size: 0.98rem; }
 .sister span { font-size: 0.84rem; color: var(--ink-2); }
 .drawer-panel a.ext span { font-family: var(--f-caps); }
 
-/* ---------- network bar: the hub and its fields, above every field's header ---------- */
-:root.has-net { --net-h: 34px; }
+/* ---------- site bar: the one wordmark and the fields, the same on the hub and on every field ---------- */
+:root.has-net { --net-h: 44px; }
 .netbar { height: var(--net-h); background: var(--band); color: var(--band-ink); overflow: hidden; }
-.netbar-row { height: 100%; display: flex; align-items: center; gap: 22px; }
+.netbar-row { height: 100%; display: flex; align-items: center; gap: 26px; }
 .net-home {
-  flex: none; text-decoration: none; font-family: var(--f-caps); font-weight: 500; font-size: 0.72rem;
-  letter-spacing: 0.34em; color: var(--band-ink); padding-right: 22px; border-right: 1px solid var(--band-rule);
+  flex: none; text-decoration: none; font-family: var(--f-caps); font-weight: 500; font-size: 0.9rem;
+  letter-spacing: 0.4em; color: var(--band-ink); padding-right: 26px; border-right: 1px solid var(--band-rule);
 }
-.net-fields { display: flex; align-items: center; gap: 22px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.net-fields { display: flex; align-items: center; gap: 26px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
 .net-fields::-webkit-scrollbar { display: none; }
 .net-group { display: inline-flex; align-items: center; gap: 14px; white-space: nowrap; }
-.net-group + .net-group { padding-left: 22px; border-left: 1px solid var(--band-rule); }
+.net-group + .net-group { padding-left: 26px; border-left: 1px solid var(--band-rule); }
 .net-dot { font-style: normal; color: var(--band-ink-2); opacity: 0.6; }
 .net-fields .nf-s { display: none; }
-.net-fields a { font-size: 0.8rem; color: var(--band-ink-2); text-decoration: none; padding-block: 3px; border-bottom: 1px solid transparent; }
+.net-fields a { font-size: 0.86rem; color: var(--band-ink-2); text-decoration: none; padding-block: 4px; border-bottom: 1px solid transparent; }
 .net-fields a:hover { color: var(--band-ink); }
 .net-fields a[aria-current="page"] { color: var(--band-ink); border-bottom-color: currentColor; }
 @media (max-width: 760px) {
-  :root.has-net { --net-h: 30px; }
+  :root.has-net { --net-h: 38px; }
   .netbar-row { gap: 14px; }
-  .net-home { padding-right: 14px; letter-spacing: 0.26em; font-size: 0.66rem; }
+  .net-home { padding-right: 14px; letter-spacing: 0.3em; font-size: 0.76rem; }
   .net-fields, .net-group { gap: 12px; }
   .net-group + .net-group { padding-left: 12px; }
-  .net-fields a { font-size: 0.74rem; }
+  .net-fields a { font-size: 0.78rem; }
 }
 @media (max-width: 520px) {
   .net-fields .nf-l { display: none; }

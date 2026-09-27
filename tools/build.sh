@@ -20,6 +20,10 @@ field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field fol
   [ -f "$f/plots.js" ] && echo "<script src=\"${F}plots.js\"></script>"
   echo "<script src=\"${R}core/app.js\"></script>"
 }
+stamp() { # $1 html: add ?v=<content hash> to every local .js/.css so a browser never mixes an old file with a new page
+  perl -i -pe 'BEGIN { use Digest::MD5 qw(md5_hex); $d = shift @ARGV }
+    s{((?:src|href)=")(?!https?:|//)([^"?#]+\.(?:js|css))(?:\?v=[0-9a-f]+)?"}{ my ($a, $p) = ($1, $2); my $h = ""; if (open my $fh, "<:raw", "$d/$p") { local $/; $h = "?v=" . substr(md5_hex(<$fh>), 0, 8) } "$a$p$h\"" }ge' "$(dirname "$1")" "$1"
+}
 body() {
   cat <<EOF
 <header class="site-header" id="site-header"></header>
@@ -66,6 +70,9 @@ EOF
     echo "</body>"
     echo "</html>"
   } | grep -v '^$' > "$f/index.html"
+  stamp "$f/index.html"
+  # claude.ai 게시본은 올릴 때마다 새 판이라 캐시 걱정이 없고 ?v= 주소를 못 찾을 수 있으니, 꼬리표 없는 사본을 따로 둡니다.
+  mkdir -p "tools/art/$f" && sed -e 's/?v=[0-9a-f]*//g' "$f/index.html" > "tools/art/$f/index.html"
 
   {
     cat <<EOF
@@ -90,8 +97,9 @@ EOF
 done
 
 if [ -f index.html ]; then
+stamp index.html
 # claude.ai 게시본의 첫 화면: index.html에서 <!doctype>·<html>·<head>·<body> 껍데기와 og 메타를 걷어 냅니다.
 sed -e '/^<!doctype html>/d' -e '/^<html/d' -e '/^<\/html>/d' -e '/^<head>/d' -e '/^<\/head>/d' -e '/^<body/d' -e '/^<\/body>/d' \
-    -e '/<meta charset/d' -e '/<meta name="viewport"/d' -e '/<meta property=/d' -e '/<meta name="twitter/d' index.html > publish.html
+    -e '/<meta charset/d' -e '/<meta name="viewport"/d' -e '/<meta property=/d' -e '/<meta name="twitter/d' -e 's/?v=[0-9a-f]*//g' index.html > publish.html
 echo "built publish.html"
 fi

@@ -1,4 +1,4 @@
-/* Diagnostic 단원 표지: 각 단원을 정의하는 곡선족 (그리는 틀은 core/plots.js) */
+/* 의료 인공지능 단원 표지: 각 단원을 정의하는 곡선족 (그리는 틀은 core/plots.js) */
 (function () {
   const { TAU, frame, curve, param } = window.EMPlots.util;
   function line(ctx, T, x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(T.X(x1), T.Y(y1)); ctx.lineTo(T.X(x2), T.Y(y2)); ctx.stroke(); }
