@@ -1,0 +1,117 @@
+/* Équation 허브 첫 화면. 공통 토큰과 머리말은 core/style.css를 씁니다. */
+:root {
+  --f-base: #4b3f8c;
+  --f-em: #2d5f8f;
+  --f-dnn: #7a2638;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; }
+}
+:root[data-theme="dark"] { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; }
+[data-field="base"], .f-base { --acc: var(--f-base); }
+[data-field="em"], .f-em { --acc: var(--f-em); }
+[data-field="dnn"], .f-dnn { --acc: var(--f-dnn); }
+
+body[data-view="hub"] main { padding-top: var(--header-h); }
+body[data-view="hub"]:not(.scrolled) .site-header { background: color-mix(in srgb, var(--paper) 94%, transparent); border-color: var(--rule); }
+
+/* ---------- hero: title and figures, then the map of links across the full width ---------- */
+.hub-hero { border-bottom: 1px solid var(--rule); background: var(--paper-2); padding-block: clamp(36px, 6vw, 76px) clamp(28px, 4vw, 48px); }
+.hub-hero-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 20px clamp(28px, 5vw, 72px); align-items: end; margin-bottom: clamp(28px, 4vw, 48px); }
+.hub-hero-title { display: grid; gap: 14px; }
+.hub-hero-title > .caps { color: var(--camel-ink); }
+.hub-hero h1 { font-weight: 600; line-height: 0.9; padding-top: 0.18em; }
+.hub-hero h1 .num-display { display: block; font-size: clamp(3.8rem, 10vw, 8.4rem); font-style: italic; letter-spacing: -0.02em; font-variation-settings: "opsz" 96; }
+.hub-hero-copy { display: grid; gap: 18px; }
+.hub-lede { font-size: 1.05rem; line-height: 1.8; color: var(--ink-2); max-width: 52ch; }
+.hub-lede b { color: var(--ink); font-weight: 600; }
+.hub-figures { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0; padding-top: 14px; border-top: 1px solid var(--rule-strong); }
+.hub-figures div { display: grid; gap: 2px; }
+.hub-figures dt { font-family: var(--f-caps); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+.hub-figures dd { margin: 0; font-family: var(--f-num); font-size: 1.7rem; line-height: 1.1; font-variant-numeric: lining-nums tabular-nums; }
+
+.hub-map { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.hub-map-scroll { overflow-x: auto; overflow-y: hidden; padding-block: 4px; }
+.hub-map svg { width: 100%; height: auto; display: block; }
+.hub-map figcaption { font-size: 0.82rem; color: var(--ink-3); }
+.hub-map .colhead { font-family: var(--f-caps); font-size: 15px; letter-spacing: 0.3em; fill: var(--ink); font-weight: 500; }
+.hub-map .colsub { font-family: var(--f-body); font-size: 13px; fill: var(--ink-3); }
+.hub-map .lk { fill: none; stroke: var(--acc); stroke-opacity: 0.42; stroke-linecap: round; transition: stroke-opacity 0.2s; }
+.hub-map .nd { fill: var(--paper-2); stroke: var(--acc); stroke-width: 2; transition: r 0.15s; }
+.hub-map .ndl { font-family: var(--f-body); font-size: 13px; fill: var(--ink-2); paint-order: stroke; stroke: var(--paper-2); stroke-width: 5px; stroke-linejoin: round; }
+.hub-map .ndl .nn { font-family: var(--f-num); fill: var(--ink-3); }
+.hub-map .nd-link { cursor: pointer; }
+.hub-map .nd-link:hover .ndl, .hub-map .nd-link.on .ndl, .hub-map .nd-link:focus .ndl { fill: var(--ink); }
+.hub-map .nd-link:hover .nd, .hub-map .nd-link.on .nd { fill: var(--acc); }
+.hub-map svg.focus .lk { stroke-opacity: 0.07; }
+.hub-map svg.focus .lk.on { stroke-opacity: 0.95; }
+.hub-map .nd-link:focus { outline: none; }
+.hub-map .nd-link:focus-visible .nd { stroke-width: 3.5; }
+
+/* ---------- fields ---------- */
+.hub-fields, .hub-used, .hub-find { padding-block: clamp(56px, 8vw, 110px); border-bottom: 1px solid var(--rule); }
+.hub-group + .hub-group { margin-top: clamp(40px, 6vw, 72px); }
+.hub-group-head { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: baseline; gap: 6px 18px; padding-bottom: 14px; margin-bottom: 22px; border-bottom: 1px solid var(--rule-strong); }
+.hub-group-head .caps { color: var(--camel-ink); }
+.hub-group-head h3 { font-family: var(--f-serif); font-size: 1.4rem; font-weight: 500; }
+.hub-group-head p { color: var(--ink-2); font-size: 0.92rem; }
+.hub-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 22px; }
+.hub-card {
+  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); text-decoration: none; color: inherit;
+  border: 1px solid var(--rule); border-top: 3px solid var(--acc); background: var(--paper-3); min-height: 250px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.hub-card:hover { border-color: var(--acc); }
+.hub-card-plate { position: relative; background: var(--paper-2); overflow: hidden; min-height: 180px; }
+.hub-card-plate canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hub-card-body { padding: 20px 22px; display: grid; gap: 8px; align-content: start; }
+.hub-card .mark { font-family: var(--f-caps); font-weight: 500; font-size: 0.8rem; letter-spacing: 0.32em; color: var(--acc); }
+.hub-card h4 { font-family: var(--f-serif); font-size: 1.22rem; font-weight: 500; line-height: 1.35; }
+.hub-card p { font-size: 0.88rem; color: var(--ink-2); line-height: 1.65; }
+.hub-card-facts { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8rem; color: var(--ink-3); }
+.hub-card-facts b { font-family: var(--f-num); font-weight: 500; color: var(--ink); margin-right: 3px; font-size: 1rem; }
+.hub-meter { height: 3px; background: var(--rule); margin-top: 6px; }
+.hub-meter i { display: block; height: 100%; background: var(--acc); min-width: 0; }
+.hub-go { font-family: var(--f-caps); font-size: 0.72rem; letter-spacing: 0.12em; font-weight: 600; color: var(--ink); }
+.hub-card.soon { opacity: 0.7; border-top-style: dashed; }
+.soon-tag { color: var(--ink-3); }
+
+/* ---------- foundations in use ---------- */
+.used-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(20px, 4vw, 56px); }
+.used-list a { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: baseline; padding-block: 11px; border-top: 1px solid var(--rule); text-decoration: none; }
+.used-list a:hover .t { text-decoration: underline; text-underline-offset: 3px; }
+.used-list .num-text { color: var(--f-base); }
+.used-list .t { font-weight: 500; }
+.used-list .u { font-size: 0.8rem; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.used-list .u i { font-style: normal; opacity: 0.7; }
+
+/* ---------- find ---------- */
+.hub-results { list-style: none; margin: 22px 0 0; padding: 0; display: grid; max-width: 900px; }
+.hub-results a { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 2px 18px; padding-block: 12px; border-top: 1px solid var(--rule); text-decoration: none; }
+.hub-results .kind { grid-row: span 2; font-family: var(--f-caps); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--acc, var(--ink-3)); padding-top: 3px; }
+.hub-results .kind[data-f="base"] { --acc: var(--f-base); }
+.hub-results .kind[data-f="em"] { --acc: var(--f-em); }
+.hub-results .kind[data-f="dnn"] { --acc: var(--f-dnn); }
+.hub-results b { font-weight: 500; }
+.hub-results a:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.hub-results small { color: var(--ink-3); font-size: 0.8rem; }
+.hub-results .more { padding-top: 12px; color: var(--ink-3); font-size: 0.86rem; border-top: 1px solid var(--rule); }
+
+@media (max-width: 960px) {
+  .hub-hero-top { grid-template-columns: minmax(0, 1fr); }
+  .used-list { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .hub-card { grid-template-columns: minmax(0, 1fr); }
+  .hub-card-plate { min-height: 150px; }
+  .hub-map svg { min-width: 640px; }
+  .hub-map .nt { display: none; }
+  .hub-map .ndl { font-size: 19px; }
+  .hub-map .colhead { font-size: 20px; letter-spacing: 0.2em; }
+  .hub-map .colsub { font-size: 18px; }
+  .hub-group-head { grid-template-columns: minmax(0, 1fr); }
+  .hub-results a { grid-template-columns: minmax(0, 1fr); }
+  .hub-results .kind { grid-row: auto; }
+  .used-list a { grid-template-columns: 44px minmax(0, 1fr); }
+  .used-list .u { grid-column: 2; white-space: normal; }
+}

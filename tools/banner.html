@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Équation banner</title>
 <!-- README 배너와 공유 미리보기 이미지의 원본. 1280×640으로 스크린샷해서 assets/banner.png, assets/og.png를 만듭니다. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Jost:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Jost:wght@400;500;600&family=IBM+Plex+Sans:wght@500;600&family=IBM+Plex+Sans+KR:wght@500;600&display=swap">
 <style>
   :root {
     --linen: #ebe2d4;
@@ -38,13 +38,13 @@
   .eq i { font-style: italic; font-weight: 600; }
   .eq sup { font-size: 0.42em; vertical-align: 0; position: relative; top: -1.05em; margin-left: 0.02em; font-style: italic; }
   .eq .op { font-weight: 700; margin: 0 0.1em; }
-  .sub { font-family: "IBM Plex Sans KR", sans-serif; font-weight: 500; font-size: 17px; letter-spacing: 0.62em; margin-right: -0.62em; }
+  .sub { font-family: "IBM Plex Sans", "IBM Plex Sans KR", sans-serif; font-weight: 500; font-size: 17px; letter-spacing: 0.62em; margin-right: -0.62em; }
   .cap { font-family: "Jost", sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.34em; margin-right: -0.34em; text-transform: uppercase; color: var(--camel-ink); }
   .arrow { position: absolute; top: 300px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(12, 28, 40, 0.32); display: grid; place-items: center; }
   .arrow.l { left: 56px; } .arrow.r { right: 56px; }
   .tl { position: absolute; left: 56px; right: 56px; bottom: 34px; display: flex; justify-content: space-between; }
   .tl::before { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 1px; background: rgba(12, 28, 40, 0.32); }
-  .tl span { position: relative; display: grid; justify-items: center; padding-bottom: 20px; font-family: "Jost", sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 0.24em; color: var(--ink-2); min-width: 22px; }
+  .tl span { position: relative; display: grid; justify-items: center; padding-bottom: 20px; font-family: "Jost", sans-serif; font-weight: 600; font-size: 8.5px; letter-spacing: 0.06em; color: var(--ink-2); min-width: 22px; }
   .tl span::after { content: ""; position: absolute; bottom: 2px; left: 50%; translate: -50% 0; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-2); }
   .tl span.on { color: var(--ink); }
   .tl span.on::after { width: 13px; height: 13px; bottom: -1px; background: var(--linen); border: 2px solid var(--ink); box-sizing: border-box; }
@@ -55,25 +55,25 @@
 <div class="b" id="banner">
   <canvas data-plot="fourier" aria-hidden="true"></canvas>
   <div class="top">
-    <div class="corner">Kreyszig · 10th ed.</div>
-    <div class="mark"><b>ÉQUATION</b><span>Engineering Mathematics</span></div>
-    <div class="corner r">530 exercises · 129 proofs</div>
+    <div class="corner">Fondements · Équation · Réseau</div>
+    <div class="mark"><b>ÉQUATION</b><span>Notes de mathématiques</span></div>
+    <div class="corner r">763 exercises · 219 proofs</div>
   </div>
   <div class="arrow l"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M11 3 5 9l6 6"/></svg></div>
   <div class="arrow r"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M7 3l6 6-6 6"/></svg></div>
   <div class="center">
     <div class="eq"><i>e</i><sup>iπ</sup><span class="op">+</span>1<span class="op">=</span>0</div>
-    <div class="sub">공학수학 시험 대비</div>
-    <div class="cap">Concepts · Exercises · Proofs · Mock exams</div>
+    <div class="sub">공학과 인공지능을 위한 수학 노트</div>
+    <div class="cap">Foundations · Engineering · Neural networks</div>
   </div>
   <div class="tl">
-    <span><em>Part A</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
-    <span><em>Part B</em>06</span><span>07</span><span>08</span><span>09</span>
-    <span><em>Part C</em>10</span><span>11</span>
-    <span class="on"><em>Part D</em>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+    <span class="on"><em>Fondements</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+    <span><em>Équation</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+    <span><em>Réseau</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span>
   </div>
 </div>
-<script src="../assets/plots.js"></script>
+<script src="../core/plots.js"></script>
+<script src="../em/plots.js"></script>
 <script>
   // draw after fonts settle so the screenshot is final
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => window.EMPlots.mount(document));

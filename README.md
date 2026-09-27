@@ -1,52 +1,56 @@
-<p align="center"><a href="https://dhsrua555.github.io/engineering-math/"><img src="assets/banner.png" alt="Équation 공학수학 — 개념, 연습문제, 증명, 모의고사" width="100%"></a></p>
+<p align="center"><a href="https://dhsrua555.github.io/equation/"><img src="assets/banner.png" alt="Équation — 공학과 인공지능을 위한 수학 노트: 기초 수학, 공학수학, 심층 신경망" width="100%"></a></p>
 
-# Équation 공학수학
+# Équation
 
-공학수학 시험 대비 사이트입니다. Kreyszig, *Advanced Engineering Mathematics* (10판) 1–18장을 16개 단원으로 정리했습니다.
+공학과 인공지능을 위한 수학 노트입니다. 분야마다 교재와 강의의 순서를 따라 개념 정리·연습문제·증명·모의고사를 두고, 분야 사이는 연결 주석으로 잇습니다.
 
-**사이트:** https://dhsrua555.github.io/engineering-math/
+**사이트:** https://dhsrua555.github.io/equation/
+
+| 분야 | 내용 | 주소 |
+|---|---|---|
+| 기초 수학 (Fondements) | O 기호·평균값 정리·테일러 정리, 적분의 도구, 급수와 수렴반지름, 다변수 연쇄법칙과 헤시안, 립시츠 조건·부등식·균등수렴. 5단원, 연습문제 38, 증명 21 | [`base/`](https://dhsrua555.github.io/equation/base/) |
+| 공학수학 (Équation) | Kreyszig, *Advanced Engineering Mathematics* 10판 1–18장. 16단원, 연습문제 530, 증명 129, 모의고사 4 | [`em/`](https://dhsrua555.github.io/equation/em/) |
+| 인공지능 · 심층 신경망 (Réseau) | 심층 신경망의 수학적 기초 1–4주차: 회귀·확률·정보이론, 선형 분류, 역전파와 학습, 하강 보조정리. 13단원, 연습문제 195, 증명 69, 모의고사 3 | [`dnn/`](https://dhsrua555.github.io/equation/dnn/) |
+
+예전 주소 `dhsrua555.github.io/engineering-math/`는 공학수학(`em/`)으로 넘어갑니다. 해시(`#ch05-k6.2` 같은 절 주소)도 그대로 따라갑니다.
 
 ## 구성
 
-- **개념 정리** — 교재의 절(§) 순서를 그대로 따르고 절마다 교재 쪽수를 표시했습니다. 정의, 핵심 공식, 교재 정리 번호, 예제 풀이, 시험 포인트, 자주 하는 실수
-- **연결 주석** — 다른 단원의 내용을 가져다 쓰는 곳에 각주(※)를 달고 그 절로 바로 이동합니다. 단원 끝의 "다른 단원과의 연결"에서 가져다 쓰는 내용과 이어받는 내용을 한눈에 봅니다
-- **연습문제 530개** — Kreyszig 각 절의 유형을 따라 만든 문제. 절별로 거를 수 있고, 객관식·단답형은 자동 채점, 서술형은 모범 풀이와 비교해 자가 채점
-- **실전 모의고사 4회** — 타이머, 자동 제출, 단원별 득점 분석, 서술형 채점 기준
-- **증명 129개** — 핵심 공식 상자마다 증명이 연결되어 있고, 증명 찾기 페이지에서 공식 이름·사람 이름·영어 용어로 검색
-- **맞춤 모의고사 · 오답노트 · 공식집**
+- **허브** (`index.html`) — 분야 목록과 진도, 분야 사이 연결 주석을 그린 연결 지도, 기초 개념이 어디에 쓰이는지, 모든 분야에서 찾기
+- **분야** (`<분야>/index.html`) — 개념 정리(절마다 출처 표시), 연습문제(자동 채점·자가 채점), 증명 찾기, 핵심 공식집, 모의고사, 오답노트
+- **연결 주석** — 본문에서 `[[ch05:6.2|주석]]`은 같은 분야의 다른 절, `[[@base:ch01:1.3|주석]]`은 다른 분야의 절로 가는 각주가 됩니다. 기초 수학의 각 절 끝에는 다른 분야에서 그 절로 오는 연결이 ‘이 개념을 쓰는 곳’으로 자동으로 모입니다.
 
-| Part | 단원 (교재 장) |
-|---|---|
-| A 상미분방정식 | 01 1계 ODE (1) · 02 2계·고계 선형 ODE (2–3) · 03 연립 ODE와 상평면 (4) · 04 급수해와 특수함수 (5) · 05 라플라스 변환 (6) |
-| B 선형대수 · 벡터 미적분 | 06 행렬과 연립일차방정식 (7) · 07 고유값 문제 (8) · 08 벡터 미분 (9) · 09 벡터 적분과 적분 정리 (10) |
-| C 푸리에 해석 · PDE | 10 푸리에 급수·적분·변환 (11) · 11 편미분방정식 (12) |
-| D 복소해석 | 12 복소수와 해석함수 (13) · 13 복소적분 (14) · 14 급수와 유수 적분 (15–16) · 15 등각사상 (17) · 16 복소해석과 퍼텐셜 이론 (18) |
-
-설명과 예제, 문제는 교재의 구성과 정리를 따라 새로 쓴 것이며 교재의 본문이나 연습문제를 옮기지 않았습니다.
-
-## 단답형 입력
-
-분수 `3/2`, 원주율 `pi`, 자연상수 `e`, 제곱근 `sqrt(3)`, 허수 `i`를 쓸 수 있습니다. 예: `2*pi*i`, `1-e^(-1)`, `(-2+2i)/3`
-
-풀이 기록과 점수는 브라우저의 localStorage에만 저장됩니다.
+설명과 문제는 교재와 강의의 구성을 따라 새로 쓴 것이며 교재의 본문이나 연습문제를 옮기지 않았습니다. 풀이 기록은 분야마다 브라우저의 localStorage에만 저장됩니다.
 
 ## 파일 구조
 
 ```
-index.html           페이지 뼈대
-assets/app.js        화면, 라우팅, 채점, 모의고사, 연결 주석
-assets/calc.js       단답형 답 계산기 (복소수 지원)
-assets/plots.js      단원별 곡선 그림 (canvas)
-assets/style.css     스타일
-assets/katex.css     KaTeX 스타일 (폰트 내장, MIT)
-data/partA–E.js      단원 정의와 기본 연습문제 (E: 15–16단원)
-data/learn-01..14.js 교재 절 순서를 따른 자세한 개념 정리 (partA–D의 짧은 설명을 대체)
-data/more-01..14.js  단원별 추가 연습문제 (Kreyszig 절 번호 표시)
-data/exams.js        모의고사 문항
-data/proofs-1..7.js  단원별 증명
-tools/banner.html    배너 원본 (1280×640 스크린샷 → assets/banner.png, assets/og.png)
+index.html            허브
+core/app.js           분야 페이지 엔진 (라우팅, 채점, 모의고사, 증명 찾기, 연결 주석)
+core/style.css        공통 스타일 (기본 색은 공학수학)   core/hub.css, core/hub.js  허브 전용
+core/net.js           분야 목록 (이름, 경로, 저장 키, 공개 여부)
+core/net-index.js     분야 사이 제목·링크 색인 (tools/netindex.sh가 생성)
+core/net-search.js    허브 검색 색인 (생성)
+core/plots.js         단원 표지 그림의 틀   core/calc.js  단답형 계산기   core/katex.css
+<분야>/site.js        분야 설정: 이름, 파트, 문구, 저장 키
+<분야>/site.env       페이지 제목·설명·글꼴   <분야>/manifest.txt  데이터 파일 순서
+<분야>/theme.css      분야의 색과 작은 차이 (선택)
+<분야>/plots.js       단원 표지 그림   <분야>/figs.js  본문 SVG 그림 (선택)
+<분야>/data/*.js      단원, 연습문제, 증명, 모의고사
+tools/build.sh        분야 페이지와 검사 하네스 생성
+tools/netindex.sh     전 분야 검사 + 색인 생성 (헤드리스 Chrome)
+tools/checks.js       KaTeX 오류, 남은 $, 정답 형식, 증명↔공식 상자, 연결 주석 대상, 모든 라우트 검사
+tools/banner.html     배너 원본 (1280×640 → assets/banner.png, assets/og.png)
 ```
 
-개념 정리 본문에서 `[[ch05:6.2|주석 내용]]`처럼 쓰면 5단원 §6.2로 가는 연결 주석이 됩니다. 문제를 추가하거나 고치려면 `data/` 파일만 수정하면 됩니다. 내용은 `String.raw` 템플릿 문자열이라 LaTeX 안에 `${`를 쓰지 않도록 주의하세요.
+## 고치고 확인하기
+
+```
+bash tools/netindex.sh      # 페이지를 다시 만들고, 모든 분야를 검사하고, 색인을 갱신합니다
+```
+
+분야마다 `RESULT OK`가 나오면 됩니다. 콘텐츠는 `String.raw` 템플릿이라 `${`를 쓰지 않고, 절 제목에는 `$`를 넣지 않습니다.
+
+**새 분야 추가:** `<분야>/`에 `site.js`, `site.env`, `manifest.txt`, `data/`를 만들고 `core/net.js`의 `NET.fields`에 한 줄 넣은 뒤 `tools/build.sh`와 `tools/netindex.sh`의 `FIELDS`에 이름을 더합니다.
 
 로컬에서 보려면 `index.html`을 브라우저로 열면 됩니다. 수식 렌더링(KaTeX)과 글꼴은 CDN에서 불러오므로 인터넷 연결이 필요합니다.
