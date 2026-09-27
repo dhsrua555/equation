@@ -27,7 +27,7 @@
   .top { position: absolute; top: 40px; left: 56px; right: 56px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; }
   .corner { font-family: "Jost", sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; padding-top: 6px; }
   .corner.r { text-align: right; }
-  .corner.ko { font-family: "IBM Plex Sans KR", sans-serif; font-weight: 500; letter-spacing: 0.08em; }
+  .corner.ko { font-family: "IBM Plex Sans KR", sans-serif; font-weight: 500; letter-spacing: 0.02em; font-size: 12px; }
   .mark { display: grid; justify-items: center; gap: 9px; }
   .mark b { font-family: "Jost", sans-serif; font-weight: 500; font-size: 27px; letter-spacing: 0.42em; margin-right: -0.42em; }
   .mark span { font-family: "Jost", sans-serif; font-weight: 500; font-size: 10.5px; letter-spacing: 0.36em; margin-right: -0.36em; color: var(--ink-2); text-transform: uppercase; }
@@ -45,7 +45,7 @@
   .arrow.l { left: 56px; } .arrow.r { right: 56px; }
   .tl { position: absolute; left: 56px; right: 56px; bottom: 34px; display: flex; justify-content: space-between; }
   .tl::before { content: ""; position: absolute; left: 0; right: 0; bottom: 5px; height: 1px; background: rgba(12, 28, 40, 0.32); }
-  .tl span { position: relative; display: grid; justify-items: center; padding-bottom: 20px; font-family: "Jost", sans-serif; font-weight: 600; font-size: 8.5px; letter-spacing: 0.06em; color: var(--ink-2); min-width: 22px; }
+  .tl span { position: relative; display: grid; justify-items: center; padding-bottom: 20px; font-family: "Jost", sans-serif; font-weight: 600; font-size: 8px; letter-spacing: 0.06em; color: var(--ink-2); min-width: 16px; }
   .tl span::after { content: ""; position: absolute; bottom: 2px; left: 50%; translate: -50% 0; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-2); }
   .tl span.on { color: var(--ink); }
   .tl span.on::after { width: 13px; height: 13px; bottom: -1px; background: var(--linen); border: 2px solid var(--ink); box-sizing: border-box; }
@@ -56,20 +56,21 @@
 <div class="b" id="banner">
   <canvas data-plot="fourier" aria-hidden="true"></canvas>
   <div class="top">
-    <div class="corner ko">기초 수학 · 공학수학 · 심층 신경망 · 의료 인공지능</div>
+    <div class="corner ko">기초 수학 · 공학수학 · 기계 학습 · 심층 신경망 · 의료 인공지능</div>
     <div class="mark"><b>ÉQUATION</b><span>Notes de mathématiques</span></div>
-    <div class="corner r">931 exercises · 264 proofs</div>
+    <div class="corner r">1162 exercises · 370 proofs</div>
   </div>
   <div class="arrow l"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M11 3 5 9l6 6"/></svg></div>
   <div class="arrow r"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#0c1c28" stroke-width="1.3"><path d="M7 3l6 6-6 6"/></svg></div>
   <div class="center">
     <div class="eq"><i>e</i><sup>iπ</sup><span class="op">+</span>1<span class="op">=</span>0</div>
     <div class="sub">공학과 인공지능을 위한 수학 노트</div>
-    <div class="cap">Foundations · Engineering · Neural networks · Medical AI</div>
+    <div class="cap">Foundations · Engineering · Learning theory · Neural networks · Medical AI</div>
   </div>
   <div class="tl">
     <span class="on"><em>기초 수학</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
     <span><em>공학수학</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+    <span><em>기계 학습</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span>
     <span><em>심층 신경망</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span>
     <span><em>의료 인공지능</em>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span>
   </div>

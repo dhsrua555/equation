@@ -915,6 +915,13 @@ a.xref.ext { color: var(--denim); }
   .net-fields a { font-size: 0.78rem; }
 }
 @media (max-width: 520px) {
+  /* phones: short names and tighter spacing so all five fields fit on one line */
   .net-fields .nf-l { display: none; }
   .net-fields .nf-s { display: inline; }
+  .netbar-row { gap: 10px; }
+  .net-home { padding-right: 10px; letter-spacing: 0.2em; font-size: 0.7rem; }
+  .net-fields { gap: 10px; }
+  .net-group { gap: 7px; }
+  .net-group + .net-group { padding-left: 10px; }
+  .net-fields a { font-size: 0.72rem; }
 }

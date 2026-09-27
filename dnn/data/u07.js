@@ -57,7 +57,7 @@ $$\max_{w,b}r(w,b)=\max_{w,b}\frac1{\lVert w\rVert}\Big[\min_{x\in D}\lvert w^Tx
 
 :::key 하드 마진 SVM (원문제)
 $$\min_{w,b}\ \frac12w^Tw=\frac12\lVert w\rVert^2\qquad\text{s.t. }\ y_i(x_i^Tw+b)\ge1\ \ (\text{즉 }1-y_i(x_i^Tw+b)\le0),\ \ i=1,\dots,K$$
-최적해에서 $H_\pm:\ x^Tw+b=\pm1$이고 마진은 $1/\lVert w\rVert$, 두 평면 사이의 폭은 $2/\lVert w\rVert$.
+최적해에서 $H_\pm:\ x^Tw+b=\pm1$이고 마진은 $1/\lVert w\rVert$, 두 평면 사이의 폭은 $2/\lVert w\rVert$[[@ml:ch12:15.1b|마진이 크면 표본 복잡도가 차원 대신 (반지름/마진)²에 기댑니다.]].
 :::
 
 :::fig margin

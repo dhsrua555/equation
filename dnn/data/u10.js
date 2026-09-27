@@ -40,7 +40,7 @@ $$\Cov\Big(\frac1B\sum_{b=1}^Bg_{k_b}\Big)=\frac1B\Sigma,\qquad \E\Big\lVert\fra
 비복원추출이면 $\frac{N-B}{N-1}\cdot\frac{\Sigma}B$ ($B=N$이면 0).
 :::
 
-즉 배치를 4배 키우면 기울기 잡음의 표준편차가 절반이 됩니다. 한편 계산량은 $B$에 비례하므로, 같은 계산량이라면 작은 배치로 여러 번 가는 쪽이 유리한 경우가 많습니다. 13단원의 **SGD 하강 보조정리**에서 이 분산 항이 수렴 속도를 제한하는 모습을 봅니다[[ch13:13.6|$\E_t[f(x_{t+1})]\le f(x_t)-\eta\lVert\nabla f\rVert^2+\frac L2\eta^2\E_t\lVert\tilde\nabla f\rVert^2$.]].
+즉 배치를 4배 키우면 기울기 잡음의 표준편차가 절반이 됩니다. 불편성만으로도 볼록 문제의 수렴 속도가 보장됩니다[[@ml:ch11:14.3|SGD 수렴 정리: E[f(w̄)] − f(w*) ≤ Bρ/√T.]]. 한편 계산량은 $B$에 비례하므로, 같은 계산량이라면 작은 배치로 여러 번 가는 쪽이 유리한 경우가 많습니다. 13단원의 **SGD 하강 보조정리**에서 이 분산 항이 수렴 속도를 제한하는 모습을 봅니다[[ch13:13.6|$\E_t[f(x_{t+1})]\le f(x_t)-\eta\lVert\nabla f\rVert^2+\frac L2\eta^2\E_t\lVert\tilde\nabla f\rVert^2$.]].
 ` },
       { k: '10.3', src: 'W4 월(2) · 슬라이드 7', title: '미니배치 SGD 알고리즘', body: R`
 반복:

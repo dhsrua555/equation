@@ -1,4 +1,4 @@
-<p align="center"><a href="https://dhsrua555.github.io/equation/"><img src="assets/banner.png" alt="Équation — 공학과 인공지능을 위한 수학 노트: 기초 수학, 공학수학, 심층 신경망, 의료 인공지능" width="100%"></a></p>
+<p align="center"><a href="https://dhsrua555.github.io/equation/"><img src="assets/banner.png" alt="Équation — 공학과 인공지능을 위한 수학 노트: 기초 수학, 공학수학, 기계 학습, 심층 신경망, 의료 인공지능" width="100%"></a></p>
 
 # Équation
 
@@ -10,6 +10,7 @@
 |---|---|---|
 | 기초 수학 | O 기호·평균값 정리·테일러 정리, 적분의 도구, 급수와 수렴반지름, 다변수 연쇄법칙과 헤시안, 립시츠 조건·부등식·균등수렴. 5단원, 연습문제 38, 증명 21 | [`base/`](https://dhsrua555.github.io/equation/base/) |
 | 공학수학 | Kreyszig, *Advanced Engineering Mathematics* 10판 1–18장. 16단원, 연습문제 530, 증명 129, 모의고사 4 | [`em/`](https://dhsrua555.github.io/equation/em/) |
+| 인공지능 · 기계 학습 | 데이터 마이닝과 기계 학습(2026-1): Shalev-Shwartz & Ben-David, *Understanding Machine Learning* 2–23장 — PAC 학습과 VC 차원, SRM·MDL, 부스팅, 볼록 학습·SGD, 규제와 안정성, SVM·커널, 다중 클래스, 결정 트리, 온라인 학습, 군집화, 차원 축소. 18단원, 연습문제 231, 증명 106, 모의고사 3 | [`ml/`](https://dhsrua555.github.io/equation/ml/) |
 | 인공지능 · 심층 신경망 | 심층 신경망의 수학적 기초 1–4주차: 회귀·확률·정보이론, 선형 분류, 역전파와 학습, 하강 보조정리. 13단원, 연습문제 195, 증명 69, 모의고사 3 | [`dnn/`](https://dhsrua555.github.io/equation/dnn/) |
 | 인공지능 · 의료 인공지능 | 의료 인공지능 및 소프트웨어 시스템: Bishop & Bishop *Deep Learning* 1·2·7·8·9장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 경사하강법과 Adam, 정규화, 역전파, 규제. 11단원, 연습문제 168, 증명 45, 모의고사 3 | [`med/`](https://dhsrua555.github.io/equation/med/) |
 

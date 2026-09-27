@@ -57,7 +57,7 @@ $$\widetilde E(\mathbf w)=E(\mathbf w)+\frac\lambda2\mathbf w^T\mathbf w,\qquad 
 경사하강 갱신은 $\mathbf w\leftarrow(1-\eta\lambda)\mathbf w-\eta\nabla E(\mathbf w)$ — 매 단계 가중치가 $(1-\eta\lambda)$배로 **감쇠**합니다. $\lambda$: 규제 계수.
 :::
 
-- **확률적 해석**: 평균 0인 가우시안 사전분포 $p(\mathbf w)=\mathcal N(\mathbf 0,\lambda^{-1}\mathbf I)$ 아래의 MAP 추정과 같습니다[[ch06:2.6b|MAP과 L2 규제.]]. 자료가 강하게 지지하지 않는 한 가중치를 작게 유지합니다.
+- **확률적 해석**: 평균 0인 가우시안 사전분포 $p(\mathbf w)=\mathcal N(\mathbf 0,\lambda^{-1}\mathbf I)$ 아래의 MAP 추정과 같습니다[[ch06:2.6b|MAP과 L2 규제.]]. 자료가 강하게 지지하지 않는 한 가중치를 작게 유지합니다. 학습 이론에서는 같은 규제가 **안정성**을 만들어 과적합을 막는다고 봅니다[[@ml:ch10:13.3|강볼록한 규제항 덕분에 표본 하나를 바꿔도 해가 조금만 움직입니다.]].
 - 계산이 쉽습니다: 기울기에 $\lambda\mathbf w$만 더하면 됩니다(계수 $\frac12$은 미분에서 사라지게 하려는 관례).
 - 한계: 사전분포는 **파라미터**에 대한 것인데, 우리가 가진 지식은 보통 입력→출력 **함수**에 대한 것이라 넣을 수 있는 사전 지식이 제한적입니다.
 

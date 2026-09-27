@@ -22,6 +22,11 @@
       desc: 'Kreyszig 10판 1–18장: 상미분방정식, 선형대수·벡터 미적분, 푸리에 해석·편미분방정식, 복소해석과 등각사상.',
     },
     {
+      id: 'ml', group: 'ai', short: '기계 학습', tiny: '기계학습', name: '데이터 마이닝과 기계 학습', en: 'Machine Learning: Theory & Algorithms',
+      path: 'ml/', key: 'equation-ml-v1', plot: 'vcgrowth', live: true,
+      desc: 'Shalev-Shwartz & Ben-David 교재 2–23장: PAC 학습과 VC 차원, SRM, 부스팅, 볼록 학습과 SGD, 규제와 안정성, SVM과 커널, 결정 트리, 온라인 학습, 군집화, 차원 축소.',
+    },
+    {
       id: 'dnn', group: 'ai', short: '심층 신경망', tiny: '신경망', name: '심층 신경망의 수학적 기초', en: 'Mathematics of Deep Neural Networks',
       path: 'dnn/', key: 'reseau-dnn-v1', plot: 'descent', live: true,
       desc: '회귀·확률·정보이론, 로지스틱·소프트맥스·SVM, 역전파·초기화·배치 정규화, 하강 보조정리.',

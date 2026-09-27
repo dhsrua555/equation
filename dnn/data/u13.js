@@ -67,7 +67,7 @@ $f:\mathbb R^d\to\mathbb R$이 연속 미분가능하고 $\nabla f$가 $\beta$-�
 $$f(y)\le f(x)+\langle\nabla f(x),y-x\rangle+\frac\beta2\lVert y-x\rVert^2\qquad\forall x,y.$$
 :::
 
-$f$는 각 점에서 만든 **이차 상한** 아래에 있습니다(표지 그림). 1차 근사의 오차가 $\frac\beta2\lVert y-x\rVert^2$을 넘지 않는다는 뜻입니다.
+$f$는 각 점에서 만든 **이차 상한** 아래에 있습니다(표지 그림)[[@ml:ch09:12.1c|같은 부등식을 적분으로 증명하고, 음이 아닌 함수의 자기 유계성 ‖∇f‖² ≤ 2βf를 끌어냅니다.]]. 1차 근사의 오차가 $\frac\beta2\lVert y-x\rVert^2$을 넘지 않는다는 뜻입니다.
 
 :::hand 수업 필기 — 증명 (f ∈ C²로 가정)
 보조함수 $g(t)=f(x+t(y-x))$, $t\in\mathbb R$를 정의합니다.

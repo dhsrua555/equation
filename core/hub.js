@@ -78,19 +78,24 @@
 
   // columns = groups of the network (fields of one group stack in one column), nodes = units, curves = cross-field links
   function mapSVG() {
-    const W = 1180, H = 780, top = 72, bottom = 20, edge = 120;
+    const W = 1180, top = 72, bottom = 20, edge = 120;
     const groups = NET.groups.map((g) => ({ g, fields: FIELDS.filter((f) => f.group === g.id) })).filter((c) => c.fields.length);
     const cols = groups.map((c, i) => Object.assign(c, { x: groups.length === 1 ? W / 2 : edge + (i * (W - 2 * edge)) / (groups.length - 1), last: i === groups.length - 1 }));
+    // slots: a small header before each field when the column holds several, and a blank slot between fields
+    cols.forEach((c) => {
+      const multi = c.fields.length > 1;
+      c.slots = [];
+      c.fields.forEach((f, fi) => {
+        if (multi) { if (fi) c.slots.push(null); c.slots.push({ head: f }); }
+        Object.keys((NET.index[f.id] || {}).chapters || {}).sort().forEach((ch, j) => c.slots.push({ f, ch, n: j + 1 }));
+      });
+    });
+    // the busiest column sets the height, so labels keep about 22 units of room each
+    const H = Math.max(780, top + bottom + 22 * (Math.max(...cols.map((c) => c.slots.length)) - 1));
     const pos = {};
     const subs = [];
     cols.forEach((c) => {
-      const multi = c.fields.length > 1;
-      // slots: a small header before each field when the column holds several, and a blank slot between fields
-      const slots = [];
-      c.fields.forEach((f, fi) => {
-        if (multi) { if (fi) slots.push(null); slots.push({ head: f }); }
-        Object.keys((NET.index[f.id] || {}).chapters || {}).sort().forEach((ch, j) => slots.push({ f, ch, n: j + 1 }));
-      });
+      const slots = c.slots;
       const step = slots.length > 1 ? (H - top - bottom) / (slots.length - 1) : 0;
       slots.forEach((s, j) => {
         if (!s) return;
@@ -238,7 +243,7 @@
   function footer() {
     return `<footer class="site-footer"><div class="wrap">
       <div class="footer-grid">
-        <div><h5 class="caps">Équation</h5><p>공학수학(Kreyszig 10판), 심층 신경망의 수학적 기초 강의, 의료 인공지능 및 소프트웨어 시스템 강의(Bishop 교재), 그리고 이들이 전제로 쓰는 미적분·해석학을 정리한 시험 대비 노트입니다. 설명과 문제는 교재와 강의의 구성을 따라 새로 썼습니다.</p></div>
+        <div><h5 class="caps">Équation</h5><p>공학수학(Kreyszig 10판), 데이터 마이닝과 기계 학습 강의(Shalev-Shwartz & Ben-David 교재), 심층 신경망의 수학적 기초 강의, 의료 인공지능 및 소프트웨어 시스템 강의(Bishop 교재), 그리고 이들이 전제로 쓰는 미적분·해석학을 정리한 시험 대비 노트입니다. 설명과 문제는 교재와 강의의 구성을 따라 새로 썼습니다.</p></div>
         <div><h5 class="caps">분야</h5>${FIELDS.map((f) => `<p><a href="${esc(url(f))}">${esc(f.name)}</a></p>`).join('')}</div>
         <div><h5 class="caps">기록</h5><p>풀이 기록과 점수는 분야별로 지금 쓰는 브라우저에만 저장됩니다. 지우려면 각 분야 아래쪽의 ‘기록 모두 지우기’를 쓰세요.</p></div>
       </div>
