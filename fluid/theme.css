@@ -1,0 +1,21 @@
+/* 유체역학의 강조색. 종이·잉크·글꼴·상자 모양은 모든 분야가 core/style.css의 것을 함께 씁니다. */
+:root {
+  --denim: #1f7548;
+  --denim-2: #2e8f5c;
+  --plot-a: rgba(31, 117, 72, 0.55);
+  --selection: rgba(31, 117, 72, 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --denim: #86d49e;
+    --denim-2: #66bd83;
+    --plot-a: rgba(134, 212, 158, 0.5);
+    --selection: rgba(134, 212, 158, 0.28);
+  }
+}
+:root[data-theme="dark"] {
+  --denim: #86d49e;
+  --denim-2: #66bd83;
+  --plot-a: rgba(134, 212, 158, 0.5);
+  --selection: rgba(134, 212, 158, 0.28);
+}

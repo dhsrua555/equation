@@ -34,6 +34,8 @@
     return `<div class="netbar"><div class="wrap netbar-row">
         <a class="net-home" href="#top" aria-current="page">${esc(NET.mark)}</a>
         <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => `<a href="${esc(url(f))}">${netName(f)}</a>`).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
+        <details class="net-menu"><summary><span>분야 ${FIELDS.length}개</span><i aria-hidden="true">▾</i></summary>
+          <div class="net-pop">${groups.map((g) => `<div class="net-pop-g"><b>${esc(g.name)}</b>${g.fields.map((f) => `<a href="${esc(url(f))}">${esc(f.short)}</a>`).join('')}</div>`).join('')}</div></details>
       </div></div>
       <div class="wrap header-row">
         <nav class="nav nav-left" aria-label="허브 메뉴">
@@ -77,10 +79,16 @@
   }
 
   // columns = groups of the network (fields of one group stack in one column), nodes = units, curves = cross-field links
+  // the map shows the head of a unit title (before a colon, at most 15 characters); the full title is in the tooltip
+  const shortTitle = (t) => { const s = String(t).split(/[:：]/)[0].trim(); return s.length > 15 ? s.slice(0, 14).trim() + '…' : s; };
   function mapSVG() {
-    const W = 1180, top = 72, bottom = 20, edge = 120;
+    const top = 72, bottom = 20, edge = 100, LW = 235;
     const groups = NET.groups.map((g) => ({ g, fields: FIELDS.filter((f) => f.group === g.id) })).filter((c) => c.fields.length);
-    const cols = groups.map((c, i) => Object.assign(c, { x: groups.length === 1 ? W / 2 : edge + (i * (W - 2 * edge)) / (groups.length - 1), last: i === groups.length - 1 }));
+    // labels run right of every column but the last, whose labels run left: leave one label width between
+    // neighbouring columns and two before the last, so no two columns' labels meet
+    const xs = groups.map((c, i) => edge + i * (LW + 30) + (i && i === groups.length - 1 ? LW + 10 : 0));
+    const W = groups.length === 1 ? 1180 : xs[xs.length - 1] + 30;
+    const cols = groups.map((c, i) => Object.assign(c, { x: groups.length === 1 ? W / 2 : xs[i], last: i === groups.length - 1 }));
     // slots: a small header before each field when the column holds several, and a blank slot between fields
     cols.forEach((c) => {
       const multi = c.fields.length > 1;
@@ -138,7 +146,7 @@
       const side = p.last ? 'end' : 'start';
       const tx = p.last ? p.x - 12 : p.x + 12;
       return `<a href="${esc(url(p.f, p.ch))}" class="nd-link" data-node="${k}"><title>${esc(p.f.short)} · ${pad(p.n)} ${esc(p.title)}</title>
-        <circle class="nd f-${p.f.id}" cx="${p.x}" cy="${p.y}" r="5.5"/><text class="ndl" x="${tx}" y="${p.y + 4}" text-anchor="${side}"><tspan class="nn">${pad(p.n)}</tspan><tspan class="nt"> ${esc(p.title)}</tspan></text></a>`;
+        <circle class="nd f-${p.f.id}" cx="${p.x}" cy="${p.y}" r="5.5"/><text class="ndl" x="${tx}" y="${p.y + 4}" text-anchor="${side}"><tspan class="nn">${pad(p.n)}</tspan><tspan class="nt"> ${esc(shortTitle(p.title))}</tspan></text></a>`;
     }).join('');
     return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="분야별 단원과 분야 사이 연결 주석의 지도">${heads}${subheads}<g class="lks">${curves}</g>${nodes}</svg>`;
   }
@@ -266,6 +274,9 @@
   }
   const q = $('#hub-q');
   q.addEventListener('input', () => renderResults(q.value));
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('details.net-menu[open]').forEach((d) => { if (!d.contains(e.target)) d.removeAttribute('open'); });
+  });
 
   // map: hovering or focusing a unit keeps only its links lit
   const map = $('#map svg');

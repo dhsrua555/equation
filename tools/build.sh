@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BASE_URL="https://dhsrua555.github.io/equation/"
-FIELDS="${FIELDS:-base em ml dnn med}"
+FIELDS="${FIELDS:-base em solid dyn fluid robot ml dnn med}"
 
 field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field folder
   local f="$1" R="$2" F="$3"
@@ -13,7 +13,7 @@ field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field fol
   echo "<script src=\"${R}core/net.js\"></script>"
   echo "<script src=\"${R}core/net-index.js\"></script>"
   echo "<script src=\"${F}site.js\"></script>"
-  [ -f "$f/figs.js" ] && echo "<script src=\"${F}figs.js\"></script>"
+  [ -f "$f/figs.js" ] && echo "<script src=\"${R}core/figkit.js\"></script><script src=\"${F}figs.js\"></script>"
   while read -r d; do d="${d%$'\r'}"; [ -n "$d" ] && echo "<script src=\"${F}data/$d\"></script>"; done < "$f/manifest.txt"
   echo "<script src=\"${R}core/calc.js\"></script>"
   echo "<script src=\"${R}core/plots.js\"></script>"

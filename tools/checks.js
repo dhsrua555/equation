@@ -23,7 +23,10 @@
     const txt = box.textContent;
     if (/\$/.test(txt)) fail(`leftover $ ${where}: ${txt.match(/.{0,40}\$.{0,40}/)[0]}`);
     if (/\bundefined\b|\bNaN\b/.test(txt)) fail(`undefined/NaN text ${where}`);
-    if (/\[\[/.test(txt)) fail(`unresolved xref ${where}: ${txt.match(/.{0,30}\[\[.{0,40}/)[0]}`);
+    // a leftover [[ outside rendered math means a cross-reference was not replaced (matrices like [[ω] v] are fine)
+    box.querySelectorAll('.katex').forEach((n) => n.remove());
+    const prose = box.textContent;
+    if (/\[\[/.test(prose)) fail(`unresolved xref ${where}: ${prose.match(/.{0,30}\[\[.{0,40}/)[0]}`);
   }
   const md = (s) => A.md(String(s || ''));
   const il = (s) => A.inline(String(s || ''));

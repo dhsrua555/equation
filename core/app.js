@@ -505,11 +505,15 @@
   function netBar() {
     if (!NET) return '';
     const groups = (NET.groups || []).map((g) => Object.assign({}, g, { fields: netFields.filter((f) => f.group === g.id) })).filter((g) => g.fields.length);
+    const me = netFields.find((f) => f.id === FIELD);
+    const link = (f, inner) => (f.id === FIELD ? `<a aria-current="page">${inner}</a>` : `<a href="${esc(fieldUrl(f))}">${inner}</a>`);
+    // narrow screens: the list folds into a menu grouped like the hub
+    const menu = `<details class="net-menu"><summary><span>${esc(me ? me.short : '분야')}</span><i aria-hidden="true">▾</i></summary>
+      <div class="net-pop">${groups.map((g) => `<div class="net-pop-g"><b>${esc(g.name)}</b>${g.fields.map((f) => link(f, esc(f.short))).join('')}</div>`).join('')}</div></details>`;
     return `<div class="netbar"><div class="wrap netbar-row">
       <a class="net-home" href="${esc(NET_HOME)}" title="Équation 전체 분야">${esc(NET.mark || 'ÉQUATION')}</a>
-      <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => f.id === FIELD
-        ? `<a aria-current="page">${netName(f)}</a>`
-        : `<a href="${esc(fieldUrl(f))}">${netName(f)}</a>`).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
+      <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => link(f, netName(f))).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
+      ${menu}
     </div></div>`;
   }
   const netName = (f) => (f.tiny && f.tiny !== f.short ? `<span class="nf-l">${esc(f.short)}</span><span class="nf-s">${esc(f.tiny)}</span>` : esc(f.short));
@@ -1476,6 +1480,7 @@
   window.addEventListener('scroll', onScroll, { passive: true });
 
   document.addEventListener('click', (e) => {
+    document.querySelectorAll('details.net-menu[open]').forEach((d) => { if (!d.contains(e.target)) d.removeAttribute('open'); });
     const a = e.target.closest('a[data-route]');
     if (a && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
       e.preventDefault();

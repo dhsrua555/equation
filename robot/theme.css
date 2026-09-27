@@ -1,0 +1,21 @@
+/* 로봇공학의 강조색. 종이·잉크·글꼴·상자 모양은 모든 분야가 core/style.css의 것을 함께 씁니다. */
+:root {
+  --denim: #3d5166;
+  --denim-2: #54697f;
+  --plot-a: rgba(61, 81, 102, 0.55);
+  --selection: rgba(61, 81, 102, 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --denim: #a9bdd2;
+    --denim-2: #8ea5bd;
+    --plot-a: rgba(169, 189, 210, 0.5);
+    --selection: rgba(169, 189, 210, 0.28);
+  }
+}
+:root[data-theme="dark"] {
+  --denim: #a9bdd2;
+  --denim-2: #8ea5bd;
+  --plot-a: rgba(169, 189, 210, 0.5);
+  --selection: rgba(169, 189, 210, 0.28);
+}

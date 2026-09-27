@@ -36,9 +36,12 @@
     exp, ln, log: ln, sin, cos, tan: (a) => div(sin(a), cos(a)),
     sinh, cosh, tanh: (a) => div(sinh(a), cosh(a)), abs: (a) => C(abs(a)),
     arctan: (a) => C(Math.atan(a.re)),
+    // real-valued inverse trig and base-10 log for the mechanics fields
+    atan: (a) => C(Math.atan(a.re)), arcsin: (a) => C(Math.asin(a.re)), asin: (a) => C(Math.asin(a.re)),
+    arccos: (a) => C(Math.acos(a.re)), acos: (a) => C(Math.acos(a.re)), log10: (a) => C(Math.log10(abs(a))),
   };
   const CONST = { pi: C(Math.PI), e: C(Math.E), i: I };
-  const NAMES = ['arctan', 'sqrt', 'sinh', 'cosh', 'tanh', 'sin', 'cos', 'tan', 'exp', 'abs', 'log', 'ln', 'pi', 'e', 'i'];
+  const NAMES = ['arctan', 'arcsin', 'arccos', 'atan', 'asin', 'acos', 'log10', 'sqrt', 'sinh', 'cosh', 'tanh', 'sin', 'cos', 'tan', 'exp', 'abs', 'log', 'ln', 'pi', 'e', 'i'];
 
   function tokenize(src) {
     const s = src

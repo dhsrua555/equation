@@ -1,0 +1,21 @@
+/* 동역학의 강조색. 종이·잉크·글꼴·상자 모양은 모든 분야가 core/style.css의 것을 함께 씁니다. */
+:root {
+  --denim: #8c2d7b;
+  --denim-2: #a8428f;
+  --plot-a: rgba(140, 45, 123, 0.55);
+  --selection: rgba(140, 45, 123, 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --denim: #e3a0d6;
+    --denim-2: #cf82c0;
+    --plot-a: rgba(227, 160, 214, 0.5);
+    --selection: rgba(227, 160, 214, 0.28);
+  }
+}
+:root[data-theme="dark"] {
+  --denim: #e3a0d6;
+  --denim-2: #cf82c0;
+  --plot-a: rgba(227, 160, 214, 0.5);
+  --selection: rgba(227, 160, 214, 0.28);
+}

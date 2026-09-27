@@ -2,16 +2,24 @@
 :root {
   --f-base: #4b3f8c;
   --f-em: #2d5f8f;
+  --f-solid: #5f6d1a;
+  --f-dyn: #8c2d7b;
+  --f-fluid: #1f7548;
+  --f-robot: #3d5166;
   --f-ml: #a3500f;
   --f-dnn: #7a2638;
   --f-med: #16676a;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --f-base: #b3a8f0; --f-em: #8db8e0; --f-ml: #f0a560; --f-dnn: #e59aab; --f-med: #7fd0cc; }
+  :root:not([data-theme="light"]) { --f-base: #b3a8f0; --f-em: #8db8e0; --f-solid: #c3d27e; --f-dyn: #e3a0d6; --f-fluid: #86d49e; --f-robot: #a9bdd2; --f-ml: #f0a560; --f-dnn: #e59aab; --f-med: #7fd0cc; }
 }
-:root[data-theme="dark"] { --f-base: #b3a8f0; --f-em: #8db8e0; --f-ml: #f0a560; --f-dnn: #e59aab; --f-med: #7fd0cc; }
+:root[data-theme="dark"] { --f-base: #b3a8f0; --f-em: #8db8e0; --f-solid: #c3d27e; --f-dyn: #e3a0d6; --f-fluid: #86d49e; --f-robot: #a9bdd2; --f-ml: #f0a560; --f-dnn: #e59aab; --f-med: #7fd0cc; }
 [data-field="base"], .f-base { --acc: var(--f-base); }
 [data-field="em"], .f-em { --acc: var(--f-em); }
+[data-field="solid"], .f-solid { --acc: var(--f-solid); }
+[data-field="dyn"], .f-dyn { --acc: var(--f-dyn); }
+[data-field="fluid"], .f-fluid { --acc: var(--f-fluid); }
+[data-field="robot"], .f-robot { --acc: var(--f-robot); }
 [data-field="ml"], .f-ml { --acc: var(--f-ml); }
 [data-field="dnn"], .f-dnn { --acc: var(--f-dnn); }
 [data-field="med"], .f-med { --acc: var(--f-med); }
@@ -96,6 +104,10 @@ body[data-view="hub"]:not(.scrolled) .site-header { background: color-mix(in srg
 .hub-results .kind { grid-row: span 2; font-family: var(--f-caps); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--acc, var(--ink-3)); padding-top: 3px; }
 .hub-results .kind[data-f="base"] { --acc: var(--f-base); }
 .hub-results .kind[data-f="em"] { --acc: var(--f-em); }
+.hub-results .kind[data-f="solid"] { --acc: var(--f-solid); }
+.hub-results .kind[data-f="dyn"] { --acc: var(--f-dyn); }
+.hub-results .kind[data-f="fluid"] { --acc: var(--f-fluid); }
+.hub-results .kind[data-f="robot"] { --acc: var(--f-robot); }
 .hub-results .kind[data-f="ml"] { --acc: var(--f-ml); }
 .hub-results .kind[data-f="dnn"] { --acc: var(--f-dnn); }
 .hub-results .kind[data-f="med"] { --acc: var(--f-med); }

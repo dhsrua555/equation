@@ -1,4 +1,4 @@
-<p align="center"><a href="https://dhsrua555.github.io/equation/"><img src="assets/banner.png" alt="Équation — 공학과 인공지능을 위한 수학 노트: 기초 수학, 공학수학, 기계 학습, 심층 신경망, 의료 인공지능" width="100%"></a></p>
+<p align="center"><a href="https://dhsrua555.github.io/equation/"><img src="assets/banner.png" alt="Équation — 공학과 인공지능을 위한 수학 노트: 기초 수학, 공학수학, 고체역학, 동역학, 유체역학, 로봇공학, 기계 학습, 심층 신경망, 의료 인공지능" width="100%"></a></p>
 
 # Équation
 
@@ -10,6 +10,10 @@
 |---|---|---|
 | 기초 수학 | O 기호·평균값 정리·테일러 정리, 적분의 도구, 급수와 수렴반지름, 다변수 연쇄법칙과 헤시안, 립시츠 조건·부등식·균등수렴. 5단원, 연습문제 38, 증명 21 | [`base/`](https://dhsrua555.github.io/equation/base/) |
 | 공학수학 | Kreyszig, *Advanced Engineering Mathematics* 10판 1–18장. 16단원, 연습문제 530, 증명 129, 모의고사 4 | [`em/`](https://dhsrua555.github.io/equation/em/) |
+| 역학 · 고체역학 | 고체역학(2026-1): Beer & Johnston, *Mechanics of Materials* 7판 1–10장과 강의 슬라이드 — 응력과 변형률, 재료 거동, 축하중·열응력, 비틀림, 전단력·굽힘모멘트 선도, 굽힘·전단 응력, 보의 처짐, 중첩과 조합 하중, 응력 변환과 모어 원, 압력 용기, 파손 기준, 좌굴. 15단원, 연습문제 215, 증명 61, 모의고사 2 | [`solid/`](https://dhsrua555.github.io/equation/solid/) |
+| 역학 · 동역학 | 동역학(2026-1): Beer, Johnston 외 *Vector Mechanics for Engineers: Dynamics* 11–18장과 수업 필기(변분법·라그랑주 역학) — 질점의 운동학·운동역학, 에너지와 운동량, 충돌, 질점계와 로켓, 오일러-라그랑주 방정식, 강체의 평면 운동, 회전 좌표계와 코리올리, 편심 충돌, 관성 텐서, 3차원 강체. 15단원, 연습문제 208, 증명 66, 모의고사 2 | [`dyn/`](https://dhsrua555.github.io/equation/dyn/) |
+| 역학 · 유체역학 | 유체역학(2025-2): White, *Fluid Mechanics* 7판 1–8장 — 유체의 성질, 정수압과 부력, 레이놀즈 수송 정리와 질량·운동량·에너지, 베르누이, 나비에-스토크스와 정확해, 차원 해석, 관 유동과 무디 선도, 부차 손실, 경계층, 항력과 양력, 퍼텐셜 유동. 15단원, 연습문제 220, 증명 71, 모의고사 2 | [`fluid/`](https://dhsrua555.github.io/equation/fluid/) |
+| 역학 · 로봇공학 | 로봇공학입문(2026-2, 진행 중): Lynch & Park, *Modern Robotics* 2–6, 8–9, 12장과 2–3주차 강의 — 자유도와 그뤼블러 공식, C-공간, 마찰 없는·있는 파지와 힘 닫힘, 회전 행렬과 지수 좌표, 트위스트와 렌치, 지수곱 정기구학, 야코비안과 조작성, 역기구학, 라그랑주 동역학, 궤적 생성. 14단원, 연습문제 179, 증명 46, 모의고사 2(범위 추정) | [`robot/`](https://dhsrua555.github.io/equation/robot/) |
 | 인공지능 · 기계 학습 | 데이터 마이닝과 기계 학습(2026-1): Shalev-Shwartz & Ben-David, *Understanding Machine Learning* 2–23장 — PAC 학습과 VC 차원, SRM·MDL, 부스팅, 볼록 학습·SGD, 규제와 안정성, SVM·커널, 다중 클래스, 결정 트리, 온라인 학습, 군집화, 차원 축소. 18단원, 연습문제 231, 증명 106, 모의고사 3 | [`ml/`](https://dhsrua555.github.io/equation/ml/) |
 | 인공지능 · 심층 신경망 | 심층 신경망의 수학적 기초 1–4주차: 회귀·확률·정보이론, 선형 분류, 역전파와 학습, 하강 보조정리. 13단원, 연습문제 195, 증명 69, 모의고사 3 | [`dnn/`](https://dhsrua555.github.io/equation/dnn/) |
 | 인공지능 · 의료 인공지능 | 의료 인공지능 및 소프트웨어 시스템: Bishop & Bishop *Deep Learning* 1·2·7·8·9장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 경사하강법과 Adam, 정규화, 역전파, 규제. 11단원, 연습문제 168, 증명 45, 모의고사 3 | [`med/`](https://dhsrua555.github.io/equation/med/) |
@@ -35,7 +39,7 @@ core/plots.js         단원 표지 그림의 틀   core/calc.js  단답형 계�
 <분야>/site.js        분야 설정: 이름, 파트, 문구, 저장 키
 <분야>/site.env       페이지 제목·설명·글꼴   <분야>/manifest.txt  데이터 파일 순서
 <분야>/theme.css      분야의 강조색 (선택, 나머지 모양은 모든 분야가 같음)
-<분야>/plots.js       단원 표지 그림   <분야>/figs.js  본문 SVG 그림 (선택)
+<분야>/plots.js       단원 표지 그림   <분야>/figs.js  본문 SVG 그림 (선택, 역학 분야는 core/figkit.js 도구를 씀)
 <분야>/data/*.js      단원, 연습문제, 증명, 모의고사
 tools/build.sh        분야 페이지와 검사 하네스 생성, 파일 주소에 내용 해시(?v=) 붙이기
 tools/netindex.sh     전 분야 검사 + 색인 생성 (헤드리스 Chrome)
