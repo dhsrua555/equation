@@ -507,11 +507,12 @@
     const groups = (NET.groups || []).map((g) => Object.assign({}, g, { fields: netFields.filter((f) => f.group === g.id) })).filter((g) => g.fields.length);
     return `<div class="netbar"><div class="wrap netbar-row">
       <a class="net-home" href="${esc(NET_HOME)}" title="Équation 전체 분야">${esc(NET.mark || 'ÉQUATION')}</a>
-      <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.label ? `<i>${esc(g.name)}</i>` : ''}${g.fields.map((f) => f.id === FIELD
-        ? `<a aria-current="page">${esc(f.short)}</a>`
-        : `<a href="${esc(fieldUrl(f))}">${esc(f.short)}</a>`).join('')}</span>`).join('')}</nav>
+      <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => f.id === FIELD
+        ? `<a aria-current="page">${netName(f)}</a>`
+        : `<a href="${esc(fieldUrl(f))}">${netName(f)}</a>`).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
     </div></div>`;
   }
+  const netName = (f) => (f.tiny && f.tiny !== f.short ? `<span class="nf-l">${esc(f.short)}</span><span class="nf-s">${esc(f.tiny)}</span>` : esc(f.short));
   function renderHeader() {
     document.documentElement.classList.toggle('has-net', !!NET);
     $('#site-header').innerHTML = `${netBar()}

@@ -4,7 +4,7 @@
 # 사용법: tools/netindex.sh            (색인을 만든 뒤 한 번 더 돌려 교차 링크까지 검사)
 set -euo pipefail
 cd "$(dirname "$0")/.."
-FIELDS="${FIELDS:-base em dnn}"
+FIELDS="${FIELDS:-base em dnn med}"
 CHROME="/c/Program Files/Google/Chrome/Application/chrome.exe"
 ROOTW="$(pwd -W | sed 's# #%20#g')"
 TMP="$(mktemp -d)"

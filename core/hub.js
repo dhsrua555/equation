@@ -26,13 +26,14 @@
   const counts = (f) => (NET.index[f.id] && NET.index[f.id].counts) || { units: 0, sections: 0, problems: 0, proofs: 0, exams: 0 };
 
   // ---------- header ----------
+  const netName = (f) => (f.tiny && f.tiny !== f.short ? `<span class="nf-l">${esc(f.short)}</span><span class="nf-s">${esc(f.tiny)}</span>` : esc(f.short));
   function header() {
     const groups = NET.groups.map((g) => Object.assign({}, g, { fields: FIELDS.filter((f) => f.group === g.id) })).filter((g) => g.fields.length);
     const right = FIELDS.reduce((s, f) => s + progressOf(f), 0);
     const total = FIELDS.reduce((s, f) => s + counts(f).problems, 0);
     return `<div class="netbar"><div class="wrap netbar-row">
         <a class="net-home" aria-current="page">${esc(NET.mark)}</a>
-        <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.label ? `<i>${esc(g.name)}</i>` : ''}${g.fields.map((f) => `<a href="${esc(url(f))}">${esc(f.short)}</a>`).join('')}</span>`).join('')}</nav>
+        <nav class="net-fields" aria-label="분야">${groups.map((g) => `<span class="net-group">${g.fields.map((f) => `<a href="${esc(url(f))}">${netName(f)}</a>`).join('<i class="net-dot" aria-hidden="true">·</i>')}</span>`).join('')}</nav>
       </div></div>
       <div class="wrap header-row">
         <nav class="nav nav-left" aria-label="허브 메뉴">
@@ -75,16 +76,27 @@
     </section>`;
   }
 
-  // columns = fields in network order, nodes = units, curves = cross-field links (aggregated per unit pair)
+  // columns = groups of the network (fields of one group stack in one column), nodes = units, curves = cross-field links
   function mapSVG() {
-    const W = 1180, H = 600, top = 70, bottom = 18, edge = 120;
-    const cols = FIELDS.map((f, i) => ({ f, x: FIELDS.length === 1 ? W / 2 : edge + (i * (W - 2 * edge)) / (FIELDS.length - 1) }));
+    const W = 1180, H = 780, top = 72, bottom = 20, edge = 120;
+    const groups = NET.groups.map((g) => ({ g, fields: FIELDS.filter((f) => f.group === g.id) })).filter((c) => c.fields.length);
+    const cols = groups.map((c, i) => Object.assign(c, { x: groups.length === 1 ? W / 2 : edge + (i * (W - 2 * edge)) / (groups.length - 1), last: i === groups.length - 1 }));
     const pos = {};
+    const subs = [];
     cols.forEach((c) => {
-      const chs = Object.keys((NET.index[c.f.id] || {}).chapters || {}).sort();
-      chs.forEach((ch, j) => {
-        const y = chs.length === 1 ? (top + H - bottom) / 2 : top + (j * (H - top - bottom)) / (chs.length - 1);
-        pos[`${c.f.id}:${ch}`] = { x: c.x, y, f: c.f, ch, n: j + 1, title: NET.index[c.f.id].chapters[ch] };
+      const multi = c.fields.length > 1;
+      // slots: a small header before each field when the column holds several, and a blank slot between fields
+      const slots = [];
+      c.fields.forEach((f, fi) => {
+        if (multi) { if (fi) slots.push(null); slots.push({ head: f }); }
+        Object.keys((NET.index[f.id] || {}).chapters || {}).sort().forEach((ch, j) => slots.push({ f, ch, n: j + 1 }));
+      });
+      const step = slots.length > 1 ? (H - top - bottom) / (slots.length - 1) : 0;
+      slots.forEach((s, j) => {
+        if (!s) return;
+        const y = slots.length === 1 ? (top + H - bottom) / 2 : top + j * step;
+        if (s.head) subs.push({ x: c.x, y, f: s.head, last: c.last });
+        else pos[`${s.f.id}:${s.ch}`] = { x: c.x, y, f: s.f, ch: s.ch, n: s.n, title: NET.index[s.f.id].chapters[s.ch], last: c.last };
       });
     });
     const agg = new Map();
@@ -97,22 +109,33 @@
     const curves = [...agg.entries()].map(([k, n]) => {
       const [a, b] = k.split('>');
       const p = pos[a], q = pos[b];
-      const dx = (q.x - p.x) * 0.5;
-      const far = Math.abs(q.x - p.x) > (W - 2 * edge) * 0.75; // skipping a column: pull the curve toward the middle band
-      const bow = far ? (H / 2 - (p.y + q.y) / 2) * 0.6 : 0;
-      return `<path class="lk f-${p.f.id}" data-a="${a}" data-b="${b}" stroke-width="${Math.min(0.9 + 0.55 * n, 3.4).toFixed(2)}" d="M${p.x},${p.y} C${p.x + dx},${p.y + bow} ${q.x - dx},${q.y + bow} ${q.x},${q.y}"/>`;
+      let d;
+      if (Math.abs(q.x - p.x) < 1) {
+        // two fields in the same column: an arc out to the free side
+        const out = Math.min(40 + Math.abs(q.y - p.y) * 0.3, 110) * (p.last ? 1 : -1);
+        d = `M${p.x},${p.y} C${p.x + out},${p.y} ${q.x + out},${q.y} ${q.x},${q.y}`;
+      } else {
+        const dx = (q.x - p.x) * 0.5;
+        const far = Math.abs(q.x - p.x) > (W - 2 * edge) * 0.75; // skipping a column: pull the curve toward the middle band
+        const bow = far ? (H / 2 - (p.y + q.y) / 2) * 0.6 : 0;
+        d = `M${p.x},${p.y} C${p.x + dx},${p.y + bow} ${q.x - dx},${q.y + bow} ${q.x},${q.y}`;
+      }
+      return `<path class="lk f-${p.f.id}" data-a="${a}" data-b="${b}" stroke-width="${Math.min(0.9 + 0.55 * n, 3.4).toFixed(2)}" d="${d}"/>`;
     }).join('');
-    const heads = cols.map((c) => `<text class="colhead" x="${c.x}" y="24" text-anchor="middle">${esc(c.f.mark)}</text><text class="colsub" x="${c.x}" y="44" text-anchor="middle">${esc(c.f.short)}</text>`).join('');
-    const last = cols.length - 1;
+    const heads = cols.map((c) => {
+      const one = c.fields.length === 1 ? c.fields[0] : null;
+      const anchor = c.last ? 'end' : 'middle', hx = c.last ? c.x + 8 : c.x;
+      return `<text class="colhead" x="${hx}" y="24" text-anchor="${anchor}">${esc(one ? one.mark : (c.g.fr || c.g.en).toUpperCase())}</text><text class="colsub" x="${hx}" y="44" text-anchor="${anchor}">${esc(one ? one.short : c.g.name)}</text>`;
+    }).join('');
+    const subheads = subs.map((s) => `<text class="colpart f-${s.f.id}" x="${s.last ? s.x + 8 : s.x - 8}" y="${s.y + 4}" text-anchor="${s.last ? 'end' : 'start'}">${esc(s.f.mark)} · ${esc(s.f.short)}</text>`).join('');
     const nodes = Object.keys(pos).map((k) => {
       const p = pos[k];
-      const ci = cols.findIndex((c) => c.f === p.f);
-      const side = ci === last ? 'end' : 'start';
-      const tx = ci === last ? p.x - 12 : p.x + 12;
+      const side = p.last ? 'end' : 'start';
+      const tx = p.last ? p.x - 12 : p.x + 12;
       return `<a href="${esc(url(p.f, p.ch))}" class="nd-link" data-node="${k}"><title>${esc(p.f.short)} · ${pad(p.n)} ${esc(p.title)}</title>
         <circle class="nd f-${p.f.id}" cx="${p.x}" cy="${p.y}" r="5.5"/><text class="ndl" x="${tx}" y="${p.y + 4}" text-anchor="${side}"><tspan class="nn">${pad(p.n)}</tspan><tspan class="nt"> ${esc(p.title)}</tspan></text></a>`;
     }).join('');
-    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="분야별 단원과 분야 사이 연결 주석의 지도">${heads}<g class="lks">${curves}</g>${nodes}</svg>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="분야별 단원과 분야 사이 연결 주석의 지도">${heads}${subheads}<g class="lks">${curves}</g>${nodes}</svg>`;
   }
 
   // ---------- fields ----------
@@ -215,7 +238,7 @@
   function footer() {
     return `<footer class="site-footer"><div class="wrap">
       <div class="footer-grid">
-        <div><h5 class="caps">Équation</h5><p>공학수학(Kreyszig 10판), 심층 신경망의 수학적 기초 강의, 그리고 두 분야가 전제로 쓰는 미적분·해석학을 정리한 시험 대비 노트입니다. 설명과 문제는 교재와 강의의 구성을 따라 새로 썼습니다.</p></div>
+        <div><h5 class="caps">Équation</h5><p>공학수학(Kreyszig 10판), 심층 신경망의 수학적 기초 강의, 의료 인공지능 및 소프트웨어 시스템 강의(Bishop 교재), 그리고 이들이 전제로 쓰는 미적분·해석학을 정리한 시험 대비 노트입니다. 설명과 문제는 교재와 강의의 구성을 따라 새로 썼습니다.</p></div>
         <div><h5 class="caps">분야</h5>${FIELDS.map((f) => `<p><a href="${esc(url(f))}">${esc(f.name)}</a></p>`).join('')}</div>
         <div><h5 class="caps">기록</h5><p>풀이 기록과 점수는 분야별로 지금 쓰는 브라우저에만 저장됩니다. 지우려면 각 분야 아래쪽의 ‘기록 모두 지우기’를 쓰세요.</p></div>
       </div>

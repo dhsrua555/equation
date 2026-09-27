@@ -3,14 +3,16 @@
   --f-base: #4b3f8c;
   --f-em: #2d5f8f;
   --f-dnn: #7a2638;
+  --f-med: #16676a;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; }
+  :root:not([data-theme="light"]) { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; --f-med: #7fd0cc; }
 }
-:root[data-theme="dark"] { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; }
+:root[data-theme="dark"] { --f-base: #b3a8f0; --f-em: #8db8e0; --f-dnn: #e59aab; --f-med: #7fd0cc; }
 [data-field="base"], .f-base { --acc: var(--f-base); }
 [data-field="em"], .f-em { --acc: var(--f-em); }
 [data-field="dnn"], .f-dnn { --acc: var(--f-dnn); }
+[data-field="med"], .f-med { --acc: var(--f-med); }
 
 body[data-view="hub"] main { padding-top: var(--header-h); }
 body[data-view="hub"]:not(.scrolled) .site-header { background: color-mix(in srgb, var(--paper) 94%, transparent); border-color: var(--rule); }
@@ -36,6 +38,7 @@ body[data-view="hub"]:not(.scrolled) .site-header { background: color-mix(in srg
 .hub-map figcaption { font-size: 0.82rem; color: var(--ink-3); }
 .hub-map .colhead { font-family: var(--f-caps); font-size: 15px; letter-spacing: 0.3em; fill: var(--ink); font-weight: 500; }
 .hub-map .colsub { font-family: var(--f-body); font-size: 13px; fill: var(--ink-3); }
+.hub-map .colpart { font-family: var(--f-caps); font-size: 11px; letter-spacing: 0.08em; fill: var(--acc); font-weight: 600; }
 .hub-map .lk { fill: none; stroke: var(--acc); stroke-opacity: 0.42; stroke-linecap: round; transition: stroke-opacity 0.2s; }
 .hub-map .nd { fill: var(--paper-2); stroke: var(--acc); stroke-width: 2; transition: r 0.15s; }
 .hub-map .ndl { font-family: var(--f-body); font-size: 13px; fill: var(--ink-2); paint-order: stroke; stroke: var(--paper-2); stroke-width: 5px; stroke-linejoin: round; }
@@ -92,6 +95,7 @@ body[data-view="hub"]:not(.scrolled) .site-header { background: color-mix(in srg
 .hub-results .kind[data-f="base"] { --acc: var(--f-base); }
 .hub-results .kind[data-f="em"] { --acc: var(--f-em); }
 .hub-results .kind[data-f="dnn"] { --acc: var(--f-dnn); }
+.hub-results .kind[data-f="med"] { --acc: var(--f-med); }
 .hub-results b { font-weight: 500; }
 .hub-results a:hover b { text-decoration: underline; text-underline-offset: 3px; }
 .hub-results small { color: var(--ink-3); font-size: 0.8rem; }

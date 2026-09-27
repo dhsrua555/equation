@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BASE_URL="https://dhsrua555.github.io/equation/"
-FIELDS="${FIELDS:-base em dnn}"
+FIELDS="${FIELDS:-base em dnn med}"
 
 field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field folder
   local f="$1" R="$2" F="$3"

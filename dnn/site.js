@@ -30,6 +30,6 @@
       proofLede: '강의에 나온 정리와 유도 {proofs}개의 증명을 모았습니다. ‘강의 필기’ 표시는 교수님이 수업 중에 손으로 풀어 주신 증명입니다. 공식 이름이나 영어 용어로 검색할 수 있습니다. 예: KL, Jensen, descent lemma, Xavier, push-through.',
       proofPlaceholder: '찾을 정리나 유도 (예: 정규방정식, Hessian, dual)',
     },
-    // 같은 네트워크의 분야(공학수학·기초 수학)는 core/net.js가 알려 줍니다. 의료 인공지능은 아직 네트워크 밖이라, 그쪽으로 가는 연결 주석은 숨겨집니다.
+    // 같은 네트워크의 분야(공학수학·의료 인공지능·기초 수학)로 가는 링크는 core/net.js와 net-index.js가 풀어 줍니다.
   };
 })();
