@@ -5,7 +5,7 @@ EM.proofs = EM.proofs || [];
   const R = String.raw;
   EM.proofs.push(
   // ───── 10
-  { ch: 'ch10', id: 'orthogonality', title: '삼각함수계의 직교성', keys: ['푸리에 계수 (주기 2L)'],
+  { ch: 'ch10', id: 'orthogonality', title: '삼각함수계의 직교성', keys: ['푸리에 계수 (주기 2L)', '삼각함수계의 직교성 (교재 Theorem 1)'],
     tags: 'orthogonality trigonometric system 직교성 삼각함수계',
     stmt: R`$m,n\ge1$일 때 $\displaystyle\int_{-L}^{L}\cos\frac{m\pi x}{L}\cos\frac{n\pi x}{L}dx=\int_{-L}^{L}\sin\frac{m\pi x}{L}\sin\frac{n\pi x}{L}dx=\begin{cases}0&m\ne n\\L&m=n\end{cases}$이고, $\cos$과 $\sin$의 곱의 적분은 항상 0이다.`,
     body: R`
@@ -24,7 +24,7 @@ $\cos\cdot\sin$은 기함수이므로 대칭 구간에서 적분이 0입니다.`
 양변에 $\cos\frac{m\pi x}L$을 곱해 적분하면 직교성에 의해 $n=m$인 코사인 항만 남습니다.
 $$\int_{-L}^Lf\cos\frac{m\pi x}{L}\,dx=a_m\cdot L$$
 사인을 곱하면 같은 방법으로 $b_m$이 나옵니다. 급수의 “좌표”를 내적으로 뽑아내는 것과 같습니다.` },
-  { ch: 'ch10', id: 'convergence', title: '푸리에 급수의 수렴 정리', keys: ['푸리에 계수 (주기 2L)', '수렴 정리 (교재 Theorem 1)'],
+  { ch: 'ch10', id: 'convergence', title: '푸리에 급수의 수렴 정리', keys: ['푸리에 계수 (주기 2L)', '수렴 정리 (교재 Theorem 2)'],
     tags: 'convergence dirichlet kernel riemann lebesgue jump average 수렴 정리 디리클레 핵 리만 르베그 불연속 평균',
     sketch: R`디리클레 핵과 리만-르베그 보조정리를 이용한 증명의 개요입니다 ($L=\pi$).`,
     stmt: R`$f$가 구간별 연속이고 각 점에서 좌우 미분계수가 있으면, 푸리에 급수는 각 점에서 $\tfrac12\big[f(x^+)+f(x^-)\big]$로 수렴한다.`,

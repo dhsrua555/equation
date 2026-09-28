@@ -146,7 +146,7 @@
       .replace(/\u0001(\d+)\u0001([^\u0002]*)\u0002/g, (_, k, tail) => glueTail(tex(math[k][0], math[k][1]), tail, math[k][1]))
       .replace(/\u0000(\d+)\u0000/g, (_, k) => tex(math[k][0], math[k][1]));
     t = esc(t)
-      .replace(/\u0000(\d+)\u0000([^\s\u0000[*<]+)/g, '\u0001$1\u0001$2\u0002')
+      .replace(/\u0000(\d+)\u0000([^\s\u0000[\]*<]+)/g, '\u0001$1\u0001$2\u0002')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     t = t.replace(XREF_RE, (_, site, ch, k, text) => xref(ch, k, restore(text), site ? site.slice(1, -1) : ''));
     return restore(t);
@@ -280,7 +280,7 @@
   };
   function isBlockStart(l) {
     const t = l.trim();
-    return t.startsWith(':::') || t.startsWith('$$') || t.startsWith('|') || /^[-•]\s+/.test(t) || /^\d+[.)]\s+/.test(t);
+    return t.startsWith(':::') || t.startsWith('### ') || t.startsWith('$$') || t.startsWith('|') || /^[-•]\s+/.test(t) || /^\d+[.)]\s+/.test(t);
   }
   function md(src) {
     if (!src) return '';
@@ -291,6 +291,7 @@
       const line = L[i];
       const t = line.trim();
       if (!t) { i++; continue; }
+      if (t.startsWith('### ')) { out += `<h3 class="sub">${inline(t.slice(4).trim())}</h3>`; i++; continue; }
       let m = /^:::(\w+)\s*(.*)$/.exec(t);
       if (m) {
         const inner = [];
@@ -357,7 +358,10 @@
       const buf = [t];
       i++;
       while (i < L.length && L[i].trim() && !isBlockStart(L[i])) { buf.push(L[i].trim()); i++; }
-      out += `<p>${inline(buf.join(' '))}</p>`;
+      // a line opening with "(a) ", "(ii) ", "**(b1)**" … starts a new line inside the paragraph
+      const segs = [[]];
+      buf.forEach((s, k) => { if (k && /^(\*\*)?\((?:[a-h]\d?|[ivx]{1,4}|\d{1,2})\)/.test(s)) segs.push([]); segs[segs.length - 1].push(s); });
+      out += `<p>${segs.map((g) => inline(g.join(' '))).join('<br>')}</p>`;
     }
     return out;
   }
