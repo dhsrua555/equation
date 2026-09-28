@@ -1,0 +1,699 @@
+/* 분야별 색 — tools/palette.pl이 만듭니다. 고치려면 그 파일의 표를 바꾸고 다시 실행하세요.
+   글꼴·상자 모양·머리말은 모든 분야가 core/style.css의 것을 함께 쓰고, 분야마다 종이·잉크·강조색·보조색·띠만 다릅니다.
+   분야 페이지는 <html data-field="…">, 허브의 분야 카드는 data-field로 이 색을 받습니다. */
+
+/* base: violet + gold */
+[data-field="base"] {
+  --paper: #f4f2f8;
+  --paper-2: #e8e4f1;
+  --paper-3: #fbfafd;
+  --ink: #17142b;
+  --ink-2: #504e60;
+  --ink-3: #6b6879;
+  --rule: rgba(23, 20, 43, 0.14);
+  --rule-strong: rgba(23, 20, 43, 0.32);
+  --denim: #4b3f8c;
+  --denim-2: #6456ad;
+  --camel: #a88230;
+  --camel-ink: #76581a;
+  --band: #1c1836;
+  --band-ink: #eeebf7;
+  --band-ink-2: #aba7b9;
+  --band-rule: rgba(238, 235, 247, 0.18);
+  --plot-a: rgba(75, 63, 140, 0.58);
+  --plot-b: rgba(168, 130, 48, 0.9);
+  --plot-faint: rgba(23, 20, 43, 0.16);
+  --plot-faint2: rgba(23, 20, 43, 0.24);
+  --selection: rgba(100, 86, 173, 0.22);
+  --shadow: 0 18px 50px -24px rgba(23, 20, 43, 0.35);
+  --scrim: rgba(23, 20, 43, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="base"], :root:not([data-theme="light"]) [data-field="base"] {
+    --paper: #121020;
+    --paper-2: #1c1930;
+    --paper-3: #16142a;
+    --ink: #eeebf7;
+    --ink-2: #b5b2bf;
+    --ink-3: #928f9d;
+    --rule: rgba(238, 235, 247, 0.13);
+    --rule-strong: rgba(238, 235, 247, 0.3);
+    --denim: #b3a8f0;
+    --denim-2: #978be0;
+    --camel: #d9b865;
+    --camel-ink: #e0c378;
+    --band: #221e3c;
+    --band-ink: #eeebf7;
+    --band-ink-2: #ada9bb;
+    --band-rule: rgba(238, 235, 247, 0.16);
+    --plot-a: rgba(179, 168, 240, 0.5);
+    --plot-b: rgba(217, 184, 101, 0.85);
+    --plot-faint: rgba(238, 235, 247, 0.12);
+    --plot-faint2: rgba(238, 235, 247, 0.2);
+    --selection: rgba(151, 139, 224, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="base"], :root[data-theme="dark"] [data-field="base"] {
+  --paper: #121020;
+  --paper-2: #1c1930;
+  --paper-3: #16142a;
+  --ink: #eeebf7;
+  --ink-2: #b5b2bf;
+  --ink-3: #928f9d;
+  --rule: rgba(238, 235, 247, 0.13);
+  --rule-strong: rgba(238, 235, 247, 0.3);
+  --denim: #b3a8f0;
+  --denim-2: #978be0;
+  --camel: #d9b865;
+  --camel-ink: #e0c378;
+  --band: #221e3c;
+  --band-ink: #eeebf7;
+  --band-ink-2: #ada9bb;
+  --band-rule: rgba(238, 235, 247, 0.16);
+  --plot-a: rgba(179, 168, 240, 0.5);
+  --plot-b: rgba(217, 184, 101, 0.85);
+  --plot-faint: rgba(238, 235, 247, 0.12);
+  --plot-faint2: rgba(238, 235, 247, 0.2);
+  --selection: rgba(151, 139, 224, 0.28);
+  color-scheme: dark;
+}
+
+/* em: blueprint blue + camel */
+[data-field="em"] {
+  --paper: #eef2f6;
+  --paper-2: #dfe7ef;
+  --paper-3: #f8fafc;
+  --ink: #0c1c28;
+  --ink-2: #47545e;
+  --ink-3: #626d76;
+  --rule: rgba(12, 28, 40, 0.14);
+  --rule-strong: rgba(12, 28, 40, 0.32);
+  --denim: #2d5f8f;
+  --denim-2: #3a7fb8;
+  --camel: #a8764b;
+  --camel-ink: #7e5230;
+  --band: #0c1c2c;
+  --band-ink: #eaf0f5;
+  --band-ink-2: #a3acb5;
+  --band-rule: rgba(234, 240, 245, 0.18);
+  --plot-a: rgba(45, 95, 143, 0.58);
+  --plot-b: rgba(168, 118, 75, 0.9);
+  --plot-faint: rgba(12, 28, 40, 0.16);
+  --plot-faint2: rgba(12, 28, 40, 0.24);
+  --selection: rgba(58, 127, 184, 0.22);
+  --shadow: 0 18px 50px -24px rgba(12, 28, 40, 0.35);
+  --scrim: rgba(12, 28, 40, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="em"], :root:not([data-theme="light"]) [data-field="em"] {
+    --paper: #0b1520;
+    --paper-2: #13202e;
+    --paper-3: #0f1b28;
+    --ink: #eaf0f5;
+    --ink-2: #b0b7be;
+    --ink-3: #8c949c;
+    --rule: rgba(234, 240, 245, 0.13);
+    --rule-strong: rgba(234, 240, 245, 0.3);
+    --denim: #8db8e0;
+    --denim-2: #6f9fcb;
+    --camel: #d2a57a;
+    --camel-ink: #dbb38b;
+    --band: #172a3d;
+    --band-ink: #eaf0f5;
+    --band-ink-2: #a6b1ba;
+    --band-rule: rgba(234, 240, 245, 0.16);
+    --plot-a: rgba(141, 184, 224, 0.5);
+    --plot-b: rgba(210, 165, 122, 0.85);
+    --plot-faint: rgba(234, 240, 245, 0.12);
+    --plot-faint2: rgba(234, 240, 245, 0.2);
+    --selection: rgba(111, 159, 203, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="em"], :root[data-theme="dark"] [data-field="em"] {
+  --paper: #0b1520;
+  --paper-2: #13202e;
+  --paper-3: #0f1b28;
+  --ink: #eaf0f5;
+  --ink-2: #b0b7be;
+  --ink-3: #8c949c;
+  --rule: rgba(234, 240, 245, 0.13);
+  --rule-strong: rgba(234, 240, 245, 0.3);
+  --denim: #8db8e0;
+  --denim-2: #6f9fcb;
+  --camel: #d2a57a;
+  --camel-ink: #dbb38b;
+  --band: #172a3d;
+  --band-ink: #eaf0f5;
+  --band-ink-2: #a6b1ba;
+  --band-rule: rgba(234, 240, 245, 0.16);
+  --plot-a: rgba(141, 184, 224, 0.5);
+  --plot-b: rgba(210, 165, 122, 0.85);
+  --plot-faint: rgba(234, 240, 245, 0.12);
+  --plot-faint2: rgba(234, 240, 245, 0.2);
+  --selection: rgba(111, 159, 203, 0.28);
+  color-scheme: dark;
+}
+
+/* solid: olive + steel */
+[data-field="solid"] {
+  --paper: #f2f2ea;
+  --paper-2: #e4e4d5;
+  --paper-3: #fafaf5;
+  --ink: #1a1d10;
+  --ink-2: #525449;
+  --ink-3: #6c6e63;
+  --rule: rgba(26, 29, 16, 0.14);
+  --rule-strong: rgba(26, 29, 16, 0.32);
+  --denim: #5a6818;
+  --denim-2: #7a8a26;
+  --camel: #4f7189;
+  --camel-ink: #3a566a;
+  --band: #22271a;
+  --band-ink: #eef0e3;
+  --band-ink-2: #adb0a3;
+  --band-rule: rgba(238, 240, 227, 0.18);
+  --plot-a: rgba(90, 104, 24, 0.58);
+  --plot-b: rgba(79, 113, 137, 0.9);
+  --plot-faint: rgba(26, 29, 16, 0.16);
+  --plot-faint2: rgba(26, 29, 16, 0.24);
+  --selection: rgba(122, 138, 38, 0.22);
+  --shadow: 0 18px 50px -24px rgba(26, 29, 16, 0.35);
+  --scrim: rgba(26, 29, 16, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="solid"], :root:not([data-theme="light"]) [data-field="solid"] {
+    --paper: #121410;
+    --paper-2: #1b1e16;
+    --paper-3: #161913;
+    --ink: #eef0e3;
+    --ink-2: #b5b7ac;
+    --ink-3: #92948a;
+    --rule: rgba(238, 240, 227, 0.13);
+    --rule-strong: rgba(238, 240, 227, 0.3);
+    --denim: #c3d27e;
+    --denim-2: #a9ba5e;
+    --camel: #93b4cc;
+    --camel-ink: #a3c1d6;
+    --band: #252b1c;
+    --band-ink: #eef0e3;
+    --band-ink-2: #aeb1a3;
+    --band-rule: rgba(238, 240, 227, 0.16);
+    --plot-a: rgba(195, 210, 126, 0.5);
+    --plot-b: rgba(147, 180, 204, 0.85);
+    --plot-faint: rgba(238, 240, 227, 0.12);
+    --plot-faint2: rgba(238, 240, 227, 0.2);
+    --selection: rgba(169, 186, 94, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="solid"], :root[data-theme="dark"] [data-field="solid"] {
+  --paper: #121410;
+  --paper-2: #1b1e16;
+  --paper-3: #161913;
+  --ink: #eef0e3;
+  --ink-2: #b5b7ac;
+  --ink-3: #92948a;
+  --rule: rgba(238, 240, 227, 0.13);
+  --rule-strong: rgba(238, 240, 227, 0.3);
+  --denim: #c3d27e;
+  --denim-2: #a9ba5e;
+  --camel: #93b4cc;
+  --camel-ink: #a3c1d6;
+  --band: #252b1c;
+  --band-ink: #eef0e3;
+  --band-ink-2: #aeb1a3;
+  --band-rule: rgba(238, 240, 227, 0.16);
+  --plot-a: rgba(195, 210, 126, 0.5);
+  --plot-b: rgba(147, 180, 204, 0.85);
+  --plot-faint: rgba(238, 240, 227, 0.12);
+  --plot-faint2: rgba(238, 240, 227, 0.2);
+  --selection: rgba(169, 186, 94, 0.28);
+  color-scheme: dark;
+}
+
+/* dyn: plum + teal */
+[data-field="dyn"] {
+  --paper: #f6eff5;
+  --paper-2: #ecdfea;
+  --paper-3: #fcf8fb;
+  --ink: #25111f;
+  --ink-2: #5b4b57;
+  --ink-3: #746570;
+  --rule: rgba(37, 17, 31, 0.14);
+  --rule-strong: rgba(37, 17, 31, 0.32);
+  --denim: #8c2d7b;
+  --denim-2: #a8428f;
+  --camel: #2f8084;
+  --camel-ink: #1d6064;
+  --band: #2a1227;
+  --band-ink: #f6ecf2;
+  --band-ink-2: #b5a6b1;
+  --band-rule: rgba(246, 236, 242, 0.18);
+  --plot-a: rgba(140, 45, 123, 0.58);
+  --plot-b: rgba(47, 128, 132, 0.9);
+  --plot-faint: rgba(37, 17, 31, 0.16);
+  --plot-faint2: rgba(37, 17, 31, 0.24);
+  --selection: rgba(168, 66, 143, 0.22);
+  --shadow: 0 18px 50px -24px rgba(37, 17, 31, 0.35);
+  --scrim: rgba(37, 17, 31, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="dyn"], :root:not([data-theme="light"]) [data-field="dyn"] {
+    --paper: #1a1018;
+    --paper-2: #261723;
+    --paper-3: #1f131d;
+    --ink: #f6ecf2;
+    --ink-2: #bdb3b9;
+    --ink-3: #9a9096;
+    --rule: rgba(246, 236, 242, 0.13);
+    --rule-strong: rgba(246, 236, 242, 0.3);
+    --denim: #e3a0d6;
+    --denim-2: #cf82c0;
+    --camel: #7cc6c4;
+    --camel-ink: #8fd1cf;
+    --band: #321b2e;
+    --band-ink: #f6ecf2;
+    --band-ink-2: #b7a9b3;
+    --band-rule: rgba(246, 236, 242, 0.16);
+    --plot-a: rgba(227, 160, 214, 0.5);
+    --plot-b: rgba(124, 198, 196, 0.85);
+    --plot-faint: rgba(246, 236, 242, 0.12);
+    --plot-faint2: rgba(246, 236, 242, 0.2);
+    --selection: rgba(207, 130, 192, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="dyn"], :root[data-theme="dark"] [data-field="dyn"] {
+  --paper: #1a1018;
+  --paper-2: #261723;
+  --paper-3: #1f131d;
+  --ink: #f6ecf2;
+  --ink-2: #bdb3b9;
+  --ink-3: #9a9096;
+  --rule: rgba(246, 236, 242, 0.13);
+  --rule-strong: rgba(246, 236, 242, 0.3);
+  --denim: #e3a0d6;
+  --denim-2: #cf82c0;
+  --camel: #7cc6c4;
+  --camel-ink: #8fd1cf;
+  --band: #321b2e;
+  --band-ink: #f6ecf2;
+  --band-ink-2: #b7a9b3;
+  --band-rule: rgba(246, 236, 242, 0.16);
+  --plot-a: rgba(227, 160, 214, 0.5);
+  --plot-b: rgba(124, 198, 196, 0.85);
+  --plot-faint: rgba(246, 236, 242, 0.12);
+  --plot-faint2: rgba(246, 236, 242, 0.2);
+  --selection: rgba(207, 130, 192, 0.28);
+  color-scheme: dark;
+}
+
+/* fluid: sea green + marine blue */
+[data-field="fluid"] {
+  --paper: #edf4f1;
+  --paper-2: #dceae3;
+  --paper-3: #f7fbf9;
+  --ink: #0e221a;
+  --ink-2: #485952;
+  --ink-3: #63726c;
+  --rule: rgba(14, 34, 26, 0.14);
+  --rule-strong: rgba(14, 34, 26, 0.32);
+  --denim: #1f7548;
+  --denim-2: #2e8f5c;
+  --camel: #2f6699;
+  --camel-ink: #245280;
+  --band: #0e2a21;
+  --band-ink: #e8f3ee;
+  --band-ink-2: #a2b3ac;
+  --band-rule: rgba(232, 243, 238, 0.18);
+  --plot-a: rgba(31, 117, 72, 0.58);
+  --plot-b: rgba(47, 102, 153, 0.9);
+  --plot-faint: rgba(14, 34, 26, 0.16);
+  --plot-faint2: rgba(14, 34, 26, 0.24);
+  --selection: rgba(46, 143, 92, 0.22);
+  --shadow: 0 18px 50px -24px rgba(14, 34, 26, 0.35);
+  --scrim: rgba(14, 34, 26, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="fluid"], :root:not([data-theme="light"]) [data-field="fluid"] {
+    --paper: #0c1814;
+    --paper-2: #13241d;
+    --paper-3: #0f1d18;
+    --ink: #e8f3ee;
+    --ink-2: #afbab5;
+    --ink-3: #8c9792;
+    --rule: rgba(232, 243, 238, 0.13);
+    --rule-strong: rgba(232, 243, 238, 0.3);
+    --denim: #86d49e;
+    --denim-2: #66bd83;
+    --camel: #86b4e0;
+    --camel-ink: #9cc3e8;
+    --band: #16332a;
+    --band-ink: #e8f3ee;
+    --band-ink-2: #a5b6af;
+    --band-rule: rgba(232, 243, 238, 0.16);
+    --plot-a: rgba(134, 212, 158, 0.5);
+    --plot-b: rgba(134, 180, 224, 0.85);
+    --plot-faint: rgba(232, 243, 238, 0.12);
+    --plot-faint2: rgba(232, 243, 238, 0.2);
+    --selection: rgba(102, 189, 131, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="fluid"], :root[data-theme="dark"] [data-field="fluid"] {
+  --paper: #0c1814;
+  --paper-2: #13241d;
+  --paper-3: #0f1d18;
+  --ink: #e8f3ee;
+  --ink-2: #afbab5;
+  --ink-3: #8c9792;
+  --rule: rgba(232, 243, 238, 0.13);
+  --rule-strong: rgba(232, 243, 238, 0.3);
+  --denim: #86d49e;
+  --denim-2: #66bd83;
+  --camel: #86b4e0;
+  --camel-ink: #9cc3e8;
+  --band: #16332a;
+  --band-ink: #e8f3ee;
+  --band-ink-2: #a5b6af;
+  --band-rule: rgba(232, 243, 238, 0.16);
+  --plot-a: rgba(134, 212, 158, 0.5);
+  --plot-b: rgba(134, 180, 224, 0.85);
+  --plot-faint: rgba(232, 243, 238, 0.12);
+  --plot-faint2: rgba(232, 243, 238, 0.2);
+  --selection: rgba(102, 189, 131, 0.28);
+  color-scheme: dark;
+}
+
+/* robot: graphite + signal amber */
+[data-field="robot"] {
+  --paper: #f0f1f2;
+  --paper-2: #e1e4e7;
+  --paper-3: #f9fafa;
+  --ink: #15191e;
+  --ink-2: #4e5155;
+  --ink-3: #686b6f;
+  --rule: rgba(21, 25, 30, 0.14);
+  --rule-strong: rgba(21, 25, 30, 0.32);
+  --denim: #3d5166;
+  --denim-2: #54697f;
+  --camel: #b0781a;
+  --camel-ink: #835709;
+  --band: #1c2026;
+  --band-ink: #eceef0;
+  --band-ink-2: #a9acaf;
+  --band-rule: rgba(236, 238, 240, 0.18);
+  --plot-a: rgba(61, 81, 102, 0.58);
+  --plot-b: rgba(176, 120, 26, 0.9);
+  --plot-faint: rgba(21, 25, 30, 0.16);
+  --plot-faint2: rgba(21, 25, 30, 0.24);
+  --selection: rgba(84, 105, 127, 0.22);
+  --shadow: 0 18px 50px -24px rgba(21, 25, 30, 0.35);
+  --scrim: rgba(21, 25, 30, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="robot"], :root:not([data-theme="light"]) [data-field="robot"] {
+    --paper: #111316;
+    --paper-2: #1a1d22;
+    --paper-3: #15181c;
+    --ink: #eceef0;
+    --ink-2: #b3b5b7;
+    --ink-3: #909294;
+    --rule: rgba(236, 238, 240, 0.13);
+    --rule-strong: rgba(236, 238, 240, 0.3);
+    --denim: #a9bdd2;
+    --denim-2: #8ea5bd;
+    --camel: #e6b35a;
+    --camel-ink: #ecc06f;
+    --band: #22272e;
+    --band-ink: #eceef0;
+    --band-ink-2: #abaeb2;
+    --band-rule: rgba(236, 238, 240, 0.16);
+    --plot-a: rgba(169, 189, 210, 0.5);
+    --plot-b: rgba(230, 179, 90, 0.85);
+    --plot-faint: rgba(236, 238, 240, 0.12);
+    --plot-faint2: rgba(236, 238, 240, 0.2);
+    --selection: rgba(142, 165, 189, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="robot"], :root[data-theme="dark"] [data-field="robot"] {
+  --paper: #111316;
+  --paper-2: #1a1d22;
+  --paper-3: #15181c;
+  --ink: #eceef0;
+  --ink-2: #b3b5b7;
+  --ink-3: #909294;
+  --rule: rgba(236, 238, 240, 0.13);
+  --rule-strong: rgba(236, 238, 240, 0.3);
+  --denim: #a9bdd2;
+  --denim-2: #8ea5bd;
+  --camel: #e6b35a;
+  --camel-ink: #ecc06f;
+  --band: #22272e;
+  --band-ink: #eceef0;
+  --band-ink-2: #abaeb2;
+  --band-rule: rgba(236, 238, 240, 0.16);
+  --plot-a: rgba(169, 189, 210, 0.5);
+  --plot-b: rgba(230, 179, 90, 0.85);
+  --plot-faint: rgba(236, 238, 240, 0.12);
+  --plot-faint2: rgba(236, 238, 240, 0.2);
+  --selection: rgba(142, 165, 189, 0.28);
+  color-scheme: dark;
+}
+
+/* ml: amber + indigo */
+[data-field="ml"] {
+  --paper: #f9f1e7;
+  --paper-2: #f0e0cc;
+  --paper-3: #fdf9f4;
+  --ink: #25180c;
+  --ink-2: #5c5045;
+  --ink-3: #766a5f;
+  --rule: rgba(37, 24, 12, 0.14);
+  --rule-strong: rgba(37, 24, 12, 0.32);
+  --denim: #9a4b0e;
+  --denim-2: #c0661c;
+  --camel: #4a5596;
+  --camel-ink: #3b4585;
+  --band: #2a1c0f;
+  --band-ink: #f6eee3;
+  --band-ink-2: #b5ab9f;
+  --band-rule: rgba(246, 238, 227, 0.18);
+  --plot-a: rgba(154, 75, 14, 0.58);
+  --plot-b: rgba(74, 85, 150, 0.9);
+  --plot-faint: rgba(37, 24, 12, 0.16);
+  --plot-faint2: rgba(37, 24, 12, 0.24);
+  --selection: rgba(192, 102, 28, 0.22);
+  --shadow: 0 18px 50px -24px rgba(37, 24, 12, 0.35);
+  --scrim: rgba(37, 24, 12, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="ml"], :root:not([data-theme="light"]) [data-field="ml"] {
+    --paper: #17120c;
+    --paper-2: #231b12;
+    --paper-3: #1c160e;
+    --ink: #f6eee3;
+    --ink-2: #bcb5ab;
+    --ink-3: #989289;
+    --rule: rgba(246, 238, 227, 0.13);
+    --rule-strong: rgba(246, 238, 227, 0.3);
+    --denim: #f0a560;
+    --denim-2: #e08b42;
+    --camel: #a3adeb;
+    --camel-ink: #b1baf0;
+    --band: #2f2418;
+    --band-ink: #f6eee3;
+    --band-ink-2: #b6ada2;
+    --band-rule: rgba(246, 238, 227, 0.16);
+    --plot-a: rgba(240, 165, 96, 0.5);
+    --plot-b: rgba(163, 173, 235, 0.85);
+    --plot-faint: rgba(246, 238, 227, 0.12);
+    --plot-faint2: rgba(246, 238, 227, 0.2);
+    --selection: rgba(224, 139, 66, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="ml"], :root[data-theme="dark"] [data-field="ml"] {
+  --paper: #17120c;
+  --paper-2: #231b12;
+  --paper-3: #1c160e;
+  --ink: #f6eee3;
+  --ink-2: #bcb5ab;
+  --ink-3: #989289;
+  --rule: rgba(246, 238, 227, 0.13);
+  --rule-strong: rgba(246, 238, 227, 0.3);
+  --denim: #f0a560;
+  --denim-2: #e08b42;
+  --camel: #a3adeb;
+  --camel-ink: #b1baf0;
+  --band: #2f2418;
+  --band-ink: #f6eee3;
+  --band-ink-2: #b6ada2;
+  --band-rule: rgba(246, 238, 227, 0.16);
+  --plot-a: rgba(240, 165, 96, 0.5);
+  --plot-b: rgba(163, 173, 235, 0.85);
+  --plot-faint: rgba(246, 238, 227, 0.12);
+  --plot-faint2: rgba(246, 238, 227, 0.2);
+  --selection: rgba(224, 139, 66, 0.28);
+  color-scheme: dark;
+}
+
+/* dnn: wine + sage */
+[data-field="dnn"] {
+  --paper: #f8f0ef;
+  --paper-2: #efdfdf;
+  --paper-3: #fdf8f8;
+  --ink: #260f15;
+  --ink-2: #5d4a4e;
+  --ink-3: #766568;
+  --rule: rgba(38, 15, 21, 0.14);
+  --rule-strong: rgba(38, 15, 21, 0.32);
+  --denim: #7a2638;
+  --denim-2: #9c3a4f;
+  --camel: #5d7a52;
+  --camel-ink: #46613c;
+  --band: #2b1016;
+  --band-ink: #f6eaed;
+  --band-ink-2: #b5a4a8;
+  --band-rule: rgba(246, 234, 237, 0.18);
+  --plot-a: rgba(122, 38, 56, 0.58);
+  --plot-b: rgba(93, 122, 82, 0.9);
+  --plot-faint: rgba(38, 15, 21, 0.16);
+  --plot-faint2: rgba(38, 15, 21, 0.24);
+  --selection: rgba(156, 58, 79, 0.22);
+  --shadow: 0 18px 50px -24px rgba(38, 15, 21, 0.35);
+  --scrim: rgba(38, 15, 21, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="dnn"], :root:not([data-theme="light"]) [data-field="dnn"] {
+    --paper: #190e11;
+    --paper-2: #25161a;
+    --paper-3: #1e1115;
+    --ink: #f6eaed;
+    --ink-2: #bdb1b4;
+    --ink-3: #998e91;
+    --rule: rgba(246, 234, 237, 0.13);
+    --rule-strong: rgba(246, 234, 237, 0.3);
+    --denim: #e59aab;
+    --denim-2: #d17c90;
+    --camel: #a8c79a;
+    --camel-ink: #b5d2a8;
+    --band: #331b21;
+    --band-ink: #f6eaed;
+    --band-ink-2: #b8a8ac;
+    --band-rule: rgba(246, 234, 237, 0.16);
+    --plot-a: rgba(229, 154, 171, 0.5);
+    --plot-b: rgba(168, 199, 154, 0.85);
+    --plot-faint: rgba(246, 234, 237, 0.12);
+    --plot-faint2: rgba(246, 234, 237, 0.2);
+    --selection: rgba(209, 124, 144, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="dnn"], :root[data-theme="dark"] [data-field="dnn"] {
+  --paper: #190e11;
+  --paper-2: #25161a;
+  --paper-3: #1e1115;
+  --ink: #f6eaed;
+  --ink-2: #bdb1b4;
+  --ink-3: #998e91;
+  --rule: rgba(246, 234, 237, 0.13);
+  --rule-strong: rgba(246, 234, 237, 0.3);
+  --denim: #e59aab;
+  --denim-2: #d17c90;
+  --camel: #a8c79a;
+  --camel-ink: #b5d2a8;
+  --band: #331b21;
+  --band-ink: #f6eaed;
+  --band-ink-2: #b8a8ac;
+  --band-rule: rgba(246, 234, 237, 0.16);
+  --plot-a: rgba(229, 154, 171, 0.5);
+  --plot-b: rgba(168, 199, 154, 0.85);
+  --plot-faint: rgba(246, 234, 237, 0.12);
+  --plot-faint2: rgba(246, 234, 237, 0.2);
+  --selection: rgba(209, 124, 144, 0.28);
+  color-scheme: dark;
+}
+
+/* med: clinical teal + rose */
+[data-field="med"] {
+  --paper: #edf5f5;
+  --paper-2: #dbeaea;
+  --paper-3: #f7fbfb;
+  --ink: #0c2222;
+  --ink-2: #475959;
+  --ink-3: #627272;
+  --rule: rgba(12, 34, 34, 0.14);
+  --rule-strong: rgba(12, 34, 34, 0.32);
+  --denim: #16676a;
+  --denim-2: #1f8a8a;
+  --camel: #b0566e;
+  --camel-ink: #8e3d55;
+  --band: #0c2a2b;
+  --band-ink: #e7f4f3;
+  --band-ink-2: #a1b3b3;
+  --band-rule: rgba(231, 244, 243, 0.18);
+  --plot-a: rgba(22, 103, 106, 0.58);
+  --plot-b: rgba(176, 86, 110, 0.9);
+  --plot-faint: rgba(12, 34, 34, 0.16);
+  --plot-faint2: rgba(12, 34, 34, 0.24);
+  --selection: rgba(31, 138, 138, 0.22);
+  --shadow: 0 18px 50px -24px rgba(12, 34, 34, 0.35);
+  --scrim: rgba(12, 34, 34, 0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-field="med"], :root:not([data-theme="light"]) [data-field="med"] {
+    --paper: #0b1717;
+    --paper-2: #122323;
+    --paper-3: #0e1c1c;
+    --ink: #e7f4f3;
+    --ink-2: #aebbba;
+    --ink-3: #8b9797;
+    --rule: rgba(231, 244, 243, 0.13);
+    --rule-strong: rgba(231, 244, 243, 0.3);
+    --denim: #7fd0cc;
+    --denim-2: #5fb8b4;
+    --camel: #e79ab0;
+    --camel-ink: #eeaabd;
+    --band: #153233;
+    --band-ink: #e7f4f3;
+    --band-ink-2: #a4b6b6;
+    --band-rule: rgba(231, 244, 243, 0.16);
+    --plot-a: rgba(127, 208, 204, 0.5);
+    --plot-b: rgba(231, 154, 176, 0.85);
+    --plot-faint: rgba(231, 244, 243, 0.12);
+    --plot-faint2: rgba(231, 244, 243, 0.2);
+    --selection: rgba(95, 184, 180, 0.28);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"][data-field="med"], :root[data-theme="dark"] [data-field="med"] {
+  --paper: #0b1717;
+  --paper-2: #122323;
+  --paper-3: #0e1c1c;
+  --ink: #e7f4f3;
+  --ink-2: #aebbba;
+  --ink-3: #8b9797;
+  --rule: rgba(231, 244, 243, 0.13);
+  --rule-strong: rgba(231, 244, 243, 0.3);
+  --denim: #7fd0cc;
+  --denim-2: #5fb8b4;
+  --camel: #e79ab0;
+  --camel-ink: #eeaabd;
+  --band: #153233;
+  --band-ink: #e7f4f3;
+  --band-ink-2: #a4b6b6;
+  --band-rule: rgba(231, 244, 243, 0.16);
+  --plot-a: rgba(127, 208, 204, 0.5);
+  --plot-b: rgba(231, 154, 176, 0.85);
+  --plot-faint: rgba(231, 244, 243, 0.12);
+  --plot-faint2: rgba(231, 244, 243, 0.2);
+  --selection: rgba(95, 184, 180, 0.28);
+  color-scheme: dark;
+}
+
+/* 기초 수학은 다른 분야가 가져다 쓰는 곳이라 ‘이 개념을 쓰는 곳’ 상자에 보조색 선을 둡니다 */
+[data-field="base"] .usedby { border-left: 3px solid var(--camel); }

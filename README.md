@@ -31,20 +31,21 @@
 ```
 index.html            허브
 core/app.js           분야 페이지 엔진 (라우팅, 채점, 모의고사, 증명 찾기, 연결 주석)
-core/style.css        공통 스타일 (기본 색은 공학수학)   core/hub.css, core/hub.js  허브 전용
+core/style.css        공통 스타일 (기본 색은 허브의 것)   core/hub.css, core/hub.js  허브 전용
+core/fields.css       분야별 색: 종이·잉크·강조색·보조색·띠 (tools/palette.pl이 생성, <html data-field>로 고름)
 core/net.js           분야 목록 (이름, 경로, 저장 키, 공개 여부)
 core/net-index.js     분야 사이 제목·링크 색인 (tools/netindex.sh가 생성)
 core/net-search.js    허브 검색 색인 (생성)
 core/plots.js         단원 표지 그림의 틀   core/calc.js  단답형 계산기   core/katex.css
 <분야>/site.js        분야 설정: 이름, 파트, 문구, 저장 키
 <분야>/site.env       페이지 제목·설명·글꼴   <분야>/manifest.txt  데이터 파일 순서
-<분야>/theme.css      분야의 강조색 (선택, 나머지 모양은 모든 분야가 같음)
 <분야>/plots.js       단원 표지 그림   <분야>/figs.js  본문 SVG 그림 (선택, 역학 분야는 core/figkit.js 도구를 씀)
 <분야>/data/*.js      단원, 연습문제, 증명, 모의고사
 tools/build.sh        분야 페이지와 검사 하네스 생성, 파일 주소에 내용 해시(?v=) 붙이기
 tools/netindex.sh     전 분야 검사 + 색인 생성 (헤드리스 Chrome)
 tools/checks.js       KaTeX 오류, 남은 $, 정답 형식, 증명↔공식 상자, 연결 주석 대상, 모든 라우트 검사
 tools/banner.html     배너 원본 (1280×640 → assets/banner.png, assets/og.png)
+tools/palette.pl      분야별 색표 → core/fields.css, 사이트 아이콘(이탤릭 é) → assets/icons/ (SVG·PNG)
 ```
 
 ## 고치고 확인하기
@@ -55,6 +56,6 @@ bash tools/netindex.sh      # 페이지를 다시 만들고, 모든 분야를 �
 
 분야마다 `RESULT OK`가 나오면 됩니다. 콘텐츠는 `String.raw` 템플릿이라 `${`를 쓰지 않고, 절 제목에는 `$`를 넣지 않습니다.
 
-**새 분야 추가:** `<분야>/`에 `site.js`, `site.env`, `manifest.txt`, `data/`를 만들고 `core/net.js`의 `NET.fields`에 한 줄 넣은 뒤 `tools/build.sh`와 `tools/netindex.sh`의 `FIELDS`에 이름을 더합니다.
+**새 분야 추가:** `<분야>/`에 `site.js`, `site.env`, `manifest.txt`, `data/`를 만들고 `core/net.js`의 `NET.fields`에 한 줄 넣은 뒤 `tools/build.sh`와 `tools/netindex.sh`의 `FIELDS`에 이름을 더합니다. 색은 `tools/palette.pl`의 표에 한 줄 더하고 `perl tools/palette.pl`을 돌리면 `core/fields.css`와 아이콘이 생깁니다.
 
 로컬에서 보려면 `index.html`을 브라우저로 열면 됩니다. 수식 렌더링(KaTeX)과 글꼴은 CDN에서 불러오므로 인터넷 연결이 필요합니다.

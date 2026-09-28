@@ -87,7 +87,10 @@
     // labels run right of every column but the last, whose labels run left: leave one label width between
     // neighbouring columns and two before the last, so no two columns' labels meet
     const xs = groups.map((c, i) => edge + i * (LW + 30) + (i && i === groups.length - 1 ? LW + 10 : 0));
-    const W = groups.length === 1 ? 1180 : xs[xs.length - 1] + 30;
+    // a cubic arc whose two handles stand out by `out` reaches 3/4 of it, so a last column holding several fields
+    // (their links arc out to the right) needs that much room after it, or the arcs are cut at the edge
+    const ARC = 110, tail = groups.length > 1 && groups[groups.length - 1].fields.length > 1 ? Math.ceil(0.75 * ARC) + 12 : 30;
+    const W = groups.length === 1 ? 1180 : xs[xs.length - 1] + tail;
     const cols = groups.map((c, i) => Object.assign(c, { x: groups.length === 1 ? W / 2 : xs[i], last: i === groups.length - 1 }));
     // slots: a small header before each field when the column holds several, and a blank slot between fields
     cols.forEach((c) => {
@@ -125,7 +128,7 @@
       let d;
       if (Math.abs(q.x - p.x) < 1) {
         // two fields in the same column: an arc out to the free side
-        const out = Math.min(40 + Math.abs(q.y - p.y) * 0.3, 110) * (p.last ? 1 : -1);
+        const out = Math.min(40 + Math.abs(q.y - p.y) * 0.3, ARC) * (p.last ? 1 : -1);
         d = `M${p.x},${p.y} C${p.x + out},${p.y} ${q.x + out},${q.y} ${q.x},${q.y}`;
       } else {
         const dx = (q.x - p.x) * 0.5;

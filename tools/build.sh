@@ -37,11 +37,10 @@ EOF
 for f in $FIELDS; do
   TITLE=""; DESC=""; FONTS=""
   source "$f/site.env"
-  theme=""; [ -f "$f/theme.css" ] && theme="<link rel=\"stylesheet\" href=\"theme.css\">"
   {
     cat <<EOF
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-field="$f">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -60,7 +59,10 @@ for f in $FIELDS; do
 <link rel="stylesheet" href="$FONTS">
 <link rel="stylesheet" href="../core/katex.css">
 <link rel="stylesheet" href="../core/style.css">
-$theme
+<link rel="stylesheet" href="../core/fields.css">
+<link rel="icon" href="../assets/icons/$f-32.png" sizes="32x32">
+<link rel="icon" href="../assets/icons/$f.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/$f-180.png">
 </head>
 <body>
 EOF
@@ -72,19 +74,19 @@ EOF
   } | grep -v '^$' > "$f/index.html"
   stamp "$f/index.html"
   # claude.ai 게시본은 올릴 때마다 새 판이라 캐시 걱정이 없고 ?v= 주소를 못 찾을 수 있으니, 꼬리표 없는 사본을 따로 둡니다.
-  mkdir -p "tools/art/$f" && sed -e 's/?v=[0-9a-f]*//g' "$f/index.html" > "tools/art/$f/index.html"
+  mkdir -p "tools/art/$f" && sed -e 's/?v=[0-9a-f]*//g' -e '/rel="icon"/d' -e '/rel="apple-touch-icon"/d' "$f/index.html" > "tools/art/$f/index.html"
 
   {
     cat <<EOF
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-field="$f">
 <head>
 <meta charset="utf-8">
 <title>test $f</title>
 <link rel="stylesheet" href="$FONTS">
 <link rel="stylesheet" href="../core/katex.css">
 <link rel="stylesheet" href="../core/style.css">
-$( [ -f "$f/theme.css" ] && echo "<link rel=\"stylesheet\" href=\"../$f/theme.css\">" )
+<link rel="stylesheet" href="../core/fields.css">
 </head><body>
 <script>window.__errors=[];window.addEventListener("error",function(e){window.__errors.push("window.error: "+e.message+" @"+(e.filename||"")+":"+e.lineno)});try{localStorage.clear()}catch(e){}</script>
 EOF
@@ -100,6 +102,6 @@ if [ -f index.html ]; then
 stamp index.html
 # claude.ai 게시본의 첫 화면: index.html에서 <!doctype>·<html>·<head>·<body> 껍데기와 og 메타를 걷어 냅니다.
 sed -e '/^<!doctype html>/d' -e '/^<html/d' -e '/^<\/html>/d' -e '/^<head>/d' -e '/^<\/head>/d' -e '/^<body/d' -e '/^<\/body>/d' \
-    -e '/<meta charset/d' -e '/<meta name="viewport"/d' -e '/<meta property=/d' -e '/<meta name="twitter/d' -e 's/?v=[0-9a-f]*//g' index.html > publish.html
+    -e '/<meta charset/d' -e '/<meta name="viewport"/d' -e '/<meta property=/d' -e '/<meta name="twitter/d' -e '/rel="icon"/d' -e '/rel="apple-touch-icon"/d' -e 's/?v=[0-9a-f]*//g' index.html > publish.html
 echo "built publish.html"
 fi
