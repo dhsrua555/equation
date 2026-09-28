@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Équation 심층 신경망</title>
-<meta name="description" content="심층 신경망의 수학적 기초 1–4주차: 회귀·확률·정보이론, 로지스틱·소프트맥스·SVM, 역전파·초기화·배치 정규화, 하강 보조정리. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta name="description" content="심층 신경망의 수학적 기초 1–5주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Équation 심층 신경망">
-<meta property="og:description" content="심층 신경망의 수학적 기초 1–4주차: 회귀·확률·정보이론, 로지스틱·소프트맥스·SVM, 역전파·초기화·배치 정규화, 하강 보조정리. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta property="og:description" content="심층 신경망의 수학적 기초 1–5주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:url" content="https://dhsrua555.github.io/equation/dnn/">
 <meta property="og:image" content="https://dhsrua555.github.io/equation/assets/og.png">
 <meta property="og:image:width" content="1280">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Jost:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Hahmlet:wght@400..700&display=swap">
 <link rel="stylesheet" href="../core/katex.css?v=68ce9d31">
-<link rel="stylesheet" href="../core/style.css?v=c5552bb2">
+<link rel="stylesheet" href="../core/style.css?v=3875357f">
 <link rel="stylesheet" href="../core/fields.css?v=907d5e23">
 <link rel="icon" href="../assets/icons/dnn-32.png" sizes="32x32">
 <link rel="icon" href="../assets/icons/dnn.svg" type="image/svg+xml">
@@ -31,10 +31,10 @@
 <div id="toast-root" aria-live="polite"></div>
 <noscript><p style="padding:24px">이 사이트는 JavaScript가 필요합니다.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="../core/net.js?v=35fd8038"></script>
-<script src="../core/net-index.js?v=1e81f214"></script>
-<script src="site.js?v=55d6ddbb"></script>
-<script src="../core/figkit.js?v=4a83b812"></script><script src="figs.js?v=d2f2e49d"></script>
+<script src="../core/net.js?v=8ed832e3"></script>
+<script src="../core/net-index.js?v=9c6fe9f8"></script>
+<script src="site.js?v=f0a4b027"></script>
+<script src="../core/figkit.js?v=f0aa6f1b"></script><script src="figs.js?v=d2f2e49d"></script>
 <script src="data/u01.js?v=bf59fd6e"></script>
 <script src="data/u02.js?v=09e0eaf9"></script>
 <script src="data/u03.js?v=7014f377"></script>
@@ -48,14 +48,57 @@
 <script src="data/u11.js?v=5ff7a606"></script>
 <script src="data/u12.js?v=300bffdc"></script>
 <script src="data/u13.js?v=c053361d"></script>
+<script src="data/u14.js?v=7ca91b73"></script>
 <script src="data/proofs-a.js?v=e1798fcd"></script>
 <script src="data/proofs-b.js?v=fa0e78fd"></script>
 <script src="data/proofs-c.js?v=41111756"></script>
 <script src="data/proofs-d.js?v=a2efb2f9"></script>
+<script src="data/proofs-e.js?v=bd73cfc8"></script>
 <script src="data/exams.js?v=1817872d"></script>
+<script src="data/exams-2.js?v=06caeba8"></script>
+<script src="data/learn-01.js?v=9f371321"></script>
+<script src="data/more-01.js?v=8e849067"></script>
+<script src="data/fig-01.js?v=cd1b3574"></script>
+<script src="data/learn-02.js?v=89187882"></script>
+<script src="data/more-02.js?v=01b11837"></script>
+<script src="data/fig-02.js?v=6493d623"></script>
+<script src="data/learn-03.js?v=d1105427"></script>
+<script src="data/more-03.js?v=61c3ee9b"></script>
+<script src="data/fig-03.js?v=95c46823"></script>
+<script src="data/learn-04.js?v=cd57a6db"></script>
+<script src="data/more-04.js?v=8ad008d3"></script>
+<script src="data/fig-04.js?v=2899dc46"></script>
+<script src="data/learn-05.js?v=fe6ab672"></script>
+<script src="data/more-05.js?v=e8b169af"></script>
+<script src="data/fig-05.js?v=2824d8f4"></script>
+<script src="data/learn-06.js?v=4a18f3dc"></script>
+<script src="data/more-06.js?v=f93f1159"></script>
+<script src="data/fig-06.js?v=6d642a37"></script>
+<script src="data/learn-07.js?v=ab6faba8"></script>
+<script src="data/more-07.js?v=f411d7ce"></script>
+<script src="data/fig-07.js?v=b336a646"></script>
+<script src="data/learn-08.js?v=aa5dd1de"></script>
+<script src="data/more-08.js?v=57fa91a6"></script>
+<script src="data/fig-08.js?v=dc8b56f0"></script>
+<script src="data/learn-09.js?v=1e2d76fa"></script>
+<script src="data/more-09.js?v=a42092b8"></script>
+<script src="data/fig-09.js?v=84663f8c"></script>
+<script src="data/learn-10.js?v=83d94fe6"></script>
+<script src="data/more-10.js?v=88e25050"></script>
+<script src="data/fig-10.js?v=830dc84f"></script>
+<script src="data/learn-11.js?v=ab6d8074"></script>
+<script src="data/more-11.js?v=ed6abe50"></script>
+<script src="data/fig-11.js?v=73931153"></script>
+<script src="data/learn-12.js?v=47e66fa7"></script>
+<script src="data/more-12.js?v=962c5b6e"></script>
+<script src="data/fig-12.js?v=f8f78171"></script>
+<script src="data/learn-13.js?v=08d7dd01"></script>
+<script src="data/more-13.js?v=bf6decf2"></script>
+<script src="data/fig-13.js?v=7fce02f3"></script>
+<script src="data/fig-14.js?v=572451f9"></script>
 <script src="../core/calc.js?v=b965d12c"></script>
 <script src="../core/plots.js?v=8830cd2f"></script>
-<script src="plots.js?v=c8e7d431"></script>
+<script src="plots.js?v=e4abb3f2"></script>
 <script src="../core/app.js?v=9c6a41ec"></script>
 </body>
 </html>

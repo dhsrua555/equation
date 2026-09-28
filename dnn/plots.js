@@ -202,6 +202,18 @@
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -3, 0, 103, 0);
     },
     // 13 — descent lemma: a β-smooth function lies under the quadratic built at every point
+    // 14: gradient descent zigzags on an ill-conditioned quadratic, momentum rolls through
+    momentum(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -2.2 * asp, 2.2 * asp, -2.2, 2.2);
+      const A = 0.1, B = 2.5; // f = A x² + B y²
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1;
+      for (let k = 1; k <= 11; k++) { const r = 0.2 * k; ctx.beginPath(); for (let t = 0; t <= 200; t++) { const u = (t / 200) * TAU; const x = (r / Math.sqrt(A)) * Math.cos(u), y = (r / Math.sqrt(B)) * Math.sin(u); t ? ctx.lineTo(T.X(x), T.Y(y)) : ctx.moveTo(T.X(x), T.Y(y)); } ctx.stroke(); }
+      const draw = (P2) => { ctx.beginPath(); P2.forEach(([x, y], k) => (k ? ctx.lineTo(T.X(x), T.Y(y)) : ctx.moveTo(T.X(x), T.Y(y)))); ctx.stroke(); };
+      const gd = () => { let x = -2.7, y = 1.3; const P2 = [[x, y]]; for (let k = 0; k < 45; k++) { x -= 0.37 * 2 * A * x; y -= 0.37 * 2 * B * y; P2.push([x, y]); } return P2; };
+      const hb = () => { let x = -2.7, y = -1.3, vx = 0, vy = 0; const P2 = [[x, y]]; for (let k = 0; k < 45; k++) { vx = 0.8 * vx - 0.08 * 2 * A * x; vy = 0.8 * vy - 0.08 * 2 * B * y; x += vx; y += vy; P2.push([x, y]); } return P2; };
+      ctx.strokeStyle = c.a; ctx.lineWidth = 1.2; draw(gd());
+      ctx.strokeStyle = c.b; ctx.lineWidth = 1.9; draw(hb());
+    },
     descent(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -3.2 * asp / 1.4, 3.2 * asp / 1.4, -1.6, 3.4);
       const f = (x) => 0.35 * x * x + 0.55 * Math.sin(2.2 * x) + 0.15 * Math.cos(5 * x) * 0.3;

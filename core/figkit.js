@@ -99,5 +99,62 @@
   function area(x0, y0, sx, sy, f, a, b, n = 80) {
     return `M${f1(x0 + sx * a)},${f1(y0)}` + fn(x0, y0, sx, sy, f, a, b, n).replace(/^M/, 'L') + `L${f1(x0 + sx * b)},${f1(y0)}Z`;
   }
-  window.FK = { fig, L, A, A2, T, R, C, P, ground, wall, pin, roller, dist, dim, dimv, mom, fn, area, f1 };
+  // ---- function graphs (moved from em/figs.js so every field can plot): G one panel, G2 several ----
+  let UID = 0;
+  // one graph panel. o: x:[a,b], y:[c,d], w,h (panel size), ox,oy (offset), m:[top,right,bottom,left],
+  // xt/yt: [[value,label]], xl/yl: axis names, hg/vg: dashed guide values, c: curves [{f|pts, a, b, n, c}],
+  // t: labels [[x,y,text,{a,c,s}]], extra(X,Y): raw svg in data coordinates, title: small caption above the panel
+  function Gp(o) {
+    const W = o.w || 560, H = o.h || 250, ox = o.ox || 0, oy = o.oy || 0;
+    const [mt, mr, mb, ml] = o.m || [14, 18, 24, 34];
+    const [xa, xb] = o.x, [ya, yb] = o.y;
+    const X = (x) => ox + ml + ((x - xa) / (xb - xa)) * (W - ml - mr);
+    const Y = (y) => oy + mt + ((yb - y) / (yb - ya)) * (H - mt - mb);
+    const id = 'emg' + (++UID);
+    const ax0 = o.ax0 != null ? o.ax0 : (ya <= 0 && yb >= 0 ? 0 : ya);
+    const ay0 = o.ay0 != null ? o.ay0 : (xa <= 0 && xb >= 0 ? 0 : xa);
+    let s = `<defs><clipPath id="${id}"><rect x="${f1(X(xa))}" y="${f1(Y(yb) - 3)}" width="${f1(X(xb) - X(xa))}" height="${f1(Y(ya) - Y(yb) + 6)}"/></clipPath></defs>`;
+    (o.hg || []).forEach((v) => { s += L(X(xa), Y(v), X(xb), Y(v), 'dm ds'); });
+    (o.vg || []).forEach((v) => { s += L(X(v), Y(ya), X(v), Y(yb), 'dm ds'); });
+    if (o.axes !== false) s += L(X(xa), Y(ax0), X(xb), Y(ax0), 'ax') + (o.noY ? '' : L(X(ay0), Y(ya), X(ay0), Y(yb), 'ax'));
+    (o.xt || []).forEach(([v, lab]) => { s += L(X(v), Y(ax0) - 3, X(v), Y(ax0) + 3, 'ax') + (lab !== '' ? T(X(v), Y(ax0) + 15, lab) : ''); });
+    (o.yt || []).forEach(([v, lab]) => { s += L(X(ay0) - 3, Y(v), X(ay0) + 3, Y(v), 'ax') + (lab !== '' ? T(X(ay0) - 6, Y(v) + 4, lab, { a: 'end' }) : ''); });
+    if (o.xl) s += T(X(xb) - 2, Y(ax0) - 7, o.xl, { a: 'end' });
+    if (o.yl) s += T(X(ay0) + 6, Y(yb) + 9, o.yl, { a: 'start' });
+    if (o.title) s += T(ox + W / 2, oy + 11, o.title, { c: 'em' });
+    let g = '';
+    (o.c || []).forEach((cv) => {
+      let d = '';
+      if (cv.pts) {
+        let pen = false;
+        cv.pts.forEach((p) => {
+          if (!p) { pen = false; return; }
+          d += (pen ? 'L' : 'M') + f1(X(p[0])) + ',' + f1(Y(p[1])); pen = true;
+        });
+      } else {
+        const a = cv.a != null ? cv.a : xa, b = cv.b != null ? cv.b : xb, n = cv.n || 320;
+        const lim = (yb - ya) * 1.5;
+        let pen = false;
+        for (let k = 0; k <= n; k++) {
+          const x = a + ((b - a) * k) / n, y = cv.f(x);
+          if (!isFinite(y) || y > yb + lim || y < ya - lim) { pen = false; continue; }
+          d += (pen ? 'L' : 'M') + f1(X(x)) + ',' + f1(Y(y)); pen = true;
+        }
+      }
+      g += `<path class="${cv.c || 'ld'}" d="${d}"/>`;
+    });
+    s += `<g clip-path="url(#${id})">${g}${o.inner ? o.inner(X, Y) : ''}</g>`;
+    if (o.extra) s += o.extra(X, Y);
+    (o.t || []).forEach(([x, y, str, opt]) => { s += T(X(x), Y(y), str, opt || {}); });
+    return s;
+  }
+  const G = (o) => fig(o.w || 560, o.h || 250, o.label || '', Gp(o), o.cap);
+  // several panels in one figure: G2(W, H, label, [panel options...], cap)
+  const G2 = (W, H, label, ps, cap) => fig(W, H, label, ps.map(Gp).join(''), cap);
+  // stems (spectra, sequences) and dots drawn in data coordinates inside extra/inner
+  const stems = (X, Y, pts, c = 'ld') => pts.map(([x, y]) => L(X(x), Y(0), X(x), Y(y), c) + `<circle class="dotf" cx="${f1(X(x))}" cy="${f1(Y(y))}" r="2.6"/>`).join('');
+  const dot = (X, Y, x, y, open) => `<circle class="${open ? 'doto' : 'dotf'}" cx="${f1(X(x))}" cy="${f1(Y(y))}" r="3"/>`;
+  // legend rows at a pixel position: [[line class, text], ...]
+  const legend = (px, py, items) => items.map(([c, t], i) => L(px, py + i * 16 - 4, px + 20, py + i * 16 - 4, c) + T(px + 26, py + i * 16, t, { a: 'start' })).join('');
+  window.FK = { fig, L, A, A2, T, R, C, P, ground, wall, pin, roller, dist, dim, dimv, mom, fn, area, f1, Gp, G, G2, stems, dot, legend };
 })();

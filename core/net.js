@@ -50,7 +50,7 @@
     {
       id: 'dnn', group: 'ai', short: '심층 신경망', tiny: '신경망', name: '심층 신경망의 수학적 기초', en: 'Mathematics of Deep Neural Networks',
       path: 'dnn/', key: 'reseau-dnn-v1', plot: 'descent', live: true,
-      desc: '회귀·확률·정보이론, 로지스틱·소프트맥스·SVM, 역전파·초기화·배치 정규화, 하강 보조정리.',
+      desc: '1–5주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·AdaGrad·RMSProp·Adam.',
     },
     {
       id: 'med', group: 'ai', short: '의료 인공지능', tiny: '의료 AI', name: '의료 인공지능 및 소프트웨어 시스템', en: 'Medical AI & Software Systems',
