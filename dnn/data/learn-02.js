@@ -339,6 +339,7 @@ $X_1,\dots,X_n$이 독립이고 $X_i\sim\N(\theta,1)$ (분산 1은 알고, 평�
 
 사후분포 $\propto$ 가능도 $\times$ 사전분포이므로
 $$\begin{aligned}\log p(\theta\mid X)&=\sum_{i=1}^n\log\Big(\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}\Big)+\log\Big(\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}\Big)+C\\&=-\frac12\sum_{i=1}^n(X_i-\theta)^2-\frac{\theta^2}{2\tau^2}+C'.\end{aligned}$$
+첫 줄의 재료는 셋입니다. 사후분포 $\propto$ 가능도 $\times$ 사전분포(2.5절), 독립이라 가능도가 $\prod_ip(X_i\mid\theta)$로 갈라지는 것(2.4절), 그리고 정규밀도 $\frac1{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/(2\sigma^2)}$에 가능도는 $(x,\mu,\sigma^2)=(X_i,\theta,1)$, 사전분포는 $(\theta,0,\tau^2)$를 넣은 것(2.3절의 표)입니다. 로그의 곱이 합이 되고 $\log e^u=u$라서 둘째 줄이 나옵니다. (이 대입은 머리말의 **퀴즈풀이** 탭, 문제 2의 풀이에 표로 한 단계씩 풀어 두었습니다.)
 $\theta$와 무관한 상수를 버리고 $-2$를 곱하면 최대화가 최소화로 바뀝니다.
 
 :::key 가우시안 MAP은 릿지

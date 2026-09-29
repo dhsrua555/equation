@@ -85,6 +85,7 @@ $$\hat\theta_{\text{MAP}}=\argmin_\theta\sum_{i=1}^n(X_i-\theta)^2+\lambda\theta
 
 :::key 핵심 포인트
 - **MAP = 사후분포의 최대점 = “음의 로그가능도 + 음의 로그사전분포”의 최소점.** 증거 $p(X)$와 정규화 상수는 $\theta$와 무관해서 버립니다. $\log$가 증가함수라 argmax가 보존된다는 근거를 적습니다.
+- **사후분포 식은 세 단계로 세웁니다:** 베이즈 정리로 $p(\theta\mid X)\propto p(X\mid\theta)\,p(\theta)$ → 독립이라 $p(X\mid\theta)=\prod_ip(X_i\mid\theta)$ → 정규밀도 공식에 $(\mu,\sigma^2)=(\theta,1)$, 사전분포는 $(0,\tau^2)$를 넣기.
 - 가우시안 가능도 → 제곱오차, 가우시안 사전분포 → $L_2$ 벌점. 음의 로그 사후분포 $\frac12\sum(X_i-\theta)^2+\frac1{2\tau^2}\theta^2$에 **2를 곱해도** 최소점은 같으므로, 곱하면 문제의 릿지 꼴($\lambda=1/\tau^2$)이 됩니다.
 - 최소점은 도함수 = 0, 그리고 **2계 도함수 $2(n+\lambda)\gt0$로 최소임을 확인**합니다.
 - 수축 계수 $a=\frac{n\tau^2}{n\tau^2+1}\in(0,1)$: 사전분포의 평균 0 쪽으로 당깁니다. 극한 확인: $\tau^2\to\infty$(정보 없는 사전분포) 또는 $n\to\infty$이면 $a\to1$(MLE $\bar X$), $\tau^2\to0$이면 $\hat\theta\to0$.
@@ -97,6 +98,37 @@ $$\hat\theta_{\text{MAP}}=\argmin_\theta\sum_{i=1}^n(X_i-\theta)^2+\lambda\theta
 ---
 **1. MAP 유도.** 베이즈 정리로 $p(\theta\mid X)\propto p(X\mid\theta)\,p(\theta)$. 독립성으로 가능도는 곱이므로
 $$p(\theta\mid X)\propto\prod_{i=1}^n\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}\cdot\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}.$$
+
+:::note 이 식은 어디서 나왔나: 세 조각을 차례로 끼우기
+이 한 줄에는 세 가지 사실이 들어 있습니다. ①과 ②는 02단원에서 증명한 것이고, ③은 공식에 값을 넣는 계산입니다.
+
+**① 베이즈 정리 → 비례식(∝).** 모수가 연속일 때의 베이즈 정리는
+$$p(\theta\mid X)=\frac{p(X\mid\theta)\,p(\theta)}{p(X)},\qquad p(X)=\int p(X\mid\theta)\,p(\theta)\,d\theta.$$
+분모 $p(X)$는 $\theta$를 적분해서 없앤 값이라 **$\theta$가 바뀌어도 변하지 않는 양수**입니다. 모든 $\theta$에서 같은 수로 나누면 어느 $\theta$에서 가장 큰지는 그대로이므로, 분모를 떼고 “비례한다(∝)”로 씁니다. 자세히: [[ch02:2.5|연속 모수의 베이즈 정리]] (이산판은 [[ch02:2.2|베이즈 정리]])
+
+**② 독립 → 곱.** 여기서 $X$는 자료 전체 $(X_1,\dots,X_n)$이므로 $p(X\mid\theta)$는 결합밀도 $p(X_1,\dots,X_n\mid\theta)$입니다. $\theta$가 주어지면 $X_i$들이 서로 독립이므로 결합밀도가 하나씩의 밀도의 곱으로 갈라집니다:
+$$p(X_1,\dots,X_n\mid\theta)=p(X_1\mid\theta)\,p(X_2\mid\theta)\cdots p(X_n\mid\theta)=\prod_{i=1}^np(X_i\mid\theta).$$
+사건 두 개에서 독립의 정의 $P(E\cap F)=P(E)P(F)$를 $n$개로 늘린 것입니다. 자세히: [[ch02:2.4|i.i.d. 자료의 가능도는 곱]]
+
+**③ 정규분포 밀도에 값 넣기.** $\N(\mu,\sigma^2)$의 밀도는
+$$f(x)=\frac1{\sqrt{2\pi\sigma^2}}\,e^{-(x-\mu)^2/(2\sigma^2)}$$
+입니다(자세히: [[ch02:2.3|분포 표의 정규분포]]). 문제의 두 분포는 이 공식의 $x,\mu,\sigma^2$ 자리에 다른 것을 넣은 것뿐입니다.
+
+| | 분포 | $x$ 자리 | $\mu$ 자리 | $\sigma^2$ 자리 | 넣은 결과 |
+|---|---|---|---|---|---|
+| 가능도 한 개 | $X_i\mid\theta\sim\N(\theta,1)$ | $X_i$ | $\theta$ | $1$ | $\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}$ |
+| 사전분포 | $\theta\sim\N(0,\tau^2)$ | $\theta$ | $0$ | $\tau^2$ | $\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}$ |
+
+첫 줄은 $\sigma^2=1$이라 $\sqrt{2\pi\cdot1}=\sqrt{2\pi}$, 지수의 분모는 $2\cdot1=2$가 됩니다. 둘째 줄은 $\mu=0$이라 $(\theta-0)^2=\theta^2$입니다. 사전분포에서는 **$\theta$가 변수 $x$의 자리**에 들어간다는 점이 헷갈리기 쉬운 곳입니다.
+
+**합치기.** ②의 곱에 ③의 첫 줄을 $n$번, ①의 $p(\theta)$에 ③의 둘째 줄을 넣으면 위의 식이 됩니다.
+
+**다음 줄(로그)로 가는 법.** 로그의 두 규칙 $\log(ab)=\log a+\log b$ (곱 → 합)와 $\log e^{u}=u$를 한 인수씩 쓰면
+$$\log\Big(\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}\Big)=-\frac12\log(2\pi)-\frac{(X_i-\theta)^2}2,$$
+$$\log\Big(\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}\Big)=-\frac12\log(2\pi\tau^2)-\frac{\theta^2}{2\tau^2}.$$
+$n$개를 더한 뒤 $\theta$가 없는 항 $-\frac n2\log(2\pi)$, $-\frac12\log(2\pi\tau^2)$, 그리고 ①에서 뗀 $-\log p(X)$를 모두 상수 $C$로 모으면 아래 식입니다. $\sigma^2$를 남겨 둔 채 같은 계산을 한 것이 [[ch02:2.4|가우시안 MLE의 로그가능도]]입니다.
+:::
+
 로그를 취하면($\theta$와 무관한 항은 상수 $C$로 모음)
 $$\log p(\theta\mid X)=-\frac12\sum_{i=1}^n(X_i-\theta)^2-\frac{\theta^2}{2\tau^2}+C.$$
 $\log$는 증가함수이므로 $\hat\theta_{\text{MAP}}=\argmax_\theta p(\theta\mid X)=\argmax_\theta\log p(\theta\mid X)$. 양의 상수 $2$를 곱하고 부호를 바꾸면
