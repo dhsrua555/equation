@@ -66,7 +66,7 @@ $\E[x_i^2]=\Var(x_i)=v$ ($\E x_i=0$)이므로 $\Var(y)=D_{in}\sigma^2v$. $\Var(y
 $D_{in}=100$, $\Var(w_i)=0.02$, $\Var(x_i)=1$이면 $\Var(y)=100\times0.02\times1=2$ — 한 층 지날 때마다 분산이 2배. 6층이면 $2^6=64$배. Xavier라면 $\Var(w_i)=0.01$, 표준편차 $0.1$.
 :::
 
-- 원래 Glorot & Bengio(2010)는 역방향에서도 분산을 보존하려고($\sigma^2=1/D_{out}$) 두 조건의 절충 $\sigma^2=\dfrac2{D_{in}+D_{out}}$을 제안했습니다. 의료 인공지능 과목(Bishop)의 표가 이 식입니다[[@med:ch07:7.2b|Xavier $2/(n_{in}+n_{out})$, He $2/n_{in}$.]].
+- 원래 Glorot & Bengio(2010)는 역방향에서도 분산을 보존하려고($\sigma^2=1/D_{out}$) 두 조건의 절충 $\sigma^2=\dfrac2{D_{in}+D_{out}}$을 제안했습니다. 의료 인공지능 과목(Bishop)의 표가 이 식입니다[[@med:ch08:7.2b|Xavier $2/(n_{in}+n_{out})$, He $2/n_{in}$.]].
 - 이 유도는 입력이 **평균 0**이라는 가정을 씁니다. tanh처럼 0 중심인 활성화에는 맞지만 ReLU에는 맞지 않습니다.
 
 **역방향 조건의 유도.** 역전파에서 $\frac{\partial L}{\partial x_i}=\sum_{j=1}^{D_{out}}W_{ji}\delta_j$ (9.5절의 $W^T\delta$)이므로 같은 계산으로 $\Var\big(\frac{\partial L}{\partial x_i}\big)=D_{out}\sigma^2\Var(\delta_j)$. 기울기의 분산을 보존하려면 $\sigma^2=1/D_{out}$. 입력·출력 폭이 다르면 두 조건을 동시에 만족할 수 없어 조화평균 $\frac2{D_{in}+D_{out}}$으로 절충합니다. 균등분포 $U(-a,a)$ (분산 $a^2/3$)로 뽑으면 $a=\sqrt{6/(D_{in}+D_{out})}$.

@@ -43,7 +43,7 @@ $$=\sum_i\E[w_i^2]\E[x_i^2]+\sum_{i\ne k}\underbrace{\E[w_i]}_{0}\E[w_k]\E[x_ix_
 $\E[x_i^2]=\Var(x_i)=v$ ($\E x_i=0$)이므로 $\Var(y)=D_{in}\sigma^2v$. $\Var(y)=v$로 두면 $D_{in}\sigma^2v=v\Rightarrow\sigma^2=1/D_{in}$.
 :::
 
-- 원래 Glorot & Bengio(2010)는 역방향에서도 분산을 보존하려고($\sigma^2=1/D_{out}$) 두 조건의 절충 $\sigma^2=\dfrac2{D_{in}+D_{out}}$을 제안했습니다. 의료 인공지능 과목(Bishop)의 표가 이 식입니다[[@med:ch07:7.2b|Xavier $2/(n_{in}+n_{out})$, He $2/n_{in}$.]].
+- 원래 Glorot & Bengio(2010)는 역방향에서도 분산을 보존하려고($\sigma^2=1/D_{out}$) 두 조건의 절충 $\sigma^2=\dfrac2{D_{in}+D_{out}}$을 제안했습니다. 의료 인공지능 과목(Bishop)의 표가 이 식입니다[[@med:ch08:7.2b|Xavier $2/(n_{in}+n_{out})$, He $2/n_{in}$.]].
 - 이 유도는 입력이 **평균 0**이라는 가정을 씁니다. tanh처럼 0 중심인 활성화에는 맞지만 ReLU에는 맞지 않습니다.
 ` },
       { k: '11.3', src: 'W4 월(2) · 슬라이드 24–25, W4 수(1) 필기', title: 'ReLU와 He(Kaiming) 초기화', body: R`

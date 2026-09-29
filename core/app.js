@@ -53,6 +53,9 @@
     });
   });
   const EXAMS = EM.exams || [];
+  // worked quiz / problem-set solutions (data/quiz-*.js): a separate "퀴즈풀이" page
+  const QUIZ = EM.quizzes || [];
+  const QUIZ_LABEL = (SITE.text && SITE.text.quizNav) || '퀴즈풀이';
   EXAMS.forEach((x) => {
     x.problems.forEach((p, k) => {
       p.no = k + 1; p.src = x.id;
@@ -533,6 +536,7 @@
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
+          ${QUIZ.length ? `<a href="#quiz" class="ko" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
         <nav class="nav nav-right" aria-label="학습 도구">
@@ -561,7 +565,7 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-'))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (r === 'quiz' && route.startsWith('quiz-'))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
@@ -574,6 +578,7 @@
           <a href="#home" data-route="home">홈</a>
           <a href="#formulas" data-route="formulas">공식집</a>
           <a href="#proofs" data-route="proofs">증명 찾기</a>
+          ${QUIZ.length ? `<a href="#quiz" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
           ${Object.keys(PARTS).map((k) => `
@@ -1093,6 +1098,33 @@
     ${footer()}`;
   }
 
+  // ---------- quiz solutions ----------
+  function viewQuiz() {
+    return `
+    <div class="wrap">
+      <header class="page-head"><span class="caps">Worked problems</span><h1>Corrigés<span class="ko">${esc(QUIZ_LABEL)}</span></h1>
+        <p class="lede">${inline((SITE.text && SITE.text.quizLede) || '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.')}</p>
+        <nav class="jump" aria-label="문제로 이동">${QUIZ.map((q) => q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}">${esc(q.short || q.title)} · ${esc(p.label || p.id)}</a>`).join('')).join('')}</nav>
+      </header>
+      <div class="section tight">
+        ${QUIZ.map((q) => `
+          <div class="quiz-set" id="qz-${q.id}">
+            <div class="part-head"><span class="part-letter">${esc(q.mark || 'Q')}</span><h3>${esc(q.title)}</h3><p>${esc(q.meta || '')}</p></div>
+            ${q.intro ? `<div class="prose quiz-intro">${md(q.intro)}</div>` : ''}
+            <article class="prose">
+              ${q.problems.map((p) => `
+                <section class="sec quiz-p" id="qz-${q.id}-${p.id}">
+                  <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}</h2></div>
+                  ${p.where ? `<p class="sec-page caps">${esc(p.where)}</p>` : ''}
+                  ${md(p.body)}
+                </section>`).join('')}
+            </article>
+          </div>`).join('')}
+      </div>
+    </div>
+    ${footer()}`;
+  }
+
   function viewFormulas() {
     return `
     <div class="wrap">
@@ -1434,6 +1466,8 @@
     else if (to === 'exam-live') { route = 'exams'; html = viewExams(); }
     else if ((m = /^result-([a-z0-9]+)$/.exec(to))) html = viewResult(m[1]);
     else if (to === 'review') html = viewReview();
+    else if (to === 'quiz' && QUIZ.length) html = viewQuiz();
+    else if ((m = /^quiz-([\w-]+)$/.exec(to)) && QUIZ.length) { html = viewQuiz(); opts = Object.assign({}, opts, { anchor: `qz-${m[1]}` }); }
     else { route = 'home'; view = 'home'; html = viewHome(); }
     document.body.dataset.view = view;
     main.innerHTML = html;
@@ -1443,7 +1477,7 @@
     if (view === 'home') startHero();
     if (view === 'chapter') watchToc();
     if (route === 'proofs') filterProofs();
-    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중' };
+    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', quiz: QUIZ_LABEL };
     const ch = chById.get(route.slice(0, 4));
     const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
     const DT = SITE.title || SITE.name || '';
@@ -1758,7 +1792,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

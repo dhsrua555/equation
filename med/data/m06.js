@@ -37,6 +37,9 @@ $p(\mathcal D)=\int p(\mathcal D\mid\mathbf w)p(\mathbf w)\,d\mathbf w$는 사�
 ---
 $p(\mathcal D\mid\mu)=\mu^3$이므로 사후분포 $\propto\mu^3$, 정규화하면 $4\mu^3$ (베타분포 $\operatorname{Beta}(4,1)$). 사후평균 $\int_0^14\mu^4d\mu=\frac45=0.8$. MLE의 극단값 1보다 덜 극단적이고, 자료가 쌓이면 사후분포가 좁아지며 참값으로 모입니다[[@dnn:ch02:2.5|베르누이 가능도 + 베타 사전분포 → 베타 사후분포.]].
 :::
+
+:::fig coinpost
+:::
 ` },
       { k: '2.6b', label: '2.6.2', p: '56', src: '슬라이드 43', title: 'MAP 추정과 규제', body: R`
 베이지안 학습에서 사후확률을 최대로 하는 모수가 **MAP**(maximum a posteriori) 추정입니다. 자료를 본 뒤 **가장 그럴듯한** 모수 값을 고릅니다. 사후확률 최대화는 음의 로그 사후확률 최소화와 같습니다.
@@ -48,6 +51,17 @@ $$-\ln p(\mathbf w\mid\mathcal D)=-\ln p(\mathcal D\mid\mathbf w)+\frac1{2s^2}\s
 가우시안 잡음 회귀에서는 $E(\mathbf w)=\frac1{2\sigma^2}\sum_{n=1}^N\{y(x_n,\mathbf w)-t_n\}^2+\frac1{2s^2}\mathbf w^T\mathbf w$.
 :::
 
+:::fig mapprior
+:::
+
+:::ex 예제 2 — 가중치 하나의 MAP
+가능도가 $w$에 대해 $\N(w\mid w_{\text{ML}},v)$ 모양($w_{\text{ML}}=1.6$, $v=0.35$)이고 사전분포가 $\N(w\mid0,s^2)$, $s^2=0.5$일 때 $w_{\text{MAP}}$은?
+---
+$-\ln(\text{사후})=\frac{(w-w_{\text{ML}})^2}{2v}+\frac{w^2}{2s^2}+\text{const}$를 미분해 0으로 두면 $\frac{w-w_{\text{ML}}}v+\frac w{s^2}=0$,
+$$w_{\text{MAP}}=\frac{w_{\text{ML}}/v}{1/v+1/s^2}=\frac{s^2}{s^2+v}\,w_{\text{ML}}=\frac{0.5}{0.85}\times1.6\approx0.941.$$
+정밀도(분산의 역수)로 가중한 평균이며, 사전분포의 평균 0 쪽으로 $\frac{s^2}{s^2+v}$배 줄어듭니다(위 그림의 값).
+:::
+
 양변에 $\sigma^2$을 곱하면 $\frac12\sum\{y-t\}^2+\frac\lambda2\mathbf w^T\mathbf w$, **$\lambda=\sigma^2/s^2$**. 즉 1장의 $L_2$ 규제는 “가중치가 0 근처에 있을 것”이라는 **사전분포의 MAP 추정**입니다. 사전분포가 좁을수록($s$ 작을수록), 잡음이 클수록($\sigma$ 클수록) 규제가 셉니다. 정규화 항 $\ln p(\mathcal D)$는 $\mathbf w$와 무관해 최적화에 영향이 없습니다.
 ` },
       { k: '2.6c', label: '2.6.3', p: '57', src: '슬라이드 44', title: '완전 베이지안 머신러닝', body: R`
@@ -57,9 +71,12 @@ MAP은 가장 그럴듯한 모수 **하나**만 고르므로 **부분적으로�
 $$p(t\mid x,\mathcal D)=\int p(t\mid x,\mathbf w)\,p(\mathbf w\mid\mathcal D)\,d\mathbf w$$
 :::
 
+:::fig predictive
+:::
+
 - 예측의 불확실성에 모수 추정의 불확실성까지 반영됩니다(자료가 적은 곳에서는 예측분포가 넓어짐).
 - 그러나 고차원 모수 공간에서의 적분은 계산 비용이 커서 완전한 베이지안 추론은 **비현실적**입니다(신경망은 모수가 수백만~수십억 개).
-- 그래서 현대의 대규모 딥러닝은 보통 **최대가능도 + 규제**를 효과적인 근사로 씁니다. 드롭아웃을 여러 모델의 평균으로 보는 관점도 이 근사의 일종입니다[[ch11:9.6|드롭아웃은 모든 가능한 부분 신경망을 같은 가중치로 평균내는 근사.]].
+- 그래서 현대의 대규모 딥러닝은 보통 **최대가능도 + 규제**를 효과적인 근사로 씁니다. 드롭아웃을 여러 모델의 평균으로 보는 관점도 이 근사의 일종입니다[[ch12:9.6|드롭아웃은 모든 가능한 부분 신경망을 같은 가중치로 평균내는 근사.]].
 ` },
     ],
     problems: [

@@ -55,7 +55,7 @@
     {
       id: 'med', group: 'ai', short: '의료 인공지능', tiny: '의료 AI', name: '의료 인공지능 및 소프트웨어 시스템', en: 'Medical AI & Software Systems',
       path: 'med/', key: 'diagnostic-medai-v1', plot: 'roc', live: true,
-      desc: 'Bishop 딥러닝 교재 1·2·7·8·9장: 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 경사하강법과 Adam, 정규화, 역전파, 규제.',
+      desc: 'Bishop 딥러닝 교재 1·2·6·7·8·9·10장: 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 다층 신경망과 오차함수, 경사하강법과 Adam, 정규화, 역전파, 규제, 합성곱 신경망·검출·분할.',
     },
   ];
 })();

@@ -25,6 +25,9 @@ $$p(x\in(a,b))=\int_a^bp(x)\,dx,\qquad p(x)\ge0,\qquad \int_{-\infty}^\infty p(x
 $$P(z)=\int_{-\infty}^zp(x)\,dx\ (\text{CDF}),\qquad P'(x)=p(x)$$
 :::
 
+:::fig pdfcdf
+:::
+
 $p(x)$는 확률이 아니라 **밀도**이므로 1보다 클 수 있습니다(예: 폭이 0.5인 균등분포의 밀도는 2). 작은 구간의 확률이 $p(x)\delta x$입니다.
 
 **여러 변수.** 결합밀도 $p(\mathbf x)=p(x_1,\dots,x_D)$, $p(\mathbf x)\ge0$, $\int p(\mathbf x)d\mathbf x=1$.
@@ -39,12 +42,16 @@ $p(x)$는 확률이 아니라 **밀도**이므로 1보다 클 수 있습니다(�
 | 라플라스 | $p(x\mid\mu,\gamma)=\dfrac1{2\gamma}\exp\Big(-\dfrac{\lvert x-\mu\rvert}\gamma\Big)$ |
 | 경험분포 | $p(x\mid\mathcal D)=\dfrac1N\sum_{n=1}^N\delta(x-x_n)$ |
 
+:::fig commonpdfs
+:::
+
 디랙 델타 $p(x\mid\mu)=\delta(x-\mu)$는 한 점에 모든 질량이 몰린 “분포”이고, 경험분포는 관측점마다 $1/N$씩 질량을 둔 것입니다.
 ` },
       { k: '2.2b', label: '2.2.2', p: '34', src: '슬라이드 16–17', title: '기댓값, 분산, 공분산', body: R`
 :::key 기댓값과 분산
 $$\E[f]=\sum_xp(x)f(x)\quad\text{또는}\quad\int p(x)f(x)\,dx,\qquad \E[f]\simeq\frac1N\sum_{n=1}^Nf(x_n)$$
-$$\Var[f]=\E\big[(f(x)-\E[f(x)])^2\big]=\E[f(x)^2]-\E[f(x)]^2,\qquad \Var[x]=\E[x^2]-\E[x]^2$$
+$$\Var[f]=\E\big[(f(x)-\E[f(x)])^2\big]=\E[f(x)^2]-\E[f(x)]^2$$
+$$\Var[x]=\E[x^2]-\E[x]^2$$
 $$\Cov[x,y]=\E_{x,y}\big[\{x-\E[x]\}\{y-\E[y]\}\big]=\E_{x,y}[xy]-\E[x]\E[y]$$
 :::
 
@@ -53,19 +60,36 @@ $$\Cov[x,y]=\E_{x,y}\big[\{x-\E[x]\}\{y-\E[y]\}\big]=\E_{x,y}[xy]-\E[x]\E[y]$$
 - **조건부 기댓값** $\E_x[f\mid y]=\sum_xp(x\mid y)f(x)$ (또는 적분).
 - **분산**은 평균 주변의 퍼짐, **공분산**은 두 변수가 함께 변하는 정도입니다. 독립이면 $\Cov=0$ (역은 일반적으로 성립하지 않음).
 - 벡터: $\Cov[\mathbf x,\mathbf y]=\E_{\mathbf x,\mathbf y}\big[\{\mathbf x-\E\mathbf x\}\{\mathbf y^T-\E\mathbf y^T\}\big]=\E[\mathbf x\mathbf y^T]-\E[\mathbf x]\E[\mathbf y^T]$, 그리고 $\Cov[\mathbf x]\equiv\Cov[\mathbf x,\mathbf x]$ (성분들 사이의 공분산 행렬).
+:::fig covfig
+:::
+
+:::ex 예제 1 — 이산 분포의 기댓값·분산·공분산
+$(x,y)$가 $(0,0)$, $(1,1)$, $(2,1)$을 각각 확률 $0.5$, $0.3$, $0.2$로 가진다. $\E[x]$, $\Var[x]$, $\Cov[x,y]$는?
+---
+$\E[x]=0+0.3+0.4=0.7$, $\E[x^2]=0+0.3+0.8=1.1$ → $\Var[x]=1.1-0.49=0.61$.
+$\E[y]=0.3+0.2=0.5$, $\E[xy]=0+0.3+0.4=0.7$ → $\Cov[x,y]=0.7-0.7\times0.5=0.35\gt0$ ($x$가 크면 $y$도 큰 경향).
+:::
 ` },
       { k: '2.3', label: '2.3–2.3.2', p: '36', src: '슬라이드 19–23', title: '가우시안 분포와 최대가능도', body: R`
 :::key 가우시안 분포
-$$\N(x\mid\mu,\sigma^2)=\frac1{(2\pi\sigma^2)^{1/2}}\exp\Big\{-\frac1{2\sigma^2}(x-\mu)^2\Big\}>0,\qquad \int_{-\infty}^\infty\N(x\mid\mu,\sigma^2)dx=1$$
-$$\E[x]=\mu,\qquad \E[x^2]=\mu^2+\sigma^2,\qquad \Var[x]=\sigma^2,\qquad \beta=1/\sigma^2\ (\text{정밀도})$$
+$$\N(x\mid\mu,\sigma^2)=\frac1{(2\pi\sigma^2)^{1/2}}\exp\Big\{-\frac1{2\sigma^2}(x-\mu)^2\Big\}>0$$
+$$\int_{-\infty}^\infty\N(x\mid\mu,\sigma^2)\,dx=1$$
+$$\E[x]=\int_{-\infty}^\infty\N(x\mid\mu,\sigma^2)\,x\,dx=\mu$$
+$$\E[x^2]=\int_{-\infty}^\infty\N(x\mid\mu,\sigma^2)\,x^2\,dx=\mu^2+\sigma^2$$
+$$\Var[x]=\E[x^2]-\E[x]^2=\sigma^2,\qquad \beta=1/\sigma^2\ (\text{정밀도})$$
 :::
 
 - $\mu$는 중심(위치), $\sigma^2$은 퍼짐. 대칭이라 **평균과 최빈값**(밀도가 가장 높은 값)이 모두 $\mu$입니다. 폭은 대략 $2\sigma$.
 - **밀도 추정**은 유한한 자료로 분포를 추정하는 일이며, 무한히 많은 분포가 같은 자료를 설명할 수 있어 본질적으로 **불량 설정**(ill-posed) 문제입니다. 가우시안 같은 분포 가정이 유일하고 다루기 쉬운 해를 줍니다.
 
+:::fig gaussfig
+:::
+
 **가능도.** 관측 $\mathbf x=(x_1,\dots,x_N)$이 모수를 모르는 가우시안에서 i.i.d.로 나왔다면, 주어진 $(\mu,\sigma^2)$에서 자료가 나올 확률(밀도)은
 $$p(\mathbf x\mid\mu,\sigma^2)=\prod_{n=1}^N\N(x_n\mid\mu,\sigma^2).$$
 이를 모수의 함수로 본 것이 **가능도 함수**이고, 모수가 자료를 얼마나 잘 설명하는지를 잽니다.
+:::fig likelihood
+:::
 
 **최대가능도(MLE).** 실제로는 **로그가능도**를 최대화합니다: 로그는 단조증가라 최대점의 위치가 같고, 곱이 합이 되어 유도가 쉽고, 작은 확률의 곱에서 생기는 **언더플로**를 막습니다.
 
@@ -78,6 +102,8 @@ $\mu$에 대해 미분하면 $\frac1{\sigma^2}\sum(x_n-\mu)=0$, 즉 $\mu_{\text{
 ` },
       { k: '2.3b', label: '2.3.3', p: '39', src: '슬라이드 24–25', title: '최대가능도의 편향과 보정', body: R`
 MLE 추정량은 관측 자료의 함수라 표본에 따라 달라집니다. 같은 참 가우시안에서 뽑은 작은 자료(점 2개)마다 MLE로 가우시안을 맞추면 평균은 참값 주위에 흩어지지만, 분산은 **체계적으로 작게** 나옵니다.
+:::fig mlbias
+:::
 
 :::key 최대가능도의 편향
 $$\E[\mu_{\text{ML}}]=\mu,\qquad \E[\sigma^2_{\text{ML}}]=\Big(\frac{N-1}N\Big)\sigma^2$$
@@ -93,6 +119,9 @@ $$\tilde\sigma^2=\frac N{N-1}\sigma^2_{\text{ML}}=\frac1{N-1}\sum_{n=1}^N(x_n-\m
       { k: '2.3c', label: '2.3.4', p: '40', src: '슬라이드 26', title: '선형회귀의 확률적 해석', body: R`
 목표값이 입력에 조건부로 가우시안이라고 가정합니다: 평균은 모델의 예측 $y(x,\mathbf w)$, 분산은 관측 잡음 $\sigma^2$.
 $$p(t\mid x,\mathbf w,\sigma^2)=\N\big(t\mid y(x,\mathbf w),\sigma^2\big),\qquad \mathbf w:\ \text{다항식 계수}$$
+
+:::fig regprob
+:::
 
 :::key 선형회귀의 최대가능도
 i.i.d. 자료의 로그가능도

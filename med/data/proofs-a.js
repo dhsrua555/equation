@@ -252,6 +252,6 @@ $$p(t\mid x,\mathcal D)=\int p(t,\mathbf w\mid x,\mathcal D)\,d\mathbf w=\int p(
 따라서 $p(t\mid x,\mathcal D)=\int p(t\mid x,\mathbf w)p(\mathbf w\mid\mathcal D)d\mathbf w$ — 모든 가능한 $\mathbf w$의 예측을 사후확률로 가중 평균한 것입니다.
 
 사후분포가 $\delta(\mathbf w-\hat{\mathbf w})$로 근사되면 적분이 $p(t\mid x,\hat{\mathbf w})$가 되어 MLE·MAP의 “플러그인” 예측이 됩니다.`,
-    note: R`이 적분은 파라미터가 수백만 개인 신경망에서는 계산할 수 없습니다. 모델 평균·드롭아웃(11단원)은 이 평균을 값싸게 흉내 내는 방법으로 볼 수 있습니다.` },
+    note: R`이 적분은 파라미터가 수백만 개인 신경망에서는 계산할 수 없습니다. 모델 평균·드롭아웃(12단원)은 이 평균을 값싸게 흉내 내는 방법으로 볼 수 있습니다.` },
   );
 })();

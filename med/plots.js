@@ -120,6 +120,22 @@
       ctx.strokeStyle = c.a; ctx.lineWidth = 1.2; draw(path(0, 0.38, 40));
       ctx.strokeStyle = c.b; ctx.lineWidth = 1.9; draw(path(0.75, 0.12, 40));
     },
+    // 07 — a two-layer tanh network: three soft steps add up to a parabola
+    univ(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -1.25 * asp / 1.4, 1.25 * asp / 1.4, -1.35, 1.35);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -9, 0, 9, 0); line(ctx, T, 0, -9, 0, 9);
+      // x² on [-1,1] ≈ c0 + v·tanh(s(x − 0.55)) − v·tanh(s(x + 0.55)) + …; drawn schematically
+      const units = [[2.6, -0.55, -1], [2.6, 0.55, 1], [1.2, 0, 0.35]];
+      units.forEach(([s, m, v]) => {
+        ctx.strokeStyle = c.a; ctx.lineWidth = 1.05; ctx.setLineDash([4, 4]);
+        curve(ctx, (x) => v * Math.tanh(s * (x - m)), -9, 9, 500, T);
+      });
+      const net = (x) => 0.95 * (Math.tanh(2.6 * (x - 0.55)) - Math.tanh(2.6 * (x + 0.55))) / 2 + 0.9 + 0.08 * x;
+      ctx.setLineDash([]); ctx.strokeStyle = c.b; ctx.lineWidth = 2;
+      curve(ctx, net, -9, 9, 500, T);
+      ctx.fillStyle = c.b;
+      for (let k = 0; k <= 16; k++) { const x = -1 + k / 8; dot(ctx, T, x, net(x) + 0.05 * noise(k), 2.4); }
+    },
     // 08 — many activations with different means and spreads, and the standardized result
     bn(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -6 * asp / 1.3, 6 * asp / 1.3, -0.04, 0.9);
@@ -175,6 +191,40 @@
         curve(ctx, (x) => 0.35 + 0.35 * Math.exp(-x * 0.9) + (0.55 * s) / (1 + ((x - 4) / (0.45 * s)) ** 2) - 0.018 * Math.max(0, x - 4) * s, 0, 10, 500, T);
       });
       ctx.strokeStyle = c.a; ctx.lineWidth = 1.2; curve(ctx, (x) => (x < 4 ? 0.7 * Math.exp(-x * 0.55) - 0.08 * x / 4 : 0.02 + 0.0 * x), 0, 10, 500, T);
+    },
+    // 13 — 1-D sections of Gabor filters: Gaussian envelopes times sinusoids of rising frequency
+    gabor(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -3.2 * asp / 1.3, 3.2 * asp / 1.3, -1.25, 1.25);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -20, 0, 20, 0);
+      [0.9, 1.6, 2.4, 3.3, 4.4].forEach((om, k) => {
+        const s = 1.25 - 0.13 * k;
+        ctx.strokeStyle = k === 2 ? c.b : c.a; ctx.lineWidth = k === 2 ? 1.9 : 1.05; ctx.globalAlpha = k === 2 ? 1 : 0.8;
+        curve(ctx, (x) => Math.exp(-(x * x) / (2 * s * s)) * Math.sin(om * x + 0.3 * k), -20, 20, 900, T);
+      });
+      ctx.globalAlpha = 1; ctx.setLineDash([3, 4]); ctx.strokeStyle = c.faint2;
+      curve(ctx, (x) => Math.exp(-(x * x) / (2 * 0.99 * 0.99)), -20, 20, 400, T); ctx.setLineDash([]);
+    },
+    // 14 — U-net: resolution falls then rises, skip connections join matching levels
+    unet(ctx, w, h, c) {
+      const levels = 5, cx = w / 2, top = h * 0.14, dy = (h * 0.66) / (levels - 1);
+      const X = (l, side) => cx + side * (w * 0.42 - l * (w * 0.4) / (levels - 1));
+      for (let l = 0; l < levels; l++) {
+        const y = top + l * dy, bh = h * (0.2 - 0.03 * l);
+        [-1, 1].forEach((side) => {
+          if (l === levels - 1 && side === 1) return;
+          const x = l === levels - 1 ? cx : X(l, side);
+          ctx.strokeStyle = c.a; ctx.lineWidth = 1.2;
+          for (let k = 0; k < 2; k++) ctx.strokeRect(x - 7 + k * 8 - 4, y - bh / 2, 6, bh);
+        });
+        if (l < levels - 1) {
+          ctx.strokeStyle = c.b; ctx.lineWidth = 1.7;
+          ctx.beginPath(); ctx.moveTo(X(l, -1) + 10, y); ctx.lineTo(X(l, 1) - 14, y); ctx.stroke();
+          ctx.strokeStyle = c.faint; ctx.lineWidth = 1;
+          const y2 = top + (l + 1) * dy, xa = l + 1 === levels - 1 ? cx : X(l + 1, -1), xb = l + 1 === levels - 1 ? cx : X(l + 1, 1);
+          ctx.beginPath(); ctx.moveTo(X(l, -1) + 4, y + h * 0.1); ctx.lineTo(xa - 6, y2 - h * 0.07); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(xb + 6, y2 - h * 0.07); ctx.lineTo(X(l, 1) - 4, y + h * 0.1); ctx.stroke();
+        }
+      }
     },
     // exam covers — a vital-sign line
     exam(ctx, w, h, c) {

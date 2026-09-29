@@ -25,6 +25,16 @@ $$p_y(y)=p_x(x)\left\lvert\frac{dx}{dy}\right\rvert=p_x(g(y))\,\lvert g'(y)\rver
 다변수: $\mathbf x=\mathbf g(\mathbf y)$이면 $p_{\mathbf y}(\mathbf y)=p_{\mathbf x}(\mathbf x)\,\lvert\det J\rvert$, $J_{ij}=\dfrac{\partial g_i}{\partial y_j}$ (야코비안 행렬).
 :::
 
+다변수 야코비안을 풀어 쓰면
+$$\mathbf x=(x_1,\dots,x_D)^T,\quad \mathbf y=(y_1,\dots,y_D)^T,\quad \mathbf x=\mathbf g(\mathbf y)$$
+$$\mathbf J=\begin{pmatrix}\dfrac{\partial g_1}{\partial y_1}&\cdots&\dfrac{\partial g_1}{\partial y_D}\\\vdots&\ddots&\vdots\\\dfrac{\partial g_D}{\partial y_1}&\cdots&\dfrac{\partial g_D}{\partial y_D}\end{pmatrix}.$$
+
+:::ex 예제 1 — 균등분포에서 지수분포 만들기
+$x\sim U(0,1)$일 때 $y=-\ln x$의 밀도는?
+---
+역변환 $x=g(y)=e^{-y}$ ($y\gt0$), $\lvert g'(y)\rvert=e^{-y}$. $p_x=1$이므로 $p_y(y)=1\cdot e^{-y}=e^{-y}$, 즉 $\lambda=1$인 지수분포. 컴퓨터가 균등 난수로 지수분포 난수를 만드는 방법이 이것입니다. 단순 대입만 하면 $p_x(g(y))=1$(상수)이라 적분이 발산해 밀도가 될 수 없습니다. 야코비안이 넓이를 맞춰 줍니다.
+:::
+
 야코비안 항은 변환이 공간을 **늘리거나 줄이는** 정도만큼 밀도를 조정해 전체 확률 질량을 보존합니다[[@em:ch06:7.7|행렬식은 선형변환이 부피를 몇 배로 바꾸는지를 나타냅니다.]][[@base:ch04:4.2|좌표변환의 야코비안: 극좌표의 넓이 요소 $r\,dr\,d\theta$.]].
 
 **비선형 변환의 효과.**
@@ -33,6 +43,11 @@ $$p_y(y)=p_x(x)\left\lvert\frac{dx}{dy}\right\rvert=p_x(g(y))\,\lvert g'(y)\rver
 - 이 변수변환 공식은 **정규화 흐름**(normalizing flows) 같은 현대 생성모델의 핵심 도구입니다: 가우시안 같은 단순한 분포에 가역 비선형 변환을 여러 번 가해 표현력 있는 분포를 만듭니다.
 
 슬라이드 예: $y_1=x_1+\tanh(5x_1)$, $y_2=x_2+\tanh(5x_2)+x_1^3/3$는 격자·가우시안 밀도·표본을 네 덩어리로 휘어진 분포로 바꿉니다.
+:::fig transform
+:::
+
+:::fig flow2d
+:::
 ` },
       { k: '2.5', label: '2.5.1–2.5.4', p: '46', src: '슬라이드 33–35', title: '정보량, 엔트로피, 미분 엔트로피', body: R`
 **정보량**은 사건의 **놀라움의 정도**입니다. 드문 사건일수록 정보가 많고, 확실한 사건은 새 정보가 없습니다. 독립인 사건의 정보량은 더해져야 하므로 로그 꼴이 됩니다.
@@ -47,17 +62,23 @@ $$h(x)=-\log_2p(x),\qquad \mathrm H[x]=-\sum_xp(x)\log_2p(x)\ (\text{섀넌 엔�
 - 교재 예: 8가지 상태가 같은 확률이면 $H=3$비트(3비트 코드 필요). 확률 $(\frac12,\frac14,\frac18,\frac1{16},\frac1{64},\frac1{64},\frac1{64},\frac1{64})$이면 $H=2$비트이고, 자주 나오는 상태에 짧은 코드(0, 10, 110, 1110, 111100, …)를 주면 평균 코드 길이도 2비트입니다. 엔트로피는 전송에 필요한 비트 수의 하한입니다(섀넌의 무잡음 부호화 정리).
 - 이후로는 자연로그를 써서 단위가 **내트**입니다(비트와 $\ln2$배 차이).
 
+:::fig entropyhist
+:::
+
 **최대 엔트로피.** 평균과 분산이 고정되었을 때 미분 엔트로피를 최대로 하는 유일한 분포는 **가우시안**입니다. 평균과 분산만 알 때 가장 덜 정보적인(가장 편향 없는) 분포라는 뜻이며, 통계·머신러닝에서 가우시안을 널리 쓰는 근거가 됩니다. 가우시안의 엔트로피는 분산이 커질수록 커집니다(넓을수록 불확실).
 
 :::warn 미분 엔트로피는 음수일 수 있다
 이산 엔트로피는 $\ge0$이지만 미분 엔트로피는 아닙니다. $\sigma^2<\frac1{2\pi e}$이면 $\frac12\{1+\ln(2\pi\sigma^2)\}<0$.
+:::
+
+:::fig entcurves
 :::
 ` },
       { k: '2.5b', label: '2.5.5', p: '51', src: '슬라이드 36–38', title: 'KL 발산', body: R`
 머신러닝에서 참 자료분포 $p(\mathbf x)$는 모르므로 모델 분포 $q(\mathbf x)$로 근사합니다. **KL 발산**은 $q$가 $p$와 얼마나 다른지, 즉 $p$ 대신 $q$를 쓸 때 잃는 정보량을 잽니다(모델 품질의 정보이론적 척도).
 
 :::key KL 발산
-$$\KL(p\Vert q)=-\int p(\mathbf x)\ln q(\mathbf x)\,d\mathbf x-\Big(-\int p(\mathbf x)\ln p(\mathbf x)\,d\mathbf x\Big)=-\int p(\mathbf x)\ln\Big\{\frac{q(\mathbf x)}{p(\mathbf x)}\Big\}d\mathbf x$$
+$$\begin{aligned}\KL(p\Vert q)&=-\int p(\mathbf x)\ln q(\mathbf x)\,d\mathbf x-\Big(-\int p(\mathbf x)\ln p(\mathbf x)\,d\mathbf x\Big)\\&=-\int p(\mathbf x)\ln\Big\{\frac{q(\mathbf x)}{p(\mathbf x)}\Big\}d\mathbf x\end{aligned}$$
 $\KL(p\Vert q)\ge0$, 등호는 $p(\mathbf x)=q(\mathbf x)$일 때만. 대칭이 아니다: $\KL(p\Vert q)\not\equiv\KL(q\Vert p)$.
 :::
 
@@ -65,13 +86,19 @@ $\KL(p\Vert q)\ge0$, 등호는 $p(\mathbf x)=q(\mathbf x)$일 때만. 대칭이 
 볼록함수 $f$에 대해 $f(\lambda a+(1-\lambda)b)\le\lambda f(a)+(1-\lambda)f(b)$ (현이 그래프 위에 있음).[[@base:ch05:5.2|젠센(옌센) 부등식의 증명.]] 일반화하면 $f\big(\sum_i\lambda_ix_i\big)\le\sum_i\lambda_if(x_i)$ ($\lambda_i\ge0$, $\sum\lambda_i=1$), 즉 $f(\E[x])\le\E[f(x)]$, 연속형으로 $f\big(\int\mathbf xp(\mathbf x)d\mathbf x\big)\le\int f(\mathbf x)p(\mathbf x)d\mathbf x$.
 :::
 
+:::fig jensen
+:::
+
 **비음성의 증명(슬라이드).** $-\ln x$는 볼록이므로 옌센 부등식에서
-$$\KL(p\Vert q)=-\int p(\mathbf x)\ln\Big\{\frac{q(\mathbf x)}{p(\mathbf x)}\Big\}d\mathbf x\ \ge\ -\ln\int p(\mathbf x)\frac{q(\mathbf x)}{p(\mathbf x)}d\mathbf x=-\ln\int q(\mathbf x)\,d\mathbf x=0.$$
+$$\begin{aligned}\KL(p\Vert q)&=-\int p(\mathbf x)\ln\Big\{\frac{q(\mathbf x)}{p(\mathbf x)}\Big\}d\mathbf x\\&\ge-\ln\int p(\mathbf x)\frac{q(\mathbf x)}{p(\mathbf x)}d\mathbf x=-\ln\int q(\mathbf x)\,d\mathbf x=0.\end{aligned}$$
 
 :::key 최대가능도 = KL 최소화
 모델 $q(\mathbf x\mid\boldsymbol\theta)$를 $p(\mathbf x)$에 가깝게 만들고 싶지만 $p$를 모르므로 기댓값을 표본평균으로 근사하면
 $$\KL(p\Vert q)\simeq\frac1N\sum_{n=1}^N\big\{-\ln q(\mathbf x_n\mid\boldsymbol\theta)+\ln p(\mathbf x_n)\big\}.$$
 둘째 항은 $\boldsymbol\theta$와 무관하므로 **KL 최소화 ⇔ 로그가능도 최대화**.
+:::
+
+:::fig klasym
 :::
 
 이것이 MLE가 머신러닝·확률 모델링에서 가장 기본적인 학습 원리인 이유입니다. 심층 신경망 과목의 Theorem 1과 같은 내용입니다[[@dnn:ch03:3.3|이산 버전의 증명과 등호 조건.]].

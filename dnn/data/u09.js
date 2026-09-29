@@ -128,7 +128,7 @@ $$\delta_L=\frac{\partial L}{\partial a_L},\qquad \delta_\ell=\sigma'(a_\ell)\od
 
 - $\delta_\ell$을 구하는 데 행렬-벡터 곱 하나, 성분별 곱 하나가 들므로 역전파 한 번의 비용은 순전파와 같은 차수입니다.
 - 소프트맥스 + 교차 엔트로피 출력이면 $\delta_L=p-y$[[ch06:6.3|$\partial J/\partial z_m=p_m-y_m$.]], 선형 출력 + 제곱오차 $\frac12\lVert y_L-t\rVert^2$이면 $\delta_L=y_L-t$.
-- 의료 인공지능 과목(Bishop 8장)의 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$가 바로 이 식의 성분 표기입니다[[@med:ch09:8.1b|오차 역전파: 은닉 유닛의 오차 = 활성화의 기울기 × 다음 층 오차의 가중합.]].
+- 의료 인공지능 과목(Bishop 8장)의 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$가 바로 이 식의 성분 표기입니다[[@med:ch10:8.1b|오차 역전파: 은닉 유닛의 오차 = 활성화의 기울기 × 다음 층 오차의 가중합.]].
 ` },
     ],
     problems: [

@@ -1,164 +1,206 @@
-/* 10 규제 I — Bishop 9.1–9.3 (p.253–270), 강의 Ch09 s.2–21 */
+/* 10 역전파 — Bishop 8.1–8.2 (p.233–251), 강의 Ch08 */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 10, part: 'C', title: '규제 I: 귀납적 편향, 가중치 감쇠, 학습 곡선', en: 'Regularization I', ref: 'Bishop §9.1–9.3', plot: 'lasso',
-    fig: R`오차의 타원 등고선이 L2 원(매끈)과 L1 마름모(꼭짓점)에 닿는 모습 — 라쏘는 축 위에서 만나 희소해를 줌`,
-    tagline: R`유한한 자료를 설명하는 모델은 무수히 많다. 어떤 해를 고를지 정하는 가정 — 그것이 귀납적 편향이고, 규제는 그 한 형태다.`,
-    summary: R`규제(Regularization)는 신경망의 과적합을 줄이는 방법입니다. 큰 망은 표현력이 크지만 과적합하기 쉬우므로, 실제로는 **큰 망 + 규제**(조기 종료, 모델 평균, 드롭아웃, 자료 증강, 파라미터 공유)를 씁니다. 이 단원은 **귀납적 편향**(역문제, 공짜 점심은 없다 정리, 불변성·등변성과 이를 넣는 네 가지 방법), **가중치 감쇠**와 그 가우시안 사전분포 해석, 둔감한 방향이 더 줄어드는 이유, **일관된 규제**와 $L_q$ 규제(라쏘의 희소성), 그리고 **학습 곡선·조기 종료**(가중치 감쇠와의 정량적 관계)와 **이중 하강**을 다룹니다.`,
+    n: 10, part: 'C', title: '역전파', en: 'Backpropagation', ref: 'Bishop §8.1–8.2', plot: 'backprop',
+    fig: R`순전파로 사전활성과 활성을 계산한 뒤, 오차 신호 δ를 출력에서 입력 쪽으로 거꾸로 전달`,
+    tagline: R`가중치 기울기 = 오차 신호 × 입력 활성. 은닉 유닛의 오차 = 활성화 기울기 × 다음 층 오차의 가중합.`,
+    summary: R`역전파는 피드포워드 신경망의 오차함수 $E(\mathbf w)$를 파라미터에 대해 **효율적으로** 미분하는 알고리즘으로, 정보를 망을 따라 거꾸로 전달하는 국소 메시지 전달입니다. 단층 선형 모델의 기울기(오차 신호 × 입력)에서 출발해, 일반 피드포워드망의 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 유도하고, tanh 은닉층 2층망 예제를 손으로 계산합니다. 수치 미분(유한·중앙 차분)과의 비용 비교, 입력에 대한 **야코비안**, 오차의 **헤시안**과 Levenberg–Marquardt(외적) 근사, 그리고 현대 프레임워크의 **자동 미분**(전진·후진 모드)까지 다룹니다.`,
     goals: [
-      R`귀납적 편향을 정의하고, 머신러닝이 불량조건 역문제인 이유와 공짜 점심은 없다 정리의 의미를 설명할 수 있다`,
-      R`불변성과 등변성을 식으로 구분하고, 불변성을 넣는 네 가지 방법을 예로 들 수 있다`,
-      R`가중치 감쇠의 기울기와 갱신식을 쓰고, 헤시안 고유방향마다 $\frac{\lambda_j}{\lambda_j+\lambda}$배로 줄어듦을 유도할 수 있다`,
-      R`단순 가중치 감쇠가 선형 변환에 대해 일관되지 않은 이유와 일관된 규제의 형태를 설명할 수 있다`,
-      R`$L_q$ 규제에서 라쏘($q=1$)가 희소해를 주는 이유를 제약 영역으로 설명할 수 있다`,
-      R`조기 종료가 가중치 감쇠와 비슷한 이유($\tau\eta\sim1/\lambda$)와 이중 하강 현상을 설명할 수 있다`,
+      R`단층 선형 모델에서 $\partial E_n/\partial w_{ji}=(y_{nj}-t_{nj})x_{ni}$를 유도할 수 있다`,
+      R`$\delta_j\equiv\partial E_n/\partial a_j$를 정의하고 역전파 공식 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 연쇄법칙으로 유도할 수 있다`,
+      R`tanh 은닉층·선형 출력의 2층망에서 순전파·역전파를 손으로 계산할 수 있다`,
+      R`유한 차분과 중앙 차분의 오차 차수, 수치 미분의 $O(W^2)$ 비용을 설명할 수 있다`,
+      R`출력층 활성화별 $\partial y_k/\partial a_l$(선형·시그모이드·소프트맥스)와 야코비안 역전파를 쓸 수 있다`,
+      R`제곱오차의 헤시안을 유도하고 Levenberg–Marquardt 근사의 조건을 설명할 수 있다`,
+      R`전진 모드와 후진 모드 자동 미분의 차이와 쓰임을 비교할 수 있다`,
     ],
-    secTitles: { '9.1': '귀납적 편향', '9.1b': '불변성과 등변성', '9.2': '가중치 감쇠', '9.2b': '일관된 규제와 라쏘', '9.3': '학습 곡선과 조기 종료' },
+    secTitles: { '8.1': '단층 신경망', '8.1b': '일반 피드포워드망', '8.1c': '2층 예제와 수치 미분', '8.1d': '야코비안과 헤시안', '8.2': '자동 미분' },
     sections: [
-      { k: '9.1', label: '9.1–9.1.2', p: '254', src: '슬라이드 2–6', title: '귀납적 편향', body: R`
-신경망은 참된 자료 생성 과정을 **근사**할 뿐이고, 큰 망은 표현력이 크지만 과적합하기 쉽습니다. 좋은 일반화를 위해 흔히 **큰 망에 규제 기법**(조기 종료, 모델 평균, 드롭아웃, 자료 증강, 파라미터 공유)을 함께 쓰고, 여러 규제를 조합하기도 합니다.
+      { k: '8.1', label: '8.1.1', p: '234', src: '슬라이드 2–4', title: '단층 신경망의 기울기', body: R`
+역전파는 옵티마이저가 쓸 **기울기**를 계산합니다. 핵심 목표는 피드포워드망의 오차 $E(\mathbf w)$를 파라미터에 대해 효율적으로 미분하는 것이고, 정보를 **거꾸로** 전달하는 국소 메시지 전달 알고리즘입니다. 현대 프레임워크는 순전파만 정의하면 기울기를 **자동 미분**으로 계산합니다(8.2).
 
-:::def 귀납적 편향 (inductive bias, learning bias)
-학습자가 **접하지 않은 입력**에 대한 출력을 예측하기 위해 사용하는 일련의 **가정**. 어떤 해를 다른 해보다 선호하게 만드는 사전 지식입니다.
+독립 자료의 최대가능도 오차는 $E(\mathbf w)=\sum_nE_n(\mathbf w)$이므로 한 점의 $\nabla E_n$만 구하면 됩니다.
+
+:::fig singlelayer
 :::
 
-**편향-분산 절충.** 좋은 일반화는 모델 복잡도와 규제의 균형이 필요합니다. 너무 단순하면 **편향이 커서 과소적합**, 너무 유연하면 **분산이 커서 과적합**하며, 최적 성능은 보통 중간 복잡도에서 나옵니다. 자료가 많아지면 더 복잡한 모델을 써도 과적합이 덜합니다(2단원 $M=9$ 다항식 참고).
+:::key 단층 신경망의 기울기
+출력이 입력의 가중합인 선형 모델과 제곱오차
+$$y_k=\sum_iw_{ki}x_i,\qquad E_n=\frac12\sum_k(y_{nk}-t_{nk})^2$$
+에서
+$$\frac{\partial E_n}{\partial w_{ji}}=(y_{nj}-t_{nj})\,x_{ni}\qquad(\text{가중치 기울기}=\text{오차 신호}\times\text{입력 활성})$$
+:::
 
-**역문제.** 머신러닝은 근본적으로 **불량조건(ill-posed) 역문제**입니다 — 유한한 훈련 자료를 설명하는 모델이 **무수히 많기** 때문입니다. 보지 못한 자료에 대해 믿을 만하게 예측하려면 귀납적 편향이 필요합니다. 예: 규제로 강제하는 **매끄러움**, 영상 분석의 **평행이동 불변성**. 전이 학습과 다중 과제 학습도 관련 과제의 지식을 쓰는 귀납적 편향으로 볼 수 있습니다.
-
-**공짜 점심은 없다 정리(No free lunch).** 모든 문제에서 보편적으로 우월한 학습 알고리즘은 **없습니다**. 어떤 과제에서 평균보다 잘하면 다른 과제에서는 반드시 못합니다. 그래서 목표 응용의 특성에 맞는 귀납적 편향(예: CNN의 평행이동 등변성)을 설계하는 것이 성공의 핵심입니다.
+$w_{ji}$는 $y_{nj}$에만 들어 있으므로 $\partial E_n/\partial w_{ji}=(y_{nj}-t_{nj})\,\partial y_{nj}/\partial w_{ji}=(y_{nj}-t_{nj})x_{ni}$. 이 “오차 신호 × 입력” 구조가 다층망에서도 그대로 유지됩니다.
 ` },
-      { k: '9.1b', label: '9.1.3–9.1.4', p: '256', src: '슬라이드 7–10', title: '대칭, 불변성, 등변성', body: R`
-많은 과제에서 예측은 입력의 평행이동·척도·회전 같은 변환에 대해 **변하지 않아야**(불변) 합니다. 이런 불변성은 중요한 귀납적 편향이며 **기하학적 딥러닝**의 중심 주제입니다. 대칭에 해당하는 변환들의 집합은 **군**(닫힘, 결합, 항등원, 역원)을 이룹니다(예: $90^\circ$ 배수 회전, 평면의 연속 평행이동).
+      { k: '8.1b', label: '8.1.2', p: '235', src: '슬라이드 5–6', title: '일반 피드포워드망과 역전파 알고리즘', body: R`
+일반 피드포워드망에서 유닛 $j$는 입력의 가중합(사전활성)을 계산한 뒤 비선형 활성화를 적용합니다(편향은 $z_0=1$인 가중치로 흡수).
+$$a_j=\sum_iw_{ji}z_i,\qquad z_j=h(a_j)$$
 
-원리상 불변성을 자료만으로 배울 수 있지만, 몇 픽셀만 옮겨도 픽셀 값이 크게 바뀌고 변환들의 조합이 지수적으로 많아 **필요한 자료가 감당할 수 없이 큽니다.** 그래서 불변성을 명시적으로 넣는 것이 훨씬 효율적입니다.
-
-**불변성을 넣는 네 가지 방법**
-1. **전처리**: 변환에 불변인 특징을 추출 (단, 유용한 정보를 버리지 않게 설계하기 어려움)
-2. **규제**: 해당 변환에 따른 출력 변화를 벌점으로 (예: 접선 전파 — 작은 변환만 다룸)
-3. **자료 증강**: 변환된 복제본(같은 타깃)으로 훈련 집합을 확장 — 좌우 반전, 척도, 평행이동, 회전, 밝기·대비, 잡음 추가, 색상 이동. 연조직 의료영상에는 연속적인 '고무판' 변형도 씁니다. 입력에 잡음을 더하는 증강은 입력에 대한 출력 기울기를 벌하는 규제와 같습니다.
-4. **망 구조 설계**: 불변성을 구조에 직접 내장 (예: CNN)
-
-:::key 불변성과 등변성
-영상 $I$, 변환 $T$, 분할망 $S$, 분류망 $C$에 대해
-$$\text{등변성: }S(T(I))=T(S(I))\quad(\text{일반적으로 }S(T(I))=\tilde T(S(I))),\qquad \text{불변성: }C(T(I))=C(I)$$
-불변성은 출력 쪽 변환이 **항등**인 등변성의 특수한 경우입니다.
+:::key 역전파 공식
+오차 신호(“errors”) $\delta_j\equiv\dfrac{\partial E_n}{\partial a_j}$로 두면
+$$\frac{\partial E_n}{\partial w_{ji}}=\delta_jz_i,\qquad \delta_k=y_k-t_k\ (\text{출력 유닛})$$
+$$\delta_j=h'(a_j)\sum_kw_{kj}\delta_k\ (\text{은닉 유닛})$$
+합은 유닛 $j$가 연결을 보내는 모든 유닛 $k$에 대해 취합니다.
 :::
 
-예: 영상 분할에서 물체를 옮기면 분할 결과도 똑같이 옮겨져야 합니다(등변). 물체 분류는 위치와 무관해야 합니다(불변).
+:::fig delta
+:::
+
+- **가중치 기울기 = 오차 신호 × 입력 활성** — $w_{ji}$는 $a_j$를 통해서만 $E_n$에 영향을 주므로 $\frac{\partial E_n}{\partial w_{ji}}=\frac{\partial E_n}{\partial a_j}\frac{\partial a_j}{\partial w_{ji}}=\delta_jz_i$.
+- **은닉 유닛 오차 = 활성화의 기울기 × 다음 층 오차의 가중합** — $a_j$는 $z_j$를 거쳐 $j$가 연결된 모든 $a_k$에 영향을 주므로 $\delta_j=\sum_k\frac{\partial E_n}{\partial a_k}\frac{\partial a_k}{\partial a_j}=\sum_k\delta_kw_{kj}h'(a_j)$.
+- 출력의 $\delta_k=y_k-t_k$는 선형 출력+제곱오차뿐 아니라 시그모이드+교차엔트로피, 소프트맥스+다중 교차엔트로피(정준 연결)에서도 같은 형태입니다.
+
+**알고리즘 (Algorithm 8.1).** 입력: $\mathbf x_n$, 파라미터 $\mathbf w$, 오차 $E_n(\mathbf w)$, 활성화 $h(a)$. 출력: $\{\partial E_n/\partial w_{ji}\}$.
+1. **순전파**: 모든 은닉·출력 유닛 $j$에 대해 $a_j\leftarrow\sum_iw_{ji}z_i$ ($\{z_i\}$는 입력 $\{x_i\}$ 포함), $z_j\leftarrow h(a_j)$
+2. **오차 평가**: 모든 출력 유닛 $k$에 대해 $\delta_k\leftarrow\partial E_n/\partial a_k$
+3. **역전파**(역순): 모든 은닉 유닛 $j$에 대해 $\delta_j\leftarrow h'(a_j)\sum_kw_{kj}\delta_k$, $\partial E_n/\partial w_{ji}\leftarrow\delta_jz_i$
+
+배치의 기울기는 $\partial E/\partial w_{ji}=\sum_n\partial E_n/\partial w_{ji}$로 합칩니다. 계산 그래프 관점과 행렬 형태의 유도는 심층 신경망 과목에서 자세히 다룹니다[[@dnn:ch09:9.6|다층 퍼셉트론 역전파의 행렬 형태.]].
 ` },
-      { k: '9.2', label: '9.2', p: '260', src: '슬라이드 11–13', title: '가중치 감쇠', body: R`
-가중치 감쇠는 가중치 크기의 제곱에 비례하는 벌점을 더해 모델 복잡도를 조절하는, 가장 널리 쓰이는 규제입니다(곡선 적합의 L2 규제와 같은 것[[ch02:1.2c|곡선 적합의 규제.]]).
+      { k: '8.1c', label: '8.1.3–8.1.4', p: '238', src: '슬라이드 7', title: '2층 신경망 예제와 수치 미분', body: R`
+출력 유닛은 **선형**, 은닉 유닛은 시그모이드 모양의 **tanh** 활성화를 쓰는 2층망(입력 $D$, 은닉 $M$, 출력 $K$, $x_0=z_0=1$은 편향).
 
-:::key 가중치 감쇠
-$$\widetilde E(\mathbf w)=E(\mathbf w)+\frac\lambda2\mathbf w^T\mathbf w,\qquad \nabla\widetilde E(\mathbf w)=\nabla E(\mathbf w)+\lambda\mathbf w$$
-경사하강 갱신은 $\mathbf w\leftarrow(1-\eta\lambda)\mathbf w-\eta\nabla E(\mathbf w)$ — 매 단계 가중치가 $(1-\eta\lambda)$배로 **감쇠**합니다. $\lambda$: 규제 계수.
+:::fig mlp2
 :::
 
-- **확률적 해석**: 평균 0인 가우시안 사전분포 $p(\mathbf w)=\mathcal N(\mathbf 0,\lambda^{-1}\mathbf I)$ 아래의 MAP 추정과 같습니다[[ch06:2.6b|MAP과 L2 규제.]]. 자료가 강하게 지지하지 않는 한 가중치를 작게 유지합니다. 학습 이론에서는 같은 규제가 **안정성**을 만들어 과적합을 막는다고 봅니다[[@ml:ch10:13.3|강볼록한 규제항 덕분에 표본 하나를 바꿔도 해가 조금만 움직입니다.]].
-- 계산이 쉽습니다: 기울기에 $\lambda\mathbf w$만 더하면 됩니다(계수 $\frac12$은 미분에서 사라지게 하려는 관례).
-- 한계: 사전분포는 **파라미터**에 대한 것인데, 우리가 가진 지식은 보통 입력→출력 **함수**에 대한 것이라 넣을 수 있는 사전 지식이 제한적입니다.
+:::key 2층 신경망 역전파
+$$h(a)=\tanh(a),\qquad h'(a)=1-h(a)^2,\qquad E_n=\frac12\sum_{k=1}^K(y_k-t_k)^2$$
+순전파: $a_j=\sum_{i=0}^Dw_{ji}^{(1)}x_i$, $z_j=\tanh(a_j)$, $y_k=\sum_{j=0}^Mw_{kj}^{(2)}z_j$
+$$\delta_k=y_k-t_k,\qquad \delta_j=(1-z_j^2)\sum_{k=1}^Kw_{kj}^{(2)}\delta_k$$
+$$\frac{\partial E_n}{\partial w_{ji}^{(1)}}=\delta_jx_i,\qquad \frac{\partial E_n}{\partial w_{kj}^{(2)}}=\delta_kz_j$$
+:::
 
-**둔감한 방향이 더 줄어든다 (교재 그림 9.3).** 오차가 이차 함수이고 축을 헤시안의 고유벡터에 맞추면, 최소점 $\mathbf w^\star$의 각 성분이
-$$\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}\,w_j^\star\qquad(\lambda_j:\ \text{헤시안의 고윳값, 그 방향의 곡률})$$
-로 줄어듭니다. 곡률이 큰($\lambda_j\gg\lambda$) 방향 $w_2$는 거의 그대로, 오차가 **둔감한**($\lambda_j\ll\lambda$) 방향 $w_1$은 $0$ 가까이로 밀립니다. 출력에 거의 영향이 없는 파라미터를 억제하는 셈이고, 규제 후에도 **활성**으로 남는 파라미터 수가 **유효 파라미터 수**입니다($\lambda\to\infty$이면 0, $\lambda=0$이면 전체).
+:::ex 손으로 한 번
+입력 하나, 은닉 유닛 하나, 출력 하나(편향 없음). $x=2$, $w^{(1)}=0.5$, $w^{(2)}=2$, $t=1$.
+---
+순전파: $a=1$, $z=\tanh1\approx0.7616$, $y=2z\approx1.5232$.
+역전파: $\delta_k=y-t\approx0.5232$, $\delta_j=(1-z^2)\,w^{(2)}\delta_k\approx0.4200\times2\times0.5232\approx0.4395$.
+기울기: $\partial E/\partial w^{(2)}=\delta_kz\approx0.3985$, $\partial E/\partial w^{(1)}=\delta_jx\approx0.8789$.
+:::
+
+**수치 미분(8.1.4).** 역전파의 장점은 **효율**입니다. 오차 한 번 평가가 $O(W)$($W$: 가중치·편향 수)이고, 역전파도 전체 기울기를 $O(W)$에 구합니다. 반면 유한 차분
+$$\frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji})}{\epsilon}+O(\epsilon)$$
+$$\frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji}-\epsilon)}{2\epsilon}+O(\epsilon^2)$$
+은 가중치 $W$개를 하나씩 흔들어야 하므로 $O(W^2)$입니다. 중앙 차분은 $O(\epsilon)$ 항이 상쇄되어 더 정확하지만 계산은 약 두 배입니다. $\epsilon$을 너무 줄이면 반올림 오차가 커집니다. 실무에서는 역전파·자동미분 코드를 **중앙 차분으로 검증**(gradient check)하는 데 씁니다.
+:::fig numdiff
+:::
 ` },
-      { k: '9.2b', label: '9.2.1–9.2.2', p: '262', src: '슬라이드 14–15', title: '일관된 규제와 일반화된 가중치 감쇠', body: R`
-**단순 가중치 감쇠의 문제.** 2층 MLP $z_j=h\big(\sum_iw_{ji}x_i+w_{j0}\big)$, $y_k=\sum_jw_{kj}z_j+w_{k0}$에서 입력을 $x_i\to ax_i+b$로 바꾸면, 첫 층을 $w_{ji}\to\frac1aw_{ji}$, $w_{j0}\to w_{j0}-\frac ba\sum_iw_{ji}$로 바꿔 **같은 함수**를 얻습니다. 출력을 $y_k\to cy_k+d$로 바꾸면 $w_{kj}\to cw_{kj}$, $w_{k0}\to cw_{k0}+d$. 이렇게 **동등한 망**을 규제가 차별하면 안 되는데(일관성), 모든 가중치·편향을 똑같이 다루는 단순 가중치 감쇠는 이 성질을 **깨뜨립니다.**
+      { k: '8.1d', label: '8.1.5–8.1.6', p: '240', src: '슬라이드 8–9', title: '야코비안과 헤시안', body: R`
+역전파는 오차의 기울기 말고 다른 도함수에도 쓸 수 있습니다.
 
-:::key 일관된 규제
-층마다 따로, **편향은 제외**하고 규제합니다 ($\mathcal W_1,\mathcal W_2$: 첫째·둘째 층의 가중치 집합)
-$$\frac{\lambda_1}2\sum_{w\in\mathcal W_1}w^2+\frac{\lambda_2}2\sum_{w\in\mathcal W_2}w^2$$
-가중치 변환과 함께 $\lambda_1\to a^2\lambda_1$, $\lambda_2\to c^{-2}\lambda_2$로 바꾸면 규제항이 변하지 않습니다. 더 일반적으로 가중치를 그룹 $\mathcal W_k$로 나눠 $\Omega(\mathbf w)=\frac12\sum_k\alpha_k\lVert\mathbf w\rVert_k^2$, $\lVert\mathbf w\rVert_k^2=\sum_{j\in\mathcal W_k}w_j^2$.
+:::key 야코비안 행렬
+망 출력의 입력에 대한 야코비안:
+$$J_{ki}=\frac{\partial y_k}{\partial x_i}=\sum_j\frac{\partial y_k}{\partial a_j}\frac{\partial a_j}{\partial x_i}=\sum_jw_{ji}\frac{\partial y_k}{\partial a_j}$$
+$$\frac{\partial y_k}{\partial a_j}=\sum_l\frac{\partial y_k}{\partial a_l}\frac{\partial a_l}{\partial a_j}=h'(a_j)\sum_lw_{lj}\frac{\partial y_k}{\partial a_l}$$
+출력층에서 시작하는 값 ($\delta_{kl}$: 크로네커 델타)
+| 출력 활성화 | $\partial y_k/\partial a_l$ |
+|---|---|
+| 선형 | $\delta_{kl}$ |
+| 로지스틱 시그모이드 | $\delta_{kl}\,\sigma'(a_l)$ |
+| 소프트맥스 | $\delta_{kl}y_k-y_ky_l$ |
 :::
 
-- 파라미터 그룹마다 **별도의 사전분포**를 두는 것과 같고, 망 함수의 서로 다른 측면(세로 척도, 가로 척도 등)을 독립적으로 조절할 수 있습니다.
-- 편향을 뺀 사전분포는 정규화할 수 없는(improper) 분포라서, 실제로는 편향에도 별도 초매개변수의 사전분포를 두기도 합니다.
+야코비안은 입력의 작은 변화가 출력에 주는 영향($\Delta y_k\simeq\sum_iJ_{ki}\Delta x_i$)을 나타냅니다. 오차 역전파와 똑같은 재귀지만 출력 $k$마다 한 번씩 거꾸로 전달합니다. 벡터 입출력의 야코비안 연쇄법칙은 심층 신경망 과목에 있습니다[[@dnn:ch09:9.5|야코비안의 곱으로 쓰는 연쇄법칙.]].
 
-:::note 교재 식의 오류
-교재(과 PRML 5.5.1)는 $\lambda_1\to a^{1/2}\lambda_1$, $\lambda_2\to c^{-1/2}\lambda_2$로 인쇄되어 있습니다. 직접 계산하면 $\frac{\tilde\lambda_1}{2}\sum(w/a)^2=\frac{\lambda_1}2\sum w^2$에서 $\tilde\lambda_1=a^2\lambda_1$, 마찬가지로 $\tilde\lambda_2=\lambda_2/c^2$가 맞습니다. 결론(층별로 다른 $\lambda$를 두고 편향을 빼면 일관됨)은 같습니다.
+**헤시안** $H_{ij}=\partial^2E/\partial w_i\partial w_j$는 오차 곡면의 **국소 곡률**을 나타내며 기울기보다 많은 정보를 줍니다.[[@base:ch04:4.3|헤시안과 2차 테일러 전개.]] 2차 최적화, 베이지안 신경망, 가중치 정밀도 축소(양자화) 등에 쓰이지만 $W\times W$ 행렬이라 큰 망에서는 계산·저장이 매우 비쌉니다(평가 $O(W^2)$, 역행렬 $O(W^3)$).
+
+:::key 헤시안의 외적 근사
+출력 하나의 제곱오차 $E=\frac12\sum_n(y_n-t_n)^2$에서 ($\nabla$는 $\mathbf w$에 대한 기울기)
+$$\mathbf H=\nabla\nabla E=\sum_{n=1}^N\nabla y_n(\nabla y_n)^T+\sum_{n=1}^N(y_n-t_n)\nabla\nabla y_n$$
+잘 학습되어 잔차 $y_n-t_n$이 작으면 둘째 항을 무시해 **Levenberg–Marquardt(외적) 근사**
+$$\mathbf H\simeq\sum_{n=1}^N\nabla a_n\nabla a_n^T\qquad(\text{선형 출력이면 }y_n=a_n)$$
 :::
 
-:::key 일반화된 가중치 감쇠
-$$\Omega(\mathbf w)=\frac\lambda2\sum_{j=1}^M\lvert w_j\rvert^q\qquad(q=2:\ \text{가중치 감쇠},\quad q=1:\ \text{라쏘, }L_1)$$
-$E(\mathbf w)+\Omega(\mathbf w)$의 최소화는 라그랑주 승수법으로, 적절한 $\eta$에 대해 제약 $\sum_j\lvert w_j\rvert^q\le\eta$ 아래 $E(\mathbf w)$를 최소화하는 것과 같습니다.
-:::
-
-- **라쏘는 희소해**를 줍니다: 제약 영역 $\lvert w_1\rvert+\lvert w_2\rvert\le\eta$가 **축 위에 꼭짓점**을 가진 마름모라, 오차의 등고선이 꼭짓점에서 먼저 닿기 쉽고 그러면 일부 $w_j=0$입니다. 원($q=2$)은 둘 다 0이 아닌 작은 값으로 줄일 뿐입니다. $\lambda$가 클수록 더 많은 가중치가 0이 되어 **특징 선택** 효과가 있습니다.
-- 규제는 유효 복잡도를 제한해 과적합을 막지만, 이번엔 **적절한 $\lambda$를 고르는 문제**가 생깁니다(검증 자료로 선택).
+외적 근사는 1차 도함수만 필요하므로 역전파로 $O(W)$에 $\nabla a_n$을 구한 뒤 $O(W^2)$ 곱셈으로 행렬을 만듭니다. 항상 양의 준정부호라는 장점이 있지만, 잘 학습된 망에서만 타당합니다. 로지스틱 시그모이드 출력 + 교차엔트로피에서는 $\mathbf H\simeq\sum_ny_n(1-y_n)\nabla a_n\nabla a_n^T$입니다.
 ` },
-      { k: '9.3', label: '9.3', p: '266', src: '슬라이드 16–21', title: '학습 곡선, 조기 종료, 이중 하강', body: R`
-**학습 곡선**은 SGD 같은 반복 학습에서 훈련·검증 오차 등을 반복 횟수의 함수로 그린 것으로, 학습 진행을 보여 주고 유효 복잡도를 조절하는 실용적 방법을 줍니다.
+      { k: '8.2', label: '8.2', p: '244', src: '슬라이드 2, 교재 보충', title: '자동 미분', body: R`
+기울기를 구하는 네 가지 방법:
+1. **손으로 역전파 식 유도 후 구현** — 정확하고 빠르지만 유도·코딩에 시간이 들고 오류가 나기 쉬우며, 모델을 바꿀 때마다 순전파·역전파 코드를 함께 고쳐야 합니다.
+2. **수치 미분** — 순전파 코드만 있으면 되지만 $O(W^2)$로 확장성이 나쁩니다. 디버깅용.
+3. **기호 미분** — 컴퓨터 대수로 도함수 식을 만듭니다. 정확하지만 식이 기하급수적으로 길어지는 **표현식 팽창**(expression swell)과, 반복문·조건문 같은 제어 흐름을 다루지 못하는 문제가 있습니다.
+4. **자동 미분**(autodiff) — 순전파 **코드**로부터 기울기를 계산하는 코드를 자동 생성합니다. 기계 정밀도로 정확하고, 중간 변수를 재사용해 중복 계산이 없으며, 분기·반복·재귀도 다룹니다.
 
-**조기 종료.** 훈련 오차는 대체로 계속 줄지만 검증 오차는 처음에 줄다가 과적합이 시작되면 **다시 증가**합니다. 검증 오차가 **최소인 지점에서 학습을 멈추면** 유효 복잡도가 제한되어 일반화가 좋아집니다. 유효 파라미터 수가 학습 중에 점점 늘어난다고 해석할 수 있습니다.
-
-:::key 조기 종료
-이차 오차 $E=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$, 원점에서 시작해 $\mathbf w^{(\tau)}=\mathbf w^{(\tau-1)}-\rho\nabla E$로 갱신하면 헤시안의 고유방향($\mathbf H\mathbf u_j=\eta_j\mathbf u_j$) 성분이
-$$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
-$\eta_j\gg(\rho\tau)^{-1}$이면 $w_j^{(\tau)}\simeq w_j^\star$, $\eta_j\ll(\rho\tau)^{-1}$이면 $\lvert w_j^{(\tau)}\rvert\ll\lvert w_j^\star\rvert$. 즉 $(\rho\tau)^{-1}$(학습률 × 반복 수의 역수)이 가중치 감쇠의 $\lambda$ 역할을 합니다.
+:::key 전진 모드와 후진 모드 자동 미분
+**전진 모드**: 각 중간(primal) 변수 $v_i$에 접선(tangent) 변수 $\dot v_i=\partial v_i/\partial x$를 붙여 순전파와 함께 $(v_i,\dot v_i)$를 계산. 입력 하나당 한 번의 패스 → $K\times D$ 야코비안에 $D$번.
+**후진 모드**: 수반(adjoint) 변수 $\bar v_i=\partial f/\partial v_i$를 출력에서 거꾸로
+$$\bar v_i=\sum_{j\in\mathrm{ch}(i)}\bar v_j\frac{\partial v_j}{\partial v_i}$$
+($\mathrm{ch}(i)$: 노드 $i$의 자식). 출력 하나당 한 번의 패스 → 오차(스칼라)의 모든 파라미터 기울기를 **한 번에**. 역전파의 일반화입니다.
 :::
 
-곡률이 큰 방향은 빨리 수렴하고 둔감한 방향은 거의 움직이지 않은 상태에서 멈추므로, 가중치 감쇠의 $\frac{\lambda_j}{\lambda_j+\lambda}$ 축소와 질적으로 같은 해를 얻습니다(교재 그림 9.8).
+- 신경망 학습은 출력이 스칼라 하나(오차)이고 입력(파라미터)이 수백만 개이므로 **후진 모드**가 압도적으로 효율적입니다.
+- 후진 모드는 역방향 계산에 필요한 모든 중간 값을 저장해야 하므로 **메모리**를 더 씁니다. 전진 모드는 쓰고 나면 버릴 수 있어 구현이 쉽습니다.
+- 두 모드 모두 한 패스의 비용은 함수 평가의 최대 6배, 실제로는 2–3배 정도입니다.
 
-**이중 하강(double descent).** 고전적 편향-분산 이론은 복잡도가 커지면 결국 시험 오차가 커진다고 예측하지만, 현대의 심층망은 파라미터가 자료 수보다 훨씬 많아도 계속 좋아지곤 합니다. 시험 오차가 **줄었다가**, 훈련 자료를 정확히 맞출 수 있게 되는 **보간 임계점** 근처에서 **증가**한 뒤, 복잡도가 아주 커지면 **다시 감소**합니다(ResNet18 실험, Nakkiran et al. 2019). 훈련 오차가 0이 된 뒤에도 시험 오차가 계속 줄어듭니다.
-- 복잡도를 **학습 시간**(에폭 수)이나 **규제 세기**($1/\lambda$)로 조절해도 이중 하강이 나타납니다.
-- 큰 망 + SGD의 **암묵적 편향**이 좋은 일반화를 이끄는 것으로 보입니다.
-- 역설적으로, 임계 영역에서는 훈련 자료를 **늘리면** 보간 임계점이 오른쪽으로 밀려 시험 오차가 **커질** 수도 있습니다.
+:::fig autodiff
+:::
+
+:::ex 교재 예제 $f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$
+중간 변수: $v_1=x_1$, $v_2=x_2$, $v_3=v_1v_2$, $v_4=\sin v_2$, $v_5=\exp v_3$, $v_6=v_3-v_4$, $v_7=v_5+v_6=f$.
+---
+후진 모드: $\bar v_7=1$, $\bar v_6=\bar v_7=1$, $\bar v_5=\bar v_7=1$, $\bar v_4=-\bar v_6=-1$, $\bar v_3=\bar v_5v_5+\bar v_6=e^{x_1x_2}+1$, $\bar v_2=\bar v_3v_1+\bar v_4\cos v_2=x_1(1+e^{x_1x_2})-\cos x_2$, $\bar v_1=\bar v_3v_2=x_2(1+e^{x_1x_2})$. 한 번의 역방향 패스로 두 편미분을 모두 얻습니다. (교재 (8.75)의 인쇄는 $\bar v_2$의 첫 항이 흐려져 있는데, $\bar v_3v_1$이 맞습니다.)
+:::
 ` },
     ],
     problems: [
-      { sec: '9.1', type: 'mc', lv: 1, q: R`귀납적 편향의 정의로 가장 알맞은 것은?`,
-        choices: [R`모델 예측의 평균 오차`, R`학습자가 접하지 않은 입력의 출력을 예측하기 위해 사용하는 일련의 가정`, R`훈련 자료에 포함된 잡음`, R`학습률의 초기값`], ans: 1,
-        sol: R`강의 슬라이드의 정의입니다.` },
-      { sec: '9.1', type: 'mc', lv: 1, q: R`머신러닝이 불량조건 역문제인 이유는?`,
-        choices: [R`자료에 잡음이 있어서`, R`유한한 훈련 자료를 설명하는 모델이 무수히 많아서`, R`최적화가 비볼록이라서`, R`계산량이 많아서`], ans: 1,
-        sol: R`해가 유일하지 않으므로 귀납적 편향으로 선호하는 해를 정해야 합니다.` },
-      { sec: '9.1', type: 'mc', lv: 2, q: R`공짜 점심은 없다 정리가 말하는 것은?`,
-        choices: [R`딥러닝이 모든 문제에서 최선이다`, R`모든 문제에서 보편적으로 우월한 학습 알고리즘은 없다`, R`자료가 많으면 항상 성능이 좋아진다`, R`규제는 항상 성능을 높인다`], ans: 1,
-        sol: R`그래서 문제에 맞는 귀납적 편향이 중요합니다.` },
-      { sec: '9.1b', type: 'mc', lv: 1, q: R`영상 분할망 $S$와 평행이동 $T$에 대해 $S(T(I))=T(S(I))$가 나타내는 성질은?`,
-        choices: [R`불변성`, R`등변성`, R`선형성`, R`희소성`], ans: 1,
-        sol: R`입력 변환이 출력의 대응 변환으로 나타납니다. 불변성은 $C(T(I))=C(I)$.` },
-      { sec: '9.1b', type: 'mc', lv: 1, q: R`불변성을 넣는 네 가지 방법에 속하지 않는 것은?`,
-        choices: [R`전처리`, R`규제`, R`자료 증강`, R`학습률 스케줄`], ans: 3,
-        sol: R`전처리, 규제, 자료 증강, 망 구조 설계.` },
-      { sec: '9.2', type: 'num', lv: 1, q: R`$\eta=0.1$, $\lambda=0.01$인 가중치 감쇠에서 $\nabla E=0$일 때 한 번의 갱신으로 가중치는 몇 배가 되는가?`, ans: '0.999', ansTex: R`1-\eta\lambda=0.999`,
-        sol: R`$\mathbf w\leftarrow(1-\eta\lambda)\mathbf w-\eta\nabla E$.` },
-      { sec: '9.2', type: 'num', lv: 2, q: R`이차 오차의 헤시안 고윳값이 $\lambda_1=0.1$, $\lambda_2=10$이고 $\lambda=1$일 때, 규제된 해에서 $\hat w_1/w_1^\star$은? (소수 넷째 자리)`, ans: '1/11', ansTex: R`\tfrac{0.1}{1.1}\approx0.0909`,
-        sol: R`$\lambda_1/(\lambda_1+\lambda)=0.1/1.1$. 반면 $\hat w_2/w_2^\star=10/11\approx0.909$ — 둔감한 방향이 훨씬 많이 줄어듭니다.` },
-      { sec: '9.2', type: 'mc', lv: 1, q: R`가중치 감쇠에 대응하는 사전분포는?`,
-        choices: [R`균등분포`, R`평균 0인 가우시안`, R`라플라스 분포`, R`베타 분포`], ans: 1,
-        sol: R`$-\ln\mathcal N(\mathbf w\mid\mathbf 0,\lambda^{-1}\mathbf I)=\frac\lambda2\mathbf w^T\mathbf w+\text{상수}$. 라플라스 사전분포는 L1(라쏘)에 대응합니다.` },
-      { sec: '9.2b', type: 'mc', lv: 2, q: R`일관된 규제의 특징으로 옳은 것은?`,
-        choices: [R`모든 가중치와 편향을 같은 $\lambda$로 규제`, R`층(그룹)마다 다른 계수로 규제하고 편향은 제외`, R`편향만 규제`, R`출력층만 규제`], ans: 1,
-        sol: R`입력·출력의 선형 변환에 대해 동등한 망을 차별하지 않도록 합니다.` },
-      { sec: '9.2b', type: 'num', lv: 3, q: R`입력을 $x\to ax$로 바꾸면 첫 층 가중치는 $w\to w/a$가 된다. $a=10$일 때 규제항이 변하지 않으려면 $\lambda_1$은 몇 배가 되어야 하는가?`, ans: '100', ansTex: R`a^2=100`,
-        sol: R`$\frac{\tilde\lambda_1}2\sum(w/a)^2=\frac{\lambda_1}2\sum w^2\Rightarrow\tilde\lambda_1=a^2\lambda_1$. (교재의 $a^{1/2}$는 오식)` },
-      { sec: '9.2b', type: 'mc', lv: 1, q: R`라쏘($q=1$)가 희소해를 주는 기하학적 이유는?`,
-        choices: [R`제약 영역이 원이라서`, R`제약 영역이 축 위에 꼭짓점을 가진 마름모라서`, R`오차함수가 선형이라서`, R`기울기가 항상 0이라서`], ans: 1,
-        sol: R`등고선이 꼭짓점(한 좌표가 0)에서 먼저 닿기 쉽습니다.` },
-      { sec: '9.3', type: 'num', lv: 2, q: R`조기 종료 식 $w_j^{(\tau)}=\{1-(1-\rho\eta_j)^\tau\}w_j^\star$에서 $\rho=0.01$, $\tau=100$, $\eta_j=0.1$이면 $w_j^{(\tau)}/w_j^\star$은? (소수 넷째 자리)`, ans: '1-0.999^100', ansTex: R`1-0.999^{100}\approx0.0952`,
-        sol: R`$0.999^{100}\approx0.9048$. $\lambda=(\rho\tau)^{-1}=1$인 가중치 감쇠의 $0.1/1.1\approx0.0909$와 비슷합니다.` },
-      { sec: '9.3', type: 'mc', lv: 1, q: R`조기 종료에서 학습을 멈추는 시점은?`,
-        choices: [R`훈련 오차가 0이 될 때`, R`검증 오차가 최소일 때`, R`학습률이 0이 될 때`, R`정해진 에폭 수의 절반`], ans: 1,
-        sol: R`검증 오차가 다시 증가하기 시작하는 지점이 과적합의 시작입니다.` },
-      { sec: '9.3', type: 'mc', lv: 2, q: R`이중 하강에서 시험 오차가 치솟는 지점은?`,
-        choices: [R`모델이 가장 단순할 때`, R`모델이 훈련 자료를 정확히 맞출 수 있게 되는 보간 임계점 근처`, R`학습률이 가장 클 때`, R`훈련 오차가 가장 클 때`], ans: 1,
-        sol: R`그 뒤 복잡도가 더 커지면 시험 오차가 다시 감소합니다.` },
-      { sec: '9.3', type: 'mc', lv: 3, q: R`이중 하강의 임계 영역에 있는 모델에 대해 옳은 것은?`,
-        choices: [R`자료를 늘리면 항상 시험 오차가 준다`, R`자료를 늘리면 보간 임계점이 오른쪽으로 밀려 시험 오차가 커질 수 있다`, R`규제는 효과가 없다`, R`에폭 수와 무관하다`], ans: 1,
-        sol: R`교재 그림 9.11 (트랜스포머, 4,000 → 18,000 표본).` },
-      { sec: '9.2', type: 'open', lv: 3, q: R`이차 오차 $E(\mathbf w)=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$에 가중치 감쇠 $\frac\lambda2\mathbf w^T\mathbf w$를 더한 최소점 $\hat{\mathbf w}$를 헤시안의 고유벡터 좌표로 쓰면 $\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$임을 보이세요.`, proof: true,
+      { sec: '8.1', type: 'num', lv: 1, q: R`단층 선형 모델 $y=w_1x_1+w_2x_2$, $E=\frac12(y-t)^2$에서 $x=(2,-1)$, $w=(1,1)$, $t=0$일 때 $\partial E/\partial w_2$는?`, ans: '-1', ansTex: R`-1`,
+        sol: R`$y=2-1=1$, 오차 신호 $y-t=1$, $\partial E/\partial w_2=1\cdot x_2=-1$.` },
+      { sec: '8.1b', type: 'mc', lv: 1, q: R`역전파에서 $\delta_j$의 정의는?`,
+        choices: [R`$\partial E_n/\partial w_{ji}$`, R`$\partial E_n/\partial a_j$`, R`$\partial E_n/\partial z_j$`, R`$y_j-t_j$ (모든 유닛)`], ans: 1,
+        sol: R`사전활성에 대한 오차의 미분. 출력 유닛(정준 연결)에서는 $y_k-t_k$가 됩니다.` },
+      { sec: '8.1b', type: 'num', lv: 2, q: R`은닉 유닛 $j$가 ReLU이고 $a_j=0.7$, 다음 층 두 유닛으로 $w_{1j}=2$, $w_{2j}=-1$로 연결되며 $\delta_1=0.3$, $\delta_2=0.5$이다. $\delta_j$는?`, ans: '0.1', ansTex: R`0.1`,
+        sol: R`$h'(0.7)=1$, $\delta_j=1\cdot(2\cdot0.3-1\cdot0.5)=0.1$.` },
+      { sec: '8.1b', type: 'num', lv: 2, q: R`위 문제에서 $a_j=-0.7$이면 $\delta_j$는?`, ans: '0', ansTex: R`0`,
+        sol: R`ReLU의 기울기가 0이므로 $\delta_j=0$ — 이 유닛으로 들어오는 가중치는 이 예제에서 갱신되지 않습니다.` },
+      { sec: '8.1b', type: 'mc', lv: 2, q: R`$\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$에서 합이 도는 범위는?`,
+        choices: [R`유닛 $j$로 연결을 보내는 모든 유닛`, R`유닛 $j$가 연결을 보내는 모든 유닛`, R`같은 층의 모든 유닛`, R`모든 출력 유닛만`], ans: 1,
+        sol: R`$a_j$의 변화는 $z_j$를 받는 다음 유닛들의 $a_k$를 통해서만 오차에 전달됩니다.` },
+      { sec: '8.1c', type: 'num', lv: 2, q: R`본문 예제($x=2$, $w^{(1)}=0.5$, $w^{(2)}=2$, $t=1$, tanh 은닉·선형 출력)에서 $\partial E/\partial w^{(1)}$은? (소수 넷째 자리)`, ans: '0.8789', ansTex: R`\approx0.8789`,
+        sol: R`$z=\tanh1$, $\delta_k=2z-1$, $\delta_j=(1-z^2)\cdot2\cdot\delta_k\approx0.43945$, $\partial E/\partial w^{(1)}=\delta_j\cdot2\approx0.8789$.` },
+      { sec: '8.1c', type: 'num', lv: 1, q: R`tanh 은닉 유닛의 출력이 $z_j=0.6$이면 $h'(a_j)$는?`, ans: '0.64', ansTex: R`0.64`,
+        sol: R`$1-z_j^2=1-0.36$.` },
+      { sec: '8.1c', type: 'mc', lv: 2, q: R`중앙 차분이 전방 유한 차분보다 정확한 이유는?`,
+        choices: [R`$\epsilon$을 더 작게 잡을 수 있어서`, R`테일러 전개에서 $O(\epsilon)$ 항이 상쇄되어 오차가 $O(\epsilon^2)$이라서`, R`반올림 오차가 없어서`, R`계산량이 절반이라서`], ans: 1,
+        sol: R`$E(w\pm\epsilon)=E\pm\epsilon E'+\frac{\epsilon^2}2E''\pm\cdots$의 차에서 $E''$ 항이 사라집니다. 계산량은 약 두 배.` },
+      { sec: '8.1c', type: 'mc', lv: 1, q: R`가중치가 $W$개인 망에서 수치 미분으로 전체 기울기를 구하는 비용은?`,
+        choices: [R`$O(W)$`, R`$O(W\log W)$`, R`$O(W^2)$`, R`$O(W^3)$`], ans: 2,
+        sol: R`순전파 $O(W)$를 가중치 $W$개마다 반복합니다. 역전파는 $O(W)$.` },
+      { sec: '8.1d', type: 'num', lv: 2, q: R`소프트맥스 출력의 사전활성이 $a=(1,0,-1)$일 때 $\partial y_1/\partial a_1$은? (소수 넷째 자리)`, ans: '0.2227', ansTex: R`y_1(1-y_1)\approx0.2227`,
+        sol: R`$y_1=e/(e+1+e^{-1})\approx0.6652$, $\partial y_1/\partial a_1=y_1-y_1^2\approx0.2227$.` },
+      { sec: '8.1d', type: 'num', lv: 2, q: R`같은 경우 $\partial y_1/\partial a_2$는? (소수 넷째 자리)`, ans: '-0.1628', ansTex: R`-y_1y_2\approx-0.1628`,
+        sol: R`$y_2=1/(e+1+e^{-1})\approx0.2447$, $-y_1y_2\approx-0.1628$.` },
+      { sec: '8.1d', type: 'mc', lv: 2, q: R`Levenberg–Marquardt 근사에서 무시하는 항과 그 근거는?`,
+        choices: [R`$\sum\nabla y_n\nabla y_n^T$ — 항상 작아서`, R`$\sum(y_n-t_n)\nabla\nabla y_n$ — 잘 학습되면 잔차가 작아서`, R`대각 원소 — 계산이 비싸서`, R`비대각 원소 — 대칭이라서`], ans: 1,
+        sol: R`잔차가 작거나 2차 도함수와 무상관이면 평균적으로 0에 가깝습니다.` },
+      { sec: '8.1d', type: 'mc', lv: 1, q: R`헤시안의 쓰임으로 강의에서 든 것이 아닌 것은?`,
+        choices: [R`2차 최적화 방법`, R`베이지안 신경망`, R`가중치 정밀도 축소`, R`미니배치 섞기`], ans: 3,
+        sol: R`슬라이드: second-order optimization, Bayesian neural networks, weight-precision reduction.` },
+      { sec: '8.2', type: 'mc', lv: 1, q: R`신경망 학습(스칼라 오차, 파라미터 수백만 개)에 더 효율적인 자동 미분 방식은?`,
+        choices: [R`전진 모드`, R`후진 모드`, R`기호 미분`, R`수치 미분`], ans: 1,
+        sol: R`후진 모드는 출력 하나당 한 번의 역방향 패스로 모든 입력(파라미터)에 대한 미분을 얻습니다.` },
+      { sec: '8.2', type: 'num', lv: 2, q: R`$f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$에서 $(x_1,x_2)=(2,0)$일 때 $\partial f/\partial x_2$는?`, ans: '3', ansTex: R`3`,
+        sol: R`$\bar v_2=x_1(1+e^{x_1x_2})-\cos x_2=2\cdot2-1=3$.` },
+      { sec: '8.2', type: 'mc', lv: 2, q: R`기호 미분의 단점이 아닌 것은?`,
+        choices: [R`표현식 팽창`, R`반복문·조건문을 다루지 못함`, R`중복 계산`, R`기계 정밀도보다 부정확함`], ans: 3,
+        sol: R`기호 미분은 정확한 식을 주므로 정밀도 문제는 없습니다.` },
+      { sec: '8.1b', type: 'open', lv: 2, q: R`$a_j=\sum_iw_{ji}z_i$, $z_j=h(a_j)$, $\delta_j\equiv\partial E_n/\partial a_j$일 때 연쇄법칙으로 (i) $\partial E_n/\partial w_{ji}=\delta_jz_i$, (ii) $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 유도하세요.`, proof: true,
         sol: R`
-$\nabla\widetilde E=\mathbf H(\mathbf w-\mathbf w^\star)+\lambda\mathbf w=0\Rightarrow(\mathbf H+\lambda\mathbf I)\hat{\mathbf w}=\mathbf H\mathbf w^\star$.
-$\mathbf H=\sum_j\lambda_j\mathbf u_j\mathbf u_j^T$ (정규직교 고유벡터)이고 $\hat w_j=\mathbf u_j^T\hat{\mathbf w}$, $w_j^\star=\mathbf u_j^T\mathbf w^\star$로 두면, 양변에 $\mathbf u_j^T$를 곱해 $(\lambda_j+\lambda)\hat w_j=\lambda_jw_j^\star$. 따라서 $\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$.
-$\lambda_j\gg\lambda$이면 거의 그대로, $\lambda_j\ll\lambda$이면 거의 0 — 둔감한 방향이 억제됩니다.`,
+(i) $E_n$은 $w_{ji}$에 합 $a_j$를 통해서만 의존하므로 $\frac{\partial E_n}{\partial w_{ji}}=\frac{\partial E_n}{\partial a_j}\frac{\partial a_j}{\partial w_{ji}}=\delta_jz_i$ ($\partial a_j/\partial w_{ji}=z_i$).
+(ii) $a_j$가 바뀌면 $z_j$가 바뀌고, $z_j$는 $j$가 연결을 보내는 유닛 $k$들의 $a_k=\sum_{j'}w_{kj'}z_{j'}$에 들어갑니다. 다변수 연쇄법칙으로 $\delta_j=\sum_k\frac{\partial E_n}{\partial a_k}\frac{\partial a_k}{\partial a_j}$이고 $\frac{\partial a_k}{\partial a_j}=w_{kj}h'(a_j)$이므로 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$.`,
         rubric: R`
-- 정류 조건 $(\mathbf H+\lambda\mathbf I)\hat{\mathbf w}=\mathbf H\mathbf w^\star$
-- 고유벡터로 사영
-- 해석` },
+- (i) $a_j$ 경유 연쇄법칙
+- (ii) 다음 층 $a_k$들에 대한 합
+- $\partial a_k/\partial a_j=w_{kj}h'(a_j)$` },
+      { sec: '8.1d', type: 'open', lv: 2, q: R`$E=\frac12\sum_n(y_n-t_n)^2$의 헤시안이 $\sum_n\nabla y_n(\nabla y_n)^T+\sum_n(y_n-t_n)\nabla\nabla y_n$임을 보이고, 외적 근사가 양의 준정부호임을 보이세요.`, proof: true,
+        sol: R`
+$\nabla E=\sum_n(y_n-t_n)\nabla y_n$. 다시 미분(곱의 미분): $\nabla\nabla E=\sum_n\big[\nabla y_n(\nabla y_n)^T+(y_n-t_n)\nabla\nabla y_n\big]$.
+외적 근사 $\mathbf H_{LM}=\sum_n\mathbf g_n\mathbf g_n^T$ ($\mathbf g_n=\nabla a_n$)에 대해 임의의 $\mathbf v$로 $\mathbf v^T\mathbf H_{LM}\mathbf v=\sum_n(\mathbf g_n^T\mathbf v)^2\ge0$. 따라서 양의 준정부호입니다.`,
+        rubric: R`
+- 1차 기울기
+- 곱의 미분으로 두 항
+- $\mathbf v^T\mathbf H\mathbf v=\sum(\cdot)^2\ge0$` },
     ],
   });
 })();

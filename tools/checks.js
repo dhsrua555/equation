@@ -81,6 +81,21 @@
     });
   });
   (window.EM.proofs || []).forEach((p) => { if (!A.chById.get(p.ch)) fail(`proof ${p.id} has unknown ch ${p.ch}`); });
+  // ---- worked quiz solutions (data/quiz-*.js) ----
+  (A.QUIZ || []).forEach((q) => {
+    checkHTML(md(q.intro), `quiz ${q.id}`);
+    q.problems.forEach((p) => {
+      const w = `quiz ${q.id}-${p.id}`;
+      if (/\$/.test(p.title)) fail(`${w} title has $`);
+      if (/\$\{/.test(p.body)) fail(`${w} has template \${`);
+      checkHTML(md(p.body), w);
+      String(p.body).replace(/\[\[(@\w+:)?(ch\d{2}):([\w.]+)\|/g, (_, site, ch, k) => {
+        if (site) { if (!A.xrefTarget(ch, k, site.slice(1, -1))) fail(`${w} xref target missing ${site}${ch}:${k}`); }
+        else if (!allSecKeys.has(`${ch}:${k}`)) fail(`${w} xref section missing ${ch}:${k}`);
+        return '';
+      });
+    });
+  });
   // ---- exams ----
   A.EXAMS.forEach((x) => {
     let pts = 0;
@@ -111,6 +126,7 @@
   const routes = ['home', 'formulas', 'proofs', 'exams', 'review'];
   A.CH.forEach((c) => { routes.push(c.id, `${c.id}-practice`, `${c.id}-formulas`, `${c.id}-proofs`); c.sections.forEach((s) => routes.push(`${c.id}-k${s.k}`)); });
   A.PROOFS.forEach((p) => routes.push(`pf-${p.pid}`));
+  (A.QUIZ || []).forEach((q, i) => { if (!i) routes.push('quiz'); q.problems.forEach((p) => routes.push(`quiz-${q.id}-${p.id}`)); });
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);

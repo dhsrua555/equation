@@ -19,6 +19,7 @@ proofs-d.js
 proofs-e.js
 exams.js
 exams-2.js
+quiz-1.js
 learn-01.js
 more-01.js
 fig-01.js

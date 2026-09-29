@@ -1,191 +1,167 @@
-/* 09 역전파 — Bishop 8.1–8.2 (p.233–251), 강의 Ch08 */
+/* 09 정규화(Normalization) — Bishop 7.4 (p.224–230), 강의 Ch07 s.22–29 */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 9, part: 'C', title: '역전파', en: 'Backpropagation', ref: 'Bishop §8.1–8.2', plot: 'backprop',
-    fig: R`순전파로 사전활성과 활성을 계산한 뒤, 오차 신호 δ를 출력에서 입력 쪽으로 거꾸로 전달`,
-    tagline: R`가중치 기울기 = 오차 신호 × 입력 활성. 은닉 유닛의 오차 = 활성화 기울기 × 다음 층 오차의 가중합.`,
-    summary: R`역전파는 피드포워드 신경망의 오차함수 $E(\mathbf w)$를 파라미터에 대해 **효율적으로** 미분하는 알고리즘으로, 정보를 망을 따라 거꾸로 전달하는 국소 메시지 전달입니다. 단층 선형 모델의 기울기(오차 신호 × 입력)에서 출발해, 일반 피드포워드망의 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 유도하고, tanh 은닉층 2층망 예제를 손으로 계산합니다. 수치 미분(유한·중앙 차분)과의 비용 비교, 입력에 대한 **야코비안**, 오차의 **헤시안**과 Levenberg–Marquardt(외적) 근사, 그리고 현대 프레임워크의 **자동 미분**(전진·후진 모드)까지 다룹니다.`,
+    n: 9, part: 'C', title: '정규화(Normalization)', en: 'Input, Batch & Layer Normalization', ref: 'Bishop §7.4', plot: 'bn',
+    fig: R`평균과 퍼짐이 제각각인 활성화 분포들(가는 선)을 평균 0, 분산 1로 표준화(굵은 선)`,
+    tagline: R`입력은 한 번, 은닉층은 매 미니배치마다. 표준화한 뒤 학습 가능한 $\gamma,\beta$로 다시 펼친다.`,
+    summary: R`정규화(Normalization)는 순전파 중에 계산되는 변수들의 척도를 다시 맞춰 지나치게 크거나 작은 값을 막는 기법입니다. 원리상 가중치가 어떤 척도에도 적응할 수 있지만 실제로는 최적화가 어려워지기 때문에, 정규화는 학습의 효율과 안정성을 크게 높입니다. **입력 정규화**(훈련 자료의 평균·표준편차로 한 번), **배치 정규화**(미니배치의 예제들에 걸친 통계, 학습 가능한 $\gamma,\beta$, 추론 시 이동평균), **층 정규화**(한 예제 안의 은닉 유닛들에 걸친 통계)를 비교합니다. 11–12단원의 **규제(Regularization)**와 이름이 비슷하지만 다른 개념입니다.`,
     goals: [
-      R`단층 선형 모델에서 $\partial E_n/\partial w_{ji}=(y_{nj}-t_{nj})x_{ni}$를 유도할 수 있다`,
-      R`$\delta_j\equiv\partial E_n/\partial a_j$를 정의하고 역전파 공식 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 연쇄법칙으로 유도할 수 있다`,
-      R`tanh 은닉층·선형 출력의 2층망에서 순전파·역전파를 손으로 계산할 수 있다`,
-      R`유한 차분과 중앙 차분의 오차 차수, 수치 미분의 $O(W^2)$ 비용을 설명할 수 있다`,
-      R`출력층 활성화별 $\partial y_k/\partial a_l$(선형·시그모이드·소프트맥스)와 야코비안 역전파를 쓸 수 있다`,
-      R`제곱오차의 헤시안을 유도하고 Levenberg–Marquardt 근사의 조건을 설명할 수 있다`,
-      R`전진 모드와 후진 모드 자동 미분의 차이와 쓰임을 비교할 수 있다`,
+      R`입력 척도가 다르면 오차 곡면의 곡률이 방향마다 달라지는 이유를 설명할 수 있다`,
+      R`입력 정규화를 계산하고, 검증·시험 자료에 훈련 자료의 통계를 써야 하는 이유를 말할 수 있다`,
+      R`기울기 소실·폭발이 연쇄법칙의 곱에서 생기는 이유를 설명할 수 있다`,
+      R`배치 정규화의 식 $\hat a=(a-\mu)/\sqrt{\sigma^2+\delta}$, $\tilde a=\gamma\hat a+\beta$를 계산할 수 있다`,
+      R`배치 정규화의 학습·추론 시 동작 차이와 이동평균을 설명할 수 있다`,
+      R`층 정규화가 통계를 구하는 축과 장점을 배치 정규화와 비교할 수 있다`,
     ],
-    secTitles: { '8.1': '단층 신경망', '8.1b': '일반 피드포워드망', '8.1c': '2층 예제와 수치 미분', '8.1d': '야코비안과 헤시안', '8.2': '자동 미분' },
+    secTitles: { '7.4': '입력 정규화', '7.4b': '배치 정규화', '7.4c': '층 정규화' },
     sections: [
-      { k: '8.1', label: '8.1.1', p: '234', src: '슬라이드 2–4', title: '단층 신경망의 기울기', body: R`
-역전파는 옵티마이저가 쓸 **기울기**를 계산합니다. 핵심 목표는 피드포워드망의 오차 $E(\mathbf w)$를 파라미터에 대해 효율적으로 미분하는 것이고, 정보를 **거꾸로** 전달하는 국소 메시지 전달 알고리즘입니다. 현대 프레임워크는 순전파만 정의하면 기울기를 **자동 미분**으로 계산합니다(8.2).
+      { k: '7.4', label: '7.4–7.4.1', p: '224', src: '슬라이드 22–24', title: '왜 정규화하는가, 입력 정규화', body: R`
+정규화는 순전파에서 계산되는 변수의 척도를 조정해 **극단적으로 크거나 작은 값**을 막습니다. 원리적으로는 가중치와 편향이 어떤 척도에도 적응할 수 있지만, 실제로는 최적화를 어렵게 만듭니다. 세 가지 중요한 형태:
+- **입력 정규화**: 입력 자료를 정규화
+- **배치 정규화**: 미니배치의 **예제들에 걸친** 통계로 정규화
+- **층 정규화**: 한 층의 **특징(유닛)들에 걸쳐** 정규화
 
-독립 자료의 최대가능도 오차는 $E(\mathbf w)=\sum_nE_n(\mathbf w)$이므로 한 점의 $\nabla E_n$만 구하면 됩니다.
+**입력 척도가 다르면** — 예: 건강 자료에서 키는 1.8 m, 혈소판 수는 300,000/µL. 두 가중치를 가진 단층 회귀망에서 한 가중치의 변화가 다른 가중치의 같은 변화보다 출력(따라서 오차)을 훨씬 크게 바꿉니다. 즉 오차 곡면의 **곡률이 축마다 매우 달라** 경사하강법이 비효율적입니다(8단원의 좁은 골짜기).
 
-:::key 단층 신경망의 기울기
-출력이 입력의 가중합인 선형 모델과 제곱오차
-$$y_k=\sum_iw_{ki}x_i,\qquad E_n=\frac12\sum_k(y_{nk}-t_{nk})^2$$
-에서
-$$\frac{\partial E_n}{\partial w_{ji}}=(y_{nj}-t_{nj})\,x_{ni}\qquad(\text{가중치 기울기}=\text{오차 신호}\times\text{입력 활성})$$
+:::fig scalecurv
 :::
 
-$w_{ji}$는 $y_{nj}$에만 들어 있으므로 $\partial E_n/\partial w_{ji}=(y_{nj}-t_{nj})\,\partial y_{nj}/\partial w_{ji}=(y_{nj}-t_{nj})x_{ni}$. 이 “오차 신호 × 입력” 구조가 다층망에서도 그대로 유지됩니다.
+:::key 입력 정규화
+훈련을 시작하기 전에 **한 번** 각 입력 $i$의 평균과 분산을 계산하고 표준화합니다.
+$$\mu_i=\frac1N\sum_{n=1}^Nx_{ni},\qquad \sigma_i^2=\frac1N\sum_{n=1}^N(x_{ni}-\mu_i)^2,\qquad \tilde x_{ni}=\frac{x_{ni}-\mu_i}{\sigma_i}$$
+그러면 $\{\tilde x_{ni}\}$는 평균 0, 분산 1입니다. **검증·시험 자료에도 훈련 자료의 같은 $\mu_i,\sigma_i$를 써야** 모든 입력이 같은 방식으로 변환됩니다.
+:::
+
+:::warn 흔한 실수
+시험 자료를 시험 자료 자신의 평균·표준편차로 표준화하면 훈련 때와 다른 변환이 되고, 시험 자료의 정보가 전처리에 새어 들어갑니다. 통계는 **훈련 자료에서만** 계산합니다.
+:::
 ` },
-      { k: '8.1b', label: '8.1.2', p: '235', src: '슬라이드 5–6', title: '일반 피드포워드망과 역전파 알고리즘', body: R`
-일반 피드포워드망에서 유닛 $j$는 입력의 가중합(사전활성)을 계산한 뒤 비선형 활성화를 적용합니다(편향은 $z_0=1$인 가중치로 흡수).
-$$a_j=\sum_iw_{ji}z_i,\qquad z_j=h(a_j)$$
+      { k: '7.4b', label: '7.4.2', p: '227', src: '슬라이드 25–27', title: '배치 정규화', body: R`
+입력을 정규화하는 논리를 **은닉층**에도 적용합니다. 어떤 은닉층의 활성화 범위가 크게 흩어져 있으면, 평균 0·분산 1로 맞춰 주는 것이 다음 층의 학습을 쉽게 합니다. 단, 입력과 달리 은닉 유닛의 값은 가중치가 갱신될 때마다 바뀌므로 **학습 중에 매 미니배치마다 반복**해야 합니다 — 이것이 **배치 정규화**(Ioffe & Szegedy, 2015)입니다.
 
-:::key 역전파 공식
-오차 신호(“errors”) $\delta_j\equiv\dfrac{\partial E_n}{\partial a_j}$로 두면
-$$\frac{\partial E_n}{\partial w_{ji}}=\delta_jz_i,\qquad \delta_k=y_k-t_k\ (\text{출력 유닛}),\qquad \delta_j=h'(a_j)\sum_kw_{kj}\delta_k\ (\text{은닉 유닛})$$
-합은 유닛 $j$가 연결을 보내는 모든 유닛 $k$에 대해 취합니다.
+**기울기 소실·폭발.** 첫 층 파라미터에 대한 오차의 기울기는 연쇄법칙[[@base:ch04:4.2|다변수 연쇄법칙: 합성의 미분은 야코비 행렬의 곱.]]으로
+$$\frac{\partial E}{\partial w_i}=\sum_m\cdots\sum_l\sum_j\frac{\partial z_m^{(1)}}{\partial w_i}\cdots\frac{\partial z_j^{(K)}}{\partial z_l^{(K-1)}}\frac{\partial E}{\partial z_j^{(K)}}$$
+처럼 층마다의 야코비안 원소의 **곱**입니다. 대부분 크기가 $1$보다 작으면 곱이 $0$으로(**소실**), 크면 $\infty$로(**폭발**) 갑니다. 배치 정규화는 이 문제를 크게 줄입니다.
+:::fig vanish
 :::
 
-:::fig delta
+:::key 배치 정규화
+크기 $K$인 미니배치에서 유닛 $i$의 사전활성 $a_{ni}$에 대해 ($\delta$: 수치 안정용 작은 상수)
+$$\mu_i=\frac1K\sum_{n=1}^Ka_{ni},\qquad \sigma_i^2=\frac1K\sum_{n=1}^K(a_{ni}-\mu_i)^2,\qquad \hat a_{ni}=\frac{a_{ni}-\mu_i}{\sqrt{\sigma_i^2+\delta}}$$
+$$\tilde a_{ni}=\gamma_i\hat a_{ni}+\beta_i\qquad(\gamma_i,\beta_i:\ \text{가중치, 편향과 함께 경사하강법으로 학습})$$
+추론 시에는 학습 중 누적한 이동평균을 씁니다 ($0\le\alpha\le1$):
+$$\bar\mu_i^{(\tau)}=\alpha\bar\mu_i^{(\tau-1)}+(1-\alpha)\mu_i,\qquad \bar\sigma_i^{(\tau)}=\alpha\bar\sigma_i^{(\tau-1)}+(1-\alpha)\sigma_i$$
 :::
 
-- **가중치 기울기 = 오차 신호 × 입력 활성** — $w_{ji}$는 $a_j$를 통해서만 $E_n$에 영향을 주므로 $\frac{\partial E_n}{\partial w_{ji}}=\frac{\partial E_n}{\partial a_j}\frac{\partial a_j}{\partial w_{ji}}=\delta_jz_i$.
-- **은닉 유닛 오차 = 활성화의 기울기 × 다음 층 오차의 가중합** — $a_j$는 $z_j$를 거쳐 $j$가 연결된 모든 $a_k$에 영향을 주므로 $\delta_j=\sum_k\frac{\partial E_n}{\partial a_k}\frac{\partial a_k}{\partial a_j}=\sum_k\delta_kw_{kj}h'(a_j)$.
-- 출력의 $\delta_k=y_k-t_k$는 선형 출력+제곱오차뿐 아니라 시그모이드+교차엔트로피, 소프트맥스+다중 교차엔트로피(정준 연결)에서도 같은 형태입니다.
-
-**알고리즘 (Algorithm 8.1).** 입력: $\mathbf x_n$, 파라미터 $\mathbf w$, 오차 $E_n(\mathbf w)$, 활성화 $h(a)$. 출력: $\{\partial E_n/\partial w_{ji}\}$.
-1. **순전파**: 모든 은닉·출력 유닛 $j$에 대해 $a_j\leftarrow\sum_iw_{ji}z_i$ ($\{z_i\}$는 입력 $\{x_i\}$ 포함), $z_j\leftarrow h(a_j)$
-2. **오차 평가**: 모든 출력 유닛 $k$에 대해 $\delta_k\leftarrow\partial E_n/\partial a_k$
-3. **역전파**(역순): 모든 은닉 유닛 $j$에 대해 $\delta_j\leftarrow h'(a_j)\sum_kw_{kj}\delta_k$, $\partial E_n/\partial w_{ji}\leftarrow\delta_jz_i$
-
-배치의 기울기는 $\partial E/\partial w_{ji}=\sum_n\partial E_n/\partial w_{ji}$로 합칩니다. 계산 그래프 관점과 행렬 형태의 유도는 심층 신경망 과목에서 자세히 다룹니다[[@dnn:ch09:9.6|다층 퍼셉트론 역전파의 행렬 형태.]].
-` },
-      { k: '8.1c', label: '8.1.3–8.1.4', p: '238', src: '슬라이드 7', title: '2층 신경망 예제와 수치 미분', body: R`
-출력 유닛은 **선형**, 은닉 유닛은 시그모이드 모양의 **tanh** 활성화를 쓰는 2층망(입력 $D$, 은닉 $M$, 출력 $K$, $x_0=z_0=1$은 편향).
-
-:::key 2층 신경망 역전파
-$$h(a)=\tanh(a),\qquad h'(a)=1-h(a)^2,\qquad E_n=\frac12\sum_{k=1}^K(y_k-t_k)^2$$
-순전파: $a_j=\sum_{i=0}^Dw_{ji}^{(1)}x_i$, $z_j=\tanh(a_j)$, $y_k=\sum_{j=0}^Mw_{kj}^{(2)}z_j$
-$$\delta_k=y_k-t_k,\qquad \delta_j=(1-z_j^2)\sum_{k=1}^Kw_{kj}^{(2)}\delta_k,\qquad \frac{\partial E_n}{\partial w_{ji}^{(1)}}=\delta_jx_i,\qquad \frac{\partial E_n}{\partial w_{kj}^{(2)}}=\delta_kz_j$$
+- 사전활성 $a_i$와 활성 $z_i=h(a_i)$ 중 어느 쪽을 정규화해도 됩니다(교재는 사전활성).
+:::fig bnsteps
 :::
 
-:::ex 손으로 한 번
-입력 하나, 은닉 유닛 하나, 출력 하나(편향 없음). $x=2$, $w^{(1)}=0.5$, $w^{(2)}=2$, $t=1$.
+:::ex 예제 1 — 미니배치 하나의 배치 정규화
+크기 $K=4$인 미니배치에서 유닛 $i$의 사전활성이 $a_{ni}=1,3,5,7$이다. $\delta=0$, $\gamma_i=2$, $\beta_i=0.5$일 때 $\hat a_{ni}$와 $\tilde a_{ni}$는?
 ---
-순전파: $a=1$, $z=\tanh1\approx0.7616$, $y=2z\approx1.5232$.
-역전파: $\delta_k=y-t\approx0.5232$, $\delta_j=(1-z^2)\,w^{(2)}\delta_k\approx0.4200\times2\times0.5232\approx0.4395$.
-기울기: $\partial E/\partial w^{(2)}=\delta_kz\approx0.3985$, $\partial E/\partial w^{(1)}=\delta_jx\approx0.8789$.
+$\mu_i=\frac{1+3+5+7}4=4$, $\sigma_i^2=\frac{9+1+1+9}4=5$, $\sigma_i=\sqrt5\approx2.236$.
+$\hat a_{ni}=\frac{a_{ni}-4}{\sqrt5}=(-1.342,\,-0.447,\,0.447,\,1.342)$ (평균 0, 분산 1).
+$\tilde a_{ni}=2\hat a_{ni}+0.5=(-2.183,\,-0.394,\,1.394,\,3.183)$: 평균 $\beta_i=0.5$, 표준편차 $\gamma_i=2$.
 :::
 
-**수치 미분(8.1.4).** 역전파의 장점은 **효율**입니다. 오차 한 번 평가가 $O(W)$($W$: 가중치·편향 수)이고, 역전파도 전체 기울기를 $O(W)$에 구합니다. 반면 유한 차분
-$$\frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji})}{\epsilon}+O(\epsilon),\qquad \frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji}-\epsilon)}{2\epsilon}+O(\epsilon^2)$$
-은 가중치 $W$개를 하나씩 흔들어야 하므로 $O(W^2)$입니다. 중앙 차분은 $O(\epsilon)$ 항이 상쇄되어 더 정확하지만 계산은 약 두 배입니다. $\epsilon$을 너무 줄이면 반올림 오차가 커집니다. 실무에서는 역전파·자동미분 코드를 **중앙 차분으로 검증**(gradient check)하는 데 씁니다.
-` },
-      { k: '8.1d', label: '8.1.5–8.1.6', p: '240', src: '슬라이드 8–9', title: '야코비안과 헤시안', body: R`
-역전파는 오차의 기울기 말고 다른 도함수에도 쓸 수 있습니다.
-
-:::key 야코비안 행렬
-망 출력의 입력에 대한 야코비안:
-$$J_{ki}=\frac{\partial y_k}{\partial x_i}=\sum_j\frac{\partial y_k}{\partial a_j}\frac{\partial a_j}{\partial x_i}=\sum_jw_{ji}\frac{\partial y_k}{\partial a_j},\qquad \frac{\partial y_k}{\partial a_j}=\sum_l\frac{\partial y_k}{\partial a_l}\frac{\partial a_l}{\partial a_j}=h'(a_j)\sum_lw_{lj}\frac{\partial y_k}{\partial a_l}$$
-출력층에서 시작하는 값 ($\delta_{kl}$: 크로네커 델타)
-| 출력 활성화 | $\partial y_k/\partial a_l$ |
-|---|---|
-| 선형 | $\delta_{kl}$ |
-| 로지스틱 시그모이드 | $\delta_{kl}\,\sigma'(a_l)$ |
-| 소프트맥스 | $\delta_{kl}y_k-y_ky_l$ |
+- 정규화만 하면 층의 **표현력**이 줄어듭니다(자유도 감소). 그래서 유닛마다 학습 가능한 척도 $\gamma_i$와 이동 $\beta_i$를 둡니다.
+- **$\gamma,\beta$가 정규화를 되돌려 버리지 않나?** 표현 가능한 분포는 같아도, 원래 망에서는 미니배치의 평균·분산이 층의 모든 가중치의 **복잡한 함수**인 반면, 여기서는 독립된 파라미터 $\beta_i,\gamma_i$가 **직접** 정하므로 경사하강법으로 훨씬 배우기 쉽습니다. 입력 정규화와의 핵심 차이가 이 학습 가능한 파라미터입니다.
+- 식 전체가 $\gamma,\beta$에 대해 미분 가능하므로 **하나의 층**(BN 층)으로 볼 수 있습니다.
+- **학습**: 미니배치 평균·분산 / **추론**: 누적된 이동평균 — 그래서 예제 하나만으로도 정규화할 수 있습니다. 이동평균은 학습 자체에는 쓰이지 않습니다.
+:::fig bnrunning
 :::
 
-야코비안은 입력의 작은 변화가 출력에 주는 영향($\Delta y_k\simeq\sum_iJ_{ki}\Delta x_i$)을 나타냅니다. 오차 역전파와 똑같은 재귀지만 출력 $k$마다 한 번씩 거꾸로 전달합니다. 벡터 입출력의 야코비안 연쇄법칙은 심층 신경망 과목에 있습니다[[@dnn:ch09:9.5|야코비안의 곱으로 쓰는 연쇄법칙.]].
-
-**헤시안** $H_{ij}=\partial^2E/\partial w_i\partial w_j$는 오차 곡면의 **국소 곡률**을 나타내며 기울기보다 많은 정보를 줍니다.[[@base:ch04:4.3|헤시안과 2차 테일러 전개.]] 2차 최적화, 베이지안 신경망, 가중치 정밀도 축소(양자화) 등에 쓰이지만 $W\times W$ 행렬이라 큰 망에서는 계산·저장이 매우 비쌉니다(평가 $O(W^2)$, 역행렬 $O(W^3)$).
-
-:::key 헤시안의 외적 근사
-출력 하나의 제곱오차 $E=\frac12\sum_n(y_n-t_n)^2$에서 ($\nabla$는 $\mathbf w$에 대한 기울기)
-$$\mathbf H=\nabla\nabla E=\sum_{n=1}^N\nabla y_n(\nabla y_n)^T+\sum_{n=1}^N(y_n-t_n)\nabla\nabla y_n$$
-잘 학습되어 잔차 $y_n-t_n$이 작으면 둘째 항을 무시해 **Levenberg–Marquardt(외적) 근사**
-$$\mathbf H\simeq\sum_{n=1}^N\nabla a_n\nabla a_n^T\qquad(\text{선형 출력이면 }y_n=a_n)$$
-:::
-
-외적 근사는 1차 도함수만 필요하므로 역전파로 $O(W)$에 $\nabla a_n$을 구한 뒤 $O(W^2)$ 곱셈으로 행렬을 만듭니다. 항상 양의 준정부호라는 장점이 있지만, 잘 학습된 망에서만 타당합니다. 로지스틱 시그모이드 출력 + 교차엔트로피에서는 $\mathbf H\simeq\sum_ny_n(1-y_n)\nabla a_n\nabla a_n^T$입니다.
-` },
-      { k: '8.2', label: '8.2', p: '244', src: '슬라이드 2, 교재 보충', title: '자동 미분', body: R`
-기울기를 구하는 네 가지 방법:
-1. **손으로 역전파 식 유도 후 구현** — 정확하고 빠르지만 유도·코딩에 시간이 들고 오류가 나기 쉬우며, 모델을 바꿀 때마다 순전파·역전파 코드를 함께 고쳐야 합니다.
-2. **수치 미분** — 순전파 코드만 있으면 되지만 $O(W^2)$로 확장성이 나쁩니다. 디버깅용.
-3. **기호 미분** — 컴퓨터 대수로 도함수 식을 만듭니다. 정확하지만 식이 기하급수적으로 길어지는 **표현식 팽창**(expression swell)과, 반복문·조건문 같은 제어 흐름을 다루지 못하는 문제가 있습니다.
-4. **자동 미분**(autodiff) — 순전파 **코드**로부터 기울기를 계산하는 코드를 자동 생성합니다. 기계 정밀도로 정확하고, 중간 변수를 재사용해 중복 계산이 없으며, 분기·반복·재귀도 다룹니다.
-
-:::key 전진 모드와 후진 모드 자동 미분
-**전진 모드**: 각 중간(primal) 변수 $v_i$에 접선(tangent) 변수 $\dot v_i=\partial v_i/\partial x$를 붙여 순전파와 함께 $(v_i,\dot v_i)$를 계산. 입력 하나당 한 번의 패스 → $K\times D$ 야코비안에 $D$번.
-**후진 모드**: 수반(adjoint) 변수 $\bar v_i=\partial f/\partial v_i$를 출력에서 거꾸로
-$$\bar v_i=\sum_{j\in\mathrm{ch}(i)}\bar v_j\frac{\partial v_j}{\partial v_i}$$
-($\mathrm{ch}(i)$: 노드 $i$의 자식). 출력 하나당 한 번의 패스 → 오차(스칼라)의 모든 파라미터 기울기를 **한 번에**. 역전파의 일반화입니다.
-:::
-
-- 신경망 학습은 출력이 스칼라 하나(오차)이고 입력(파라미터)이 수백만 개이므로 **후진 모드**가 압도적으로 효율적입니다.
-- 후진 모드는 역방향 계산에 필요한 모든 중간 값을 저장해야 하므로 **메모리**를 더 씁니다. 전진 모드는 쓰고 나면 버릴 수 있어 구현이 쉽습니다.
-- 두 모드 모두 한 패스의 비용은 함수 평가의 최대 6배, 실제로는 2–3배 정도입니다.
-
-:::ex 교재 예제 $f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$
-중간 변수: $v_1=x_1$, $v_2=x_2$, $v_3=v_1v_2$, $v_4=\sin v_2$, $v_5=\exp v_3$, $v_6=v_3-v_4$, $v_7=v_5+v_6=f$.
+:::ex 예제 2 — 이동평균
+$\alpha=0.9$, $\bar\mu^{(0)}=0$에서 세 미니배치의 평균이 $4,\,6,\,5$였다. $\bar\mu^{(3)}$은?
 ---
-후진 모드: $\bar v_7=1$, $\bar v_6=\bar v_7=1$, $\bar v_5=\bar v_7=1$, $\bar v_4=-\bar v_6=-1$, $\bar v_3=\bar v_5v_5+\bar v_6=e^{x_1x_2}+1$, $\bar v_2=\bar v_3v_1+\bar v_4\cos v_2=x_1(1+e^{x_1x_2})-\cos x_2$, $\bar v_1=\bar v_3v_2=x_2(1+e^{x_1x_2})$. 한 번의 역방향 패스로 두 편미분을 모두 얻습니다. (교재 (8.75)의 인쇄는 $\bar v_2$의 첫 항이 흐려져 있는데, $\bar v_3v_1$이 맞습니다.)
+$\bar\mu^{(1)}=0.9\cdot0+0.1\cdot4=0.4$, $\bar\mu^{(2)}=0.36+0.6=0.96$, $\bar\mu^{(3)}=0.864+0.5=1.364$. 0에서 시작해 아직 참 평균(약 5)보다 훨씬 작습니다. 학습이 수백 단계 이어지면 $\alpha^\tau\to0$이라 이 영향이 사라집니다.
+:::
+- 왜 잘 되는지는 확실하지 않습니다. 원래 동기는 **내부 공변량 이동**(앞 층 가중치가 바뀌면 뒤 층 입력 분포가 바뀜)이었지만, 이후 연구(Santurkar et al., 2018)는 **오차 곡면이 매끄러워지는 효과**가 주된 이유라고 봅니다.
+
+:::fig bnln
+:::
+
+추론 시 BN은 고정된 아핀 변환이므로 앞의 선형층에 흡수(fuse)할 수 있습니다[[@dnn:ch12:12.4|BN을 선형층에 합치는 식의 유도.]].
+` },
+      { k: '7.4c', label: '7.4.3', p: '229', src: '슬라이드 28–29', title: '층 정규화', body: R`
+배치 정규화의 약점:
+- 배치 크기가 **작으면** 평균·분산 추정이 너무 잡음이 많습니다.
+- 매우 큰 자료에서 미니배치를 **여러 GPU에 나누면** 미니배치 전체에 걸친 정규화가 비효율적입니다.
+
+**층 정규화**(Ba, Kiros & Hinton, 2016)는 미니배치의 예제들에 걸쳐 유닛별로 정규화하는 대신, **각 예제마다 은닉 유닛들에 걸쳐** 정규화합니다.
+
+:::key 층 정규화
+층의 은닉 유닛 $M$개에 대해 예제 $n$마다
+$$\mu_n=\frac1M\sum_{i=1}^Ma_{ni},\qquad \sigma_n^2=\frac1M\sum_{i=1}^M(a_{ni}-\mu_n)^2,\qquad \hat a_{ni}=\frac{a_{ni}-\mu_n}{\sqrt{\sigma_n^2+\delta}}$$
+그리고 배치 정규화처럼 유닛별 학습 가능한 $\gamma_i,\beta_i$로 $\tilde a_{ni}=\gamma_i\hat a_{ni}+\beta_i$. 학습과 추론에 **같은** 함수를 쓰므로 이동평균을 저장할 필요가 없습니다.
+:::
+
+| | 배치 정규화 | 층 정규화 |
+|---|---|---|
+| 통계를 구하는 축 | 미니배치의 예제들 (유닛마다) | 한 예제의 은닉 유닛들 (예제마다) |
+| 다른 예제에 의존 | 예 | 아니오 |
+| 작은 배치 | 불안정 | 문제없음 |
+| 추론 | 이동평균 사용 | 학습과 동일 |
+| 주 사용처 | CNN 등 | RNN, 트랜스포머 |
+
+:::note 교재 식의 오타
+Bishop (7.59)는 $\sigma_n^2=\frac1M\sum_i(a_{ni}-\mu_i)^2$로 인쇄되어 있지만, 예제 $n$의 평균 $\mu_n$을 빼야 맞습니다: $\sigma_n^2=\frac1M\sum_i(a_{ni}-\mu_n)^2$.
 :::
 ` },
     ],
     problems: [
-      { sec: '8.1', type: 'num', lv: 1, q: R`단층 선형 모델 $y=w_1x_1+w_2x_2$, $E=\frac12(y-t)^2$에서 $x=(2,-1)$, $w=(1,1)$, $t=0$일 때 $\partial E/\partial w_2$는?`, ans: '-1', ansTex: R`-1`,
-        sol: R`$y=2-1=1$, 오차 신호 $y-t=1$, $\partial E/\partial w_2=1\cdot x_2=-1$.` },
-      { sec: '8.1b', type: 'mc', lv: 1, q: R`역전파에서 $\delta_j$의 정의는?`,
-        choices: [R`$\partial E_n/\partial w_{ji}$`, R`$\partial E_n/\partial a_j$`, R`$\partial E_n/\partial z_j$`, R`$y_j-t_j$ (모든 유닛)`], ans: 1,
-        sol: R`사전활성에 대한 오차의 미분. 출력 유닛(정준 연결)에서는 $y_k-t_k$가 됩니다.` },
-      { sec: '8.1b', type: 'num', lv: 2, q: R`은닉 유닛 $j$가 ReLU이고 $a_j=0.7$, 다음 층 두 유닛으로 $w_{1j}=2$, $w_{2j}=-1$로 연결되며 $\delta_1=0.3$, $\delta_2=0.5$이다. $\delta_j$는?`, ans: '0.1', ansTex: R`0.1`,
-        sol: R`$h'(0.7)=1$, $\delta_j=1\cdot(2\cdot0.3-1\cdot0.5)=0.1$.` },
-      { sec: '8.1b', type: 'num', lv: 2, q: R`위 문제에서 $a_j=-0.7$이면 $\delta_j$는?`, ans: '0', ansTex: R`0`,
-        sol: R`ReLU의 기울기가 0이므로 $\delta_j=0$ — 이 유닛으로 들어오는 가중치는 이 예제에서 갱신되지 않습니다.` },
-      { sec: '8.1b', type: 'mc', lv: 2, q: R`$\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$에서 합이 도는 범위는?`,
-        choices: [R`유닛 $j$로 연결을 보내는 모든 유닛`, R`유닛 $j$가 연결을 보내는 모든 유닛`, R`같은 층의 모든 유닛`, R`모든 출력 유닛만`], ans: 1,
-        sol: R`$a_j$의 변화는 $z_j$를 받는 다음 유닛들의 $a_k$를 통해서만 오차에 전달됩니다.` },
-      { sec: '8.1c', type: 'num', lv: 2, q: R`본문 예제($x=2$, $w^{(1)}=0.5$, $w^{(2)}=2$, $t=1$, tanh 은닉·선형 출력)에서 $\partial E/\partial w^{(1)}$은? (소수 넷째 자리)`, ans: '0.8789', ansTex: R`\approx0.8789`,
-        sol: R`$z=\tanh1$, $\delta_k=2z-1$, $\delta_j=(1-z^2)\cdot2\cdot\delta_k\approx0.43945$, $\partial E/\partial w^{(1)}=\delta_j\cdot2\approx0.8789$.` },
-      { sec: '8.1c', type: 'num', lv: 1, q: R`tanh 은닉 유닛의 출력이 $z_j=0.6$이면 $h'(a_j)$는?`, ans: '0.64', ansTex: R`0.64`,
-        sol: R`$1-z_j^2=1-0.36$.` },
-      { sec: '8.1c', type: 'mc', lv: 2, q: R`중앙 차분이 전방 유한 차분보다 정확한 이유는?`,
-        choices: [R`$\epsilon$을 더 작게 잡을 수 있어서`, R`테일러 전개에서 $O(\epsilon)$ 항이 상쇄되어 오차가 $O(\epsilon^2)$이라서`, R`반올림 오차가 없어서`, R`계산량이 절반이라서`], ans: 1,
-        sol: R`$E(w\pm\epsilon)=E\pm\epsilon E'+\frac{\epsilon^2}2E''\pm\cdots$의 차에서 $E''$ 항이 사라집니다. 계산량은 약 두 배.` },
-      { sec: '8.1c', type: 'mc', lv: 1, q: R`가중치가 $W$개인 망에서 수치 미분으로 전체 기울기를 구하는 비용은?`,
-        choices: [R`$O(W)$`, R`$O(W\log W)$`, R`$O(W^2)$`, R`$O(W^3)$`], ans: 2,
-        sol: R`순전파 $O(W)$를 가중치 $W$개마다 반복합니다. 역전파는 $O(W)$.` },
-      { sec: '8.1d', type: 'num', lv: 2, q: R`소프트맥스 출력의 사전활성이 $a=(1,0,-1)$일 때 $\partial y_1/\partial a_1$은? (소수 넷째 자리)`, ans: '0.2227', ansTex: R`y_1(1-y_1)\approx0.2227`,
-        sol: R`$y_1=e/(e+1+e^{-1})\approx0.6652$, $\partial y_1/\partial a_1=y_1-y_1^2\approx0.2227$.` },
-      { sec: '8.1d', type: 'num', lv: 2, q: R`같은 경우 $\partial y_1/\partial a_2$는? (소수 넷째 자리)`, ans: '-0.1628', ansTex: R`-y_1y_2\approx-0.1628`,
-        sol: R`$y_2=1/(e+1+e^{-1})\approx0.2447$, $-y_1y_2\approx-0.1628$.` },
-      { sec: '8.1d', type: 'mc', lv: 2, q: R`Levenberg–Marquardt 근사에서 무시하는 항과 그 근거는?`,
-        choices: [R`$\sum\nabla y_n\nabla y_n^T$ — 항상 작아서`, R`$\sum(y_n-t_n)\nabla\nabla y_n$ — 잘 학습되면 잔차가 작아서`, R`대각 원소 — 계산이 비싸서`, R`비대각 원소 — 대칭이라서`], ans: 1,
-        sol: R`잔차가 작거나 2차 도함수와 무상관이면 평균적으로 0에 가깝습니다.` },
-      { sec: '8.1d', type: 'mc', lv: 1, q: R`헤시안의 쓰임으로 강의에서 든 것이 아닌 것은?`,
-        choices: [R`2차 최적화 방법`, R`베이지안 신경망`, R`가중치 정밀도 축소`, R`미니배치 섞기`], ans: 3,
-        sol: R`슬라이드: second-order optimization, Bayesian neural networks, weight-precision reduction.` },
-      { sec: '8.2', type: 'mc', lv: 1, q: R`신경망 학습(스칼라 오차, 파라미터 수백만 개)에 더 효율적인 자동 미분 방식은?`,
-        choices: [R`전진 모드`, R`후진 모드`, R`기호 미분`, R`수치 미분`], ans: 1,
-        sol: R`후진 모드는 출력 하나당 한 번의 역방향 패스로 모든 입력(파라미터)에 대한 미분을 얻습니다.` },
-      { sec: '8.2', type: 'num', lv: 2, q: R`$f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$에서 $(x_1,x_2)=(2,0)$일 때 $\partial f/\partial x_2$는?`, ans: '3', ansTex: R`3`,
-        sol: R`$\bar v_2=x_1(1+e^{x_1x_2})-\cos x_2=2\cdot2-1=3$.` },
-      { sec: '8.2', type: 'mc', lv: 2, q: R`기호 미분의 단점이 아닌 것은?`,
-        choices: [R`표현식 팽창`, R`반복문·조건문을 다루지 못함`, R`중복 계산`, R`기계 정밀도보다 부정확함`], ans: 3,
-        sol: R`기호 미분은 정확한 식을 주므로 정밀도 문제는 없습니다.` },
-      { sec: '8.1b', type: 'open', lv: 2, q: R`$a_j=\sum_iw_{ji}z_i$, $z_j=h(a_j)$, $\delta_j\equiv\partial E_n/\partial a_j$일 때 연쇄법칙으로 (i) $\partial E_n/\partial w_{ji}=\delta_jz_i$, (ii) $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 유도하세요.`, proof: true,
+      { sec: '7.4', type: 'num', lv: 1, q: R`훈련 자료의 한 입력이 $2,4,6,8$이다. 평균 $\mu$와 분산 $\sigma^2$(교재 정의, $1/N$)을 구하고, 새 시험 자료 $x=9$의 정규화 값 $\tilde x$를 구하세요. (답: $\tilde x$, 소수 넷째 자리)`, ans: '4/sqrt(5)', ansTex: R`\mu=5,\ \sigma^2=5,\ \tilde x=\tfrac{4}{\sqrt5}\approx1.7889`,
+        sol: R`$\mu=5$, $\sigma^2=(9+1+1+9)/4=5$. 시험 자료에도 훈련 통계를 써서 $\tilde x=(9-5)/\sqrt5\approx1.7889$.` },
+      { sec: '7.4', type: 'mc', lv: 1, q: R`입력 변수의 척도가 크게 다를 때 경사하강법이 비효율적인 이유는?`,
+        choices: [R`기울기가 0이 되어서`, R`오차 곡면의 곡률이 파라미터 방향마다 크게 달라져서`, R`국소 최소가 없어져서`, R`학습률이 자동으로 커져서`], ans: 1,
+        sol: R`한 가중치의 변화가 오차를 훨씬 크게 바꾸므로 곡률이 축마다 다르고, 좁은 골짜기에서 진동합니다.` },
+      { sec: '7.4', type: 'mc', lv: 1, q: R`검증·시험 자료를 정규화할 때 써야 하는 평균·표준편차는?`,
+        choices: [R`각 자료 자신의 통계`, R`훈련 자료의 통계`, R`훈련+시험을 합친 통계`, R`0과 1`], ans: 1,
+        sol: R`같은 변환을 적용해야 하고, 시험 자료의 정보가 새면 안 됩니다.` },
+      { sec: '7.4b', type: 'num', lv: 2, q: R`미니배치($K=4$)에서 한 유닛의 사전활성이 $1,3,5,7$이다. $\delta=0$, $\gamma=2$, $\beta=1$일 때 $a=7$의 배치 정규화 출력 $\tilde a$는? (소수 넷째 자리)`, ans: '1+6/sqrt(5)', ansTex: R`1+\tfrac{6}{\sqrt5}\approx3.6833`,
+        sol: R`$\mu=4$, $\sigma^2=(9+1+1+9)/4=5$. $\hat a=(7-4)/\sqrt5=3/\sqrt5$, $\tilde a=2\cdot3/\sqrt5+1\approx3.6833$.` },
+      { sec: '7.4b', type: 'num', lv: 1, q: R`$L$층에서 각 층의 야코비안 원소가 대략 $0.5$라면, $L=20$일 때 곱의 크기는 대략? (유효숫자 3자리)`, ans: '0.5^20', ansTex: R`0.5^{20}\approx9.54\times10^{-7}`,
+        sol: R`$0.5^{20}=1/1048576\approx9.54\times10^{-7}$ — 기울기 소실.` },
+      { sec: '7.4b', type: 'mc', lv: 2, q: R`배치 정규화에 학습 가능한 $\gamma_i,\beta_i$를 두는 이유는?`,
+        choices: [R`정규화 효과를 완전히 없애려고`, R`정규화로 줄어든 표현력을 보완하고, 적절한 척도·이동을 직접 학습하게 하려고`, R`추론 속도를 높이려고`, R`학습률을 대체하려고`], ans: 1,
+        sol: R`평균·분산을 독립 파라미터가 직접 정하므로 학습이 쉬워집니다.` },
+      { sec: '7.4b', type: 'mc', lv: 1, q: R`배치 정규화가 추론 시에 쓰는 평균·분산은?`,
+        choices: [R`시험 미니배치의 통계`, R`학습 중 누적한 이동평균`, R`항상 0과 1`, R`첫 미니배치의 통계`], ans: 1,
+        sol: R`예제 하나로는 평균·분산을 구할 수 없으므로 이동평균을 씁니다.` },
+      { sec: '7.4b', type: 'num', lv: 2, q: R`이동평균 $\bar\mu^{(\tau)}=\alpha\bar\mu^{(\tau-1)}+(1-\alpha)\mu$에서 $\alpha=0.9$, $\bar\mu^{(0)}=0$이고 매 미니배치 평균이 $\mu=2$로 같다면 $\bar\mu^{(3)}$은?`, ans: '0.542', ansTex: R`2(1-0.9^3)=0.542`,
+        sol: R`$\bar\mu^{(\tau)}=2(1-0.9^\tau)$: $0.2,\ 0.38,\ 0.542$.` },
+      { sec: '7.4b', type: 'mc', lv: 2, q: R`배치 정규화가 잘 작동하는 이유에 대해 교재가 소개한 이후 연구(Santurkar et al.)의 견해는?`,
+        choices: [R`내부 공변량 이동을 제거하기 때문`, R`오차 함수 곡면을 매끄럽게 하기 때문`, R`파라미터 수를 줄이기 때문`, R`드롭아웃과 같기 때문`], ans: 1,
+        sol: R`공변량 이동은 중요한 요인이 아니고, 곡면의 매끄러움이 개선된다는 견해입니다.` },
+      { sec: '7.4c', type: 'num', lv: 1, q: R`한 예제의 은닉 유닛($M=4$) 사전활성이 $2,-2,2,-2$이다. $\delta=0$일 때 층 정규화 후 첫 유닛의 $\hat a$는?`, ans: '1', ansTex: R`1`,
+        sol: R`$\mu_n=0$, $\sigma_n^2=4$, $\hat a=2/2=1$.` },
+      { sec: '7.4c', type: 'mc', lv: 1, q: R`층 정규화의 장점이 아닌 것은?`,
+        choices: [R`배치 크기가 작아도 안정적`, R`다른 예제에 의존하지 않음`, R`학습·추론에 같은 함수를 씀`, R`미니배치 전체의 통계를 써서 더 정확함`], ans: 3,
+        sol: R`층 정규화는 한 예제 안의 유닛들로 통계를 구합니다.` },
+      { sec: '7.4c', type: 'mc', lv: 1, q: R`층 정규화가 처음 도입된 맥락과 지금 널리 쓰이는 구조는?`,
+        choices: [R`CNN / 결정 트리`, R`RNN / 트랜스포머`, R`SVM / 로지스틱 회귀`, R`GAN / 오토인코더`], ans: 1,
+        sol: R`RNN은 시간 단계마다 분포가 바뀌어 배치 정규화가 어렵습니다. 트랜스포머에서도 널리 씁니다.` },
+      { sec: '7.4b', type: 'open', lv: 2, q: R`배치 정규화 후 $\hat a_{ni}$의 미니배치 평균이 0, 분산이 $\sigma_i^2/(\sigma_i^2+\delta)\approx1$임을 보이고, $\tilde a=\gamma\hat a+\beta$의 평균과 표준편차를 구하세요.`,
         sol: R`
-(i) $E_n$은 $w_{ji}$에 합 $a_j$를 통해서만 의존하므로 $\frac{\partial E_n}{\partial w_{ji}}=\frac{\partial E_n}{\partial a_j}\frac{\partial a_j}{\partial w_{ji}}=\delta_jz_i$ ($\partial a_j/\partial w_{ji}=z_i$).
-(ii) $a_j$가 바뀌면 $z_j$가 바뀌고, $z_j$는 $j$가 연결을 보내는 유닛 $k$들의 $a_k=\sum_{j'}w_{kj'}z_{j'}$에 들어갑니다. 다변수 연쇄법칙으로 $\delta_j=\sum_k\frac{\partial E_n}{\partial a_k}\frac{\partial a_k}{\partial a_j}$이고 $\frac{\partial a_k}{\partial a_j}=w_{kj}h'(a_j)$이므로 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$.`,
+$\frac1K\sum_n\hat a_{ni}=\frac{1}{\sqrt{\sigma_i^2+\delta}}\Big(\frac1K\sum_na_{ni}-\mu_i\Big)=0$.
+$\frac1K\sum_n\hat a_{ni}^2=\frac{1}{\sigma_i^2+\delta}\cdot\frac1K\sum_n(a_{ni}-\mu_i)^2=\frac{\sigma_i^2}{\sigma_i^2+\delta}\approx1$.
+따라서 $\tilde a$의 평균은 $\gamma\cdot0+\beta=\beta$, 분산은 $\gamma^2\sigma_i^2/(\sigma_i^2+\delta)\approx\gamma^2$ — 표준편차 $\approx\lvert\gamma\rvert$. 교재가 “평균 $\beta_i$, 표준편차 $\gamma_i$로 다시 척도화”라고 하는 이유입니다.`,
         rubric: R`
-- (i) $a_j$ 경유 연쇄법칙
-- (ii) 다음 층 $a_k$들에 대한 합
-- $\partial a_k/\partial a_j=w_{kj}h'(a_j)$` },
-      { sec: '8.1d', type: 'open', lv: 2, q: R`$E=\frac12\sum_n(y_n-t_n)^2$의 헤시안이 $\sum_n\nabla y_n(\nabla y_n)^T+\sum_n(y_n-t_n)\nabla\nabla y_n$임을 보이고, 외적 근사가 양의 준정부호임을 보이세요.`, proof: true,
+- 평균 0 계산
+- 분산 계산
+- $\tilde a$의 평균 $\beta$, 표준편차 $\gamma$` },
+      { sec: '7.4c', type: 'open', lv: 2, q: R`배치 크기 $K$, 유닛 수 $M$인 사전활성 행렬 $A\in\mathbb R^{K\times M}$ ($A_{ni}=a_{ni}$)에서 배치 정규화와 층 정규화는 각각 어느 축으로 평균을 내는지, 배치 크기 1에서 어떤 일이 생기는지 설명하세요.`,
         sol: R`
-$\nabla E=\sum_n(y_n-t_n)\nabla y_n$. 다시 미분(곱의 미분): $\nabla\nabla E=\sum_n\big[\nabla y_n(\nabla y_n)^T+(y_n-t_n)\nabla\nabla y_n\big]$.
-외적 근사 $\mathbf H_{LM}=\sum_n\mathbf g_n\mathbf g_n^T$ ($\mathbf g_n=\nabla a_n$)에 대해 임의의 $\mathbf v$로 $\mathbf v^T\mathbf H_{LM}\mathbf v=\sum_n(\mathbf g_n^T\mathbf v)^2\ge0$. 따라서 양의 준정부호입니다.`,
+배치 정규화: 각 열 $i$(유닛)마다 행 $n$(예제)에 걸쳐 평균 → $M$개의 $\mu_i,\sigma_i^2$.
+층 정규화: 각 행 $n$(예제)마다 열 $i$(유닛)에 걸쳐 평균 → $K$개의 $\mu_n,\sigma_n^2$.
+$K=1$이면 배치 정규화는 $\mu_i=a_{1i}$, $\sigma_i^2=0$이라 $\hat a=0$이 되어 정보가 사라집니다(학습 불가). 층 정규화는 한 예제 안의 $M$개 유닛으로 통계를 내므로 $K=1$에서도 문제없습니다.`,
         rubric: R`
-- 1차 기울기
-- 곱의 미분으로 두 항
-- $\mathbf v^T\mathbf H\mathbf v=\sum(\cdot)^2\ge0$` },
+- 두 축 구분
+- 배치 크기 1의 BN 퇴화
+- LN은 영향 없음` },
     ],
   });
 })();

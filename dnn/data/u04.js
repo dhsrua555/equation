@@ -71,7 +71,7 @@ $$\hat\beta_{\text{ridge}}=(\lambda I+X^TX)^{-1}X^Ty$$
 $\lambda>0$이면 $\lambda I+X^TX$는 양의 정부호라 **항상** 가역이다.
 :::
 
-가역성: $v^T(\lambda I+X^TX)v=\lambda\lVert v\rVert^2+\lVert Xv\rVert^2>0$ ($v\ne0$). 1단원에서 $X^TX$가 특이해 해가 유일하지 않던 경우($n<k+1$ 등)도 릿지는 유일한 해를 줍니다. 확률적으로는 가우시안 사전분포의 MAP입니다[[ch02:2.6|MAP에서 $\beta\sim\N(0,\tau^2I)$이면 $\lambda=\sigma^2/\tau^2$인 릿지.]]. 의료 인공지능 과목에서는 같은 식을 가중치 감쇠로 부릅니다[[@med:ch10:9.2|가중치 감쇠 $\tilde E=E+\frac\lambda2w^Tw$, 기울기에 $\lambda w$가 더해집니다.]].
+가역성: $v^T(\lambda I+X^TX)v=\lambda\lVert v\rVert^2+\lVert Xv\rVert^2>0$ ($v\ne0$). 1단원에서 $X^TX$가 특이해 해가 유일하지 않던 경우($n<k+1$ 등)도 릿지는 유일한 해를 줍니다. 확률적으로는 가우시안 사전분포의 MAP입니다[[ch02:2.6|MAP에서 $\beta\sim\N(0,\tau^2I)$이면 $\lambda=\sigma^2/\tau^2$인 릿지.]]. 의료 인공지능 과목에서는 같은 식을 가중치 감쇠로 부릅니다[[@med:ch11:9.2|가중치 감쇠 $\tilde E=E+\frac\lambda2w^Tw$, 기울기에 $\lambda w$가 더해집니다.]].
 ` },
       { k: '4.4', src: 'W1 수 · 슬라이드 59–60', title: '커널 트릭', body: R`
 평면에서 두 종류의 점을 직선으로 나눌 수 없어도, 표본을 더 높은 차원의 **특성공간**으로 보내는 사상 $x\mapsto\varphi(x)$를 쓰면 선형으로 분리될 수 있습니다. 예를 들어 원 안쪽과 바깥쪽의 점은 $\varphi(x)=(x_1^2,x_2^2,\sqrt2x_1x_2)$로 보내면 평면 $z_1+z_2=r^2$으로 나뉩니다.

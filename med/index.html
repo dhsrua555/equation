@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Équation 의료 인공지능</title>
-<meta name="description" content="의료 인공지능 및 소프트웨어 시스템: Bishop 딥러닝 교재 1·2·7·8·9장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 경사하강법과 Adam, 배치 정규화, 역전파, 규제. 개념 정리, 연습문제, 증명, 모의고사">
+<meta name="description" content="의료 인공지능 및 소프트웨어 시스템: Bishop 딥러닝 교재 1·2·6·7·8·9·10장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 다층 신경망과 오차함수, 경사하강법과 Adam, 배치 정규화, 역전파, 규제, 합성곱 신경망과 검출·분할. 개념 정리, 연습문제, 증명, 모의고사">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Équation 의료 인공지능">
-<meta property="og:description" content="의료 인공지능 및 소프트웨어 시스템: Bishop 딥러닝 교재 1·2·7·8·9장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 경사하강법과 Adam, 배치 정규화, 역전파, 규제. 개념 정리, 연습문제, 증명, 모의고사">
+<meta property="og:description" content="의료 인공지능 및 소프트웨어 시스템: Bishop 딥러닝 교재 1·2·6·7·8·9·10장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 다층 신경망과 오차함수, 경사하강법과 Adam, 배치 정규화, 역전파, 규제, 합성곱 신경망과 검출·분할. 개념 정리, 연습문제, 증명, 모의고사">
 <meta property="og:url" content="https://dhsrua555.github.io/equation/med/">
 <meta property="og:image" content="https://dhsrua555.github.io/equation/assets/og.png">
 <meta property="og:image:width" content="1280">
@@ -31,27 +31,47 @@
 <div id="toast-root" aria-live="polite"></div>
 <noscript><p style="padding:24px">이 사이트는 JavaScript가 필요합니다.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="../core/net.js?v=8ed832e3"></script>
-<script src="../core/net-index.js?v=9c6fe9f8"></script>
-<script src="site.js?v=c421e286"></script>
+<script src="../core/net.js?v=8d2d31b2"></script>
+<script src="../core/net-index.js?v=f5fcfaa5"></script>
+<script src="site.js?v=7107ab10"></script>
 <script src="../core/figkit.js?v=f0aa6f1b"></script><script src="figs.js?v=7e4d3326"></script>
-<script src="data/m01.js?v=5ce1784f"></script>
-<script src="data/m02.js?v=14d86e55"></script>
-<script src="data/m03.js?v=17d7459a"></script>
-<script src="data/m04.js?v=3b6930f5"></script>
-<script src="data/m05.js?v=12a4a1bd"></script>
-<script src="data/m06.js?v=5ccdc303"></script>
-<script src="data/m07.js?v=42aa6c0a"></script>
-<script src="data/m08.js?v=7b24a05c"></script>
-<script src="data/m09.js?v=30c16c5e"></script>
-<script src="data/m10.js?v=4ce3a752"></script>
-<script src="data/m11.js?v=2f40fd97"></script>
-<script src="data/proofs-a.js?v=1d905298"></script>
-<script src="data/proofs-b.js?v=5f1032ff"></script>
-<script src="data/exams.js?v=5691dcb1"></script>
+<script src="data/m01.js?v=4fc5bc1c"></script>
+<script src="data/m02.js?v=53fafe93"></script>
+<script src="data/m03.js?v=55a3db4d"></script>
+<script src="data/m04.js?v=5cb9e3c0"></script>
+<script src="data/m05.js?v=2d76be61"></script>
+<script src="data/m06.js?v=d0b874c4"></script>
+<script src="data/m07.js?v=b00bff32"></script>
+<script src="data/m08.js?v=60cf802b"></script>
+<script src="data/m09.js?v=cf70ee4e"></script>
+<script src="data/m10.js?v=7b4fc342"></script>
+<script src="data/m11.js?v=ca74a996"></script>
+<script src="data/m12.js?v=0fa31a50"></script>
+<script src="data/m13.js?v=a6ac14ae"></script>
+<script src="data/m14.js?v=ab8b73f3"></script>
+<script src="data/proofs-a.js?v=f0fcf935"></script>
+<script src="data/proofs-b.js?v=bc2598c1"></script>
+<script src="data/proofs-c.js?v=164073bd"></script>
+<script src="data/exams.js?v=b92fd6fd"></script>
+<script src="data/exams-2.js?v=8c3fc4f8"></script>
+<script src="data/fig-00.js?v=78dd9bf7"></script>
+<script src="data/fig-01.js?v=043e62e8"></script>
+<script src="data/fig-02.js?v=511b65c6"></script>
+<script src="data/fig-03.js?v=05afda0f"></script>
+<script src="data/fig-04.js?v=103d5612"></script>
+<script src="data/fig-05.js?v=5a2508d5"></script>
+<script src="data/fig-06.js?v=c0159488"></script>
+<script src="data/fig-07.js?v=4d0e1350"></script>
+<script src="data/fig-08.js?v=1f3c3113"></script>
+<script src="data/fig-09.js?v=05a9e41c"></script>
+<script src="data/fig-10.js?v=1b7bf18c"></script>
+<script src="data/fig-11.js?v=b1484a64"></script>
+<script src="data/fig-12.js?v=a186c52d"></script>
+<script src="data/fig-13.js?v=88d6a5e4"></script>
+<script src="data/fig-14.js?v=68aeeab9"></script>
 <script src="../core/calc.js?v=b965d12c"></script>
 <script src="../core/plots.js?v=8830cd2f"></script>
-<script src="plots.js?v=684a9f56"></script>
-<script src="../core/app.js?v=9c6a41ec"></script>
+<script src="plots.js?v=e444e7e2"></script>
+<script src="../core/app.js?v=90df5fdd"></script>
 </body>
 </html>
