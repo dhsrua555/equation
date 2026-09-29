@@ -20,12 +20,12 @@
     <line class="cv" x1="70" y1="250" x2="470" y2="40"/>
     <text x="478" y="44">H: wᵀx + b = 0</text>
     <circle class="dotf" cx="330" cy="215" r="5"/><text class="em" x="340" y="232">x</text>
-    <circle class="dotf" cx="262" cy="147" r="5"/><text class="em" x="226" y="140">x_p</text>
+    <circle class="dotf" cx="262" cy="147" r="5"/><text class="em" x="226" y="140">xₚ</text>
     <line class="cv2" x1="330" y1="215" x2="264" y2="149" stroke-dasharray="5 4"/>
     <text x="304" y="176">d = αw</text>
     ${arrow(150, 208, 196, 254)}<text x="200" y="262">w (법선)</text>
     <path class="ax" d="M 250 153 L 256 159 L 262 153" fill="none"/>
-  </svg><figcaption>$\mathbf x_p=\mathbf x-\mathbf d$가 평면 위에 있고 $\mathbf d$는 법선 $\mathbf w$와 평행합니다. 여기서 $\alpha=(\mathbf w^T\mathbf x+b)/\mathbf w^T\mathbf w$가 나오고 거리는 $\lvert\mathbf w^T\mathbf x+b\rvert/\lVert\mathbf w\rVert_2$입니다.</figcaption></figure>`;
+  </svg><figcaption>$\\mathbf x_p=\\mathbf x-\\mathbf d$가 평면 위에 있고 $\\mathbf d$는 법선 $\\mathbf w$와 평행합니다. 여기서 $\\alpha=(\\mathbf w^T\\mathbf x+b)/\\mathbf w^T\\mathbf w$가 나오고 거리는 $\\lvert\\mathbf w^T\\mathbf x+b\\rvert/\\lVert\\mathbf w\\rVert_2$입니다.</figcaption></figure>`;
 
   // maximum margin picture
   F.margin = () => `<figure class="fig"><svg viewBox="0 0 560 290" role="img" aria-label="최대 마진 초평면과 서포트 벡터">
@@ -40,7 +40,7 @@
     <line class="cv2" x1="226" y1="98" x2="260" y2="140"/><line class="cv2" x1="296" y1="132" x2="330" y2="174"/>
     <text class="em" x="236" y="152">1/‖w‖</text><text class="em" x="316" y="140">1/‖w‖</text>
     <text x="60" y="30">y = +1 (P)</text><text x="430" y="285">y = −1 (N)</text>
-  </svg><figcaption>서포트 벡터(동그라미 친 점)는 $\mathbf w^T\mathbf x+b=\pm1$ 위에 있고, 결정 평면 $H_0$에서 각각 $1/\lVert\mathbf w\rVert$ 떨어져 있습니다. 마진 전체 폭은 $2/\lVert\mathbf w\rVert$입니다.</figcaption></figure>`;
+  </svg><figcaption>서포트 벡터(동그라미 친 점)는 $\\mathbf w^T\\mathbf x+b=\\pm1$ 위에 있고, 결정 평면 $H_0$에서 각각 $1/\\lVert\\mathbf w\\rVert$ 떨어져 있습니다. 마진 전체 폭은 $2/\\lVert\\mathbf w\\rVert$입니다.</figcaption></figure>`;
 
   // computational graph for f = (x + y) z
   F.graph1 = () => `<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="f = (x+y)z의 계산 그래프">${defs}
@@ -51,7 +51,7 @@
     <text class="fw" x="300" y="100">q = 3</text><text class="fw" x="440" y="130">−12</text>
     <text class="bw" x="120" y="72">−4</text><text class="bw" x="120" y="132">−4</text><text class="bw" x="200" y="205">3</text>
     <text class="bw" x="300" y="122">−4</text><text class="bw" x="440" y="160">1</text>
-  </svg><figcaption>위쪽 숫자는 순전파 값, 아래쪽 숫자는 역전파로 얻은 $\partial f/\partial(\cdot)$입니다. 곱셈 노드는 기울기를 서로 바꿔 보냅니다.</figcaption></figure>`;
+  </svg><figcaption>위쪽 숫자는 순전파 값, 아래쪽 숫자는 역전파로 얻은 $\\partial f/\\partial(\\cdot)$입니다. 곱셈 노드는 기울기를 서로 바꿔 보냅니다.</figcaption></figure>`;
 
   // sigmoid neuron graph with forward and backward values
   F.graph2 = () => `<figure class="fig"><svg viewBox="0 0 640 260" role="img" aria-label="시그모이드 뉴런의 계산 그래프">${defs}
@@ -67,7 +67,7 @@
     <text class="bw" x="62" y="42">−0.20</text><text class="bw" x="62" y="115">0.40</text><text class="bw" x="62" y="164">−0.40</text><text class="bw" x="62" y="238">−0.60</text><text class="bw" x="150" y="258">0.20</text>
     <text class="bw" x="160" y="94">0.20</text><text class="bw" x="160" y="200">0.20</text><text class="bw" x="238" y="140">0.20</text><text class="bw" x="306" y="172">0.20</text>
     <text class="bw" x="382" y="172">−0.20</text><text class="bw" x="456" y="172">−0.53</text><text class="bw" x="530" y="172">−0.53</text><text class="bw" x="612" y="172">1.00</text>
-  </svg><figcaption>$f(\mathbf w,\mathbf x)=1/(1+e^{-(w_0x_0+w_1x_1+w_2)})$. 위쪽 숫자는 순전파 값, 아래쪽 숫자는 역전파 기울기입니다. $+,\ -1$배, $\exp$, $+1$, $1/x$ 노드를 묶으면 시그모이드 게이트 하나가 되고 그 국소 기울기는 $\sigma(1-\sigma)=0.73\times0.27\approx0.20$입니다.</figcaption></figure>`;
+  </svg><figcaption>$f(\\mathbf w,\\mathbf x)=1/(1+e^{-(w_0x_0+w_1x_1+w_2)})$. 위쪽 숫자는 순전파 값, 아래쪽 숫자는 역전파 기울기입니다. $+,\\ -1$배, $\\exp$, $+1$, $1/x$ 노드를 묶으면 시그모이드 게이트 하나가 되고 그 국소 기울기는 $\\sigma(1-\\sigma)=0.73\\times0.27\\approx0.20$입니다.</figcaption></figure>`;
 
   // batch normalization vs layer normalization axes
   F.bnln = () => {

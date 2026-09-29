@@ -18,6 +18,11 @@
     box.querySelectorAll('.katex-html').forEach((k) => { if (k.textContent.includes('\\')) fail(`katex literal backslash ${where}: ${k.textContent.slice(0, 80)}`); });
     // an unknown command rendered as literal red text (e.g. a middle dot inside a text block)
     box.querySelectorAll(".katex-html").forEach((k) => { if (k.textContent.includes("\\")) fail(`katex literal backslash ${where}: ${k.textContent.slice(0, 80)}`); });
+    // a TeX command without its backslash (a plain JS string or template ate it: `\mathbf` → `mathbf`) renders as italic letters
+    box.querySelectorAll('annotation').forEach((a) => {
+      const m = /(^|[^\\A-Za-z{])(mathbf|mathrm|lVert|rVert|lvert|rvert|partial|alpha|theta|lambda|sigma|cdot|frac|sqrt|times)(?![A-Za-z])/.exec(a.textContent);
+      if (m) fail(`TeX command lost its backslash ${where}: ${a.textContent.slice(0, 80)}`);
+    });
     // leftover $ outside code/inputs means a math delimiter was not paired
     box.querySelectorAll('code, textarea, input, script, .katex-mathml').forEach((n) => n.remove());
     const txt = box.textContent;
@@ -66,6 +71,8 @@
         try { window.EMCalc.parse(p.ans); } catch (e) { fail(`${w} num ans parse: ${p.ans} (${e.message})`); }
         if (p.ansTex) checkHTML(il('$' + p.ansTex + '$'), `${w} ansTex`);
       }
+      if (typeof p.quiz === 'string' && !(A.QZP && A.QZP.has(p.quiz))) fail(`${w} quiz names a missing quiz problem ${p.quiz}`);
+      if (p.quiz && p.type === 'open' && !p.rubric) log(`note: quiz-style problem without rubric ${w}`);
       checkHTML(md(p.q) + (p.choices || []).map(il).join('') + md(p.sol) + il(p.hint) + md(p.rubric), w);
     });
   });
@@ -89,6 +96,7 @@
       if (/\$/.test(p.title)) fail(`${w} title has $`);
       if (/\$\{/.test(p.body)) fail(`${w} has template \${`);
       checkHTML(md(p.body), w);
+      (p.secs || []).forEach((s) => { if (!allSecKeys.has(s)) fail(`${w} secs names a missing section ${s}`); });
       String(p.body).replace(/\[\[(@\w+:)?(ch\d{2}):([\w.]+)\|/g, (_, site, ch, k) => {
         if (site) { if (!A.xrefTarget(ch, k, site.slice(1, -1))) fail(`${w} xref target missing ${site}${ch}:${k}`); }
         else if (!allSecKeys.has(`${ch}:${k}`)) fail(`${w} xref section missing ${ch}:${k}`);

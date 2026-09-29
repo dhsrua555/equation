@@ -145,7 +145,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; text-wrap: balance; }
 p { margin: 0; }
 .wrap { width: 100%; max-width: 1360px; margin-inline: auto; padding-inline: var(--gutter); }
 /* 마우스를 따라 나타나는 배경 벡터장(core/ambient.js): 본문 아래 층에 그립니다 */
-.ambient { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.ambient { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; contain: strict; }
 main { position: relative; z-index: 1; }
 .caps {
   font-family: var(--f-caps);
@@ -858,6 +858,19 @@ body[data-view="exam-live"] main { padding-top: 0; }
 .blk-note .blk-label { color: var(--camel-ink); }
 .chip.hand { border-color: var(--hand); color: var(--hand); background: var(--hand-bg); }
 .chip.pfc { border-color: var(--denim); color: var(--denim); }
+.chip.quizc { border-color: var(--camel); color: var(--camel-ink); background: color-mix(in srgb, var(--camel) 10%, transparent); text-decoration: none; }
+a.chip.quizc:hover { border-color: var(--camel-ink); }
+/* 퀴즈풀이 ↔ 단원 연결 */
+.quiz-links { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.quiz-links .caps { color: var(--ink-3); margin-right: 4px; font-size: 0.68rem; }
+.quiz-links a.pf-chip { text-decoration: none; color: var(--ink); font-size: 0.78rem; line-height: 1.5; }
+.quiz-links a.pf-chip:hover { background: var(--ink); color: var(--paper); }
+.sec > .quiz-links { margin-block: -6px 22px; }
+.sec > .quiz-links-more { margin-block: 26px 0; padding-top: 16px; border-top: 1px dashed var(--rule-strong); }
+.quiz-more > .quiz-links { margin-top: 20px; }
+.sec-quiz { margin-block: -6px 18px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.84rem; }
+.sec-quiz a { color: var(--camel-ink); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--camel) 45%, transparent); }
+.sec-quiz a:hover { border-bottom-color: var(--camel-ink); }
 .pf-ch .chip.hand { margin-left: auto; font-size: 0.68rem; }
 .pf-src { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 0.86rem; color: var(--ink-2); }
 .pf-chip.hand-chip { border-color: var(--hand); color: var(--hand); }

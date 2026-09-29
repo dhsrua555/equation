@@ -7,7 +7,7 @@ EM.more = EM.more || [];
     n: 3,
     secTitles: { '3.6': 'JS 발산' },
     problems: [
-      { sec: '3.6', type: 'open', lv: 3, proof: true, q: R`**(Problem Set 1 문제 1)** 같은 확률공간 위의 두 확률분포 $p,q$에 대해 젠센-섀넌 발산을 $D_{JS}(p\Vert q)=\frac12D_{KL}(p\Vert m)+\frac12D_{KL}(q\Vert m)$, $m=\frac12(p+q)$로 정의한다. 다음을 증명하시오.
+      { sec: '3.6', type: 'open', lv: 3, proof: true, quiz: 'ps1-p1', q: R`**(Problem Set 1 문제 1)** 같은 확률공간 위의 두 확률분포 $p,q$에 대해 젠센-섀넌 발산을 $D_{JS}(p\Vert q)=\frac12D_{KL}(p\Vert m)+\frac12D_{KL}(q\Vert m)$, $m=\frac12(p+q)$로 정의한다. 다음을 증명하시오.
 (i) 비음성: $D_{JS}(p\Vert q)\ge0$.
 (ii) 구별 불가능한 것의 동일성: $D_{JS}(p\Vert q)=0\iff p=q$.
 (iii) 대칭성: $D_{JS}(p\Vert q)=D_{JS}(q\Vert p)$.`,
@@ -30,7 +30,7 @@ EM.more = EM.more || [];
         sol: R`$m=(\tfrac12,\tfrac12)$. $D_{KL}(p\Vert m)=1\cdot\log\frac1{1/2}=\log2$, $D_{KL}(q\Vert m)=\log2$. 평균 $\log2$ — JS의 최댓값입니다.` },
       { sec: '3.6', type: 'num', lv: 2, q: R`$p=(\tfrac12,\tfrac12)$, $q=(1,0)$일 때 $D_{JS}(p\Vert q)$ (자연로그, 소수 넷째 자리)는?`, ans: '0.75*ln(4/3)', ansTex: R`\tfrac34\ln\tfrac43\approx0.2158`,
         sol: R`$m=(\tfrac34,\tfrac14)$. $D_{KL}(p\Vert m)=\tfrac12\ln\tfrac{1/2}{3/4}+\tfrac12\ln\tfrac{1/2}{1/4}=\tfrac12\ln\tfrac23+\tfrac12\ln2=\tfrac12\ln\tfrac43$. $D_{KL}(q\Vert m)=\ln\tfrac1{3/4}=\ln\tfrac43$. $D_{JS}=\tfrac12\big(\tfrac12+1\big)\ln\tfrac43=\tfrac34\ln\tfrac43\approx0.2158$. 이때 $D_{KL}(p\Vert q)=\infty$입니다.` },
-      { sec: '3.6', type: 'open', lv: 3, proof: true, q: R`$D_{JS}(p\Vert q)\le\log2$임을 보이고, 등호가 성립할 필요충분조건이 “모든 $x$에서 $p(x)q(x)=0$”임을 보이세요.`,
+      { sec: '3.6', type: 'open', lv: 3, proof: true, quiz: 'ps1-p1', q: R`$D_{JS}(p\Vert q)\le\log2$임을 보이고, 등호가 성립할 필요충분조건이 “모든 $x$에서 $p(x)q(x)=0$”임을 보이세요.`,
         sol: R`
 $p(x)>0$인 $x$에서 $m(x)=\frac{p(x)+q(x)}2\ge\frac{p(x)}2$이므로 $\log\frac{p(x)}{m(x)}\le\log2$이고, 등호는 $q(x)=0$일 때뿐입니다. 따라서
 $$D_{KL}(p\Vert m)=\sum_{p(x)>0}p(x)\log\frac{p(x)}{m(x)}\le\log2\sum_{p(x)>0}p(x)=\log2,$$
@@ -39,7 +39,7 @@ $$D_{KL}(p\Vert m)=\sum_{p(x)>0}p(x)\log\frac{p(x)}{m(x)}\le\log2\sum_{p(x)>0}p(
 - $p/m\le2$ 관찰과 등호 조건 — 4점
 - 두 KL의 상한 — 3점
 - 등호의 필요충분조건 — 3점` },
-      { sec: '3.6', type: 'open', lv: 3, proof: true, q: R`$D_{JS}(p\Vert q)=H(m)-\frac12\big(H(p)+H(q)\big)$임을 보이고, 엔트로피의 오목성을 이용해 $D_{JS}\ge0$을 다시 증명하세요.`,
+      { sec: '3.6', type: 'open', lv: 3, proof: true, quiz: 'ps1-p1', q: R`$D_{JS}(p\Vert q)=H(m)-\frac12\big(H(p)+H(q)\big)$임을 보이고, 엔트로피의 오목성을 이용해 $D_{JS}\ge0$을 다시 증명하세요.`,
         sol: R`
 $D_{KL}(p\Vert m)=\sum p\log p-\sum p\log m=-H(p)-\sum_xp(x)\log m(x)$, 마찬가지로 $q$. 평균하면
 $$D_{JS}=-\frac{H(p)+H(q)}2-\sum_x\frac{p(x)+q(x)}2\log m(x)=-\frac{H(p)+H(q)}2-\sum_xm(x)\log m(x)=H(m)-\frac{H(p)+H(q)}2.$$
@@ -51,7 +51,7 @@ $$D_{JS}=-\frac{H(p)+H(q)}2-\sum_x\frac{p(x)+q(x)}2\log m(x)=-\frac{H(p)+H(q)}2-
       { sec: '3.6', type: 'mc', lv: 2, q: R`JS 발산에 대해 **틀린** 것은?`,
         choices: [R`$D_{JS}(p\Vert q)=D_{JS}(q\Vert p)$`, R`$0\le D_{JS}\le\log2$`, R`$D_{JS}$ 자체가 삼각부등식을 만족하는 거리(metric)이다`, R`$p$와 $q$의 받침이 달라도 유한하다`], ans: 2,
         sol: R`삼각부등식을 만족하는 것은 $\sqrt{D_{JS}}$입니다. $D_{JS}$ 자체는 만족하지 않습니다(제곱거리가 삼각부등식을 깨는 것과 같은 이유).` },
-      { sec: '3.6', type: 'open', lv: 3, proof: true, q: R`$Z\sim\operatorname{Bern}(\tfrac12)$이고 $Z=0$이면 $X\sim p$, $Z=1$이면 $X\sim q$일 때 $I(X;Z)=D_{JS}(p\Vert q)$임을 보이고, 이로부터 $D_{JS}\le\log2$를 얻으세요.`,
+      { sec: '3.6', type: 'open', lv: 3, proof: true, quiz: 'ps1-p1', q: R`$Z\sim\operatorname{Bern}(\tfrac12)$이고 $Z=0$이면 $X\sim p$, $Z=1$이면 $X\sim q$일 때 $I(X;Z)=D_{JS}(p\Vert q)$임을 보이고, 이로부터 $D_{JS}\le\log2$를 얻으세요.`,
         sol: R`
 $X$의 주변분포는 $P(X=x)=\frac12p(x)+\frac12q(x)=m(x)$.
 $I(X;Z)=\sum_zP(Z=z)\,D_{KL}\big(P_{X\mid Z=z}\Vert P_X\big)$ (정의 $\sum_{x,z}p(x,z)\log\frac{p(x\mid z)}{p(x)}$를 $z$로 묶은 것)이므로

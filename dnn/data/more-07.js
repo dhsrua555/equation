@@ -7,7 +7,7 @@ EM.more = EM.more || [];
     n: 7,
     secTitles: { '7.6': '쌍대 문제 손풀이', '7.7': '최대-최소 부등식' },
     problems: [
-      { sec: '7.6', type: 'open', lv: 3, proof: true, q: R`**(Problem Set 1 문제 3)** 2차원 자료 $x_1=(0,0)$, $y_1=-1$; $x_2=(2,2)$, $y_2=+1$.
+      { sec: '7.6', type: 'open', lv: 3, proof: true, quiz: 'ps1-p3', q: R`**(Problem Set 1 문제 3)** 2차원 자료 $x_1=(0,0)$, $y_1=-1$; $x_2=(2,2)$, $y_2=+1$.
 1. 원문제 $\min_{w,b}\frac12\lVert w\rVert^2$ s.t. $y_i(w^Tx_i+b)\ge1$ ($i=1,2$)의 라그랑지안을 승수 $\alpha_1,\alpha_2\ge0$으로 쓰고, $w,b$에 대해 최소화해 $\alpha_1,\alpha_2$에 대한 쌍대 문제를 유도하시오. 최적 승수를 구하시오.
 2. 최적 승수로 최적 $w,b$를 복원하시오.
 3. 분리 초평면 $w^Tx+b=0$을 쓰고 마진을 구하시오.`,
@@ -25,7 +25,7 @@ $\alpha_1=\alpha_2=\alpha$: $2\alpha-4\alpha^2$ 최대 $\Rightarrow\alpha=\tfrac
 - 최적 승수 — 1점
 - $w,b$ 복원(서포트 벡터 사용 근거) — 2점
 - 초평면과 마진 — 1점` },
-      { sec: '7.7', type: 'open', lv: 3, proof: true, q: R`**(Problem Set 1 문제 4)** 공집합이 아닌 집합 $X,Y$와 $f:X\times Y\to\mathbb R$에 대해 최대-최소 부등식 $\max_{x\in X}\min_{y\in Y}f(x,y)\le\min_{y\in Y}\max_{x\in X}f(x,y)$를 증명하고, 등호가 성립하지 않는 반례를 제시하시오.`,
+      { sec: '7.7', type: 'open', lv: 3, proof: true, quiz: 'ps1-p4', q: R`**(Problem Set 1 문제 4)** 공집합이 아닌 집합 $X,Y$와 $f:X\times Y\to\mathbb R$에 대해 최대-최소 부등식 $\max_{x\in X}\min_{y\in Y}f(x,y)\le\min_{y\in Y}\max_{x\in X}f(x,y)$를 증명하고, 등호가 성립하지 않는 반례를 제시하시오.`,
         sol: R`
 **증명.** $g(x)=\min_yf(x,y)$, $h(y)=\max_xf(x,y)$. 임의의 $x'\in X$, $y'\in Y$에 대해
 $$g(x')\le f(x',y')\le h(y').$$
@@ -61,14 +61,14 @@ $\alpha^*>0$이고 $x^*=1$에서 제약이 등호 — 상보성 $\alpha^*(x^*-1)
 - 쌍대 값 ≤ 라그랑지안 값 — 3점
 - 각 항의 부호 — 3점
 - 강한 쌍대성으로 등호, 각 항 0 — 4점` },
-      { sec: '7.7', type: 'open', lv: 2, proof: true, q: R`$X=Y=\{-1,1\}$, $f(x,y)=xy$ (동전 맞히기, $x$가 최대화)에서 $\max_x\min_yf$와 $\min_y\max_xf$를 구하고, 안장점이 없음을 보이세요.`,
+      { sec: '7.7', type: 'open', lv: 2, proof: true, quiz: 'ps1-p4', q: R`$X=Y=\{-1,1\}$, $f(x,y)=xy$ (동전 맞히기, $x$가 최대화)에서 $\max_x\min_yf$와 $\min_y\max_xf$를 구하고, 안장점이 없음을 보이세요.`,
         sol: R`
 $\min_yxy=-1$ ($y=-x$)이므로 $\max_x\min_y=-1$. $\max_xxy=1$ ($x=y$)이므로 $\min_y\max_x=1$. $-1<1$.
 안장점 $(x^*,y^*)$이면 $f(x,y^*)\le f(x^*,y^*)\le f(x^*,y)$ ($\forall x,y$)인데, 그러면 $\max_xf(x,y^*)=f(x^*,y^*)=\min_yf(x^*,y)$에서 $1=f(x^*,y^*)=-1$ — 모순. (안장점이 있으면 두 값이 같아야 함.)`,
         rubric: R`
 - 두 값 계산 — 5점
 - 안장점이 있으면 등호가 됨을 이용한 모순 — 5점` },
-      { sec: '7.7', type: 'open', lv: 3, proof: true, q: R`$(x^*,y^*)$가 $f$의 안장점, 즉 모든 $x\in X$, $y\in Y$에서 $f(x,y^*)\le f(x^*,y^*)\le f(x^*,y)$이면 $\max_x\min_yf=\min_y\max_xf=f(x^*,y^*)$임을 보이세요.`,
+      { sec: '7.7', type: 'open', lv: 3, proof: true, quiz: 'ps1-p4', q: R`$(x^*,y^*)$가 $f$의 안장점, 즉 모든 $x\in X$, $y\in Y$에서 $f(x,y^*)\le f(x^*,y^*)\le f(x^*,y)$이면 $\max_x\min_yf=\min_y\max_xf=f(x^*,y^*)$임을 보이세요.`,
         sol: R`
 왼쪽 부등식에서 $\max_xf(x,y^*)=f(x^*,y^*)$ (등호는 $x=x^*$), 오른쪽에서 $\min_yf(x^*,y)=f(x^*,y^*)$.
 $\min_y\max_xf\le\max_xf(x,y^*)=f(x^*,y^*)=\min_yf(x^*,y)\le\max_x\min_yf$.

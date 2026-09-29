@@ -56,6 +56,10 @@
   // worked quiz / problem-set solutions (data/quiz-*.js): a separate "퀴즈풀이" page
   const QUIZ = EM.quizzes || [];
   const QUIZ_LABEL = (SITE.text && SITE.text.quizNav) || '퀴즈풀이';
+  // quiz problems ↔ units: a quiz problem lists its sections in secs: ['ch02:2.6', …];
+  // a practice problem of the same kind carries quiz: '<set>-<problem>' (or true for quiz-style in general)
+  const QZP = new Map();
+  QUIZ.forEach((q) => q.problems.forEach((p) => QZP.set(`${q.id}-${p.id}`, { q, p })));
   EXAMS.forEach((x) => {
     x.problems.forEach((p, k) => {
       p.no = k + 1; p.src = x.id;
@@ -209,9 +213,11 @@
     NOTES = null;
     const num = sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
     const where = SITE.secSource ? SITE.secSource(sec, c) : (sec.p ? `p.${sec.p}` : '');
+    const quizzes = [...QZP.entries()].filter(([, x]) => (x.p.secs || []).includes(`${c.id}:${sec.k}`));
     return `<section class="sec" id="sec-${sec.k || idx}">
       <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}</h2></div>
       ${where ? `<p class="sec-page caps">${esc(where)}</p>` : ''}
+      ${quizzes.length ? `<p class="sec-quiz">${quizzes.map(([id, x]) => `<a href="#quiz-${id}" data-route="quiz-${id}">${esc(QUIZ_LABEL)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
       ${body}
       ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
         <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">${n.tg && n.tg.ext ? '↗' : '※'}${i + 1}</button>
@@ -655,6 +661,18 @@
     return '';
   }
 
+  // “퀴즈형” chip on a practice problem: links to the quiz problem it imitates
+  function quizChip(p) {
+    if (!p.quiz) return '';
+    const x = typeof p.quiz === 'string' && QZP.get(p.quiz);
+    return x ? `<a class="chip quizc" href="#quiz-${p.quiz}" data-route="quiz-${p.quiz}" title="${esc(x.p.title)}">퀴즈형 · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} →</a>`
+      : `<span class="chip quizc">퀴즈형</span>`;
+  }
+  // practice problems of one quiz problem's kind, grouped by unit (or every quiz-style problem when id is empty)
+  function quizPractice(id) {
+    return CH.map((c) => ({ c, n: c.problems.filter((p) => (id ? p.quiz === id : p.quiz)).length })).filter((x) => x.n);
+  }
+  const quizPracticeLink = (c, n, label) => `<a class="pf-chip" href="#${c.id}-practice" data-act="quiz-practice" data-ch="${c.id}">${label || `${pad(c.n)}단원`} · ${n}문제 →</a>`;
   function probHTML(p, o) {
     const ctx = o.ctx;
     if (ctx === 'exam') return examProbHTML(p, o);
@@ -664,7 +682,7 @@
     const SC = T('secChip', '§');
     const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? (chById.get(p.ch) && chById.get(p.ch).sections.some((s) => s.k === p.sec)
       ? `<a class="chip sec" href="#${p.ch}-k${p.sec}" data-route="${p.ch}-k${p.sec}" title="이 절의 개념 정리로 이동">${SC}${esc(p.sec)} →</a>`
-      : `<span class="chip sec">${SC}${esc(p.sec)}</span>`) : ''}${p.proof ? `<span class="chip pfc">증명형</span>` : ''}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
+      : `<span class="chip sec">${SC}${esc(p.sec)}</span>`) : ''}${p.proof ? `<span class="chip pfc">증명형</span>` : ''}${quizChip(p)}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
     let body = '';
     if (p.type === 'mc') {
       body = `<div class="choices" role="group" aria-label="보기">${p.choices.map((c, k) => {
@@ -905,7 +923,7 @@
     return list.length ? Math.max(...list.map((h) => scoreOf(h).got)) : null;
   }
 
-  let filters = Object.assign({ lv: 'all', type: 'all', st: 'all', sec: 'all' }, S.prefs.filters || {});
+  let filters = Object.assign({ lv: 'all', type: 'all', st: 'all', sec: 'all', kind: 'all' }, S.prefs.filters || {});
   function viewChapter(c, tab) {
     CUR_CH = c.id;
     S.prefs.lastCh = c.id;
@@ -969,8 +987,10 @@
   }
   function filtered(list, secs) {
     const sec = secs && secs.includes(filters.sec) ? filters.sec : 'all';
+    const quizOnly = filters.kind === 'quiz' && list.some((p) => p.quiz);
     return list.filter((p) => {
       if (sec !== 'all' && p.sec !== sec) return false;
+      if (quizOnly && !p.quiz) return false;
       if (filters.lv !== 'all' && String(p.lv) !== filters.lv) return false;
       if (filters.type !== 'all' && p.type !== filters.type) return false;
       const r = S.prog[p.id];
@@ -999,6 +1019,7 @@
           ${seg('lv', [['all', '전체'], ['1', '기초'], ['2', '표준'], ['3', '심화']])}
           ${seg('type', [['all', '모든 유형'], ['mc', '객관식'], ['num', '단답형'], ['open', '서술형']])}
           ${seg('st', [['all', '전체'], ['todo', '안 푼 문제'], ['wrong', '틀린 문제']])}
+          ${c.problems.some((p) => p.quiz) ? seg('kind', [['all', '모든 문제'], ['quiz', `퀴즈형 ${c.problems.filter((p) => p.quiz).length}`]]) : ''}
         </div>
       </div>
       ${secs.length ? `<div class="sec-filter" role="group" aria-label="절로 거르기">
@@ -1099,6 +1120,22 @@
   }
 
   // ---------- quiz solutions ----------
+  // the unit sections a quiz problem draws on (p.secs = ['ch02:2.6', …])
+  function quizUnits(p) {
+    const links = (p.secs || []).map((s) => {
+      const [ch, k] = s.split(':');
+      const tg = xrefTarget(ch, k);
+      if (!tg) return '';
+      const c = chById.get(ch), sec = c.sections.find((x) => x.k === k);
+      return `<a class="pf-chip" href="#${tg.route}" data-route="${tg.route}" title="${esc(tg.label)}">${pad(c.n)} · §${esc(k)} ${esc(sec ? sec.title : '')}</a>`;
+    }).filter(Boolean);
+    return links.length ? `<nav class="quiz-links" aria-label="이 문제의 개념이 있는 단원"><span class="caps">개념 정리로</span>${links.join('')}</nav>` : '';
+  }
+  // practice problems of the same kind, after the worked solution
+  function quizMore(id) {
+    const list = quizPractice(id);
+    return list.length ? `<nav class="quiz-links quiz-links-more" aria-label="같은 유형 연습문제"><span class="caps">같은 유형 더 풀기</span>${list.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>` : '';
+  }
   function viewQuiz() {
     return `
     <div class="wrap">
@@ -1111,6 +1148,7 @@
           ${QUIZ.map((q) => `<span class="caps">${esc(q.title)}</span>
             ${q.intro ? `<a href="#quiz" data-act="scroll" data-target="qz-${q.id}-intro"><span>—</span>답안 작성 원칙</a>` : ''}
             ${q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}"><span>${esc(p.label || p.id)}</span>${esc(p.title)}</a>`).join('')}`).join('')}
+          ${quizPractice('').length ? `<a href="#quiz" data-act="scroll" data-target="qz-more"><span>→</span>퀴즈 대비 연습문제</a>` : ''}
         </nav>
         <div class="quiz-main">
         ${QUIZ.map((q) => `
@@ -1122,10 +1160,17 @@
                 <section class="sec quiz-p" id="qz-${q.id}-${p.id}">
                   <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}</h2></div>
                   ${p.where ? `<p class="sec-page caps">${esc(p.where)}</p>` : ''}
+                  ${quizUnits(p)}
                   ${md(p.body)}
+                  ${quizMore(`${q.id}-${p.id}`)}
                 </section>`).join('')}
             </article>
           </div>`).join('')}
+          ${quizPractice('').length ? `<article class="prose"><section class="sec quiz-more" id="qz-more">
+            <div class="sec-title"><span>→</span><h2>퀴즈 대비 연습문제</h2></div>
+            <p>위 문제들과 같은 모양(정의 → 유도·증명 → 작은 계산 → 해석)의 문제를 단원마다 더 만들어 두었습니다. 누르면 그 단원의 연습문제가 <b>퀴즈형</b>만 걸러진 채로 열립니다. 서술형이라 풀이를 펼친 뒤 채점 기준으로 스스로 채점하세요.</p>
+            <nav class="quiz-links" aria-label="퀴즈 대비 연습문제">${quizPractice('').map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
+          </section></article>` : ''}
         </div>
       </div>
     </div>
@@ -1614,6 +1659,14 @@
         render(route, { keepScroll: window.scrollY });
         break;
       }
+      case 'quiz-practice': { // from the quiz page: open a unit's practice showing only quiz-style problems
+        e.preventDefault();
+        filters = Object.assign(filters, { lv: 'all', type: 'all', st: 'all', sec: 'all', kind: 'quiz' });
+        S.prefs.filters = filters;
+        save();
+        go(`${t.dataset.ch}-practice`);
+        break;
+      }
       case 'exam-start': {
         const x = examById.get(t.dataset.exam);
         const begin = () => { closeModal(); startExam(x.id); };
@@ -1800,7 +1853,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

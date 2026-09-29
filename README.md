@@ -15,7 +15,7 @@
 | 역학 · 유체역학 | 유체역학(2025-2): White, *Fluid Mechanics* 7판 1–8장 — 유체의 성질, 정수압과 부력, 레이놀즈 수송 정리와 질량·운동량·에너지, 베르누이, 나비에-스토크스와 정확해, 차원 해석, 관 유동과 무디 선도, 부차 손실, 경계층, 항력과 양력, 퍼텐셜 유동. 15단원, 연습문제 220, 증명 71, 모의고사 2 | [`fluid/`](https://dhsrua555.github.io/equation/fluid/) |
 | 역학 · 로봇공학 | 로봇공학입문(2026-2, 진행 중): Lynch & Park, *Modern Robotics* 2–6, 8–9, 12장과 2–3주차 강의 — 자유도와 그뤼블러 공식, C-공간, 마찰 없는·있는 파지와 힘 닫힘, 회전 행렬과 지수 좌표, 트위스트와 렌치, 지수곱 정기구학, 야코비안과 조작성, 역기구학, 라그랑주 동역학, 궤적 생성. 14단원, 연습문제 179, 증명 46, 모의고사 2(범위 추정) | [`robot/`](https://dhsrua555.github.io/equation/robot/) |
 | 인공지능 · 기계 학습 | 데이터 마이닝과 기계 학습(2026-1): Shalev-Shwartz & Ben-David, *Understanding Machine Learning* 2–23장 — PAC 학습과 VC 차원, SRM·MDL, 부스팅, 볼록 학습·SGD, 규제와 안정성, SVM·커널, 다중 클래스, 결정 트리, 온라인 학습, 군집화, 차원 축소. 18단원, 연습문제 231, 증명 106, 모의고사 3 | [`ml/`](https://dhsrua555.github.io/equation/ml/) |
-| 인공지능 · 심층 신경망 | 심층 신경망의 수학적 기초 1–5주차와 Problem Set 1: 회귀·확률·정보이론, 선형 분류와 SVM 쌍대, 역전파와 학습, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 14단원, 연습문제 343, 증명 81, 모의고사 5, 퀴즈풀이(Problem Set 1) | [`dnn/`](https://dhsrua555.github.io/equation/dnn/) |
+| 인공지능 · 심층 신경망 | 심층 신경망의 수학적 기초 1–5주차와 Problem Set 1: 회귀·확률·정보이론, 선형 분류와 SVM 쌍대, 역전파와 학습, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 14단원, 연습문제 370(퀴즈형 38), 증명 81, 모의고사 5, 퀴즈풀이(Problem Set 1) | [`dnn/`](https://dhsrua555.github.io/equation/dnn/) |
 | 인공지능 · 의료 인공지능 | 의료 인공지능 및 소프트웨어 시스템: Bishop & Bishop *Deep Learning* 1·2·6·7·8·9·10장 — 확률과 베이즈 정리, 가우시안과 최대가능도, 정보이론, 다층 신경망과 오차함수, 경사하강법과 Adam, 정규화, 역전파, 규제, 합성곱 신경망·검출·분할. 14단원, 연습문제 234, 증명 72, 모의고사 4 | [`med/`](https://dhsrua555.github.io/equation/med/) |
 
 ## 구성

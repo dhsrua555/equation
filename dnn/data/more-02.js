@@ -7,7 +7,7 @@ EM.more = EM.more || [];
     n: 2,
     secTitles: { '2.8': '가우시안 MAP·편향-분산' },
     problems: [
-      { sec: '2.8', type: 'open', lv: 3, proof: true, q: R`**(Problem Set 1 문제 2)** $X_1,\dots,X_n$이 독립이고 $X_i\sim\N(\theta,1)$ (분산 1은 알고 $\theta$는 모름), 사전분포는 $\theta\sim\N(0,\tau^2)$이다. 기댓값은 $\theta$가 주어졌을 때 $(X_1,\dots,X_n)$의 표본분포에 대해 취한다.
+      { sec: '2.8', type: 'open', lv: 3, proof: true, quiz: 'ps1-p2', q: R`**(Problem Set 1 문제 2)** $X_1,\dots,X_n$이 독립이고 $X_i\sim\N(\theta,1)$ (분산 1은 알고 $\theta$는 모름), 사전분포는 $\theta\sim\N(0,\tau^2)$이다. 기댓값은 $\theta$가 주어졌을 때 $(X_1,\dots,X_n)$의 표본분포에 대해 취한다.
 1. $\theta$의 MAP 추정량을 유도하고, 그것이 릿지 문제 $\hat\theta_{\text{MAP}}=\argmin_\theta\sum_{i=1}^n(X_i-\theta)^2+\lambda\theta^2$, $\lambda=1/\tau^2$의 해와 같음을 보이시오.
 2. $\hat\theta_{\text{MAP}}=a\bar X$로 쓰고 수축 계수 $a$를 $n,\tau^2$의 함수로 구하시오.
 3. 임의의 추정량 $\hat\theta$에 대해 $\E(\hat\theta-\theta)^2=(\E\hat\theta-\theta)^2+\Var(\hat\theta)$를 증명하고, $\hat\theta_{\text{MAP}}$의 편향, 분산, MSE를 구하시오.`,
@@ -28,7 +28,7 @@ $\E\bar X=\theta$, $\Var\bar X=1/n$이므로 편향 $=(a-1)\theta=-\frac{\theta}
         sol: R`$a=\frac{9(1/3)}{9(1/3)+1}=\frac34$, $\hat\theta=\frac34\cdot2=1.5$.` },
       { sec: '2.8', type: 'num', lv: 2, q: R`같은 설정($n=9$, $\tau^2=1/3$)에서 참값이 $\theta=1$일 때 $\hat\theta_{\text{MAP}}$의 MSE는?`, ans: '0.125', ansTex: R`\tfrac18`,
         sol: R`$\frac{\theta^2+n\tau^4}{(n\tau^2+1)^2}=\frac{1+9/9}{16}=\frac18$. MLE의 MSE는 $1/9\approx0.111$이라 여기서는 MLE가 낫습니다($\theta^2=1>2\tau^2+1/n\approx0.778$).` },
-      { sec: '2.8', type: 'open', lv: 3, proof: true, q: R`위 설정에서 $\mathrm{MSE}(\hat\theta_{\text{MAP}})<\mathrm{MSE}(\bar X)$일 필요충분조건이 $\theta^2<2\tau^2+\frac1n$임을 보이세요.`,
+      { sec: '2.8', type: 'open', lv: 3, proof: true, quiz: 'ps1-p2', q: R`위 설정에서 $\mathrm{MSE}(\hat\theta_{\text{MAP}})<\mathrm{MSE}(\bar X)$일 필요충분조건이 $\theta^2<2\tau^2+\frac1n$임을 보이세요.`,
         sol: R`
 $\mathrm{MSE}(\bar X)=1/n$ (편향 0, 분산 $1/n$). 따라서
 $$\frac{\theta^2+n\tau^4}{(n\tau^2+1)^2}<\frac1n\iff n\theta^2+n^2\tau^4<(n\tau^2+1)^2=n^2\tau^4+2n\tau^2+1\iff n\theta^2<2n\tau^2+1\iff\theta^2<2\tau^2+\frac1n.$$
@@ -37,7 +37,7 @@ $$\frac{\theta^2+n\tau^4}{(n\tau^2+1)^2}<\frac1n\iff n\theta^2+n^2\tau^4<(n\tau^
 - 두 MSE의 식 — 3점
 - 분모 정리와 전개 — 4점
 - 결론과 해석 — 3점` },
-      { sec: '2.8', type: 'open', lv: 3, proof: true, q: R`위 설정에서 사후분포 $p(\theta\mid X)$가 가우시안 $\N\big(a\bar X,\ \frac1{n+1/\tau^2}\big)$임을 완전제곱으로 보이고, 이 경우 MAP과 사후평균이 같은 이유를 말하세요.`,
+      { sec: '2.8', type: 'open', lv: 3, proof: true, quiz: 'ps1-p2', q: R`위 설정에서 사후분포 $p(\theta\mid X)$가 가우시안 $\N\big(a\bar X,\ \frac1{n+1/\tau^2}\big)$임을 완전제곱으로 보이고, 이 경우 MAP과 사후평균이 같은 이유를 말하세요.`,
         sol: R`
 지수부는 $-\frac12\big[\sum(X_i-\theta)^2+\theta^2/\tau^2\big]=-\frac12\big[(n+\tfrac1{\tau^2})\theta^2-2n\bar X\theta\big]+C$.
 $P=n+1/\tau^2$로 두고 완전제곱하면 $-\frac P2\big(\theta-\frac{n\bar X}P\big)^2+C'$. 따라서 $p(\theta\mid X)\propto\exp\big(-\frac{(\theta-m)^2}{2/P}\big)$, $m=\frac{n\bar X}{n+1/\tau^2}=a\bar X$, 분산 $1/P$ — 가우시안입니다(정규화 상수는 $\theta$와 무관하므로 모양만으로 분포가 결정됨).

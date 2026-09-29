@@ -60,3 +60,5 @@ learn-13.js
 more-13.js
 fig-13.js
 fig-14.js
+quizprep-a.js
+quizprep-b.js

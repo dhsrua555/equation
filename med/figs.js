@@ -14,7 +14,7 @@
     ${arrow(330, 64, 420, 30)}${arrow(330, 76, 420, 104)}${arrow(360, 196, 440, 164)}${arrow(360, 208, 440, 240)}
     <text class="fw" x="430" y="34">양성 90명 (민감도 90%)</text><text x="430" y="110">음성 10명 (위음성)</text>
     <text class="fw" x="450" y="168">양성 297명 (위양성 3%)</text><text x="450" y="244">음성 9,603명 (특이도 97%)</text>
-  </svg><figcaption>양성은 모두 $90+297=387$명이고 그중 실제 암 환자는 90명이므로 $p(C=1\mid T=1)=90/387\approx0.23$입니다. 유병률(사전확률)이 낮으면 위양성이 양성의 대부분을 차지합니다.</figcaption></figure>`;
+  </svg><figcaption>양성은 모두 $90+297=387$명이고 그중 실제 암 환자는 90명이므로 $p(C=1\\mid T=1)=90/387\\approx0.23$입니다. 유병률(사전확률)이 낮으면 위양성이 양성의 대부분을 차지합니다.</figcaption></figure>`;
 
   // counts n_ij in a grid (sum and product rules)
   F.grid = () => {
@@ -24,7 +24,7 @@
       <text class="em" x="${150 + 3 * 56 + 26}" y="${40 + 50 + 28}" text-anchor="middle">n_ij</text>
       <text x="${150 + 3 * 56 + 26}" y="228" text-anchor="middle">x_i</text><text x="120" y="118" text-anchor="end">y_j</text>
       <text x="${150 + 3 * 56 + 26}" y="30" text-anchor="middle">열의 합 c_i</text><text x="440" y="118">행의 합 r_j</text>
-    </svg><figcaption>$N$번 시행에서 $X=x_i,\ Y=y_j$가 함께 나온 횟수가 $n_{ij}$입니다. $p(x_i,y_j)=n_{ij}/N$, $p(x_i)=c_i/N$, $p(y_j\mid x_i)=n_{ij}/c_i$에서 합의 규칙과 곱의 규칙이 나옵니다.</figcaption></figure>`;
+    </svg><figcaption>$N$번 시행에서 $X=x_i,\\ Y=y_j$가 함께 나온 횟수가 $n_{ij}$입니다. $p(x_i,y_j)=n_{ij}/N$, $p(x_i)=c_i/N$, $p(y_j\\mid x_i)=n_{ij}/c_i$에서 합의 규칙과 곱의 규칙이 나옵니다.</figcaption></figure>`;
   };
 
   // entropy / mutual information Venn diagram
@@ -33,7 +33,7 @@
     <text class="em" x="160" y="130" text-anchor="middle">H[x|y]</text><text class="em" x="280" y="130" text-anchor="middle">I[x,y]</text><text class="em" x="400" y="130" text-anchor="middle">H[y|x]</text>
     <text x="150" y="22" text-anchor="middle">H[x]</text><text x="410" y="22" text-anchor="middle">H[y]</text>
     <text x="280" y="244" text-anchor="middle">H[x,y] = 두 원의 합집합</text>
-  </svg><figcaption>왼쪽 원이 $\mathrm H[x]$, 오른쪽 원이 $\mathrm H[y]$. 겹친 부분이 상호정보량 $\mathrm I[x,y]$이고, 합집합 전체가 결합 엔트로피 $\mathrm H[x,y]$입니다.</figcaption></figure>`;
+  </svg><figcaption>왼쪽 원이 $\\mathrm H[x]$, 오른쪽 원이 $\\mathrm H[y]$. 겹친 부분이 상호정보량 $\\mathrm I[x,y]$이고, 합집합 전체가 결합 엔트로피 $\\mathrm H[x,y]$입니다.</figcaption></figure>`;
 
   // error backpropagation at a hidden unit
   F.delta = () => `<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="은닉 유닛 j에서의 오차 역전파">${defs}
@@ -43,7 +43,7 @@
     <text x="160" y="104" text-anchor="middle">w_ji</text><text x="370" y="66" text-anchor="middle">w_kj</text>
     <text class="bw" x="260" y="160" text-anchor="middle">δ_j = h′(a_j) Σ w_kj δ_k</text>
     <text x="470" y="115" text-anchor="middle">⋮</text>
-  </svg><figcaption>검은 화살표는 순전파($a_j=\sum_iw_{ji}z_i$), 색 화살표는 오차의 역전파입니다. 은닉 유닛의 오차는 다음 층 오차의 가중합에 활성화 함수의 기울기를 곱한 것입니다.</figcaption></figure>`;
+  </svg><figcaption>검은 화살표는 순전파($a_j=\\sum_iw_{ji}z_i$), 색 화살표는 오차의 역전파입니다. 은닉 유닛의 오차는 다음 층 오차의 가중합에 활성화 함수의 기울기를 곱한 것입니다.</figcaption></figure>`;
 
   // batch normalization vs layer normalization axes
   F.bnln = () => {
@@ -72,7 +72,7 @@
       ${arrow(210, 117, 246, 117)}${block(246, 'F₂')}${arrow(326, 117, 362, 117)}${plus(374)}${skip(228, 374)}
       ${arrow(386, 117, 422, 117)}${block(422, 'F₃')}${arrow(502, 117, 538, 117)}${plus(550)}${skip(404, 550)}
       ${arrow(562, 117, 590, 117)}<text x="228" y="160">z₁</text><text x="404" y="160">z₂</text><text class="em" x="580" y="160">y</text>
-    </svg><figcaption>$z_1=F_1(x)+x$, $z_2=F_2(z_1)+z_1$, $y=F_3(z_2)+z_2$. 각 블록은 입력에 더할 **변화량** $F_\ell(z_{\ell-1})=z_\ell-z_{\ell-1}$만 배웁니다.</figcaption></figure>`;
+    </svg><figcaption>$z_1=F_1(x)+x$, $z_2=F_2(z_1)+z_1$, $y=F_3(z_2)+z_2$. 각 블록은 입력에 더할 **변화량** $F_\\ell(z_{\\ell-1})=z_\\ell-z_{\\ell-1}$만 배웁니다.</figcaption></figure>`;
   };
 
   window.SITE_FIGS = F;
