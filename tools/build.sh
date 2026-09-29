@@ -18,6 +18,7 @@ field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field fol
   echo "<script src=\"${R}core/calc.js\"></script>"
   echo "<script src=\"${R}core/plots.js\"></script>"
   [ -f "$f/plots.js" ] && echo "<script src=\"${F}plots.js\"></script>"
+  echo "<script src=\"${R}core/ambient.js\"></script>"
   echo "<script src=\"${R}core/app.js\"></script>"
 }
 stamp() { # $1 html: add ?v=<content hash> to every local .js/.css so a browser never mixes an old file with a new page

@@ -1106,12 +1106,18 @@
         <p class="lede">${inline((SITE.text && SITE.text.quizLede) || '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.')}</p>
         <nav class="jump" aria-label="문제로 이동">${QUIZ.map((q) => q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}">${esc(q.short || q.title)} · ${esc(p.label || p.id)}</a>`).join('')).join('')}</nav>
       </header>
-      <div class="section tight">
+      <div class="ch-body quiz-body">
+        <nav class="toc" aria-label="문제 목차">
+          ${QUIZ.map((q) => `<span class="caps">${esc(q.title)}</span>
+            ${q.intro ? `<a href="#quiz" data-act="scroll" data-target="qz-${q.id}-intro"><span>—</span>답안 작성 원칙</a>` : ''}
+            ${q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}"><span>${esc(p.label || p.id)}</span>${esc(p.title)}</a>`).join('')}`).join('')}
+        </nav>
+        <div class="quiz-main">
         ${QUIZ.map((q) => `
           <div class="quiz-set" id="qz-${q.id}">
             <div class="part-head"><span class="part-letter">${esc(q.mark || 'Q')}</span><h3>${esc(q.title)}</h3><p>${esc(q.meta || '')}</p></div>
-            ${q.intro ? `<div class="prose quiz-intro">${md(q.intro)}</div>` : ''}
             <article class="prose">
+              ${q.intro ? `<section class="sec quiz-intro" id="qz-${q.id}-intro">${md(q.intro)}</section>` : ''}
               ${q.problems.map((p) => `
                 <section class="sec quiz-p" id="qz-${q.id}-${p.id}">
                   <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}</h2></div>
@@ -1120,6 +1126,7 @@
                 </section>`).join('')}
             </article>
           </div>`).join('')}
+        </div>
       </div>
     </div>
     ${footer()}`;
@@ -1475,13 +1482,14 @@
     updateHeader();
     window.EMPlots.mount(main);
     if (view === 'home') startHero();
-    if (view === 'chapter') watchToc();
+    if (view === 'chapter' || /^quiz(-|$)/.test(route)) watchToc();
     if (route === 'proofs') filterProofs();
     const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', quiz: QUIZ_LABEL };
     const ch = chById.get(route.slice(0, 4));
     const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
     const DT = SITE.title || SITE.name || '';
-    document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[route] ? `${title[route]} · ${DT}` : DT;
+    const tk = route.startsWith('quiz-') ? 'quiz' : route;
+    document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[tk] ? `${title[tk]} · ${DT}` : DT;
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
     else if (opts.anchor && document.getElementById(opts.anchor)) {
