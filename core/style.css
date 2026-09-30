@@ -998,3 +998,39 @@ a.xref.ext { color: var(--denim); }
   .net-group + .net-group { padding-left: 10px; }
   .net-fields a { font-size: 0.72rem; }
 }
+
+/* ---------- bilingual fields (SITE.bilingual): English first, the Korean original on demand ---------- */
+.ko-body, .ko-t { display: none; }
+.bi.open > .ko-body, .ko-on .ko-body { display: block; }
+.ko-on .ko-t { display: block; }
+.ko-t { font-family: var(--f-body); font-size: 0.8em; font-weight: 400; font-style: normal; color: var(--ink-3); letter-spacing: 0; text-transform: none; margin-top: 2px; }
+.bi { position: relative; padding-right: 40px; }
+.bi.nochip { padding-right: 0; }
+.ko-btn {
+  position: absolute; right: 0; top: 0.25em;
+  font-family: var(--f-caps); font-size: 0.6rem; font-weight: 600; line-height: 1; letter-spacing: 0.1em;
+  color: var(--ink-3); background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 999px; padding: 4px 7px; cursor: pointer;
+}
+.ko-btn:hover { color: var(--ink); border-color: var(--ink); }
+.bi.open > .ko-btn, .ko-card[aria-pressed="true"] { color: var(--paper); background: var(--camel-ink); border-color: var(--camel-ink); }
+body.ko-on .bi > .ko-btn { visibility: hidden; }
+.ko-card { position: static; margin-left: auto; }
+.ko-body { margin-top: 0.55em; padding: 0.55em 0.9em; border-left: 2px solid var(--camel); background: color-mix(in srgb, var(--camel) 8%, transparent); color: var(--ink-2); font-size: 0.94em; }
+.ko-body > * + * { margin-top: 0.6em; }
+.ko-body .mathblock { margin-block: 0.4em; }
+.en.ko-sub { letter-spacing: 0.02em; text-transform: none; font-family: var(--f-serif); font-size: 1.05rem; }
+.ko-all {
+  position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); font-size: 0.78rem; box-shadow: var(--shadow); cursor: pointer;
+}
+.ko-all b { font-family: var(--f-caps); font-size: 0.62rem; letter-spacing: 0.1em; padding: 4px 6px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+.ko-all[aria-pressed="true"] b { background: var(--camel-ink); }
+body[data-view="exam-live"] .ko-all { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 700px) {
+  .bi { padding-right: 0; }
+  .ko-btn { position: static; display: block; margin: 6px 0 0 auto; }
+  .ko-card { display: inline-block; margin: 0 0 0 auto; }
+  .ko-all span { display: none; }
+  .ko-all { padding: 7px; }
+}

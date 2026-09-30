@@ -78,6 +78,49 @@
     if (!proofsByKey.has(k)) proofsByKey.set(k, []);
     proofsByKey.get(k).push(p);
   }));
+  // ---------- bilingual fields (SITE.bilingual): English text first, the original Korean as a translation toggle ----------
+  // English lives in data/en-*.js as EM.en = { ch: {n: {title, tagline, summary, goals, fig, secs: {k: {title, body}}, probs: [...]}},
+  // pf: {pid: {...}}, ex: {examId: {..., probs: [...]}}, qz: {setId: {..., probs: {pid: {...}}}}, fig: {name: caption} }.
+  // Each English body mirrors the Korean one paragraph by paragraph (tools/checks.js verifies the shapes match).
+  const EN = window.EM && EM.en ? EM.en : null;
+  const BI = !!(SITE.bilingual && EN);
+  if (BI) {
+    Object.values(PARTS).forEach((p) => { if (p.en) { p.nameKo = p.name; p.name = p.en; p.en = p.nameKo; } });
+    CH.forEach((c) => {
+      const e = (EN.ch || {})[c.n];
+      if (!e) return;
+      c.enData = e;
+      if (e.title) { const ko = c.title; c.title = e.title; c.en = ko; c.titleKo = ko; }
+      if (e.secTitles) { c.secTitlesKo = c.secTitles; c.secTitles = Object.assign({}, c.secTitles, e.secTitles); }
+      c.sections.forEach((s) => {
+        const se = (e.secs || {})[s.k];
+        if (!se) return;
+        s.enData = se;
+        if (se.title) { s.titleKo = s.title; s.title = se.title; }
+      });
+      c.problems.forEach((p, k) => { const pe = (e.probs || [])[k]; if (pe) p.enData = pe; });
+    });
+    PROOFS.forEach((p) => { const pe = (EN.pf || {})[p.pid]; if (pe) { p.enData = pe; if (pe.title) { p.titleKo = p.title; p.title = pe.title; } } });
+    EXAMS.forEach((x) => {
+      const xe = (EN.ex || {})[x.id];
+      if (!xe) return;
+      x.enData = xe;
+      ['title', 'kind', 'desc', 'scopeText'].forEach((f) => { if (xe[f]) { x[f + 'Ko'] = x[f]; x[f] = xe[f]; } });
+      x.problems.forEach((p, k) => { const pe = (xe.probs || [])[k]; if (pe) p.enData = pe; });
+    });
+    QUIZ.forEach((q) => {
+      const qe = (EN.qz || {})[q.id];
+      if (!qe) return;
+      q.enData = qe;
+      ['title', 'meta'].forEach((f) => { if (qe[f]) { q[f + 'Ko'] = q[f]; q[f] = qe[f]; } });
+      q.problems.forEach((p) => {
+        const pe = (qe.probs || {})[p.id];
+        if (!pe) return;
+        p.enData = pe;
+        ['title', 'where', 'label'].forEach((f) => { if (pe[f]) { p[f + 'Ko'] = p[f]; p[f] = pe[f]; } });
+      });
+    });
+  }
   // cross-references between chapters: [[ch05:6.2|note text]] inside content.
   // [[@base:ch01:1.3|note]] points to another field of the Équation network (window.NET), or to a sister site in SITE.sisters.
   const XREF_RE = /\[\[(@[a-z]+:)?(ch\d{2})(?::(\d+\.\d+[a-z]?))?\|([\s\S]+?)\]\]/g;
@@ -192,6 +235,7 @@
   }
   const extAttrs = (tg) => (tg.site && tg.site.net ? `href="${esc(tg.href)}"` : `href="${esc(tg.href)}" target="_blank" rel="noopener"`);
   function xref(ch, k, textHtml, site) {
+    if (KO_MODE) return ''; // the English text above carries the note
     const tg = xrefTarget(ch, k, site);
     if (!tg) return site ? '' : textHtml; // a sister outside the network that is not linked: drop the note
     if (NOTES) {
@@ -207,7 +251,7 @@
   function sectionHTML(c, sec, idx) {
     NOTES = [];
     NOTEKEY = `${c.id}-${idx}`;
-    const body = md(sec.body);
+    const body = mdOf(sec, 'body');
     const notes = NOTES;
     const key = NOTEKEY;
     NOTES = null;
@@ -215,7 +259,7 @@
     const where = SITE.secSource ? SITE.secSource(sec, c) : (sec.p ? `p.${sec.p}` : '');
     const quizzes = [...QZP.entries()].filter(([, x]) => (x.p.secs || []).includes(`${c.id}:${sec.k}`));
     return `<section class="sec" id="sec-${sec.k || idx}">
-      <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}</h2></div>
+      <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}${koT(sec.titleKo)}</h2></div>
       ${where ? `<p class="sec-page caps">${esc(where)}</p>` : ''}
       ${quizzes.length ? `<p class="sec-quiz">${quizzes.map(([id, x]) => `<a href="#quiz-${id}" data-route="quiz-${id}">${esc(QUIZ_LABEL)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
       ${body}
@@ -293,7 +337,65 @@
   }
   function md(src) {
     if (!src) return '';
-    const L = dedent(src);
+    return mdCore(dedent(src));
+  }
+  // the top-level pieces md() draws one after another: heading, ::: box, display math, table, list, paragraph.
+  // The bilingual renderer pairs an English body with its Korean original piece by piece.
+  function scanSegs(src) {
+    const L = dedent(src || '');
+    const out = [];
+    let i = 0;
+    while (i < L.length) {
+      const t = L[i].trim();
+      if (!t) { i++; continue; }
+      const s = i;
+      if (t.startsWith('### ')) { i++; out.push({ kind: 'h3', text: t.slice(4).trim(), lines: L.slice(s, i) }); continue; }
+      const m = /^:::(\w+)\s*(.*)$/.exec(t);
+      if (m) {
+        const inner = [];
+        let depth = 0;
+        i++;
+        while (i < L.length) {
+          const tt = L[i].trim();
+          if (/^:::\w/.test(tt)) depth++;
+          else if (tt === ':::') { if (depth === 0) break; depth--; }
+          inner.push(L[i]);
+          i++;
+        }
+        i++;
+        out.push({ kind: 'blk', type: m[1], title: m[2], inner: inner.join('\n'), lines: L.slice(s, Math.min(i, L.length)) });
+        continue;
+      }
+      let kind;
+      if (t.startsWith('$$')) {
+        kind = 'math';
+        const buf = t.slice(2);
+        i++;
+        if (!(buf.trim().length >= 2 && buf.trim().endsWith('$$'))) {
+          while (i < L.length && !L[i].trim().endsWith('$$')) i++;
+          if (i < L.length) i++;
+        }
+      } else if (t.startsWith('|')) {
+        kind = 'table';
+        while (i < L.length && L[i].trim().startsWith('|')) i++;
+      } else if (/^[-•]\s+/.test(t) || /^\d+[.)]\s+/.test(t)) {
+        const isUl = /^[-•]\s+/.test(t);
+        const re = isUl ? /^[-•]\s+/ : /^\d+[.)]\s+/;
+        kind = isUl ? 'ul' : 'ol';
+        while (i < L.length && re.test(L[i].trim())) {
+          i++;
+          while (i < L.length && L[i].trim() && /^\s{2,}/.test(L[i]) && !isBlockStart(L[i])) i++;
+        }
+      } else {
+        kind = 'p';
+        i++;
+        while (i < L.length && L[i].trim() && !isBlockStart(L[i])) i++;
+      }
+      out.push({ kind, lines: L.slice(s, i) });
+    }
+    return out;
+  }
+  function mdCore(L) {
     let out = '';
     let i = 0;
     while (i < L.length) {
@@ -387,7 +489,16 @@
   function container(type, title, inner) {
     if (type === 'fig') {
       const fn = FIGS[title.trim()];
-      return fn ? fn().replace(/<figcaption>([\s\S]*?)<\/figcaption>/, (_, t) => `<figcaption>${inline(t)}</figcaption>`) : '';
+      const capEn = BI && EN.fig ? EN.fig[title.trim()] : '';
+      let h = fn ? fn() : '';
+      if (h && BI && EN.figText) { // labels drawn inside the figure
+        const tr = (t) => { const s = t.trim(); const e = EN.figText[s]; return e ? t.replace(s, e) : t; };
+        const at = h.indexOf('<figcaption>');
+        const g = at < 0 ? h : h.slice(0, at);
+        h = g.replace(/>([^<>]+)</g, (m, t) => `>${tr(t)}<`).replace(/(aria-label|title)="([^"]+)"/g, (m, a, t) => `${a}="${tr(t)}"`) + (at < 0 ? '' : h.slice(at));
+      }
+      return fn ? h.replace(/<figcaption>([\s\S]*?)<\/figcaption>/, (_, t) => `<figcaption>${capEn
+        ? koPair(`<span>${inline(capEn)}</span>`, `<span>${koSide(() => inline(t))}</span>`) : inline(t)}</figcaption>`) : '';
     }
     const [label, cls] = BLOCK_LABEL[type] || ['Note', 'blk-thm'];
     const head = `<div class="blk-label">${label}${title ? `<em>${inline(title)}</em>` : ''}</div>`;
@@ -420,11 +531,93 @@
           inner.push(L[i]);
           i++;
         }
-        found.push({ title: m[1] || s.title, k: s.k || "", body: inner.join('\n'), sec: `${s.k ? `§${s.k}` : `${c.n}.${si + 1}`} ${s.title}` });
+        found.push({ title: m[1] || s.titleKo || s.title, k: s.k || "", body: inner.join('\n'), sec: `${s.k ? `§${s.k}` : `${c.n}.${si + 1}`} ${s.title}` });
       }
     });
     c._keys = found;
     return found;
+  }
+
+  // ---------- bilingual rendering ----------
+  // the page switch: every Korean translation open at once (remembered per browser)
+  function applyKoAll() {
+    const on = !!S.prefs.koAll;
+    document.body.classList.toggle('ko-on', on);
+    const b = document.getElementById('ko-all');
+    if (b) { b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? '한국어 번역 모두 숨기기' : '한국어 번역 모두 보기'; }
+  }
+  let KO_MODE = false; // rendering the Korean side: cross-reference notes are left to the English text
+  const KO_BTN = '<button class="ko-btn" type="button" data-act="ko" aria-expanded="false" aria-label="한국어 번역 보기" title="한국어 번역">KO</button>';
+  const koT = (t) => (t ? `<span class="ko-t" lang="ko">${inline(t)}</span>` : '');
+  function koSide(fn) {
+    const n = NOTES, k = KO_MODE;
+    NOTES = null; KO_MODE = true;
+    try { return fn(); } finally { NOTES = n; KO_MODE = k; }
+  }
+  // an English piece with its Korean original under a KO button (chips: false → shown only by a card-level or page-level switch)
+  function koPair(enHtml, koHtml, opt) {
+    const chip = !opt || opt.chips !== false;
+    return `<div class="bi${chip ? '' : ' nochip'}">${enHtml}${chip ? KO_BTN : ''}<div class="ko-body" lang="ko">${koHtml}</div></div>`;
+  }
+  const segShape = (A, B) => A.length === B.length && A.every((a, k) => a.kind === B[k].kind && (a.kind !== 'blk' || a.type === B[k].type));
+  function bimd(en, ko, opt) {
+    if (!BI || !en) return md(ko || en);
+    if (!ko) return md(en);
+    const A = scanSegs(en), B = scanSegs(ko);
+    if (!segShape(A, B)) return md(en) + koPair('', koSide(() => md(ko)), opt);
+    return A.map((a, k) => biSeg(a, B[k], opt)).join('');
+  }
+  function biSeg(a, b, opt) {
+    if (a.kind === 'blk') return biContainer(a, b, opt);
+    if (a.lines.join('\n') === b.lines.join('\n')) return mdCore(a.lines);
+    if (a.kind === 'h3') return `<h3 class="sub">${inline(a.text)}${koT(b.text)}</h3>`;
+    return koPair(mdCore(a.lines), koSide(() => mdCore(b.lines)), opt);
+  }
+  function biContainer(a, b, opt) {
+    const type = a.type;
+    if (type === 'fig') return container('fig', a.title, a.inner);
+    const [label, cls] = BLOCK_LABEL[type] || ['Note', 'blk-thm'];
+    const tko = b.title && b.title !== a.title ? b.title : '';
+    const head = `<div class="blk-label">${label}${a.title ? `<em>${inline(a.title)}${koT(tko)}</em>` : ''}</div>`;
+    if (type === 'key' || type === 'thm') return `<div class="blk ${cls}">${head}${bimd(a.inner, b.inner, opt)}${proofLinks(b.title || a.title)}</div>`;
+    if (type === 'ex') {
+      const pa = a.inner.split(/\n\s*---\s*\n/), pb = b.inner.split(/\n\s*---\s*\n/);
+      const ans = pa.slice(1).join('\n'), ansKo = pb.slice(1).join('\n');
+      return `<div class="blk ${cls}">${head}${bimd(pa[0], pb[0], opt)}${ans ? `<details class="sol"><summary>풀이 보기</summary><div>${bimd(ans, ansKo, opt)}</div></details>` : ''}</div>`;
+    }
+    if (type === 'pf') return `<div class="blk ${cls}">${head}${bimd(a.inner, b.inner, opt)}<p class="qed" aria-label="증명 끝">∎</p></div>`;
+    return `<div class="blk ${cls}">${head}${bimd(a.inner, b.inner, opt)}</div>`;
+  }
+  // a markdown field of an object that may carry English in obj.enData
+  const mdOf = (o, f, opt) => (BI && o && o.enData && o.enData[f] ? bimd(o.enData[f], o[f], opt) : md(o ? o[f] : ''));
+  // a one-line field: English, with the Korean shown by the page or card switch
+  const ilOf = (o, f) => (BI && o && o.enData && o.enData[f] ? `${inline(o.enData[f])}${koT(o[f])}` : inline(o ? o[f] : ''));
+  // a paragraph field (chapter summary): English paragraph with its own KO button
+  const paraOf = (o, f) => (BI && o && o.enData && o.enData[f] ? koPair(`<p>${inline(o.enData[f])}</p>`, `<p>${inline(o[f])}</p>`) : `<p>${inline(o[f])}</p>`);
+  const choiceOf = (p, k) => (BI && p.enData && p.enData.choices ? `${inline(p.enData.choices[k])}${koT(p.choices[k])}` : inline(p.choices[k]));
+  function goalsOf(c) {
+    const list = (g) => `<ul class="goals">${g.map((x) => `<li><span>${inline(x)}</span></li>`).join('')}</ul>`;
+    return BI && c.enData && c.enData.goals ? koPair(list(c.enData.goals), list(c.goals)) : list(c.goals);
+  }
+  // one KO switch for a whole problem card (its statement, choices and hint)
+  const koCard = (p) => (BI && p.enData ? '<button class="ko-btn ko-card" type="button" data-act="ko-card" aria-pressed="false" aria-label="이 문제의 한국어 번역 보기" title="한국어 번역">KO</button>' : '');
+  // English key boxes of a chapter paired with the Korean ones of the same section (formula sheet)
+  function keyItems(c) {
+    if (c._keyItems) return c._keyItems;
+    const ko = keyBlocks(c);
+    if (!BI || !c.enData) { c._keyItems = ko.map((k) => Object.assign({ koTitle: k.title }, k)); return c._keyItems; }
+    const bySec = (list) => { const m = new Map(); list.forEach((k) => { if (!m.has(k.k)) m.set(k.k, []); m.get(k.k).push(k); }); return m; };
+    const enKeys = keyBlocks({ sections: c.sections.map((s) => Object.assign({}, s, { body: s.enData ? s.enData.body : s.body, titleKo: undefined })), n: c.n });
+    const E = bySec(enKeys);
+    const seen = new Map();
+    c._keyItems = ko.map((k) => {
+      const j = seen.get(k.k) || 0;
+      seen.set(k.k, j + 1);
+      const s = c.sections.find((x) => x.k === k.k);
+      const e = s && s.enData ? (E.get(k.k) || [])[j] : null;
+      return e ? { title: e.title, koTitle: k.title, body: e.body, koBody: k.body, k: k.k, sec: k.sec } : Object.assign({ koTitle: k.title }, k);
+    });
+    return c._keyItems;
   }
 
   // ---------- progress helpers ----------
@@ -653,10 +846,10 @@
     return x ? `모의고사 ${x.roman} · ${pad(p.no)}번` : '';
   }
   function solutionHTML(p) {
-    return `<div class="solution"><div class="blk-label">Solution<em>풀이</em></div>${md(p.sol)}</div>`;
+    return `<div class="solution"><div class="blk-label">Solution<em>풀이</em></div>${mdOf(p, 'sol')}</div>`;
   }
   function answerTex(p) {
-    if (p.type === 'mc') return `${CIRC[p.ans]} ${inline(p.choices[p.ans])}`;
+    if (p.type === 'mc') return `${CIRC[p.ans]} ${choiceOf(p, p.ans)}`;
     if (p.type === 'num') return p.ansTex ? tex(p.ansTex, false) : `<code>${esc(p.ans)}</code>`;
     return '';
   }
@@ -682,13 +875,13 @@
     const SC = T('secChip', '§');
     const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? (chById.get(p.ch) && chById.get(p.ch).sections.some((s) => s.k === p.sec)
       ? `<a class="chip sec" href="#${p.ch}-k${p.sec}" data-route="${p.ch}-k${p.sec}" title="이 절의 개념 정리로 이동">${SC}${esc(p.sec)} →</a>`
-      : `<span class="chip sec">${SC}${esc(p.sec)}</span>`) : ''}${p.proof ? `<span class="chip pfc">증명형</span>` : ''}${quizChip(p)}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}</div>`;
+      : `<span class="chip sec">${SC}${esc(p.sec)}</span>`) : ''}${p.proof ? `<span class="chip pfc">증명형</span>` : ''}${quizChip(p)}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}${koCard(p)}</div>`;
     let body = '';
     if (p.type === 'mc') {
       body = `<div class="choices" role="group" aria-label="보기">${p.choices.map((c, k) => {
         let cls = '';
         if (u.done) { if (k === p.ans) cls = 'is-right'; else if (k === u.pick) cls = 'is-wrong'; }
-        return `<button class="choice ${cls}" data-act="mc-pick" data-pid="${p.id}" data-i="${k}" aria-pressed="${u.pick === k}" ${u.done ? 'disabled' : ''}><span class="letter">${k + 1}</span><span class="ctext">${inline(c)}</span></button>`;
+        return `<button class="choice ${cls}" data-act="mc-pick" data-pid="${p.id}" data-i="${k}" aria-pressed="${u.pick === k}" ${u.done ? 'disabled' : ''}><span class="letter">${k + 1}</span><span class="ctext">${choiceOf(p, k)}</span></button>`;
       }).join('')}</div>`;
     } else if (p.type === 'num') {
       body = `<div class="answer-row">
@@ -710,7 +903,7 @@
         ${p.hint ? `<button class="linkbtn" data-act="hint" data-pid="${p.id}" aria-expanded="${!!u.hint}">${u.hint ? '힌트 닫기' : '힌트'}</button>` : ''}
       </div>`;
     }
-    const hint = !u.done && u.hint ? `<p class="hint"><b>힌트</b> ${inline(p.hint)}</p>` : '';
+    const hint = !u.done && u.hint ? `<p class="hint"><b>힌트</b> ${ilOf(p, 'hint')}</p>` : '';
     let fb = '';
     if (u.done) {
       if (p.type === 'mc') {
@@ -733,7 +926,7 @@
     }
     return `<article class="prob" id="p-${p.id}" data-pid="${p.id}">
       <div class="prob-no">${no}<small>${o.sub || LV[p.lv]}</small></div>
-      <div class="prob-main">${tags}<div class="prob-q">${md(p.q)}</div>${body}${actions}${hint}${fb}</div>
+      <div class="prob-main">${tags}<div class="prob-q">${mdOf(p, 'q', { chips: false })}</div>${body}${actions}${hint}${fb}</div>
     </article>`;
   }
   function previewText(p, v) {
@@ -765,7 +958,7 @@
     let body = '';
     if (p.type === 'mc') {
       body = `<div class="choices" role="group" aria-label="보기">${p.choices.map((c, k) =>
-        `<button class="choice" data-act="ex-pick" data-pid="${p.id}" data-i="${k}" aria-pressed="${a === k}"><span class="letter">${k + 1}</span><span class="ctext">${inline(c)}</span></button>`).join('')}</div>`;
+        `<button class="choice" data-act="ex-pick" data-pid="${p.id}" data-i="${k}" aria-pressed="${a === k}"><span class="letter">${k + 1}</span><span class="ctext">${choiceOf(p, k)}</span></button>`).join('')}</div>`;
     } else if (p.type === 'num') {
       body = `<div class="answer-row"><label class="sr-only" for="ex-${p.id}">답 입력</label>
         <input id="ex-${p.id}" data-pid="${p.id}" data-role="ex-num" autocomplete="off" spellcheck="false" placeholder="답 입력 (예: 3/2, 2*pi, e^2)" value="${esc(a ?? '')}"></div>
@@ -775,8 +968,8 @@
     }
     return `<article class="prob" id="q-${o.k + 1}" data-pid="${p.id}">
       <div class="prob-no">${o.k + 1}<small class="pts">${L.pts[p.id]}점</small></div>
-      <div class="prob-main"><div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip">${esc(chById.get(p.ch) ? chById.get(p.ch).title : '')}</span></div>
-      <div class="prob-q">${md(p.q)}</div>${body}</div>
+      <div class="prob-main"><div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip">${esc(chById.get(p.ch) ? chById.get(p.ch).title : '')}</span>${koCard(p)}</div>
+      <div class="prob-q">${mdOf(p, 'q', { chips: false })}</div>${body}</div>
     </article>`;
   }
 
@@ -790,7 +983,7 @@
       body = `<div class="choices">${p.choices.map((c, k) => {
         let cls = '';
         if (k === p.ans) cls = 'is-right'; else if (k === it.resp) cls = 'is-wrong';
-        return `<button class="choice ${cls}" disabled aria-pressed="${it.resp === k}"><span class="letter">${k + 1}</span><span class="ctext">${inline(c)}</span></button>`;
+        return `<button class="choice ${cls}" disabled aria-pressed="${it.resp === k}"><span class="letter">${k + 1}</span><span class="ctext">${choiceOf(p, k)}</span></button>`;
       }).join('')}</div>`;
       verdict = it.resp == null ? `<div class="feedback bad"><b>미응답</b><span>정답 ${answerTex(p)}</span></div>`
         : it.got ? `<div class="feedback ok"><b>정답</b></div>` : `<div class="feedback bad"><b>오답</b><span>정답 ${answerTex(p)}</span></div>`;
@@ -805,12 +998,12 @@
         ${[[0, '0점'], [0.5, `부분 ${it.pts / 2}점`], [1, `만점 ${it.pts}점`]].map(([v, t]) => `<button data-act="res-grade" data-hid="${h.hid}" data-pid="${p.id}" data-f="${v}" aria-pressed="${f === v}">${t}</button>`).join('')}
       </div>`;
     }
-    const rubric = p.rubric ? `<div class="blk blk-thm"><div class="blk-label">Rubric<em>채점 기준</em></div>${md(p.rubric)}</div>` : '';
+    const rubric = p.rubric ? `<div class="blk blk-thm"><div class="blk-label">Rubric<em>채점 기준</em></div>${mdOf(p, 'rubric')}</div>` : '';
     const got = it.got === null ? '—' : it.got;
     return `<article class="prob" id="r-${p.id}">
       <div class="prob-no">${o.k + 1}<small class="pts">${got} / ${it.pts}점</small></div>
-      <div class="prob-main"><div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip">${esc(chById.get(p.ch) ? chById.get(p.ch).title : '')}</span></div>
-      <div class="prob-q">${md(p.q)}</div>${body}${verdict}
+      <div class="prob-main"><div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip">${esc(chById.get(p.ch) ? chById.get(p.ch).title : '')}</span>${koCard(p)}</div>
+      <div class="prob-q">${mdOf(p, 'q', { chips: false })}</div>${body}${verdict}
       <details class="sol" ${p.type === 'open' || !it.got ? 'open' : ''}><summary>풀이 보기</summary><div>${solutionHTML(p)}${rubric}</div></details></div>
     </article>`;
   }
@@ -823,7 +1016,7 @@
       <div class="hero-num num-display" aria-hidden="true">${pad(c.n)}</div>
       <div class="hero-en">${esc(c.en)}</div>
       <h1 class="hero-ko">${esc(c.title)}</h1>
-      <p class="hero-sum">${inline(c.tagline)}</p>
+      <p class="hero-sum">${ilOf(c, 'tagline')}</p>
       <div class="hero-actions">
         <a class="link-u ko" href="#${c.id}" data-route="${c.id}">개념 정리 보기</a>
         <a class="link-u ko" href="#${c.id}-practice" data-route="${c.id}-practice">연습문제 ${c.problems.length}</a>
@@ -947,9 +1140,9 @@
     } else if (tab === 'practice') {
       body = practiceBody(c);
     } else if (tab === 'formulas') {
-      const keys = keyBlocks(c);
+      const keys = keyItems(c);
       body = `<div class="section tight" style="padding-top:40px"><div class="sheet">${keys.map((k) => `
-        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}</h4><div class="body">${md(k.body)}</div>${proofLinks(k.title, c.id)}</div>`).join('')}</div></div>`;
+        <div class="sheet-item"><span class="caps">${esc(k.sec)}</span><h4>${inline(k.title)}${k.koTitle !== k.title ? koT(k.koTitle) : ''}</h4><div class="body">${k.koBody ? bimd(k.body, k.koBody) : md(k.body)}</div>${proofLinks(k.koTitle, c.id)}</div>`).join('')}</div></div>`;
     } else if (tab === 'proofs') {
       const list = PROOFS.filter((p) => p.ch === c.id);
       body = `<div class="section tight" style="padding-top:40px">
@@ -958,13 +1151,13 @@
     }
     return `
     <section class="ch-hero">
-      <div class="ch-plate"><canvas data-plot="${c.plot}" aria-hidden="true"></canvas><span class="plate-num" aria-hidden="true">${pad(c.n)}</span><span class="plate-cap caps">Fig. ${inline(c.fig)}</span></div>
+      <div class="ch-plate"><canvas data-plot="${c.plot}" aria-hidden="true"></canvas><span class="plate-num" aria-hidden="true">${pad(c.n)}</span><span class="plate-cap caps">Fig. ${ilOf(c, 'fig')}</span></div>
       <div class="ch-intro">
         <span class="caps">${T('unitCaps', 'Unit')} ${pad(c.n)} · Part ${c.part} ${esc(PARTS[c.part].name)}</span>
         <h1>${esc(c.title)}</h1>
-        <span class="en">${esc(c.en)}</span>
-        <p>${inline(c.summary)}</p>
-        <ul class="goals">${c.goals.map((g) => `<li><span>${inline(g)}</span></li>`).join('')}</ul>
+        <span class="en${c.titleKo ? ' ko-sub' : ''}"${c.titleKo ? ' lang="ko"' : ''}>${esc(c.en)}</span>
+        ${paraOf(c, 'summary')}
+        ${goalsOf(c)}
         <div class="ch-meta"><span>${T('refLabel', '교재')} <b>${esc(c.ref)}</b></span><span>개념 <b>${c.sections.length}</b></span><span>연습문제 <b>${c.problems.length}</b></span><span>정답 <b class="tabular" data-ch-right>${s.right}/${s.total}</b></span></div>
       </div>
     </section>
@@ -1007,9 +1200,15 @@
     return `<b>${s.total}</b>문제 중 정답 <b>${s.right}</b> · 오답 <b>${s.wrong}</b>${s.partial ? ` · 부분 <b>${s.partial}</b>` : ''} · 남은 문제 <b>${s.total - s.tried}</b>`;
   }
   function practiceBody(c) {
+    // “퀴즈형만” belongs to the unit where it was turned on; another unit starts with every problem
+    if (filters.kind === 'quiz' && filters.kindCh !== c.id) { filters.kind = 'all'; S.prefs.filters = filters; save(); }
     const secs = chapterSecs(c);
     const curSec = secs.includes(filters.sec) ? filters.sec : 'all';
     const list = filtered(c.problems, secs);
+    const pool = filtered(c.problems, []); // every filter except the section one: what the section chips count
+    const active = [filters.lv !== 'all' && `난이도 ${LV[+filters.lv]}`, filters.type !== 'all' && TYPE[filters.type],
+      filters.st !== 'all' && (filters.st === 'todo' ? '안 푼 문제' : '틀린 문제'), filters.kind === 'quiz' && c.problems.some((p) => p.quiz) && '퀴즈형만',
+      curSec !== 'all' && `§${curSec}`].filter(Boolean);
     const titles = c.secTitles || {};
     return `
       <div class="practice-head">
@@ -1024,12 +1223,13 @@
       </div>
       ${secs.length ? `<div class="sec-filter" role="group" aria-label="절로 거르기">
         <span class="caps">${T('secFilter', '절')}</span>
-        <button class="pf-chip" data-act="filter" data-k="sec" data-v="all" aria-pressed="${curSec === 'all'}">전체 ${c.problems.length}</button>
-        ${secs.map((s) => `<button class="pf-chip" data-act="filter" data-k="sec" data-v="${s}" aria-pressed="${curSec === s}">${s}${titles[s] ? ` ${esc(titles[s])}` : ''} <span class="n">${c.problems.filter((p) => p.sec === s).length}</span></button>`).join('')}
+        <button class="pf-chip" data-act="filter" data-k="sec" data-v="all" aria-pressed="${curSec === 'all'}">전체 ${pool.length}</button>
+        ${secs.map((s) => `<button class="pf-chip" data-act="filter" data-k="sec" data-v="${s}" aria-pressed="${curSec === s}">${s}${titles[s] ? ` ${esc(titles[s])}` : ''} <span class="n">${pool.filter((p) => p.sec === s).length}</span></button>`).join('')}
       </div>` : ''}
       <div class="problems">
         ${list.length ? list.map((p) => withOpts(probHTML(p, { ctx: 'practice' }), {})).join('')
-          : `<div class="empty"><b>Voilà</b><p>조건에 맞는 문제가 없습니다. 필터를 바꿔 보세요.</p></div>`}
+          : `<div class="empty"><b>Voilà</b><p>조건에 맞는 문제가 없습니다.${active.length ? ` 지금 켜진 필터: <strong style="font-weight:600;color:var(--ink)">${active.map(esc).join(' · ')}</strong>` : ''}</p>
+            <div class="btn-row" style="justify-content:center"><button class="btn" data-act="filter-reset">필터 모두 풀고 ${c.problems.length}문제 보기</button></div></div>`}
       </div>`;
   }
   function updateTally() {
@@ -1047,7 +1247,7 @@
     return `<a class="pf-item" href="#pf-${p.pid}" data-route="pf-${p.pid}" data-pf-ch="${p.ch}" data-pf-hand="${p.src ? 1 : 0}" data-pf-text="${esc(proofSearchText(p))}">
       <span class="pf-ch"><b>${pad(c.n)}</b>${esc(c.title)}${p.src ? `<span class="chip hand">${esc(p.src)}</span>` : ''}</span>
       <span class="pf-title">${inline(p.title)}${p.sketch ? ' <span class="chip">개요</span>' : ''}</span>
-      <span class="pf-stmt">${md(p.stmt)}</span>
+      <span class="pf-stmt">${md(BI && p.enData && p.enData.stmt ? p.enData.stmt : p.stmt)}</span>
     </a>`;
   }
   let pfFilter = { q: S.prefs.pfq || '', ch: 'all' };
@@ -1098,17 +1298,17 @@
       <article class="pf-page">
         <header class="pf-head">
           <span class="num-display pf-num">${pad(c.n)}.${i + 1}</span>
-          <h1>${inline(p.title)}</h1>
+          <h1>${inline(p.title)}${koT(p.titleKo)}</h1>
           ${p.src ? `<p class="pf-src"><span class="chip hand">${esc(p.src)}</span>${p.srcNote ? `<span>${inline(p.srcNote)}</span>` : ''}</p>` : ''}
         </header>
-        <div class="blk blk-key"><div class="blk-label">Statement<em>명제</em></div>${md(p.stmt)}</div>
+        <div class="blk blk-key"><div class="blk-label">Statement<em>명제</em></div>${mdOf(p, 'stmt')}</div>
         <div class="prose pf-body">
           <div class="blk-label pf-label">Proof<em>증명</em></div>
           ${p.sketch ? `<p class="pf-sketch">${inline(p.sketch === true ? '엄밀한 증명은 길어 핵심 아이디어만 보입니다.' : p.sketch)}</p>` : ''}
-          ${md(p.body)}
+          ${mdOf(p, 'body')}
           <p class="qed" aria-label="증명 끝">∎</p>
         </div>
-        ${p.note ? `<div class="blk blk-note"><div class="blk-label">Remark<em>덧붙임</em></div>${md(p.note)}</div>` : ''}
+        ${p.note ? `<div class="blk blk-note"><div class="blk-label">Remark<em>덧붙임</em></div>${mdOf(p, 'note')}</div>` : ''}
         ${(p.keys || []).length ? `<p class="pf-rel">관련 공식: ${p.keys.map((k) => `<a href="#${c.id}-formulas" data-route="${c.id}-formulas">${inline(k)}</a>`).join(' · ')}</p>` : ''}
       </article>
     </div>
@@ -1155,13 +1355,13 @@
           <div class="quiz-set" id="qz-${q.id}">
             <div class="part-head"><span class="part-letter">${esc(q.mark || 'Q')}</span><h3>${esc(q.title)}</h3><p>${esc(q.meta || '')}</p></div>
             <article class="prose">
-              ${q.intro ? `<section class="sec quiz-intro" id="qz-${q.id}-intro">${md(q.intro)}</section>` : ''}
+              ${q.intro ? `<section class="sec quiz-intro" id="qz-${q.id}-intro">${mdOf(q, 'intro')}</section>` : ''}
               ${q.problems.map((p) => `
                 <section class="sec quiz-p" id="qz-${q.id}-${p.id}">
-                  <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}</h2></div>
+                  <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}${koT(p.titleKo)}</h2></div>
                   ${p.where ? `<p class="sec-page caps">${esc(p.where)}</p>` : ''}
                   ${quizUnits(p)}
-                  ${md(p.body)}
+                  ${mdOf(p, 'body')}
                   ${quizMore(`${q.id}-${p.id}`)}
                 </section>`).join('')}
             </article>
@@ -1191,7 +1391,7 @@
             ${CH.filter((c) => c.part === k).map((c) => `
               <div id="f-${c.id}" style="margin-bottom:44px">
                 <h3 style="font-family:var(--f-serif);font-size:1.2rem;margin-bottom:16px"><span class="num-text" style="margin-right:12px">${pad(c.n)}</span><a href="#${c.id}" data-route="${c.id}" style="text-decoration:none">${esc(c.title)}</a></h3>
-                <div class="sheet">${keyBlocks(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}</h4><div class="body">${md(b.body)}</div>${proofLinks(b.title, c.id)}</div>`).join('')}</div>
+                <div class="sheet">${keyItems(c).map((b) => `<div class="sheet-item"><span class="caps">${esc(b.sec)}</span><h4>${inline(b.title)}${b.koTitle !== b.title ? koT(b.koTitle) : ''}</h4><div class="body">${b.koBody ? bimd(b.body, b.koBody) : md(b.body)}</div>${proofLinks(b.koTitle, c.id)}</div>`).join('')}</div>
               </div>`).join('')}
           </div>`).join('')}
       </div>
@@ -1522,6 +1722,10 @@
     else if ((m = /^quiz-([\w-]+)$/.exec(to)) && QUIZ.length) { html = viewQuiz(); opts = Object.assign({}, opts, { anchor: `qz-${m[1]}` }); }
     else { route = 'home'; view = 'home'; html = viewHome(); }
     document.body.dataset.view = view;
+    if (BI && !document.getElementById('ko-all')) {
+      document.body.insertAdjacentHTML('beforeend', '<button id="ko-all" class="ko-all" type="button" data-act="ko-all" aria-pressed="false"><b>KO</b><span>한국어 번역 모두 보기</span></button>');
+      applyKoAll();
+    }
     main.innerHTML = html;
     $('#drawer-root').innerHTML = '';
     updateHeader();
@@ -1652,8 +1856,26 @@
       }
       case 'retry': ui.delete(pid); rerenderCard(pid); break;
       case 'hint': { const u = uiOf(pid); u.hint = !u.hint; rerenderCard(pid); break; }
+      case 'ko': { // one paragraph's Korean original
+        const b = t.closest('.bi');
+        if (b) t.setAttribute('aria-expanded', String(b.classList.toggle('open')));
+        break;
+      }
+      case 'ko-card': { // a whole problem card
+        const card = t.closest('.prob');
+        if (card) t.setAttribute('aria-pressed', String(card.classList.toggle('ko-on')));
+        break;
+      }
+      case 'ko-all': S.prefs.koAll = !S.prefs.koAll; save(); applyKoAll(); break;
+      case 'filter-reset':
+        filters = Object.assign(filters, { lv: 'all', type: 'all', st: 'all', sec: 'all', kind: 'all' });
+        S.prefs.filters = filters;
+        save();
+        render(route, { keepScroll: window.scrollY });
+        break;
       case 'filter': {
         filters[t.dataset.k] = t.dataset.v;
+        if (t.dataset.k === 'kind') filters.kindCh = route.slice(0, 4);
         S.prefs.filters = filters;
         save();
         render(route, { keepScroll: window.scrollY });
@@ -1661,7 +1883,7 @@
       }
       case 'quiz-practice': { // from the quiz page: open a unit's practice showing only quiz-style problems
         e.preventDefault();
-        filters = Object.assign(filters, { lv: 'all', type: 'all', st: 'all', sec: 'all', kind: 'quiz' });
+        filters = Object.assign(filters, { lv: 'all', type: 'all', st: 'all', sec: 'all', kind: 'quiz', kindCh: t.dataset.ch });
         S.prefs.filters = filters;
         save();
         go(`${t.dataset.ch}-practice`);
@@ -1853,7 +2075,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BI, EN, scanSegs, bimd };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

@@ -62,3 +62,8 @@ fig-13.js
 fig-14.js
 quizprep-a.js
 quizprep-b.js
+en-01.js
+en-figs.js
+en-02.js
+en-03.js
+en-04.js

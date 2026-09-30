@@ -104,6 +104,97 @@
       });
     });
   });
+  // ---- bilingual fields: English must mirror the Korean original piece by piece, and contain no Korean ----
+  if (A.BI) {
+    const cov = {};
+    const tally = (k, ok) => { cov[k] = cov[k] || [0, 0]; cov[k][1]++; if (ok) cov[k][0]++; };
+    const split = (s) => String(s || '').split(/\n\s*---\s*\n/);
+    const shapeDiff = (en, ko, path) => {
+      const a = A.scanSegs(en), b = A.scanSegs(ko);
+      const sig = (L) => L.map((x) => (x.kind === 'blk' ? `:${x.type}` : x.kind)).join(' ');
+      if (a.length !== b.length) return `${path}: ${a.length} vs ${b.length} pieces [${sig(a)}] / [${sig(b)}]`;
+      for (let k = 0; k < a.length; k++) {
+        const at = `${path} #${k + 1}`;
+        if (a[k].kind !== b[k].kind) return `${at}: ${a[k].kind} vs ${b[k].kind}`;
+        if (a[k].kind !== 'blk') continue;
+        if (a[k].type !== b[k].type) return `${at}: :::${a[k].type} vs :::${b[k].type}`;
+        if (a[k].type === 'fig') { if (a[k].title.trim() !== b[k].title.trim()) return `${at}: fig ${a[k].title} vs ${b[k].title}`; continue; }
+        if (a[k].type === 'ex') {
+          const pa = split(a[k].inner), pb = split(b[k].inner);
+          if ((pa.length > 1) !== (pb.length > 1)) return `${at}: example with/without solution`;
+          const d = shapeDiff(pa[0], pb[0], `${at} ex`) || shapeDiff(pa.slice(1).join('\n'), pb.slice(1).join('\n'), `${at} ex-sol`);
+          if (d) return d;
+        } else {
+          const d = shapeDiff(a[k].inner, b[k].inner, `${at} :::${a[k].type}`);
+          if (d) return d;
+        }
+      }
+      return '';
+    };
+    const HANGUL = /[가-힣]/;
+    const pair = (en, ko, where, isMd) => {
+      if (!ko) return;
+      if (en == null || en === '') { fail(`${where} English missing`); return; }
+      if (HANGUL.test(en)) fail(`${where} English text contains Korean: ${String(en).match(/.{0,30}[가-힣].{0,30}/)[0]}`);
+      if (isMd) { const d = shapeDiff(en, ko, where); if (d) fail(`bilingual shape ${d}`); checkHTML(md(en), `${where} (en)`); }
+      else checkHTML(il(en), `${where} (en)`);
+    };
+    A.CH.forEach((c) => {
+      const e = c.enData;
+      tally('units', !!e);
+      if (!e) return;
+      pair(e.summary, c.summary, `${c.id} summary`);
+      pair(e.tagline, c.tagline, `${c.id} tagline`);
+      pair(e.fig, c.fig, `${c.id} plate caption`);
+      if (!e.title || HANGUL.test(e.title)) fail(`${c.id} English title missing or Korean`);
+      if ((e.goals || []).length !== (c.goals || []).length) fail(`${c.id} goals: ${(e.goals || []).length} English vs ${(c.goals || []).length}`);
+      (e.goals || []).forEach((g, k) => pair(g, c.goals[k], `${c.id} goal ${k + 1}`));
+      c.sections.forEach((s) => {
+        tally('sections', !!s.enData);
+        if (!s.enData) return;
+        if (!s.enData.title || HANGUL.test(s.enData.title)) fail(`${c.id} §${s.k} English title missing or Korean`);
+        pair(s.enData.body, s.body, `${c.id} §${s.k}`, true);
+      });
+      c.problems.forEach((p) => {
+        tally('problems', !!p.enData);
+        if (!p.enData) return;
+        const pe = p.enData;
+        ['q', 'sol', 'rubric'].forEach((f) => pair(pe[f], p[f], `${p.id} ${f}`, true));
+        pair(pe.hint, p.hint, `${p.id} hint`);
+        if (p.choices) {
+          if (!pe.choices || pe.choices.length !== p.choices.length) fail(`${p.id} choices: English ${pe.choices ? pe.choices.length : 0} vs ${p.choices.length}`);
+          else pe.choices.forEach((ch, k) => pair(ch, p.choices[k], `${p.id} choice ${k + 1}`));
+        }
+      });
+      if (e.probs && e.probs.length !== c.problems.length) fail(`${c.id} English problems ${e.probs.length} vs ${c.problems.length}`);
+    });
+    A.PROOFS.forEach((p) => {
+      tally('proofs', !!p.enData);
+      if (!p.enData) return;
+      if (!p.enData.title || HANGUL.test(p.enData.title)) fail(`proof ${p.pid} English title missing or Korean`);
+      ['stmt', 'body', 'note'].forEach((f) => pair(p.enData[f], p[f], `proof ${p.pid} ${f}`, true));
+    });
+    A.EXAMS.forEach((x) => {
+      x.problems.forEach((p) => {
+        tally('exam problems', !!p.enData);
+        if (!p.enData) return;
+        const pe = p.enData;
+        ['q', 'sol', 'rubric'].forEach((f) => pair(pe[f], p[f], `${p.id} ${f}`, true));
+        if (p.choices) {
+          if (!pe.choices || pe.choices.length !== p.choices.length) fail(`${p.id} choices: English ${pe.choices ? pe.choices.length : 0} vs ${p.choices.length}`);
+          else pe.choices.forEach((ch, k) => pair(ch, p.choices[k], `${p.id} choice ${k + 1}`));
+        }
+      });
+    });
+    (A.QUIZ || []).forEach((q) => {
+      if (q.enData) pair(q.enData.intro, q.intro, `quiz ${q.id} intro`, true);
+      q.problems.forEach((p) => { tally('quiz problems', !!p.enData); if (p.enData) pair(p.enData.body, p.body, `quiz ${q.id}-${p.id}`, true); });
+    });
+    const figNames = new Set();
+    A.CH.forEach((c) => c.sections.forEach((s) => String(s.body).replace(/^\s*:::fig\s+(\S+)/gm, (_, n) => { figNames.add(n); return ''; })));
+    figNames.forEach((n) => { tally('figure captions', !!(A.EN.fig || {})[n]); const cap = (A.EN.fig || {})[n]; if (cap && HANGUL.test(cap)) fail(`figure ${n} English caption contains Korean`); });
+    log('en coverage ' + Object.entries(cov).map(([k, [a, b]]) => `${k} ${a}/${b}`).join(', '));
+  }
   // ---- exams ----
   A.EXAMS.forEach((x) => {
     let pts = 0;

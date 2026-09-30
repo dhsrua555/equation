@@ -2,6 +2,7 @@
 (function () {
   window.SITE = {
     field: 'dnn',
+    bilingual: false, // 서술은 영어로 쓰고 한국어 원문은 KO 버튼으로 (data/en-*.js)
     key: 'reseau-dnn-v1',
     name: '심층 신경망',
     title: 'Équation 심층 신경망',
@@ -12,7 +13,12 @@
       D: { name: '최적화', en: 'Optimization', desc: '테일러 전개와 하강 보조정리, 경사하강법의 감소 조건, 확률적 경사하강 보조정리와 O(1/√T) 수렴, 나쁜 조건수와 모멘텀·네스테로프, AdaGrad·RMSProp·Adam. 4주차 수요일–5주차 월요일.' },
     },
     // what the "§" chip and the section headline say about the source of a section
-    secSource: (sec) => (!sec.src ? "" : /^Problem Set/.test(sec.src) ? sec.src : `강의 ${sec.src}`),
+    secSource: (sec) => {
+      if (!sec.src) return "";
+      // bilingual: "W1 수 · 슬라이드 3–5, W2 월 필기" → "Lecture W1 Wed · slides 3–5, W2 Mon notes"
+      const s = sec.src.replace(/문제 (\d)/g, "Problem $1").replace(/월/g, "Mon").replace(/수/g, "Wed").replace(/슬라이드/g, "slides").replace(/필기/g, "notes").replace(/보충/g, "supplement").replace(/종합/g, "combined");
+      return /^Problem Set/.test(s) ? s : `Lecture ${s}`;
+    },
     about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–5주차 강의 슬라이드와 수업 중 필기, 그리고 Problem Set 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
     text: {
       refLabel: '강의',
