@@ -174,7 +174,28 @@ $$x_i^Tw+b=y_i\ \Longrightarrow\ b=y_i-x_i^Tw.$$
 :::ex 예제 3 — 1차원 두 점
 $x_1=1$ ($y=+1$), $x_2=-1$ ($y=-1$)의 하드 마진 SVM은?
 ---
-대칭이라 경계는 0, 즉 $b=0$. 두 점이 모두 서포트 벡터라 $w\cdot1+0=1$, $w=1$. 쌍대로 확인: $\alpha_1=\alpha_2=\alpha$ ($\sum\alpha_iy_i=0$), 목적함수 $2\alpha-\frac12\alpha^2(1+1+2)=2\alpha-2\alpha^2$ ($x_ix_jy_iy_j$가 모두 1), 최대 $\alpha=\frac12$. $w=\frac12(1)(1)+\frac12(-1)(-1)=1$. 마진 $1/\lvert w\rvert=1$ — 두 점 사이 거리 2의 절반입니다.
+**그림으로 먼저.** 두 점이 0에 대해 대칭이라 경계는 한가운데 0, 즉 $b=0$. 두 점이 모두 서포트 벡터라 $w\cdot1+0=1$, $w=1$. 이것을 쌍대 문제로 확인합니다.
+
+**1. 제약에서 $\alpha_1=\alpha_2$.** $\sum_i\alpha_iy_i=0$에 $y_1=+1$, $y_2=-1$을 넣으면 $\alpha_1-\alpha_2=0$. 그래서 $\alpha_1=\alpha_2=\alpha$로 둡니다.
+
+**2. 쌍대 목적함수에 숫자 넣기.** 7.4절의 일반형
+$$g(\alpha)=\sum_i\alpha_i-\frac12\sum_i\sum_j\alpha_i\alpha_j\,y_iy_j\,x_i^Tx_j$$
+에서 첫째 항은 $\alpha+\alpha=2\alpha$. 둘째 항의 이중합은 $(i,j)$ 네 칸의 합입니다. $y_1x_1=(+1)(1)=1$, $y_2x_2=(-1)(-1)=1$이라 $y_iy_jx_ix_j=(y_ix_i)(y_jx_j)$는 네 칸 모두 1입니다.
+
+| $(i,j)$ | $y_iy_jx_ix_j$ | 그 칸의 값 |
+|---|---|---|
+| (1,1) | $(1)(1)(1)(1)=1$ | $\alpha^2$ |
+| (2,2) | $(-1)(-1)(-1)(-1)=1$ | $\alpha^2$ |
+| (1,2) | $(1)(-1)(1)(-1)=1$ | $\alpha^2$ |
+| (2,1) | $(-1)(1)(-1)(1)=1$ | $\alpha^2$ |
+
+이중합은 $4\alpha^2$ (대각선 두 칸 $1+1$과, 서로 같은 교차항 두 칸 $2$), 따라서
+$$g(\alpha)=2\alpha-\frac12\cdot4\alpha^2=2\alpha-2\alpha^2.$$
+**더 빠른 길:** 이중합은 $\lVert w\rVert^2$을 전개한 것이므로(7.4절의 유도), $w=\sum_i\alpha_iy_ix_i=\alpha(1)(1)+\alpha(-1)(-1)=2\alpha$에서 바로 $\lVert w\rVert^2=4\alpha^2$, $g=2\alpha-\frac12(4\alpha^2)$.
+
+**3. 최대화.** $g'(\alpha)=2-4\alpha=0$에서 $\alpha=\frac12$ ($\ge0$), $g''=-4\lt0$이라 최대.
+
+**4. 복원과 검산.** $w=2\alpha=1$. $b=y_1-x_1w=1-1=0$ (서포트 벡터 $x_1$에서). 마진 $1/\lvert w\rvert=1$ — 두 점 사이 거리 2의 절반입니다. 원문제 값 $\frac12w^2=\frac12$와 쌍대 값 $g(\frac12)=1-\frac12=\frac12$가 같아 강한 쌍대성도 확인됩니다.
 :::
 ` },
       { k: '7.6', src: 'Problem Set 1 · 문제 3', title: '작은 자료로 쌍대 문제 끝까지 풀기', body: R`
