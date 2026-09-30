@@ -85,11 +85,16 @@
   const EN = window.EM && EM.en ? EM.en : null;
   const BI = !!(SITE.bilingual && EN);
   if (BI) {
-    Object.values(PARTS).forEach((p) => { if (p.en) { p.nameKo = p.name; p.name = p.en; p.en = p.nameKo; } });
+    Object.values(PARTS).forEach((p) => {
+      if (p.en) { p.nameKo = p.name; p.name = p.en; p.en = p.nameKo; }
+      if (p.descEn) { p.descKo = p.desc; p.desc = p.descEn; }
+    });
     CH.forEach((c) => {
       const e = (EN.ch || {})[c.n];
       if (!e) return;
       c.enData = e;
+      // “W3 월 · s.3–13, W4 수 필기” → “W3 Mon · s.3–13, W4 Wed notes”
+      if (c.ref) { c.refKo = c.ref; c.ref = c.ref.replace(/월/g, 'Mon').replace(/수/g, 'Wed').replace(/필기/g, 'notes'); }
       if (e.title) { const ko = c.title; c.title = e.title; c.en = ko; c.titleKo = ko; }
       if (e.secTitles) { c.secTitlesKo = c.secTitles; c.secTitles = Object.assign({}, c.secTitles, e.secTitles); }
       c.sections.forEach((s) => {
@@ -100,7 +105,14 @@
       });
       c.problems.forEach((p, k) => { const pe = (e.probs || [])[k]; if (pe) p.enData = pe; });
     });
-    PROOFS.forEach((p) => { const pe = (EN.pf || {})[p.pid]; if (pe) { p.enData = pe; if (pe.title) { p.titleKo = p.title; p.title = pe.title; } } });
+    PROOFS.forEach((p) => {
+      const pe = (EN.pf || {})[p.pid];
+      if (!pe) return;
+      p.enData = pe;
+      if (pe.title) { p.titleKo = p.title; p.title = pe.title; }
+      // the “lecture notes · W1 수 s.6” chip, in English like the section sources
+      if (p.src) { p.srcKo = p.src; p.src = p.src.replace('강의 필기', 'Lecture notes').replace(/월/g, 'Mon').replace(/수/g, 'Wed'); }
+    });
     EXAMS.forEach((x) => {
       const xe = (EN.ex || {})[x.id];
       if (!xe) return;
@@ -559,6 +571,15 @@
     const chip = !opt || opt.chips !== false;
     return `<div class="bi${chip ? '' : ' nochip'}">${enHtml}${chip ? KO_BTN : ''}<div class="ko-body" lang="ko">${koHtml}</div></div>`;
   }
+  // site-level prose from site.js (SITE.text): SITE.textEn holds the English, and the Korean original sits behind the same KO toggle
+  const TE = (k) => (BI && SITE.textEn && SITE.textEn[k] != null ? SITE.textEn[k] : null);
+  function proseP(k, fallback, cls, fn) {
+    const f = fn || ((s) => s);
+    const p = (s) => `<p${cls ? ` class="${cls}"` : ''}>${f(s)}</p>`;
+    const en = TE(k);
+    return en == null ? p(T(k, fallback)) : koPair(p(en), p(T(k, fallback)));
+  }
+  const proseH = (k, fallback) => (TE(k) == null ? T(k, fallback) : `${TE(k)}${koT(T(k, fallback))}`);
   const segShape = (A, B) => A.length === B.length && A.every((a, k) => a.kind === B[k].kind && (a.kind !== 'blk' || a.type === B[k].type));
   function bimd(en, ko, opt) {
     if (!BI || !en) return md(ko || en);
@@ -808,7 +829,7 @@
         <div class="footer-grid">
           <div>
             <h5 class="caps">${esc(SITE.name || '')}</h5>
-            <p>${SITE.about || ''}</p>
+            ${BI && SITE.aboutEn ? koPair(`<p>${SITE.aboutEn}</p>`, `<p>${SITE.about || ''}</p>`) : `<p>${SITE.about || ''}</p>`}
           </div>
           <div>
             <h5 class="caps">단답형 입력</h5>
@@ -1040,17 +1061,17 @@
 
     <section class="section">
       <div class="wrap">
-        <div class="section-head"><div><span class="caps">How to study</span><h2>${T('howTitle', '읽고, 풀고, 시험처럼 점검하기')}</h2></div>
-          <p class="lede">${T('howLede', '한 단원은 개념 정리 → 연습문제 → 모의고사 순서로 공부하도록 짜여 있습니다. 틀린 문제는 오답노트에 자동으로 모입니다.')}</p></div>
+        <div class="section-head"><div><span class="caps">How to study</span><h2>${proseH('howTitle', '읽고, 풀고, 시험처럼 점검하기')}</h2></div>
+          ${proseP('howLede', '한 단원은 개념 정리 → 연습문제 → 모의고사 순서로 공부하도록 짜여 있습니다. 틀린 문제는 오답노트에 자동으로 모입니다.', 'lede')}</div>
         <div class="modes">
           <div class="mode"><div class="step"><b>1</b><span class="caps">Learn</span></div><h3>개념 정리</h3>
-            <p>${T('howLearn', `정의와 풀이법을 시험에 나오는 형태로 정리했습니다. 핵심 공식 상자마다 증명이 연결되어 있고, 증명 ${PROOFS.length}개는 따로 검색할 수 있습니다.`).replace('{proofs}', PROOFS.length)}</p>
+            ${proseP('howLearn', `정의와 풀이법을 시험에 나오는 형태로 정리했습니다. 핵심 공식 상자마다 증명이 연결되어 있고, 증명 ${PROOFS.length}개는 따로 검색할 수 있습니다.`, '', (s) => s.replace('{proofs}', PROOFS.length))}
             <div class="btn-row" style="gap:22px"><a class="link-u ko" href="#${CH[0].id}" data-route="${CH[0].id}">1단원부터 읽기</a><a class="link-u ko" href="#proofs" data-route="proofs">증명 찾기</a></div></div>
           <div class="mode"><div class="step"><b>2</b><span class="caps">Practice</span></div><h3>연습문제</h3>
-            <p>${T('howPractice', '객관식·단답형은 바로 채점되고, 서술형은 모범 풀이와 비교해 스스로 채점합니다.')}</p>
+            ${proseP('howPractice', '객관식·단답형은 바로 채점되고, 서술형은 모범 풀이와 비교해 스스로 채점합니다.')}
             <a class="link-u ko" href="#${CH[0].id}-practice" data-route="${CH[0].id}-practice">연습문제 풀기</a></div>
           <div class="mode"><div class="step"><b>3</b><span class="caps">Examine</span></div><h3>실전 모의고사</h3>
-            <p>시간 제한이 있는 모의고사 ${EXAMS.length}회와, 고른 단원에서 문제를 뽑아 만드는 맞춤 모의고사로 실전 감각을 점검합니다.</p>
+            ${proseP('howExam', `시간 제한이 있는 모의고사 {exams}회와, 고른 단원에서 문제를 뽑아 만드는 맞춤 모의고사로 실전 감각을 점검합니다.`, '', (s) => s.replace('{exams}', EXAMS.length))}
             <a class="link-u ko" href="#exams" data-route="exams">모의고사 보기</a></div>
         </div>
       </div>
@@ -1070,10 +1091,10 @@
     <section class="section" id="catalogue">
       <div class="wrap">
         <div class="section-head"><div><span class="caps">${T('unitsCaps', 'The units')}</span><h2>${CH.length}개 단원</h2></div>
-          <p class="lede">${T('catLede', '그림은 각 단원을 대표하는 곡선입니다.')}</p></div>
+          ${proseP('catLede', '그림은 각 단원을 대표하는 곡선입니다.', 'lede')}</div>
         ${Object.keys(PARTS).map((k) => `
           <div class="part-block">
-            <div class="part-head"><span class="part-letter">${k}</span><h3>${esc(PARTS[k].name)}</h3><p>${esc(PARTS[k].desc)}</p></div>
+            <div class="part-head"><span class="part-letter">${k}</span><h3>${esc(PARTS[k].name)}${PARTS[k].nameKo ? koT(PARTS[k].nameKo) : ''}</h3>${PARTS[k].descKo ? koPair(`<p>${esc(PARTS[k].desc)}</p>`, `<p>${esc(PARTS[k].descKo)}</p>`) : `<p>${esc(PARTS[k].desc)}</p>`}</div>
             <div class="tiles">${CH.filter((x) => x.part === k).map(tileHTML).join('')}</div>
           </div>`).join('')}
       </div>
@@ -1082,7 +1103,7 @@
     <section class="band section">
       <div class="wrap">
         <div class="section-head"><div><span class="caps">Mock examinations</span><h2>실전 모의고사</h2></div>
-          <p class="lede">${T('examLede', '시험 범위에 맞춘 시간 제한 시험입니다. 제출하면 자동 채점과 단원별 분석을 보여줍니다.')}</p></div>
+          ${proseP('examLede', '시험 범위에 맞춘 시간 제한 시험입니다. 제출하면 자동 채점과 단원별 분석을 보여줍니다.', 'lede')}</div>
         <div class="exam-rows">
           ${EXAMS.map((x) => `<button class="exam-row" data-act="exam-start" data-exam="${x.id}">
               <span class="roman">${x.roman}</span>
@@ -1255,7 +1276,7 @@
     return `
     <div class="wrap">
       <header class="page-head"><span class="caps">Proofs</span><h1>Démonstrations<span class="ko">증명 찾기</span></h1>
-        <p class="lede">${T('proofLede', `단원에 나오는 공식과 정리 ${PROOFS.length}개의 증명을 모았습니다. 공식 이름, 사람 이름, 영어 용어로 검색할 수 있습니다.`).replace('{proofs}', PROOFS.length)}</p>
+        ${proseP('proofLede', `단원에 나오는 공식과 정리 ${PROOFS.length}개의 증명을 모았습니다. 공식 이름, 사람 이름, 영어 용어로 검색할 수 있습니다.`, 'lede', (s) => s.replace('{proofs}', PROOFS.length))}
         <div class="pf-search">
           <label class="sr-only" for="pf-q">증명 검색</label>
           <input id="pf-q" type="search" autocomplete="off" spellcheck="false" placeholder="${esc(T('proofPlaceholder', '찾을 공식이나 정리'))}" value="${esc(pfFilter.q)}">
@@ -1340,7 +1361,7 @@
     return `
     <div class="wrap">
       <header class="page-head"><span class="caps">Worked problems</span><h1>Corrigés<span class="ko">${esc(QUIZ_LABEL)}</span></h1>
-        <p class="lede">${inline((SITE.text && SITE.text.quizLede) || '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.')}</p>
+        ${proseP('quizLede', '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.', 'lede', inline)}
         <nav class="jump" aria-label="문제로 이동">${QUIZ.map((q) => q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}">${esc(q.short || q.title)} · ${esc(p.label || p.id)}</a>`).join('')).join('')}</nav>
       </header>
       <div class="ch-body quiz-body">
@@ -1405,7 +1426,7 @@
     return `
     <div class="wrap">
       <header class="page-head"><span class="caps">Mock examinations</span><h1>Examens<span class="ko">실전 모의고사</span></h1>
-        <p class="lede">시험 범위에 맞춘 모의고사 ${EXAMS.length}회와 맞춤 모의고사가 있습니다. 시작하면 타이머가 돌아가고, 시간이 끝나면 자동으로 제출됩니다. 서술형은 제출 뒤 모범 풀이와 채점 기준을 보고 직접 채점합니다.</p>
+        ${proseP('examsPageLede', '시험 범위에 맞춘 모의고사 {exams}회와 맞춤 모의고사가 있습니다. 시작하면 타이머가 돌아가고, 시간이 끝나면 자동으로 제출됩니다. 서술형은 제출 뒤 모범 풀이와 채점 기준을 보고 직접 채점합니다.', 'lede', (s) => s.replace('{exams}', EXAMS.length))}
         ${L ? `<div class="resume"><div><span class="caps" style="color:var(--camel-ink)">In progress</span><p><b>${esc(L.title)}</b> · 남은 시간 <span data-timer-inline>${fmtTime(L.minutes * 60 - (Date.now() - L.start) / 1000)}</span> · ${Object.keys(L.answers).filter((k) => L.answers[k] !== '' && L.answers[k] != null).length}/${L.pids.length}문항 답함</p></div>
           <div class="btn-row"><a class="btn" href="#exam-live" data-route="exam-live">이어서 풀기</a><button class="linkbtn" data-act="exam-abandon">응시 취소</button></div></div>` : ''}
       </header>
@@ -1418,8 +1439,8 @@
               <div class="exam-cover"><canvas data-plot="${x.plot}" aria-hidden="true"></canvas><b>${x.roman}</b></div>
               <div class="exam-info">
                 <span class="caps" style="color:var(--camel-ink)">${esc(x.kind)}</span>
-                <h3>${esc(x.title)}</h3>
-                <p>${esc(x.desc)}</p>
+                <h3>${esc(x.title)}${x.titleKo ? koT(x.titleKo) : ''}</h3>
+                ${x.descKo ? koPair(`<p>${esc(x.desc)}</p>`, `<p>${esc(x.descKo)}</p>`) : `<p>${esc(x.desc)}</p>`}
                 <div class="exam-facts"><span>시간 <b>${x.minutes}분</b></span><span>문항 <b>${x.problems.length}</b></span><span>범위 <b>${esc(x.scopeText)}</b></span>${n ? `<span>응시 <b>${n}회</b> · 최고 <b>${b}점</b></span>` : ''}</div>
                 <div class="btn-row"><button class="btn sm" data-act="exam-start" data-exam="${x.id}">시작하기</button></div>
               </div>

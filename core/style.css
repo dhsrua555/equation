@@ -1006,6 +1006,7 @@ a.xref.ext { color: var(--denim); }
 .ko-t { font-family: var(--f-body); font-size: 0.8em; font-weight: 400; font-style: normal; color: var(--ink-3); letter-spacing: 0; text-transform: none; margin-top: 2px; }
 .bi { position: relative; padding-right: 40px; }
 .bi.nochip { padding-right: 0; }
+.bi:has(> p.lede) { width: fit-content; max-width: 100%; } /* keep the KO chip beside a narrow lede, not at the far edge of the page */
 .ko-btn {
   position: absolute; right: 0; top: 0.25em;
   font-family: var(--f-caps); font-size: 0.6rem; font-weight: 600; line-height: 1; letter-spacing: 0.1em;

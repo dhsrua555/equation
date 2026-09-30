@@ -256,16 +256,17 @@
     counts: { units: A.CH.length, sections: nSec, problems: nProb, proofs: A.PROOFS.length, exams: A.EXAMS.length },
     search: [],
   };
+  // a bilingual field (English on its pages) still enters the network with its Korean titles; the English goes to `en` for search
   A.CH.forEach((c) => {
-    idx.chapters[c.id] = c.title;
-    idx.search.push({ t: 'u', ch: c.id, title: c.title, en: c.en || '' });
+    idx.chapters[c.id] = c.titleKo || c.title;
+    idx.search.push({ t: 'u', ch: c.id, title: c.titleKo || c.title, en: c.titleKo ? c.title : c.en || '' });
     c.sections.forEach((s) => {
-      idx.secs[`${c.id}:${s.k}`] = s.title;
-      idx.search.push({ t: 's', ch: c.id, k: s.k, title: s.title });
+      idx.secs[`${c.id}:${s.k}`] = s.titleKo || s.title;
+      idx.search.push(Object.assign({ t: 's', ch: c.id, k: s.k, title: s.titleKo || s.title }, s.titleKo ? { en: s.title } : {}));
     });
     A.keyBlocks(c).forEach((kb) => idx.search.push({ t: 'k', ch: c.id, k: kb.k || '', title: strip(kb.title) }));
   });
-  A.PROOFS.forEach((p) => idx.search.push({ t: 'p', ch: p.ch, pid: p.pid, title: strip(p.title), tags: strip(p.tags) }));
+  A.PROOFS.forEach((p) => idx.search.push(Object.assign({ t: 'p', ch: p.ch, pid: p.pid, title: strip(p.titleKo || p.title), tags: strip(p.tags) }, p.titleKo ? { en: strip(p.title) } : {})));
   const links = A.XLINKS.filter((l) => l.site).map((l) => ({ from: A.FIELD, fromCh: l.from, fromK: l.fromK, to: l.site, toCh: l.to, toK: l.toK }));
   // printed as JS statements so tools/netindex.sh only has to concatenate them
   const F = JSON.stringify(A.FIELD);
