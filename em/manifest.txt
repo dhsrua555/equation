@@ -3,7 +3,9 @@ partB.js
 partC.js
 partD.js
 partE.js
+lec-17.js
 exams.js
+exams-17.js
 proofs-1.js
 proofs-2.js
 proofs-3.js
@@ -11,6 +13,7 @@ proofs-4.js
 proofs-5.js
 proofs-6.js
 proofs-7.js
+proofs-17.js
 more-01.js
 more-02.js
 more-03.js
@@ -25,6 +28,7 @@ more-11.js
 more-12.js
 more-13.js
 more-14.js
+more-17.js
 learn-01.js
 learn-02.js
 learn-03.js
@@ -57,3 +61,6 @@ fig-13.js
 fig-14.js
 fig-15.js
 fig-16.js
+fig-17.js
+quiz-1.js
+quizprep-hw1.js

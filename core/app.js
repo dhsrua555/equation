@@ -56,6 +56,8 @@
   // worked quiz / problem-set solutions (data/quiz-*.js): a separate "퀴즈풀이" page
   const QUIZ = EM.quizzes || [];
   const QUIZ_LABEL = (SITE.text && SITE.text.quizNav) || '퀴즈풀이';
+  // extra header links a field asks for, e.g. the unit its lecture slides live in: SITE.nav = [{ label, route, title }]
+  const NAV_X = SITE.nav || [];
   // quiz problems ↔ units: a quiz problem lists its sections in secs: ['ch02:2.6', …];
   // a practice problem of the same kind carries quiz: '<set>-<problem>' (or true for quiz-style in general)
   const QZP = new Map();
@@ -756,6 +758,7 @@
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
+          ${NAV_X.map((n) => `<a href="#${n.route}" class="ko" data-route="${n.route}"${n.title ? ` title="${esc(n.title)}"` : ''}>${esc(n.label)}</a>`).join('')}
           ${QUIZ.length ? `<a href="#quiz" class="ko" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
@@ -785,7 +788,7 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (r === 'quiz' && route.startsWith('quiz-'))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (r === 'quiz' && route.startsWith('quiz-')) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
@@ -798,6 +801,7 @@
           <a href="#home" data-route="home">홈</a>
           <a href="#formulas" data-route="formulas">공식집</a>
           <a href="#proofs" data-route="proofs">증명 찾기</a>
+          ${NAV_X.map((n) => `<a href="#${n.route}" data-route="${n.route}">${esc(n.label)}</a>`).join('')}
           ${QUIZ.length ? `<a href="#quiz" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
@@ -893,7 +897,7 @@
     if (ctx === 'result') return resultProbHTML(p, o);
     const u = uiOf(p.id);
     const no = o.label || pad(p.no);
-    const SC = T('secChip', '§');
+    const SC = (chById.get(p.ch) || {}).secChip || T('secChip', '§'); // a unit outside the textbook (e.g. lecture slides) names its own source
     const tags = `<div class="prob-tags"><span class="chip">${TYPE[p.type]}</span><span class="chip lv">${LV[p.lv]}</span>${p.sec ? (chById.get(p.ch) && chById.get(p.ch).sections.some((s) => s.k === p.sec)
       ? `<a class="chip sec" href="#${p.ch}-k${p.sec}" data-route="${p.ch}-k${p.sec}" title="이 절의 개념 정리로 이동">${SC}${esc(p.sec)} →</a>`
       : `<span class="chip sec">${SC}${esc(p.sec)}</span>`) : ''}${p.proof ? `<span class="chip pfc">증명형</span>` : ''}${quizChip(p)}${o.source ? `<span class="chip">${esc(sourceLabel(p))}</span>` : ''}${statusChip(p.id)}${koCard(p)}</div>`;
@@ -1179,7 +1183,7 @@
         <span class="en${c.titleKo ? ' ko-sub' : ''}"${c.titleKo ? ' lang="ko"' : ''}>${esc(c.en)}</span>
         ${paraOf(c, 'summary')}
         ${goalsOf(c)}
-        <div class="ch-meta"><span>${T('refLabel', '교재')} <b>${esc(c.ref)}</b></span><span>개념 <b>${c.sections.length}</b></span><span>연습문제 <b>${c.problems.length}</b></span><span>정답 <b class="tabular" data-ch-right>${s.right}/${s.total}</b></span></div>
+        <div class="ch-meta"><span>${c.refLabel || T('refLabel', '교재')} <b>${esc(c.ref)}</b></span><span>개념 <b>${c.sections.length}</b></span><span>연습문제 <b>${c.problems.length}</b></span><span>정답 <b class="tabular" data-ch-right>${s.right}/${s.total}</b></span></div>
       </div>
     </section>
     <div class="tabs-bar" id="tabs"><div class="wrap"><div class="tabs" role="tablist" aria-label="단원 보기 방식">
@@ -1243,7 +1247,7 @@
         </div>
       </div>
       ${secs.length ? `<div class="sec-filter" role="group" aria-label="절로 거르기">
-        <span class="caps">${T('secFilter', '절')}</span>
+        <span class="caps">${c.secFilter || T('secFilter', '절')}</span>
         <button class="pf-chip" data-act="filter" data-k="sec" data-v="all" aria-pressed="${curSec === 'all'}">전체 ${pool.length}</button>
         ${secs.map((s) => `<button class="pf-chip" data-act="filter" data-k="sec" data-v="${s}" aria-pressed="${curSec === s}">${s}${titles[s] ? ` ${esc(titles[s])}` : ''} <span class="n">${pool.filter((p) => p.sec === s).length}</span></button>`).join('')}
       </div>` : ''}

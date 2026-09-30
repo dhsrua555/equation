@@ -20,7 +20,7 @@
     {
       id: 'em', group: 'eng', short: '공학수학', tiny: '공학수학', name: '공학수학', en: 'Engineering Mathematics',
       path: 'em/', key: 'equation-em-v1', plot: 'slope', live: true,
-      desc: 'Kreyszig 10판 1–18장: 상미분방정식, 선형대수·벡터 미적분, 푸리에 해석·편미분방정식, 복소해석과 등각사상.',
+      desc: 'Kreyszig 10판 1–18장과 공학수학2 강의 PPT(선형대수학): 상미분방정식, 선형대수·벡터 미적분, 푸리에 해석·편미분방정식, 복소해석과 등각사상, 과제 풀이.',
     },
     {
       id: 'solid', group: 'mech', short: '고체역학', tiny: '고체', name: '고체역학', en: 'Mechanics of Materials',

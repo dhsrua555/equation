@@ -267,6 +267,20 @@
       ctx.strokeStyle = c.b; ctx.lineWidth = 1.8;
       param(ctx, (t) => Math.cos(t), (t) => Math.sin(t), 0, TAU, 120, T);
     },
+    // 17 — sin x on [−π, π]: Taylor polynomials of degree 1, 3, 5, 7 (faint) and the degree-5 best (projection) approximation
+    bestapprox(ctx, w, h, c) {
+      const P = Math.PI, T = frame(w, h, -P * 1.18, P * 1.18, -1.9, 1.9);
+      const taylor = (N) => (x) => { let s = 0, t = x; for (let k = 1; k <= N; k += 2) { s += t; t *= (-x * x) / ((k + 1) * (k + 2)); } return s; };
+      ctx.lineWidth = 1.1;
+      [1, 3, 5, 7].forEach((N, k) => {
+        ctx.strokeStyle = c.a; ctx.globalAlpha = 0.25 + k * 0.12;
+        curve(ctx, taylor(N), -P * 1.18, P * 1.18, 300, T);
+      });
+      ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.strokeStyle = c.a;
+      curve(ctx, Math.sin, -P * 1.18, P * 1.18, 300, T);
+      ctx.strokeStyle = c.b; ctx.lineWidth = 1.8;
+      curve(ctx, (x) => 0.987862 * x - 0.155271 * x ** 3 + 0.00564312 * x ** 5, -P, P, 300, T);
+    },
     // exams — a sine carrier, used on exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);
