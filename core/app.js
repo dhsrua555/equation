@@ -62,6 +62,20 @@
   // a practice problem of the same kind carries quiz: '<set>-<problem>' (or true for quiz-style in general)
   const QZP = new Map();
   QUIZ.forEach((q) => q.problems.forEach((p) => QZP.set(`${q.id}-${p.id}`, { q, p })));
+  // worked-solution pages in the same layout: 퀴즈풀이 and, when a field has data/hard-*.js (EM.hard), 고난이도.
+  // each page has its own route (#quiz, #hard), problem routes (#hard-<set>-<problem>) and anchor prefix
+  const TX = SITE.text || {};
+  const BOOKS = [
+    { key: 'quiz', pre: 'qz', sets: QUIZ, label: QUIZ_LABEL, caps: 'Worked problems', h1: 'Corrigés', lede: 'quizLede',
+      ledeDef: '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.', intro: '답안 작성 원칙', practice: true },
+    { key: 'hard', pre: 'hd', sets: EM.hard || [], label: TX.hardNav || '고난이도', caps: 'Challenge problems', h1: 'Défis', lede: 'hardLede',
+      ledeDef: '교재 연습문제 가운데 어려운 문제를 골라 풀이와 함께 정리했습니다.', intro: '이 장을 푸는 법', practice: false },
+  ].filter((b) => b.sets.length);
+  const BOOK = new Map(BOOKS.map((b) => [b.key, b]));
+  const bookOf = (r) => BOOK.get(String(r).split('-')[0]);
+  // every worked problem, for the links under a section title
+  const WORKED = [];
+  BOOKS.forEach((b) => b.sets.forEach((q) => q.problems.forEach((p) => WORKED.push({ id: `${q.id}-${p.id}`, b, q, p }))));
   EXAMS.forEach((x) => {
     x.problems.forEach((p, k) => {
       p.no = k + 1; p.src = x.id;
@@ -271,11 +285,11 @@
     NOTES = null;
     const num = sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
     const where = SITE.secSource ? SITE.secSource(sec, c) : (sec.p ? `p.${sec.p}` : '');
-    const quizzes = [...QZP.entries()].filter(([, x]) => (x.p.secs || []).includes(`${c.id}:${sec.k}`));
+    const worked = WORKED.filter((x) => (x.p.secs || []).includes(`${c.id}:${sec.k}`));
     return `<section class="sec" id="sec-${sec.k || idx}">
       <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}${koT(sec.titleKo)}</h2></div>
       ${where ? `<p class="sec-page caps">${esc(where)}</p>` : ''}
-      ${quizzes.length ? `<p class="sec-quiz">${quizzes.map(([id, x]) => `<a href="#quiz-${id}" data-route="quiz-${id}">${esc(QUIZ_LABEL)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
+      ${worked.length ? `<p class="sec-quiz">${worked.map((x) => `<a href="#${x.b.key}-${x.id}" data-route="${x.b.key}-${x.id}">${esc(x.b.label)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
       ${body}
       ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
         <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">${n.tg && n.tg.ext ? '↗' : '※'}${i + 1}</button>
@@ -753,13 +767,13 @@
     document.documentElement.classList.toggle('has-net', !!NET);
     $('#site-header').innerHTML = `${netBar()}
       <div class="wrap header-row">
-        <nav class="nav nav-left" aria-label="주 메뉴">
+        <nav class="nav nav-left${3 + NAV_X.length + BOOKS.length > 5 ? ' many' : ''}" aria-label="주 메뉴">
           <button class="menu-btn" data-act="menu" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" class="ko" data-route="${n.route}"${n.title ? ` title="${esc(n.title)}"` : ''}>${esc(n.label)}</a>`).join('')}
-          ${QUIZ.length ? `<a href="#quiz" class="ko" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
+          ${BOOKS.map((b) => `<a href="#${b.key}" class="ko" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
         <nav class="nav nav-right" aria-label="학습 도구">
@@ -788,7 +802,7 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (r === 'quiz' && route.startsWith('quiz-')) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (BOOK.has(r) && route.startsWith(`${r}-`)) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
@@ -802,7 +816,7 @@
           <a href="#formulas" data-route="formulas">공식집</a>
           <a href="#proofs" data-route="proofs">증명 찾기</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" data-route="${n.route}">${esc(n.label)}</a>`).join('')}
-          ${QUIZ.length ? `<a href="#quiz" data-route="quiz">${esc(QUIZ_LABEL)}</a>` : ''}
+          ${BOOKS.map((b) => `<a href="#${b.key}" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
           ${Object.keys(PARTS).map((k) => `
@@ -1361,40 +1375,46 @@
     const list = quizPractice(id);
     return list.length ? `<nav class="quiz-links quiz-links-more" aria-label="같은 유형 연습문제"><span class="caps">같은 유형 더 풀기</span>${list.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>` : '';
   }
-  function viewQuiz() {
+  // one worked-solution page (퀴즈풀이 or 고난이도): sets → problems, with a table of contents on the side
+  function viewBook(b) {
+    const Q = b.sets, K = b.key, P = b.pre;
+    const many = Q.reduce((s, q) => s + q.problems.length, 0) > 16; // a long page jumps by set, not by problem
+    const more = b.practice ? quizPractice('') : [];
     return `
     <div class="wrap">
-      <header class="page-head"><span class="caps">Worked problems</span><h1>Corrigés<span class="ko">${esc(QUIZ_LABEL)}</span></h1>
-        ${proseP('quizLede', '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.', 'lede', inline)}
-        <nav class="jump" aria-label="문제로 이동">${QUIZ.map((q) => q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}">${esc(q.short || q.title)} · ${esc(p.label || p.id)}</a>`).join('')).join('')}</nav>
+      <header class="page-head"><span class="caps">${esc(b.caps)}</span><h1>${esc(b.h1)}<span class="ko">${esc(b.label)}</span></h1>
+        ${proseP(b.lede, b.ledeDef, 'lede', inline)}
+        <nav class="jump" aria-label="문제로 이동">${many
+          ? Q.map((q) => `<a href="#${K}" data-act="scroll" data-target="${P}-${q.id}">${esc(q.title)} · ${q.problems.length}문제</a>`).join('')
+          : Q.map((q) => q.problems.map((p) => `<a href="#${K}-${q.id}-${p.id}" data-act="scroll" data-target="${P}-${q.id}-${p.id}">${esc(q.short || q.title)} · ${esc(p.label || p.id)}</a>`).join('')).join('')}</nav>
       </header>
       <div class="ch-body quiz-body">
         <nav class="toc" aria-label="문제 목차">
-          ${QUIZ.map((q) => `<span class="caps">${esc(q.title)}</span>
-            ${q.intro ? `<a href="#quiz" data-act="scroll" data-target="qz-${q.id}-intro"><span>—</span>답안 작성 원칙</a>` : ''}
-            ${q.problems.map((p) => `<a href="#quiz-${q.id}-${p.id}" data-act="scroll" data-target="qz-${q.id}-${p.id}"><span>${esc(p.label || p.id)}</span>${esc(p.title)}</a>`).join('')}`).join('')}
-          ${quizPractice('').length ? `<a href="#quiz" data-act="scroll" data-target="qz-more"><span>→</span>퀴즈 대비 연습문제</a>` : ''}
+          ${Q.map((q) => `<span class="caps">${esc(q.title)}</span>
+            ${q.intro ? `<a href="#${K}" data-act="scroll" data-target="${P}-${q.id}-intro"><span>—</span>${esc(q.introLabel || b.intro)}</a>` : ''}
+            ${q.problems.map((p) => `<a href="#${K}-${q.id}-${p.id}" data-act="scroll" data-target="${P}-${q.id}-${p.id}"><span>${esc(p.label || p.id)}</span>${esc(p.title)}</a>`).join('')}`).join('')}
+          ${more.length ? `<a href="#${K}" data-act="scroll" data-target="${P}-more"><span>→</span>퀴즈 대비 연습문제</a>` : ''}
         </nav>
         <div class="quiz-main">
-        ${QUIZ.map((q) => `
-          <div class="quiz-set" id="qz-${q.id}">
+        ${Q.map((q) => `
+          <div class="quiz-set" id="${P}-${q.id}">
             <div class="part-head"><span class="part-letter">${esc(q.mark || 'Q')}</span><h3>${esc(q.title)}</h3><p>${esc(q.meta || '')}</p></div>
             <article class="prose">
-              ${q.intro ? `<section class="sec quiz-intro" id="qz-${q.id}-intro">${mdOf(q, 'intro')}</section>` : ''}
+              ${q.intro ? `<section class="sec quiz-intro" id="${P}-${q.id}-intro">${mdOf(q, 'intro')}</section>` : ''}
               ${q.problems.map((p) => `
-                <section class="sec quiz-p" id="qz-${q.id}-${p.id}">
+                <section class="sec quiz-p" id="${P}-${q.id}-${p.id}">
                   <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}${koT(p.titleKo)}</h2></div>
                   ${p.where ? `<p class="sec-page caps">${esc(p.where)}</p>` : ''}
                   ${quizUnits(p)}
                   ${mdOf(p, 'body')}
-                  ${quizMore(`${q.id}-${p.id}`)}
+                  ${b.practice ? quizMore(`${q.id}-${p.id}`) : ''}
                 </section>`).join('')}
             </article>
           </div>`).join('')}
-          ${quizPractice('').length ? `<article class="prose"><section class="sec quiz-more" id="qz-more">
+          ${more.length ? `<article class="prose"><section class="sec quiz-more" id="${P}-more">
             <div class="sec-title"><span>→</span><h2>퀴즈 대비 연습문제</h2></div>
             <p>위 문제들과 같은 모양(정의 → 유도·증명 → 작은 계산 → 해석)의 문제를 단원마다 더 만들어 두었습니다. 누르면 그 단원의 연습문제가 <b>퀴즈형</b>만 걸러진 채로 열립니다. 서술형이라 풀이를 펼친 뒤 채점 기준으로 스스로 채점하세요.</p>
-            <nav class="quiz-links" aria-label="퀴즈 대비 연습문제">${quizPractice('').map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
+            <nav class="quiz-links" aria-label="퀴즈 대비 연습문제">${more.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
           </section></article>` : ''}
         </div>
       </div>
@@ -1743,8 +1763,8 @@
     else if (to === 'exam-live') { route = 'exams'; html = viewExams(); }
     else if ((m = /^result-([a-z0-9]+)$/.exec(to))) html = viewResult(m[1]);
     else if (to === 'review') html = viewReview();
-    else if (to === 'quiz' && QUIZ.length) html = viewQuiz();
-    else if ((m = /^quiz-([\w-]+)$/.exec(to)) && QUIZ.length) { html = viewQuiz(); opts = Object.assign({}, opts, { anchor: `qz-${m[1]}` }); }
+    else if (BOOK.has(to)) html = viewBook(BOOK.get(to));
+    else if ((m = /^([a-z]+)-([\w-]+)$/.exec(to)) && BOOK.has(m[1])) { const b = BOOK.get(m[1]); html = viewBook(b); opts = Object.assign({}, opts, { anchor: `${b.pre}-${m[2]}` }); }
     else { route = 'home'; view = 'home'; html = viewHome(); }
     document.body.dataset.view = view;
     if (BI && !document.getElementById('ko-all')) {
@@ -1756,13 +1776,14 @@
     updateHeader();
     window.EMPlots.mount(main);
     if (view === 'home') startHero();
-    if (view === 'chapter' || /^quiz(-|$)/.test(route)) watchToc();
+    if (view === 'chapter' || bookOf(route)) watchToc();
     if (route === 'proofs') filterProofs();
-    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', quiz: QUIZ_LABEL };
+    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중' };
+    BOOKS.forEach((b) => { title[b.key] = b.label; });
     const ch = chById.get(route.slice(0, 4));
     const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
     const DT = SITE.title || SITE.name || '';
-    const tk = route.startsWith('quiz-') ? 'quiz' : route;
+    const tk = bookOf(route) ? bookOf(route).key : route;
     document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[tk] ? `${title[tk]} · ${DT}` : DT;
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
@@ -2100,7 +2121,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BI, EN, scanSegs, bimd };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, BI, EN, scanSegs, bimd };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

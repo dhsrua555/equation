@@ -88,11 +88,12 @@
     });
   });
   (window.EM.proofs || []).forEach((p) => { if (!A.chById.get(p.ch)) fail(`proof ${p.id} has unknown ch ${p.ch}`); });
-  // ---- worked quiz solutions (data/quiz-*.js) ----
-  (A.QUIZ || []).forEach((q) => {
-    checkHTML(md(q.intro), `quiz ${q.id}`);
+  // ---- worked solutions (data/quiz-*.js, data/hard-*.js): every page of A.BOOKS ----
+  const BOOKS = A.BOOKS || [{ key: 'quiz', sets: A.QUIZ || [] }];
+  BOOKS.forEach((b) => b.sets.forEach((q) => {
+    checkHTML(md(q.intro), `${b.key} ${q.id}`);
     q.problems.forEach((p) => {
-      const w = `quiz ${q.id}-${p.id}`;
+      const w = `${b.key} ${q.id}-${p.id}`;
       if (/\$/.test(p.title)) fail(`${w} title has $`);
       if (/\$\{/.test(p.body)) fail(`${w} has template \${`);
       checkHTML(md(p.body), w);
@@ -103,7 +104,7 @@
         return '';
       });
     });
-  });
+  }));
   // ---- bilingual fields: English must mirror the Korean original piece by piece, and contain no Korean ----
   if (A.BI) {
     const cov = {};
@@ -225,7 +226,7 @@
   const routes = ['home', 'formulas', 'proofs', 'exams', 'review'];
   A.CH.forEach((c) => { routes.push(c.id, `${c.id}-practice`, `${c.id}-formulas`, `${c.id}-proofs`); c.sections.forEach((s) => routes.push(`${c.id}-k${s.k}`)); });
   A.PROOFS.forEach((p) => routes.push(`pf-${p.pid}`));
-  (A.QUIZ || []).forEach((q, i) => { if (!i) routes.push('quiz'); q.problems.forEach((p) => routes.push(`quiz-${q.id}-${p.id}`)); });
+  BOOKS.forEach((b) => { routes.push(b.key); b.sets.forEach((q) => q.problems.forEach((p) => routes.push(`${b.key}-${q.id}-${p.id}`))); });
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);

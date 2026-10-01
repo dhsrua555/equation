@@ -66,3 +66,7 @@ quiz-1.js
 quizprep-hw1.js
 quiz-2.js
 quizprep-hw2.js
+fig-hard.js
+hard-06.js
+hard-07.js
+hard-10.js
