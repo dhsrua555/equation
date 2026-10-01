@@ -227,12 +227,22 @@
   A.CH.forEach((c) => { routes.push(c.id, `${c.id}-practice`, `${c.id}-formulas`, `${c.id}-proofs`); c.sections.forEach((s) => routes.push(`${c.id}-k${s.k}`)); });
   A.PROOFS.forEach((p) => routes.push(`pf-${p.pid}`));
   BOOKS.forEach((b) => { routes.push(b.key); b.sets.forEach((q) => q.problems.forEach((p) => routes.push(`${b.key}-${q.id}-${p.id}`))); });
+  // simulations: every ":::sim name" must name a registered simulation, and the lab page lists them all
+  const SIMREG = A.SIMREG || {};
+  const simUse = (src, where) => String(src || '').replace(/^\s*:::sim\s+(\S+)/gm, (_, n) => { if (!SIMREG[n]) fail(`${where} names a missing simulation ${n}`); return ''; });
+  A.CH.forEach((c) => c.sections.forEach((s) => simUse(s.body, `${c.id} §${s.k}`)));
+  BOOKS.forEach((b) => b.sets.forEach((q) => { simUse(q.intro, `${b.key} ${q.id}`); q.problems.forEach((p) => simUse(p.body, `${b.key} ${q.id}-${p.id}`)); }));
+  if ((A.SIMS || []).length) { routes.push('lab'); A.SIMS.forEach((s) => { routes.push(`lab-${s.id}`); if (s.ch && !A.chById.get(s.ch)) fail(`simulation ${s.id} names unknown unit ${s.ch}`); if (s.ch && s.k && !A.chById.get(s.ch).sections.some((x) => x.k === s.k)) fail(`simulation ${s.id} names unknown section ${s.k}`); }); }
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);
       window.dispatchEvent(new HashChangeEvent('hashchange'));
       const m = document.getElementById('main');
       if (!m || m.innerHTML.length < 200) fail(`route ${r} rendered almost nothing`);
+      const km = /^(ch\d{2})-k([\w.]+)$/.exec(r);
+      if (km && !document.getElementById(`sec-${km[2]}`)) fail(`route ${r} opened without its section`);
+      const lm = /^lab-([\w-]+)$/.exec(r);
+      if (lm && !document.getElementById(`lb-${lm[1]}`)) fail(`route ${r} opened without its simulation`);
       m.querySelectorAll('.katex-error').forEach((e) => fail(`route ${r} katex: ${(e.getAttribute('title') || '').slice(0, 120)}`));
       const clone = m.cloneNode(true); clone.querySelectorAll('code, textarea, input, script, .katex-mathml').forEach((n) => n.remove());
       if (/\$/.test(clone.textContent)) fail(`route ${r} leftover $: ${clone.textContent.match(/.{0,40}\$.{0,40}/)[0]}`);

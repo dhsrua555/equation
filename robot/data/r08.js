@@ -25,6 +25,14 @@ $$e^{[\mathcal S]\theta}=\begin{bmatrix}e^{[\omega]\theta}&G(\theta)v\\0&1\end{b
 $\omega=0$, $\lVert v\rVert=1$(순수 병진)이면 $e^{[\mathcal S]\theta}=\begin{bmatrix}I&v\theta\\0&1\end{bmatrix}$.
 :::
 
+:::idea G(θ)v는 무엇인가
+나사 운동의 위치 부분 $G(\theta)v$는 “축 둘레로 돌며 축 방향으로 나가는 동안 원점이 실려 간 거리”입니다. 피치가 0이고 축이 원점을 지나면 $v=0$이라 원점은 움직이지 않고, 축이 원점에서 떨어져 있으면 원점이 축 둘레의 원호를 따라 옮겨 갑니다. $\theta$가 작을 때 $G(\theta)\approx I\theta$라 $G(\theta)v\approx v\theta$ — 속도 $v$로 시간 $\theta$만큼 간 거리와 같습니다.
+:::
+
+:::sim screw
+막대 θ로 나사를 따라 움직이며 아래의 $e^{[\mathcal S]\theta}$를 보세요. 회전 부분은 로드리게스 공식 그대로이고, 위치 부분이 $G(\theta)v$입니다. $\theta=360°$에서는 회전 부분이 $I$로 돌아오고 위치는 축 방향으로 $2\pi h$만 남습니다.
+:::
+
 :::ex 예제 1 — 한 점 둘레의 90° 회전
 점 $q=(0,1,0)$을 지나는 $\hat z$ 방향 축(피치 0) 둘레로 90° 도는 변환은?
 ---
@@ -59,6 +67,9 @@ $v=\tfrac2\pi(1,1,0)-\tfrac12(-1,1,0)+(\tfrac2\pi-\tfrac12)(-1,-1,0)=(1,0,0)$ �
 ` },
       { k: '3.4', p: 108, title: '렌치', body: R`
 점 $r$에 힘 $f$가 작용하면 원점에 대한 모멘트는 $m=r\times f$. 둘을 묶어 여섯 성분의 **렌치**를 만듭니다. 트위스트가 각속도를 위에 두듯 렌치는 모멘트를 위에 둡니다.
+
+:::fig rWrench
+:::
 
 :::key 렌치와 좌표 변환
 $$\mathcal F_a=\begin{bmatrix}m_a\\f_a\end{bmatrix},\qquad m_a=r_a\times f_a;\qquad\mathcal F_b=[\mathrm{Ad}_{T_{ab}}]^T\mathcal F_a$$

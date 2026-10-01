@@ -18,6 +18,11 @@ field_page() { # $1 field, $2 prefix to root ("../"), $3 prefix to the field fol
   echo "<script src=\"${R}core/calc.js\"></script>"
   echo "<script src=\"${R}core/plots.js\"></script>"
   [ -f "$f/plots.js" ] && echo "<script src=\"${F}plots.js\"></script>"
+  # 조작형 시뮬레이션: <분야>/sims-*.js가 있으면 core/simkit.js와 함께 (이름 순서대로)
+  if ls "$f"/sims-*.js > /dev/null 2>&1; then
+    echo "<script src=\"${R}core/simkit.js\"></script>"
+    for s in "$f"/sims-*.js; do echo "<script src=\"${F}${s#$f/}\"></script>"; done
+  fi
   echo "<script src=\"${R}core/ambient.js\"></script>"
   echo "<script src=\"${R}core/app.js\"></script>"
 }

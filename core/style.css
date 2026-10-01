@@ -1041,3 +1041,136 @@ body[data-view="exam-live"] .ko-all { bottom: calc(76px + env(safe-area-inset-bo
   .ko-all span { display: none; }
   .ko-all { padding: 7px; }
 }
+
+/* ---------- motion: page changes, presses, reveals ----------
+   One easing for everything that arrives (fast start, soft landing) and short durations, so the site feels quick.
+   "prefers-reduced-motion" above switches all of it off. */
+:root { --ease-out: cubic-bezier(.2, .75, .25, 1); --ease-in: cubic-bezier(.4, 0, 1, 1); }
+@view-transition { navigation: auto; } /* moving between field pages and the hub cross-fades */
+.site-header { view-transition-name: site-header; }
+main { view-transition-name: page; }
+::view-transition-group(page) { animation-duration: 0s; }
+::view-transition-old(page) { animation: vt-out 0.14s var(--ease-in) both; }
+::view-transition-new(page) { animation: page-in 0.38s var(--ease-out) 0.03s both; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.22s; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes soft-in { from { opacity: 0; } }
+main.enter { animation: page-in 0.36s var(--ease-out) both; }
+main.enter-soft .ch-body, main.enter-soft .practice-head, main.enter-soft .problems { animation: soft-in 0.26s ease both; }
+
+/* presses: everything clickable gives under the finger */
+.btn, .choice, .seg button, .selfgrade button, .jump a, .pf-chip, .chip.sec, .sec-filter button, .linkbtn, .hero-arrow,
+.nav a, .tab, .toc a, .pf-links a, .sim-btn, .sim-seg button, .menu-btn, .progress-pill, .ko-btn, details.sol > summary, .exam-row, .ch-next a {
+  transition: transform 0.14s var(--ease-out), background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+.btn:active, .choice:active:not([disabled]), .seg button:active, .selfgrade button:active, .jump a:active, .pf-chip:active, .sec-filter button:active,
+.linkbtn:active, .sim-btn:active, .sim-seg button:active, .menu-btn:active, .progress-pill:active, .ko-btn:active, details.sol > summary:active { transform: scale(0.965); }
+.nav a:active, .tab:active, .toc a:active, .pf-links a:active, .ch-next a:active, .exam-row:active { transform: translateY(1px); }
+.tile { transition: transform 0.3s var(--ease-out); }
+.tile:hover { transform: translateY(-3px); }
+.tile:active { transform: translateY(-1px) scale(0.99); }
+.pf-item { transition: transform 0.25s var(--ease-out); }
+.pf-item:hover { transform: translateX(3px); }
+.toc a { transition: color 0.2s, padding-left 0.25s var(--ease-out); }
+.toc a.active { padding-left: 6px; }
+.choice[aria-pressed="true"] .letter, .selfgrade button[aria-pressed="true"] { animation: press-pop 0.28s var(--ease-out); }
+@keyframes press-pop { 40% { transform: scale(1.14); } }
+
+/* the active tab's underline draws itself in */
+.tab { position: relative; }
+.tab[aria-selected="true"] { border-bottom-color: transparent; }
+.tab::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: var(--ink); transform: scaleX(0); transform-origin: 50% 50%; transition: transform 0.25s var(--ease-out); }
+.tab:hover::after { transform: scaleX(0.35); background: var(--rule-strong); }
+.tab[aria-selected="true"]::after { transform: scaleX(1); background: var(--ink); animation: line-in 0.38s var(--ease-out) both; }
+@keyframes line-in { from { transform: scaleX(0); } }
+
+/* solutions and answers unfold instead of popping */
+details.sol[open] > div { animation: unfold 0.32s var(--ease-out) both; }
+details.sol > summary::before { display: inline-block; transition: transform 0.25s var(--ease-out); }
+details.sol[open] > summary::before { transform: rotate(180deg); }
+.feedback.reveal, .solution.reveal { animation: unfold 0.34s var(--ease-out) both; }
+@keyframes unfold { from { opacity: 0; transform: translateY(-6px); } }
+.prob.pop-ok .feedback { animation: unfold 0.34s var(--ease-out) both, glow-ok 0.9s ease 0.1s; }
+.prob.pop-bad .answer-row, .prob.pop-bad .choices { animation: nudge 0.38s ease; }
+@keyframes glow-ok { 30% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); } }
+@keyframes nudge { 20% { transform: translateX(-5px); } 45% { transform: translateX(4px); } 70% { transform: translateX(-2px); } }
+
+/* drawer, modal, toast */
+.drawer-panel { animation: drawer-in 0.3s var(--ease-out) both; }
+.drawer-scrim { animation: fade-in 0.25s ease both; }
+.drawer.closing .drawer-panel { animation: drawer-out 0.2s var(--ease-in) both; }
+.drawer.closing .drawer-scrim { animation: fade-out 0.2s ease both; }
+@keyframes drawer-in { from { transform: translateX(-100%); } }
+@keyframes drawer-out { to { transform: translateX(-100%); } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+.modal-back { animation: fade-in 0.2s ease both; }
+.modal { animation: modal-in 0.28s var(--ease-out) both; }
+.modal-back.closing { animation: fade-out 0.17s ease both; pointer-events: none; }
+.modal-back.closing .modal { animation: modal-out 0.17s var(--ease-in) both; }
+@keyframes modal-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+@keyframes modal-out { to { opacity: 0; transform: translateY(6px) scale(0.98); } }
+.toast { animation: toast-in 0.3s var(--ease-out) both; }
+.toast.out { animation: toast-out 0.25s var(--ease-in) both; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- simulations (core/simkit.js) ---------- */
+.sim { margin: 1.8em 0; border: 1px solid var(--rule-strong); background: var(--paper-3); }
+.sec > .sim { margin-block: 1.8em; }
+.sim-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+.sim-head .caps { color: var(--camel-ink); }
+.sim-head b { font-family: var(--f-serif); font-weight: 600; font-size: 1rem; }
+.sim-head a { margin-left: auto; font-size: 0.78rem; color: var(--ink-3); text-decoration: none; }
+.sim-head a:hover { color: var(--ink); }
+.sim-stage { display: grid; gap: 0; min-width: 0; }
+.sim-wait { padding: 40px 16px; text-align: center; color: var(--ink-3); font-size: 0.86rem; }
+.sim > figcaption { padding: 10px 14px 12px; font-size: 0.86rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
+.sim > figcaption > * + * { margin-top: 0.5em; }
+.sim-try { padding: 10px 14px 14px; border-top: 1px solid var(--rule); font-size: 0.88rem; color: var(--ink-2); }
+.sim-try .caps { color: var(--camel-ink); }
+.sim-try ol { margin: 6px 0 0; padding-left: 1.3em; display: grid; gap: 4px; }
+.sim-canvas { position: relative; min-width: 0; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.sim-canvas canvas { display: block; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.sim-canvas canvas.dragging { cursor: grabbing !important; }
+.sim-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-bottom: 1px solid var(--rule); }
+.sim-row > .sim-canvas { border-bottom: 0; }
+.sim-row > .sim-canvas + .sim-canvas { border-left: 1px solid var(--rule); }
+.sim-ctrl { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+.sim-ctrl:last-child { border-bottom: 0; }
+.sim-sl { display: grid; grid-template-columns: auto minmax(90px, 1fr) 4.6em; align-items: center; gap: 10px; flex: 1 1 230px; min-width: 0; font-size: 0.84rem; color: var(--ink-2); }
+.sim-sl label { white-space: nowrap; }
+.sim-sl output { font-family: var(--f-body); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
+.sim-sl input[type="range"] { width: 100%; min-width: 0; accent-color: var(--camel); height: 22px; }
+.sim-seg { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--ink-2); }
+.sim-seg-b { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; }
+.sim-seg button { background: none; border: 0; padding: 6px 12px; font-size: 0.8rem; color: var(--ink-2); cursor: pointer; }
+.sim-seg button + button { border-left: 1px solid var(--rule); }
+.sim-seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.sim-btn { border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; cursor: pointer; }
+.sim-btn:hover { border-color: var(--ink); }
+.sim-btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.sim-btn.primary:hover { background: transparent; color: var(--ink); }
+.sim-chk { display: inline-flex; align-items: center; gap: 7px; font-size: 0.84rem; color: var(--ink-2); cursor: pointer; }
+.sim-chk input { accent-color: var(--camel); width: 16px; height: 16px; }
+.sim-out { padding: 12px 14px; font-size: 0.88rem; color: var(--ink-2); display: grid; gap: 6px; min-width: 0; overflow-x: auto; border-bottom: 1px solid var(--rule); }
+.sim-out:last-child { border-bottom: 0; }
+.sim-out b { color: var(--ink); font-weight: 600; }
+.sim-out .katex { font-size: 1.02em; }
+.sim-out .katex-display { margin: 0.2em 0; }
+.sim-out .row { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; }
+.sim-out .mono { font-variant-numeric: tabular-nums; }
+.sim-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; }
+.sim-badge.ok { background: var(--ok-bg); color: var(--ok); border: 1px solid var(--ok); }
+.sim-badge.bad { background: var(--bad-bg); color: var(--bad); border: 1px solid var(--bad); }
+.sim-note { font-size: 0.8rem; color: var(--ink-3); }
+.lab-sec .sim { margin-top: 1.2em; }
+@media (max-width: 760px) {
+  .sim-row { grid-template-columns: minmax(0, 1fr); }
+  .sim-row > .sim-canvas + .sim-canvas { border-left: 0; border-top: 1px solid var(--rule); }
+  .sim-ctrl { gap: 10px 14px; }
+  .sim-sl { flex-basis: 100%; }
+}
+.sim-sel { display: inline-flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--ink-2); }
+.sim-sel select { font: inherit; font-size: 0.84rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 999px; padding: 5px 12px; max-width: 100%; }

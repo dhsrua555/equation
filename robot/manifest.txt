@@ -15,3 +15,7 @@ r14.js
 proofs-a.js
 proofs-b.js
 exams.js
+fig-grasp.js
+quiz-ps2.js
+quizprep-ps2.js
+fig-more.js

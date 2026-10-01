@@ -17,6 +17,9 @@ window.EM = window.EM || { chapters: [], exams: [] };
     secTitles: { '3.2.2': '각속도', '3.2.3a': '행렬 지수와 로드리게스 공식', '3.2.3b': '행렬 로그' },
     sections: [
       { k: '3.2.2', p: 76, title: '각속도', body: R`
+:::fig rAngVel
+:::
+
 물체가 순간적으로 단위 축 $\hat w$ 둘레로 $\dot\theta$의 비율로 돈다면 각속도는 $\omega=\hat w\dot\theta$입니다. 물체 축 $\hat x_b$의 끝은 $\dot{\hat x}_b=\omega\times\hat x_b$로 움직이고, 세 축을 모으면 $\dot R=[\omega\times\hat x_b\ \ \omega\times\hat y_b\ \ \omega\times\hat z_b]$.
 
 :::key 반대칭 행렬
@@ -48,6 +51,20 @@ $$\mathrm{Rot}(\hat\omega,\theta)=e^{[\hat\omega]\theta}=I+\sin\theta\,[\hat\ome
 $\hat\omega\theta\in\mathbb R^3$을 회전의 **지수 좌표**라 한다(방향의 명시적 표현, 세 수).
 :::
 
+### 그림으로 보는 로드리게스 공식
+급수 없이 기하로도 같은 식이 나옵니다. 점 $p$를 축 방향 성분 $p_\parallel=\hat\omega(\hat\omega^Tp)$와 수직 성분 $p_\perp=p-p_\parallel$로 나누면, 회전은 $p_\parallel$을 그대로 두고 $p_\perp$만 축에 수직인 평면에서 $\theta$만큼 돌립니다. 그 평면의 두 직교 방향이 $p_\perp$와 $\hat\omega\times p$(길이가 같음)이므로
+$$Rp=p_\parallel+\cos\theta\,p_\perp+\sin\theta\,(\hat\omega\times p).$$
+$\hat\omega\times p=[\hat\omega]p$이고 $[\hat\omega]^2p=\hat\omega\times(\hat\omega\times p)=-p_\perp$이므로 $p_\perp=-[\hat\omega]^2p$, $p_\parallel=p+[\hat\omega]^2p$. 넣어 정리하면
+$$Rp=\big(I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2\big)p$$
+— 로드리게스 공식입니다.
+
+:::fig rRodrigues
+:::
+
+:::sim rotation axis
+축의 방위각·고도로 $\hat\omega$를, 막대로 $\theta$를 정하면 상자가 그만큼 돌고 아래에 로드리게스 공식으로 계산한 $R$이 나옵니다. 색 곡선은 세 물체 축의 끝이 지나온 원호로, 모두 축 $\hat\omega$에 수직인 평면 위에 있습니다.
+:::
+
 :::ex 예제 2
 $\hat\omega=\tfrac1{\sqrt3}(1,1,1)$ 둘레로 $\theta=120°$ 돈 회전 행렬은?
 ---
@@ -62,6 +79,10 @@ $\mathrm{Rot}(\hat z,\theta)$에 $\hat\omega=\hat z$를 넣으면 로드리게�
 ` },
       { k: '3.2.3b', p: 84, title: '행렬 로그: 회전 행렬에서 축과 각으로', body: R`
 로드리게스 공식의 대각합과 반대칭 부분을 보면 거꾸로 풀 수 있습니다: $\operatorname{tr}R=1+2\cos\theta$, $R-R^T=2\sin\theta[\hat\omega]$.
+
+:::idea 왜 대각합과 반대칭 부분인가
+$[\hat\omega]$는 대각합이 0인 반대칭 행렬이고 $[\hat\omega]^2=\hat\omega\hat\omega^T-I$는 대칭 행렬(대각합 $1-3=-2$)입니다. 그래서 로드리게스 공식의 대각합에는 $I$와 $[\hat\omega]^2$만 남아 $3-2(1-\cos\theta)=1+2\cos\theta$가 되고, 반대칭 부분 $\frac12(R-R^T)$에는 $\sin\theta[\hat\omega]$만 남습니다. 각은 대각합에서, 축은 반대칭 부분에서 읽습니다.
+:::
 
 :::key 행렬 로그
 $R\in SO(3)$에서 $\hat\omega\theta$를 구한다($\theta\in[0,\pi]$).

@@ -24,6 +24,13 @@ $$T=\begin{bmatrix}R&p\\0&1\end{bmatrix},\quad R\in SO(3),\ p\in\mathbb R^3;\qqu
 점은 동차 좌표 $(x,1)$로: $T\begin{bmatrix}x\\1\end{bmatrix}=\begin{bmatrix}Rx+p\\1\end{bmatrix}$. 곱에 닫혀 있고 교환 법칙은 없다. 자유도 $3+3=6$.
 :::
 
+:::fig rHomog
+:::
+
+:::idea 왜 4×4인가
+회전과 이동을 함께 적용하는 $x\mapsto Rx+p$는 선형 사상이 아닙니다(원점이 $p$로 감). 점에 성분 1을 하나 덧붙여 $(x,1)$로 쓰면 이 변환이 $4\times4$ 행렬의 곱 하나가 되어, 여러 변환을 잇는 일이 행렬을 곱하는 일로 바뀝니다. 속도 같은 **벡터**는 성분 0을 붙여 $(v,0)$으로 쓰면 이동의 영향을 받지 않습니다.
+:::
+
 회전 행렬의 세 가지 쓰임이 그대로 옮겨집니다: $T_{sb}$로 자세를 적고, $T_{ab}T_{bc}=T_{ac}$와 $T_{ab}x_b=x_a$로 좌표계를 바꾸고, 변환 $T=(\mathrm{Rot}(\hat\omega,\theta),p)$로 물체를 옮깁니다. $TT_{sb}$는 {s}의 축 둘레로 돌리고 {s}에서 잰 $p$만큼 옮기며, $T_{sb}T$는 {b}에서 잰 축과 거리로 움직입니다.
 
 :::ex 예제 1
@@ -45,6 +52,9 @@ $v_b=R^T\dot p$는 {b} 원점의 속도를 {b} 좌표로 쓴 것. $v_s=\dot p-\o
 :::key 수반 행렬
 $$[\mathrm{Ad}_T]=\begin{bmatrix}R&0\\{}[p]R&R\end{bmatrix}\in\mathbb R^{6\times6},\qquad\mathcal V_s=[\mathrm{Ad}_{T_{sb}}]\mathcal V_b,\qquad[\mathrm{Ad}_T]^{-1}=[\mathrm{Ad}_{T^{-1}}]$$
 일반적으로 $\mathcal V_a=[\mathrm{Ad}_{T_{ab}}]\mathcal V_b$. 행렬로는 $[\mathcal V_s]=T[\mathcal V_b]T^{-1}$.
+:::
+
+:::fig rTwistVs
 :::
 
 :::ex 예제 2 — 한 점 둘레로 도는 물체
@@ -76,6 +86,10 @@ $\dot\theta=2$, $\mathcal S=((0,0,1),(2,0,0.5))$. 피치 $h=\hat s\cdot v_S=0.5$
 
 :::note 두 트위스트는 같은 나사
 $\mathcal V_s$와 $\mathcal V_b$는 같은 나사 운동을 두 좌표계에서 쓴 것입니다. 나사 축, 피치, 회전 속도는 좌표계와 무관한 기하학적 대상이고, 수반 행렬은 그 표현만 바꿉니다.
+:::
+
+:::sim screw
+나사 축의 방향 $\hat s$, 축 위의 점 $q$, 피치 $h$를 바꾸며 상자가 축 둘레로 돌면서 축 방향으로 미끄러지는 모습을 보세요. 아래의 $\mathcal S=(\omega,v)$에서 $v=-\hat s\times q+h\hat s$의 두 항이 각각 “축이 원점을 지나지 않아 생기는 부분”과 “피치 때문에 축 방향으로 나가는 부분”입니다.
 :::
 ` },
     ],

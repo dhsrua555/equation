@@ -56,6 +56,7 @@
   // worked quiz / problem-set solutions (data/quiz-*.js): a separate "퀴즈풀이" page
   const QUIZ = EM.quizzes || [];
   const QUIZ_LABEL = (SITE.text && SITE.text.quizNav) || '퀴즈풀이';
+  const QUIZ_MORE = (SITE.text && SITE.text.quizMore) || '퀴즈 대비 연습문제';
   // extra header links a field asks for, e.g. the unit its lecture slides live in: SITE.nav = [{ label, route, title }]
   const NAV_X = SITE.nav || [];
   // quiz problems ↔ units: a quiz problem lists its sections in secs: ['ch02:2.6', …];
@@ -76,6 +77,11 @@
   // every worked problem, for the links under a section title
   const WORKED = [];
   BOOKS.forEach((b) => b.sets.forEach((q) => q.problems.forEach((p) => WORKED.push({ id: `${q.id}-${p.id}`, b, q, p }))));
+  // interactive simulations: <field>/sims.js registers them in window.SITE_SIMS (drawn with core/simkit.js).
+  // Content embeds one as ":::sim name [preset]"; the #lab page gathers them all
+  const SIMREG = window.SITE_SIMS || {};
+  const SIMS = Object.keys(SIMREG).filter((k) => SIMREG[k] && SIMREG[k].title && SIMREG[k].mount).map((k) => Object.assign({ id: k }, SIMREG[k]));
+  const LAB_LABEL = TX.labNav || '시뮬레이션';
   EXAMS.forEach((x) => {
     x.problems.forEach((p, k) => {
       p.no = k + 1; p.src = x.id;
@@ -283,7 +289,7 @@
     const notes = NOTES;
     const key = NOTEKEY;
     NOTES = null;
-    const num = sec.label ? `§${sec.label}` : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
+    const num = sec.label ? (/^\d/.test(sec.label) ? `§${sec.label}` : sec.label) : sec.k ? `§${sec.k}` : `${c.n}.${idx}`;
     const where = SITE.secSource ? SITE.secSource(sec, c) : (sec.p ? `p.${sec.p}` : '');
     const worked = WORKED.filter((x) => (x.p.secs || []).includes(`${c.id}:${sec.k}`));
     return `<section class="sec" id="sec-${sec.k || idx}">
@@ -514,7 +520,32 @@
     return `<div class="pf-links"><span class="caps">Proof</span>${list.map((p) =>
       `<a href="#pf-${p.pid}" data-route="pf-${p.pid}">${inline(p.title)}</a>`).join('')}</div>`;
   }
+  function simFig(spec, cap, tries) {
+    const [name, ...rest] = String(spec || '').trim().split(/\s+/);
+    const s = SIMREG[name];
+    if (!s || !s.mount) return '';
+    return `<figure class="sim" data-sim="${esc(name)}" data-arg="${esc(rest.join(' '))}">
+      <div class="sim-head"><span class="caps">Simulation</span><b>${esc(s.title)}</b>${route.startsWith('lab') ? '' : `<a href="#lab-${esc(name)}" data-route="lab-${esc(name)}">${esc(LAB_LABEL)} 모아 보기 →</a>`}</div>
+      <div class="sim-stage"><p class="sim-wait">시뮬레이션을 준비하는 중…</p></div>
+      ${cap && String(cap).trim() ? `<figcaption>${md(cap)}</figcaption>` : ''}
+      ${tries && tries.length ? `<div class="sim-try"><span class="caps">해 볼 것</span><ol>${tries.map((t) => `<li>${inline(t)}</li>`).join('')}</ol></div>` : ''}</figure>`;
+  }
+  // build every simulation placeholder under root (once per element)
+  function mountSims(root) {
+    (root || main).querySelectorAll('figure.sim[data-sim]:not([data-on])').forEach((f) => {
+      f.setAttribute('data-on', '');
+      const s = SIMREG[f.dataset.sim];
+      const stage = f.querySelector('.sim-stage');
+      if (!s || !stage) return;
+      stage.innerHTML = '';
+      try { s.mount(stage, f.dataset.arg || ''); } catch (e) {
+        stage.innerHTML = '<p class="sim-wait">시뮬레이션을 열지 못했습니다.</p>';
+        if (window.__errors) window.__errors.push(`sim ${f.dataset.sim}: ${e.message}`); else console.error(e);
+      }
+    });
+  }
   function container(type, title, inner) {
+    if (type === 'sim') return simFig(title, inner);
     if (type === 'fig') {
       const fn = FIGS[title.trim()];
       const capEn = BI && EN.fig ? EN.fig[title.trim()] : '';
@@ -613,6 +644,7 @@
   function biContainer(a, b, opt) {
     const type = a.type;
     if (type === 'fig') return container('fig', a.title, a.inner);
+    if (type === 'sim') return container('sim', a.title, a.inner);
     const [label, cls] = BLOCK_LABEL[type] || ['Note', 'blk-thm'];
     const tko = b.title && b.title !== a.title ? b.title : '';
     const head = `<div class="blk-label">${label}${a.title ? `<em>${inline(a.title)}${koT(tko)}</em>` : ''}</div>`;
@@ -707,7 +739,7 @@
     const root = $('#toast-root');
     root.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
     clearTimeout(toast.t);
-    toast.t = setTimeout(() => { root.innerHTML = ''; }, 2600);
+    toast.t = setTimeout(() => { const t = root.firstChild; if (!t || reduced) { root.innerHTML = ''; return; } t.classList.add('out'); setTimeout(() => t.remove(), 260); }, 2600);
   }
   let modalOk = null;
   function modal({ title, body, ok = '확인', cancel = '취소', onOk }) {
@@ -726,7 +758,14 @@
     const b = $('#modal-ok');
     if (b) b.focus();
   }
-  function closeModal() { $('#modal-root').innerHTML = ''; modalOk = null; }
+  function closeModal() {
+    const back = $('#modal-root .modal-back');
+    modalOk = null;
+    if (!back || reduced) { $('#modal-root').innerHTML = ''; return; }
+    back.classList.add('closing');
+    back.removeAttribute('data-act');
+    setTimeout(() => back.remove(), 170);
+  }
   const svgArrow = (dir) => `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="${dir === 'l' ? 'M11 3 5 9l6 6' : 'M7 3l6 6-6 6'}"/></svg>`;
   function fmtTime(sec) {
     sec = Math.max(0, Math.round(sec));
@@ -767,13 +806,14 @@
     document.documentElement.classList.toggle('has-net', !!NET);
     $('#site-header').innerHTML = `${netBar()}
       <div class="wrap header-row">
-        <nav class="nav nav-left${3 + NAV_X.length + BOOKS.length > 5 ? ' many' : ''}" aria-label="주 메뉴">
+        <nav class="nav nav-left${3 + NAV_X.length + BOOKS.length + (SIMS.length ? 1 : 0) > 5 ? ' many' : ''}" aria-label="주 메뉴">
           <button class="menu-btn" data-act="menu" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" class="ko" data-route="${n.route}"${n.title ? ` title="${esc(n.title)}"` : ''}>${esc(n.label)}</a>`).join('')}
           ${BOOKS.map((b) => `<a href="#${b.key}" class="ko" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
+          ${SIMS.length ? `<a href="#lab" class="ko" data-route="lab">${esc(LAB_LABEL)}</a>` : ''}
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
         <nav class="nav nav-right" aria-label="학습 도구">
@@ -802,9 +842,15 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || (BOOK.has(r) && route.startsWith(`${r}-`)) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || ((BOOK.has(r) || r === 'lab') && route.startsWith(`${r}-`)) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
+  }
+  function closeDrawer() {
+    const d = $('#drawer-root .drawer');
+    if (!d || reduced) { $('#drawer-root').innerHTML = ''; return; }
+    d.classList.add('closing');
+    setTimeout(() => { if (d.isConnected) $('#drawer-root').innerHTML = ''; }, 200);
   }
   function openDrawer() {
     $('#drawer-root').innerHTML = `
@@ -817,6 +863,7 @@
           <a href="#proofs" data-route="proofs">증명 찾기</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" data-route="${n.route}">${esc(n.label)}</a>`).join('')}
           ${BOOKS.map((b) => `<a href="#${b.key}" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
+          ${SIMS.length ? `<a href="#lab" data-route="lab">${esc(LAB_LABEL)}</a>` : ''}
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
           ${Object.keys(PARTS).map((k) => `
@@ -981,7 +1028,15 @@
     tmp.innerHTML = probHTML(p, Object.assign({ ctx: 'practice' }, opts));
     const next = tmp.firstElementChild;
     next.dataset.opts = el.dataset.opts || '{}';
+    const wasDone = !!el.querySelector('.feedback, .solution');
     el.replaceWith(next);
+    // the verdict arrives with a small motion: a nod for right, a shake for wrong, a fade for an opened solution
+    const u = ui.get(pid);
+    if (!reduced && u && u.done && !wasDone) {
+      const fb = next.querySelector('.feedback, .solution');
+      if (fb) fb.classList.add('reveal');
+      if (p.type !== 'open' && u.ok != null) next.classList.add(u.ok ? 'pop-ok' : 'pop-bad');
+    }
     updateTally();
     updateHeader();
   }
@@ -1167,7 +1222,7 @@
     if (tab === 'learn') {
       body = `<div class="ch-body">
         <nav class="toc" aria-label="단원 목차"><span class="caps">Contents</span>
-          ${c.sections.map((sec, k) => `<a href="#${sec.k ? `${c.id}-k${sec.k}` : c.id}" data-act="scroll" data-target="sec-${sec.k || k + 1}"><span>${sec.label ? `§${sec.label.split("–")[0]}` : sec.k ? `§${sec.k}` : `${c.n}.${k + 1}`}</span>${esc(sec.title)}</a>`).join('')}
+          ${c.sections.map((sec, k) => `<a href="#${sec.k ? `${c.id}-k${sec.k}` : c.id}" data-act="scroll" data-target="sec-${sec.k || k + 1}"><span>${sec.label ? `${/^\d/.test(sec.label) ? '§' : ''}${sec.label.split("–")[0]}` : sec.k ? `§${sec.k}` : `${c.n}.${k + 1}`}</span>${esc(sec.title)}</a>`).join('')}
           ${XLINKS.some((l) => (l.from === c.id) !== (l.to === c.id)) ? `<a href="#${c.id}" data-act="scroll" data-target="sec-links"><span>↔</span>다른 단원과의 연결</a>` : ''}
         </nav>
         <article class="prose">
@@ -1366,7 +1421,8 @@
       const tg = xrefTarget(ch, k);
       if (!tg) return '';
       const c = chById.get(ch), sec = c.sections.find((x) => x.k === k);
-      return `<a class="pf-chip" href="#${tg.route}" data-route="${tg.route}" title="${esc(tg.label)}">${pad(c.n)} · §${esc(k)} ${esc(sec ? sec.title : '')}</a>`;
+      const num = sec && sec.label && !/^\d/.test(sec.label) ? sec.label : `§${k}`;
+      return `<a class="pf-chip" href="#${tg.route}" data-route="${tg.route}" title="${esc(tg.label)}">${pad(c.n)} · ${esc(num)} ${esc(sec ? sec.title : '')}</a>`;
     }).filter(Boolean);
     return links.length ? `<nav class="quiz-links" aria-label="이 문제의 개념이 있는 단원"><span class="caps">개념 정리로</span>${links.join('')}</nav>` : '';
   }
@@ -1393,7 +1449,7 @@
           ${Q.map((q) => `<span class="caps">${esc(q.title)}</span>
             ${q.intro ? `<a href="#${K}" data-act="scroll" data-target="${P}-${q.id}-intro"><span>—</span>${esc(q.introLabel || b.intro)}</a>` : ''}
             ${q.problems.map((p) => `<a href="#${K}-${q.id}-${p.id}" data-act="scroll" data-target="${P}-${q.id}-${p.id}"><span>${esc(p.label || p.id)}</span>${esc(p.title)}</a>`).join('')}`).join('')}
-          ${more.length ? `<a href="#${K}" data-act="scroll" data-target="${P}-more"><span>→</span>퀴즈 대비 연습문제</a>` : ''}
+          ${more.length ? `<a href="#${K}" data-act="scroll" data-target="${P}-more"><span>→</span>${esc(QUIZ_MORE)}</a>` : ''}
         </nav>
         <div class="quiz-main">
         ${Q.map((q) => `
@@ -1412,11 +1468,42 @@
             </article>
           </div>`).join('')}
           ${more.length ? `<article class="prose"><section class="sec quiz-more" id="${P}-more">
-            <div class="sec-title"><span>→</span><h2>퀴즈 대비 연습문제</h2></div>
+            <div class="sec-title"><span>→</span><h2>${esc(QUIZ_MORE)}</h2></div>
             <p>위 문제들과 같은 모양(정의 → 유도·증명 → 작은 계산 → 해석)의 문제를 단원마다 더 만들어 두었습니다. 누르면 그 단원의 연습문제가 <b>퀴즈형</b>만 걸러진 채로 열립니다. 서술형이라 풀이를 펼친 뒤 채점 기준으로 스스로 채점하세요.</p>
-            <nav class="quiz-links" aria-label="퀴즈 대비 연습문제">${more.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
+            <nav class="quiz-links" aria-label="${esc(QUIZ_MORE)}">${more.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
           </section></article>` : ''}
         </div>
+      </div>
+    </div>
+    ${footer()}`;
+  }
+
+  // every simulation on one page, each with what to try and a link back to its section
+  function viewLab() {
+    return `
+    <div class="wrap">
+      <header class="page-head"><span class="caps">Interactive simulations</span><h1>Laboratoire<span class="ko">${esc(LAB_LABEL)}</span></h1>
+        ${proseP('labLede', '직접 끌고 돌려 보며 이해하는 시뮬레이션을 모았습니다. 각 시뮬레이션은 관련 단원의 절에도 들어 있습니다.', 'lede', inline)}
+        <nav class="jump" aria-label="시뮬레이션으로 이동">${SIMS.map((s) => `<a href="#lab-${s.id}" data-act="scroll" data-target="lb-${s.id}">${esc(s.title)}</a>`).join('')}</nav>
+      </header>
+      <div class="ch-body quiz-body lab-body">
+        <nav class="toc" aria-label="시뮬레이션 목차">
+          <span class="caps">${esc(LAB_LABEL)}</span>
+          ${SIMS.map((s, i) => `<a href="#lab-${s.id}" data-act="scroll" data-target="lb-${s.id}"><span>${pad(i + 1)}</span>${esc(s.title)}</a>`).join('')}
+        </nav>
+        <div class="quiz-main"><article class="prose">
+        ${SIMS.map((s, i) => {
+          const c = s.ch ? chById.get(s.ch) : null;
+          const sec = c && s.k ? c.sections.find((x) => x.k === s.k) : null;
+          const to = c ? `${c.id}${sec ? `-k${s.k}` : ''}` : '';
+          return `<section class="sec lab-sec" id="lb-${s.id}">
+            <div class="sec-title"><span>${pad(i + 1)}</span><h2>${esc(s.title)}</h2></div>
+            ${c ? `<p class="sec-page caps"><a href="#${to}" data-route="${to}">${pad(c.n)} ${esc(c.title)}${sec ? ` · §${esc(s.k)} ${esc(sec.title)}` : ''} →</a></p>` : ''}
+            ${s.desc ? md(s.desc) : ''}
+            ${simFig(`${s.id}${s.labArg ? ` ${s.labArg}` : ''}`, '', s.tries)}
+          </section>`;
+        }).join('')}
+        </article></div>
       </div>
     </div>
     ${footer()}`;
@@ -1738,11 +1825,17 @@
     try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
     return h || 'home';
   }
+  // a click on a link cross-fades the old page into the new one (View Transitions where the browser has them);
+  // history and hash changes render at once and only fade the new page in
   function go(to, opts) {
     if (to !== route) {
       try { history.pushState(null, '', '#' + to); } catch (e) { /* sandboxed: keep in-page state only */ }
     }
-    render(to, opts || {});
+    const o = opts || {};
+    if (o.vt && !reduced && document.startViewTransition && !document.hidden) {
+      try { document.startViewTransition(() => render(to, Object.assign({}, o, { fade: false }))); return; } catch (e) { /* fall through */ }
+    }
+    render(to, o);
   }
   function render(to, opts) {
     const prevRoute = route;
@@ -1754,7 +1847,7 @@
     let html = '';
     if (to === 'home') { view = 'home'; html = viewHome(); }
     else if ((m = /^(ch\d{2})(?:-(practice|formulas|proofs))?$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), m[2] || 'learn'); }
-    else if ((m = /^(ch\d{2})-k(\d+\.\d+[a-z]?)$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), 'learn'); opts = Object.assign({}, opts, { anchor: `sec-${m[2]}` }); }
+    else if ((m = /^(ch\d{2})-k([\w.]+)$/.exec(to)) && chById.get(m[1])) { view = 'chapter'; html = viewChapter(chById.get(m[1]), 'learn'); opts = Object.assign({}, opts, { anchor: `sec-${m[2]}` }); }
     else if (to === 'formulas') html = viewFormulas();
     else if (to === 'proofs') html = viewProofs();
     else if ((m = /^pf-(ch\d{2}-[\w-]+)$/.exec(to)) && proofById.get(m[1])) html = viewProof(proofById.get(m[1]));
@@ -1763,6 +1856,8 @@
     else if (to === 'exam-live') { route = 'exams'; html = viewExams(); }
     else if ((m = /^result-([a-z0-9]+)$/.exec(to))) html = viewResult(m[1]);
     else if (to === 'review') html = viewReview();
+    else if (to === 'lab' && SIMS.length) html = viewLab();
+    else if ((m = /^lab-([\w-]+)$/.exec(to)) && SIMREG[m[1]]) { html = viewLab(); opts = Object.assign({}, opts, { anchor: `lb-${m[1]}` }); }
     else if (BOOK.has(to)) html = viewBook(BOOK.get(to));
     else if ((m = /^([a-z]+)-([\w-]+)$/.exec(to)) && BOOK.has(m[1])) { const b = BOOK.get(m[1]); html = viewBook(b); opts = Object.assign({}, opts, { anchor: `${b.pre}-${m[2]}` }); }
     else { route = 'home'; view = 'home'; html = viewHome(); }
@@ -1772,18 +1867,27 @@
       applyKoAll();
     }
     main.innerHTML = html;
-    $('#drawer-root').innerHTML = '';
+    const samePage0 = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
+    if (opts.fade !== false && !reduced && prevRoute && prevRoute !== route) {
+      // a new page rises in; a tab switch inside the same unit only fades its body
+      main.classList.remove('enter', 'enter-soft');
+      void main.offsetWidth;
+      main.classList.add(samePage0 ? 'enter-soft' : 'enter');
+    }
+    const drawer = $('#drawer-root .drawer');
+    if (drawer && !reduced && opts.fade !== false) { drawer.classList.add('closing'); setTimeout(() => { if (drawer.isConnected) $('#drawer-root').innerHTML = ''; }, 200); } else $('#drawer-root').innerHTML = '';
     updateHeader();
     window.EMPlots.mount(main);
+    mountSims(main);
     if (view === 'home') startHero();
-    if (view === 'chapter' || bookOf(route)) watchToc();
+    if (view === 'chapter' || bookOf(route) || route.startsWith('lab')) watchToc();
     if (route === 'proofs') filterProofs();
-    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중' };
+    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', lab: LAB_LABEL };
     BOOKS.forEach((b) => { title[b.key] = b.label; });
     const ch = chById.get(route.slice(0, 4));
     const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
     const DT = SITE.title || SITE.name || '';
-    const tk = bookOf(route) ? bookOf(route).key : route;
+    const tk = bookOf(route) ? bookOf(route).key : route.startsWith('lab-') ? 'lab' : route;
     document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[tk] ? `${title[tk]} · ${DT}` : DT;
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
@@ -1825,7 +1929,7 @@
     const a = e.target.closest('a[data-route]');
     if (a && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
       e.preventDefault();
-      go(a.dataset.route);
+      go(a.dataset.route, { vt: true });
       return;
     }
     const t = e.target.closest('[data-act]');
@@ -1857,7 +1961,7 @@
         filterProofs();
         break;
       case 'menu': openDrawer(); break;
-      case 'menu-close': $('#drawer-root').innerHTML = ''; break;
+      case 'menu-close': closeDrawer(); break;
       case 'hero-prev': setHero(heroIdx - 1); break;
       case 'hero-next': setHero(heroIdx + 1); break;
       case 'hero-to': setHero(+t.dataset.i); break;
@@ -2045,7 +2149,7 @@
     if (e.target.closest('#builder-form')) readBuilderForm();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeModal(); $('#drawer-root').innerHTML = ''; }
+    if (e.key === 'Escape') { closeModal(); closeDrawer(); }
     if (e.key === 'Enter' && e.target.dataset && e.target.dataset.role === 'num') {
       e.preventDefault();
       const b = $(`#p-${e.target.dataset.pid} [data-act="check"]`);
@@ -2121,7 +2225,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, BI, EN, scanSegs, bimd };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }
