@@ -64,3 +64,5 @@ fig-16.js
 fig-17.js
 quiz-1.js
 quizprep-hw1.js
+quiz-2.js
+quizprep-hw2.js

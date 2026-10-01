@@ -16,7 +16,7 @@
     // 머리말의 바로가기: 강의 PPT 단원
     nav: [{ label: '선형대수 강의', route: 'ch17', title: '공학수학2 강의 PPT 「선형대수학」 정리 (17단원)' }],
     secSource: (sec) => (sec.slides ? `강의 PPT · 슬라이드 ${sec.slides}` : sec.p ? `Kreyszig 10판 · ${sec.p}쪽` : ''),
-    about: 'Kreyszig, <em>Advanced Engineering Mathematics</em> (10판)의 장 구성을 따라 정리한 공학수학 시험 대비 노트입니다. 각 단원의 ‘Kreyszig Ch.’ 표기가 교재의 장 번호입니다. 17단원은 공학수학2 강의 PPT 「선형대수학」을 슬라이드 순서대로 정리했고, 퀴즈풀이에는 Homework #1의 풀이가 있습니다.',
+    about: 'Kreyszig, <em>Advanced Engineering Mathematics</em> (10판)의 장 구성을 따라 정리한 공학수학 시험 대비 노트입니다. 각 단원의 ‘Kreyszig Ch.’ 표기가 교재의 장 번호입니다. 17단원은 공학수학2 강의 PPT 「선형대수학」을 슬라이드 순서대로 정리했고, 퀴즈풀이에는 Homework #1(선형대수학·푸리에 급수)과 #2(푸리에 해석)의 풀이가 있습니다.',
     text: {
       refLabel: '교재',
       secChip: 'Kreyszig ',
@@ -34,7 +34,7 @@
       proofPlaceholder: '찾을 공식이나 정리 (예: 매개변수 변환법, residue)',
       inputHelp: '<p>분수 <code>3/2</code>, 원주율 <code>pi</code>, 자연상수 <code>e</code>, 제곱근 <code>sqrt(3)</code>, 허수 <code>i</code>를 쓸 수 있습니다.</p><p>예: <code>2*pi*i</code>, <code>1-e^(-1)</code>, <code>(-2+2i)/3</code></p>',
       quizNav: '퀴즈풀이',
-      quizLede: '공학수학2 Homework #1의 다섯 문제를 문제 → **핵심 포인트** → 풀이 → 자주 하는 실수 순서로 정리했습니다. 핵심 포인트를 읽고 직접 답안을 써 본 뒤 풀이를 펼쳐 비교하세요. 문제마다 위에는 개념이 있는 단원(17단원 강의 PPT, 10단원 푸리에 해석)으로, 아래에는 같은 유형의 연습문제로 가는 링크가 있습니다.',
+      quizLede: '공학수학2 과제 두 개(Homework #1 다섯 문제, Homework #2 아홉 문항)를 문제 → **핵심 포인트** → 풀이 → 자주 하는 실수 순서로 정리했습니다. 핵심 포인트를 읽고 직접 답안을 써 본 뒤 풀이를 펼쳐 비교하세요. 문제마다 위에는 개념이 있는 단원(17단원 강의 PPT, 10단원 푸리에 해석)으로, 아래에는 같은 유형의 연습문제로 가는 링크가 있습니다.',
     },
   };
 })();

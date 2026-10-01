@@ -172,6 +172,44 @@
           c: [{ f: (w) => (w === 0 ? c : (c * Math.sin(w)) / w), c: 'ld', n: 500 }] },
       ], R`폭 2인 사각 펄스(왼쪽)의 푸리에 변환(오른쪽). 시간(공간) 영역에서 좁고 모서리가 날카로운 신호일수록 변환은 넓게 퍼지고 $1/w$처럼 천천히 줄어듭니다.`);
     },
+    // quiz HW2-1: Fourier–Legendre partial sums of 1 + x + x² + x³ + x⁴ (exact at N = 4)
+    f10hw2leg() {
+      const a = [23 / 15, 8 / 5, 26 / 21, 2 / 5, 8 / 35];
+      const S = (N) => (x) => { let s = 0; for (let m = 0; m <= N; m++) s += a[m] * P(m, x); return s; };
+      return G({
+        x: [-1.08, 1.08], y: [-0.5, 5.4], h: 250, ay0: -1.08,
+        xt: [[-1, '−1'], [-0.5, '−0.5'], [0, '0'], [0.5, '0.5'], [1, '1']], yt: [[1, '1'], [3, '3'], [5, '5']], xl: 'x',
+        c: [{ f: (x) => 1 + x + x * x + x ** 3 + x ** 4, c: 'vl', a: -1, b: 1 }, { f: S(1), c: 'dm', a: -1, b: 1 },
+          { f: S(2), c: 'rx', a: -1, b: 1 }, { f: S(3), c: 'ld', a: -1, b: 1 }],
+        extra: (X, Y) => legend(X(-0.98), Y(4.95), [['vl', 'f(x) = S_{4}(x)'], ['dm', 'S_{1}'], ['rx', 'S_{2}'], ['ld', 'S_{3}']]) + dot(X, Y, 1, 5) + dot(X, Y, -1, 1),
+        label: '1 + x + x² + x³ + x⁴의 푸리에-르장드르 부분합',
+        cap: R`$f(x)=1+x+x^2+x^3+x^4$과 푸리에-르장드르 부분합 $S_N=\sum_{m=0}^Na_mP_m$. $S_N$은 $N$차 이하 다항식 중 $\int_{-1}^1(f-p)^2dx$가 가장 작은 다항식이고(정사영), $f$가 4차라 $S_4=f$에서 급수가 끝납니다. 점은 $f(\pm1)$입니다.`,
+      });
+    },
+    // quiz HW2-2(2): the Fourier cosine integral of the cos x bump, cut off at w = W
+    f10hw2ci() {
+      const A = (w) => (Math.abs(w - 1) < 1e-9 ? 0.5 : ((2 / PI) * Math.cos((PI * w) / 2)) / (1 - w * w));
+      const cut = (W) => (x) => simpson((w) => A(w) * Math.cos(x * w), 0, W, 600);
+      const f = (x) => (Math.abs(x) < PI / 2 ? Math.cos(x) : 0);
+      return G({
+        x: [-4.7, 4.7], y: [-0.22, 1.2], h: 230, ay0: -4.7,
+        xt: piTicks([-PI, -PI / 2, 0, PI / 2, PI], 2), yt: [[1, '1']], xl: 'x',
+        c: [{ f, c: 'vl', n: 400 }, { f: cut(2), c: 'dm', n: 160 }, { f: cut(6), c: 'rx', n: 200 }, { f: cut(24), c: 'ld', n: 260 }],
+        extra: (X, Y) => legend(X(1.9), Y(1.08), [['vl', 'f(x)'], ['dm', '상한 W = 2'], ['rx', 'W = 6'], ['ld', 'W = 24']]),
+        label: 'cos x 한 봉우리와 상한을 자른 푸리에 코사인 적분',
+        cap: R`$f(x)=\cos x$ ($\lvert x\rvert\lt\frac\pi2$), $0$ (그 밖)과 $\frac2\pi\int_0^W\frac{\cos(\pi w/2)}{1-w^2}\cos xw\,dw$. $f$가 연속이라 상한 $W$를 키우면 모든 점에서 $f$로 다가가고, 사각 펄스와 달리 깁스 현상처럼 튀어 오르는 봉우리가 남지 않습니다.`,
+      });
+    },
+    // quiz HW2-3: Gaussians e^(−ax²) and their transforms (1/√(2a)) e^(−w²/(4a)); a = 1/2 maps to itself
+    f10hw2gauss() {
+      const as = [[2, 'ld'], [0.5, 'vl'], [0.125, 'rx']];
+      const base = { w: 280, h: 210, m: [20, 10, 22, 26], x: [-5, 5], y: [-0.1, 2.15], ay0: -5, xt: [[-4, '−4'], [-2, '−2'], [0, '0'], [2, '2'], [4, '4']], yt: [[1, '1'], [2, '2']] };
+      return G2(560, 210, '가우스 함수와 그 푸리에 변환', [
+        Object.assign({}, base, { title: '(a) f(x) = e^(−ax²)', xl: 'x', c: as.map(([a, c]) => ({ f: (x) => Math.exp(-a * x * x), c })),
+          extra: (X, Y) => legend(X(1.2), Y(2.0), [['ld', 'a = 2'], ['vl', 'a = 1/2'], ['rx', 'a = 1/8']]) }),
+        Object.assign({}, base, { ox: 280, title: '(b) f̂(w) = e^(−w²/4a) / √(2a)', xl: 'w', c: as.map(([a, c]) => ({ f: (w) => Math.exp(-(w * w) / (4 * a)) / Math.sqrt(2 * a), c })) }),
+      ], R`(a) 가우스 함수 $e^{-ax^2}$ ($a=2,\frac12,\frac18$)와 (b) 그 푸리에 변환 $\frac1{\sqrt{2a}}e^{-w^2/(4a)}$. $a=\frac12$이면 $e^{-x^2/2}$가 그대로 자기 자신으로 갑니다(표 I #4, 표 III #9). 좁은 함수($a=2$)는 넓고 낮은 변환을, 넓은 함수($a=\frac18$)는 좁고 높은 변환을 가집니다.`);
+    },
   });
   function R(s, ...v) { return String.raw(s, ...v); }
 })();
