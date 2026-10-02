@@ -171,10 +171,14 @@ $\beta=\{v_1,\dots,v_n\}$이 $V$의 기저이면 모든 $v\in V$는 $v=\sum_{i=1
 | $M_{m,n}(\mathbb F)$ | $E_{ij}$ ($(i,j)$ 성분만 1) | $mn$ |
 | $\mathbb F[t]$ | $1,t,t^2,\dots$ | 무한 (가산) |
 | $C[a,b]$ | 구체적으로 적을 수 없음 | 무한 |
-| $\mathbb C$ ($\mathbb F=\mathbb R$) | $1,\ i$ | 2 |
-| $\mathbb C$ ($\mathbb F=\mathbb C$) | $1$ | 1 |
+| $\mathbb C$, 스칼라는 실수 ($\mathbb F=\mathbb R$) | $1,\ i$ | 2 |
+| $\mathbb C$, 스칼라도 복소수 ($\mathbb F=\mathbb C$) | $1$ | 1 |
 
-마지막 두 줄이 $\dim_{\mathbb F}$처럼 **체를 밝혀 쓰는** 이유입니다.
+마지막 두 줄은 **같은 집합 $\mathbb C$인데 차원이 다릅니다.** 차이는 곱할 수 있는 스칼라에 있습니다.
+- 스칼라가 실수뿐이면 $3+2i=3\cdot1+2\cdot i$처럼 $1$과 $i$가 둘 다 있어야 모든 복소수를 만들 수 있습니다. $i$는 $1$의 실수배가 아니므로 둘은 독립이고, 차원은 2입니다. 복소평면을 실수 좌표 $(a,b)$의 평면 $\mathbb R^2$로 보는 것과 같습니다.
+- 스칼라로 복소수를 쓸 수 있으면 $3+2i=(3+2i)\cdot1$이라 $1$ 하나로 충분합니다. 이때는 $i=i\cdot1$이라 $1$과 $i$가 오히려 종속이고, 차원은 1입니다.
+
+그래서 $\dim_{\mathbb R}\mathbb C=2$, $\dim_{\mathbb C}\mathbb C=1$처럼 **체를 밝혀 씁니다.** 같은 이유로 $\dim_{\mathbb R}\mathbb C^n=2n$, $\dim_{\mathbb C}\mathbb C^n=n$입니다.
 
 **유한차원에서 쓸모 있는 사실** ($\dim V=n$).
 - 일차독립인 벡터는 많아야 $n$개이고, $V$를 생성하는 집합은 적어도 $n$개입니다.
