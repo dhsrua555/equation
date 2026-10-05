@@ -243,6 +243,7 @@
       if (km && !document.getElementById(`sec-${km[2]}`)) fail(`route ${r} opened without its section`);
       const lm = /^lab-([\w-]+)$/.exec(r);
       if (lm && !document.getElementById(`lb-${lm[1]}`)) fail(`route ${r} opened without its simulation`);
+      if (A.mountSims) A.mountSims(m, true); // simulations start lazily on the page; here every one mounts so its errors surface
       m.querySelectorAll('.katex-error').forEach((e) => fail(`route ${r} katex: ${(e.getAttribute('title') || '').slice(0, 120)}`));
       const clone = m.cloneNode(true); clone.querySelectorAll('code, textarea, input, script, .katex-mathml').forEach((n) => n.remove());
       if (/\$/.test(clone.textContent)) fail(`route ${r} leftover $: ${clone.textContent.match(/.{0,40}\$.{0,40}/)[0]}`);

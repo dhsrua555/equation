@@ -36,6 +36,9 @@
   };
 
   // ---------- canvas that fits its box and redraws on resize ----------
+  // every live canvas, so a page change can let go of the watchers of the sims it removed (SK.sweep)
+  const LIVE = new Set();
+  SK.sweep = () => LIVE.forEach((x) => { if (!x.wrap.isConnected) x.release(); });
   SK.canvas = (host, opt = {}) => {
     const wrap = el('div', 'sim-canvas' + (opt.cls ? ' ' + opt.cls : ''));
     const cv = el('canvas');
@@ -64,7 +67,9 @@
     // a theme switch repaints with the new palette; every watcher lets go once the sim has left the page
     const mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
     let mo = null, ro = null;
-    const release = () => { if (ro) ro.disconnect(); if (mo) mo.disconnect(); if (mq && mq.removeEventListener) mq.removeEventListener('change', repaint); };
+    const live = { wrap, release: () => { LIVE.delete(live); if (ro) ro.disconnect(); if (mo) mo.disconnect(); if (mq && mq.removeEventListener) mq.removeEventListener('change', repaint); } };
+    const release = live.release;
+    LIVE.add(live);
     function repaint() { if (!wrap.isConnected) { release(); return; } st.C = SK.colors(host); st.req(); }
     if (mq && mq.addEventListener) mq.addEventListener('change', repaint);
     if ('MutationObserver' in window) { mo = new MutationObserver(repaint); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); }

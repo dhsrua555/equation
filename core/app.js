@@ -531,18 +531,25 @@
       ${tries && tries.length ? `<div class="sim-try"><span class="caps">해 볼 것</span><ol>${tries.map((t) => `<li>${inline(t)}</li>`).join('')}</ol></div>` : ''}</figure>`;
   }
   // build every simulation placeholder under root (once per element)
-  function mountSims(root) {
-    (root || main).querySelectorAll('figure.sim[data-sim]:not([data-on])').forEach((f) => {
-      f.setAttribute('data-on', '');
-      const s = SIMREG[f.dataset.sim];
-      const stage = f.querySelector('.sim-stage');
-      if (!s || !stage) return;
-      stage.innerHTML = '';
-      try { s.mount(stage, f.dataset.arg || ''); } catch (e) {
-        stage.innerHTML = '<p class="sim-wait">시뮬레이션을 열지 못했습니다.</p>';
-        if (window.__errors) window.__errors.push(`sim ${f.dataset.sim}: ${e.message}`); else console.error(e);
-      }
-    });
+  function startSim(f) {
+    if (f.hasAttribute('data-on')) return;
+    f.setAttribute('data-on', '');
+    const s = SIMREG[f.dataset.sim];
+    const stage = f.querySelector('.sim-stage');
+    if (!s || !stage) return;
+    stage.innerHTML = '';
+    try { s.mount(stage, f.dataset.arg || ''); } catch (e) {
+      stage.innerHTML = '<p class="sim-wait">시뮬레이션을 열지 못했습니다.</p>';
+      if (window.__errors) window.__errors.push(`sim ${f.dataset.sim}: ${e.message}`); else console.error(e);
+    }
+  }
+  // a simulation starts when it comes near the screen, so opening a page never waits on the ones further down
+  let simObs = null;
+  function mountSims(root, now) {
+    const figs = (root || main).querySelectorAll('figure.sim[data-sim]:not([data-on])');
+    if (now || !('IntersectionObserver' in window)) { figs.forEach(startSim); return; }
+    if (!simObs) simObs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { simObs.unobserve(e.target); startSim(e.target); } }), { rootMargin: '400px 0px' });
+    figs.forEach((f) => simObs.observe(f));
   }
   function container(type, title, inner) {
     if (type === 'sim') return simFig(title, inner);
@@ -1825,23 +1832,55 @@
     try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
     return h || 'home';
   }
-  // a click on a link cross-fades the old page into the new one (View Transitions where the browser has them);
-  // history and hash changes render at once and only fade the new page in
+  // Page motion. A click fades the old page out at once, then the new page rises in. Building a long unit takes a
+  // moment, and the fade runs on the compositor meanwhile, so it shows the click landed instead of freezing the page.
+  // Only opacity and transform move. Back/forward and hash changes skip the fade-out and only bring the new page in.
+  const canMove = !reduced && !!Element.prototype.animate;
+  const EASE_OUT = 'cubic-bezier(.2,.75,.25,1)';
+  let leaving = null;
+  let navSeq = 0;
+  const sameUnit = (a, b) => /^ch\d{2}/.test(a) && a.slice(0, 4) === b.slice(0, 4) && chById.has(a.slice(0, 4));
+  const unitBody = () => $('#tabs + .wrap'); // a unit's content under its tabs: a tab switch moves only this
+  function stopLeave() { if (leaving) { leaving.cancel(); leaving = null; } }
+  function arrive(soft) {
+    stopLeave();
+    if (!canMove) return;
+    const el = soft ? unitBody() : main;
+    if (!el) return;
+    el.animate(soft ? [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }] : [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
+      { duration: soft ? 240 : 380, easing: EASE_OUT });
+  }
   function go(to, opts) {
+    const o = opts || {};
+    const seq = ++navSeq;
     if (to !== route) {
       try { history.pushState(null, '', '#' + to); } catch (e) { /* sandboxed: keep in-page state only */ }
     }
-    const o = opts || {};
-    if (o.vt && !reduced && document.startViewTransition && !document.hidden) {
-      try { document.startViewTransition(() => render(to, Object.assign({}, o, { fade: false }))); return; } catch (e) { /* fall through */ }
+    // a section of the unit already on screen: scroll to it instead of building the unit again
+    const k = /^(ch\d{2})-k([\w.]+)$/.exec(to);
+    const here = k && document.body.dataset.view === 'chapter' && /^ch\d{2}(-k[\w.]+)?$/.test(route) && route.slice(0, 4) === k[1] && document.getElementById(`sec-${k[2]}`);
+    if (here) {
+      stopLeave(); closeDrawer(); route = to;
+      jumpIn(here);
+      return;
     }
-    render(to, o);
+    if (!o.vt || !canMove || !route || to === route) { render(to, o); return; }
+    const soft = sameUnit(to, route);
+    const el = (soft && unitBody()) || main;
+    stopLeave(); closeDrawer();
+    leaving = el.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: 130, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' });
+    // build once the fade is on screen and mostly done; a later click or a back press cancels this one
+    requestAnimationFrame(() => setTimeout(() => { if (seq === navSeq) render(to, Object.assign({}, o, { motion: soft ? 'soft' : 'page' })); }, 80));
   }
   function render(to, opts) {
+    navSeq++;
+    stopLeave(); // nothing is painted before the new page is in, and a page that fails to build stays visible
     const prevRoute = route;
     route = to;
     CUR_CH = null;
     stopHero();
+    if (tocObs) { tocObs.disconnect(); tocObs = null; }
+    if (simObs) simObs.disconnect();
     let m;
     let view = 'page';
     let html = '';
@@ -1867,15 +1906,10 @@
       applyKoAll();
     }
     main.innerHTML = html;
-    const samePage0 = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
-    if (opts.fade !== false && !reduced && prevRoute && prevRoute !== route) {
-      // a new page rises in; a tab switch inside the same unit only fades its body
-      main.classList.remove('enter', 'enter-soft');
-      void main.offsetWidth;
-      main.classList.add(samePage0 ? 'enter-soft' : 'enter');
-    }
-    const drawer = $('#drawer-root .drawer');
-    if (drawer && !reduced && opts.fade !== false) { drawer.classList.add('closing'); setTimeout(() => { if (drawer.isConnected) $('#drawer-root').innerHTML = ''; }, 200); } else $('#drawer-root').innerHTML = '';
+    if (window.SimKit) window.SimKit.sweep();
+    // a new page rises in (also on first load); a tab switch inside the same unit moves only its body
+    const motion = opts.motion || (prevRoute !== route ? (view === 'chapter' && sameUnit(route, prevRoute) ? 'soft' : 'page') : '');
+    closeDrawer();
     updateHeader();
     window.EMPlots.mount(main);
     mountSims(main);
@@ -1890,20 +1924,53 @@
     const tk = bookOf(route) ? bookOf(route).key : route.startsWith('lab-') ? 'lab' : route;
     document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[tk] ? `${title[tk]} · ${DT}` : DT;
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
-    if (opts.keepScroll != null) window.scrollTo(0, opts.keepScroll);
-    else if (opts.anchor && document.getElementById(opts.anchor)) {
-      document.getElementById(opts.anchor).scrollIntoView();
-    } else if (samePage) {
+    const target = opts.anchor && document.getElementById(opts.anchor);
+    landed = target ? opts.anchor : '';
+    if (opts.keepScroll != null) instant(() => window.scrollTo(0, opts.keepScroll));
+    else if (target) jumpTo(target);
+    else if (samePage) {
       const tabs = $('#tabs');
       if (tabs) {
         const y = tabs.getBoundingClientRect().top + window.scrollY - (document.querySelector('.site-header').offsetHeight);
-        if (window.scrollY > y) window.scrollTo(0, y);
+        if (window.scrollY > y) instant(() => window.scrollTo(0, y));
       }
-    } else if (opts.anchor) {
-      const el = document.getElementById(opts.anchor);
-      if (el) el.scrollIntoView();
-    } else window.scrollTo(0, 0);
+    } else if (!opts.anchor) instant(() => window.scrollTo(0, 0));
+    // after the scroll, so the jump is measured without the motion's offset
+    if (motion) arrive(motion === 'soft');
     onScroll();
+  }
+
+  // Scrolling that the page does itself is instant (the stylesheet makes the reader's own anchor scrolls smooth).
+  // Sections far from the screen keep an estimated height until the browser lays them out (content-visibility), so a
+  // jump lands near its target first and is put right over the next frames as the sections around it get their real
+  // size; touching the page stops the correction.
+  function instant(fn) {
+    const s = document.documentElement.style;
+    const was = s.scrollBehavior;
+    s.scrollBehavior = 'auto';
+    try { fn(); } finally { s.scrollBehavior = was; }
+  }
+  let landed = ''; // the anchor the last page change jumped to
+  const docTop = (el) => { let y = 0; for (let e = el; e; e = e.offsetParent) y += e.offsetTop; return y; };
+  let settleId = 0;
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach((ev) => window.addEventListener(ev, () => { settleId++; }, { passive: true, capture: true }));
+  function jumpTo(el) {
+    const id = ++settleId;
+    instant(() => el.scrollIntoView({ block: 'start' }));
+    const pad = docTop(el) - window.scrollY;
+    let n = 0;
+    const fix = () => {
+      if (id !== settleId || !el.isConnected) return;
+      const want = Math.max(0, docTop(el) - pad);
+      if (Math.abs(window.scrollY - want) > 1) instant(() => window.scrollTo(0, want));
+      if (++n < 12) requestAnimationFrame(fix);
+    };
+    requestAnimationFrame(fix);
+  }
+  // a jump inside a page: the section it lands on rises in, so the eye knows where it is
+  function jumpIn(el) {
+    jumpTo(el);
+    if (canMove) el.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: EASE_OUT });
   }
 
   let tocObs = null;
@@ -1942,7 +2009,7 @@
       case 'scroll': {
         e.preventDefault();
         const el = document.getElementById(t.dataset.target);
-        if (el) el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+        if (el) jumpIn(el);
         break;
       }
       case 'to-catalogue':
@@ -2225,7 +2292,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd, mountSims };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }
@@ -2235,8 +2302,7 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
     window.EMPlots.redrawAll();
     // web fonts change the line breaks above a deep-linked section; land on it again unless the reader has moved
-    const m = /-k([\d.]+[a-z]?)$/.exec(route);
-    const el = m && document.getElementById('sec-' + m[1]);
-    if (el && !userScrolled) el.scrollIntoView();
+    const el = landed && document.getElementById(landed);
+    if (el && !userScrolled) jumpTo(el);
   });
 })();

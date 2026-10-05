@@ -66,13 +66,22 @@
     fn(ctx, rect.width, rect.height, colors(canvas));
   }
 
+  // A new canvas is drawn by the observer's first report, which comes once it has a size, so mounting never
+  // forces a layout and a canvas in a part of the page the browser has not laid out yet waits until it is.
+  // Canvases that have left the page are let go, or each would keep its whole old page alive.
   let ro = null;
+  const seen = new Set();
   function mount(root) {
     const list = (root || document).querySelectorAll('canvas[data-plot]');
     if (!ro && 'ResizeObserver' in window) {
-      ro = new ResizeObserver((entries) => entries.forEach((e) => draw(e.target)));
+      ro = new ResizeObserver((entries) => entries.forEach((e) => { if (e.target.isConnected) draw(e.target); }));
     }
-    list.forEach((cv) => { draw(cv); if (ro) ro.observe(cv); });
+    seen.forEach((cv) => { if (!cv.isConnected) { seen.delete(cv); if (ro) ro.unobserve(cv); } });
+    list.forEach((cv) => {
+      if (!ro) { draw(cv); return; }
+      if (seen.has(cv)) draw(cv); // already watched: only its picture changed
+      else { seen.add(cv); ro.observe(cv); }
+    });
   }
   function redrawAll() { document.querySelectorAll('canvas[data-plot]').forEach(draw); }
 

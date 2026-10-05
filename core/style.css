@@ -1042,22 +1042,20 @@ body[data-view="exam-live"] .ko-all { bottom: calc(76px + env(safe-area-inset-bo
   .ko-all { padding: 7px; }
 }
 
+/* ---------- long pages ----------
+   A unit runs to tens of thousands of elements. The browser lays out and paints only the sections, problems and
+   formula cards near the screen and keeps a remembered height for the rest, so a page opens in a fraction of the time.
+   The containment that comes with it stops a section's last margin from collapsing into the gap below, hence the reset. */
+.prose > .sec { content-visibility: auto; contain-intrinsic-block-size: auto 1600px; }
+.prose > .sec > :last-child { margin-bottom: 0; }
+.problems > .prob { content-visibility: auto; contain-intrinsic-block-size: auto 420px; }
+.sheet-item { content-visibility: auto; contain-intrinsic-block-size: auto 260px; }
+
 /* ---------- motion: page changes, presses, reveals ----------
    One easing for everything that arrives (fast start, soft landing) and short durations, so the site feels quick.
+   Page changes are animated from app.js (Web Animations, opacity and transform only).
    "prefers-reduced-motion" above switches all of it off. */
 :root { --ease-out: cubic-bezier(.2, .75, .25, 1); --ease-in: cubic-bezier(.4, 0, 1, 1); }
-@view-transition { navigation: auto; } /* moving between field pages and the hub cross-fades */
-.site-header { view-transition-name: site-header; }
-main { view-transition-name: page; }
-::view-transition-group(page) { animation-duration: 0s; }
-::view-transition-old(page) { animation: vt-out 0.14s var(--ease-in) both; }
-::view-transition-new(page) { animation: page-in 0.38s var(--ease-out) 0.03s both; }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.22s; }
-@keyframes vt-out { to { opacity: 0; transform: translateY(-4px); } }
-@keyframes page-in { from { opacity: 0; transform: translateY(12px); } }
-@keyframes soft-in { from { opacity: 0; } }
-main.enter { animation: page-in 0.36s var(--ease-out) both; }
-main.enter-soft .ch-body, main.enter-soft .practice-head, main.enter-soft .problems { animation: soft-in 0.26s ease both; }
 
 /* presses: everything clickable gives under the finger */
 .btn, .choice, .seg button, .selfgrade button, .jump a, .pf-chip, .chip.sec, .sec-filter button, .linkbtn, .hero-arrow,

@@ -267,6 +267,10 @@
   document.body.dataset.view = 'hub';
   $('#site-header').innerHTML = header();
   $('#main').innerHTML = hero() + fieldsSection() + usedSection() + findSection() + footer();
+  // arriving from a field page: the hub rises in the way a field's own pages do
+  if (Element.prototype.animate && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    $('#main').animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.2,.75,.25,1)' });
+  }
   if (window.EMPlots) {
     window.EMPlots.mount($('#main'));
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => window.EMPlots.redrawAll());
