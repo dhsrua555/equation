@@ -127,6 +127,12 @@ $\mathbf y^{(1)}=(1,1)^Te^{-t}$, $\mathbf y^{(2)}=(1,-2)^Te^{-4t}$는 기저인�
 $$W=\begin{vmatrix}e^{-t}&e^{-4t}\\e^{-t}&-2e^{-4t}\end{vmatrix}=-2e^{-5t}-e^{-5t}=-3e^{-5t}\ne0$$
 따라서 기저입니다(다음 절 예제 1의 해). $W$가 어느 $t$에서도 0이 아니라는 것도 정리와 일치합니다.
 :::
+
+:::key 선형계의 기본행렬과 일반해
+$$\mathbf y'=A(t)\mathbf y,\qquad Y=[\mathbf y^{(1)}\ \cdots\ \mathbf y^{(n)}]$$
+$$\mathbf y=Y\mathbf c,\qquad W=\det Y$$
+한 점에서 $W\ne0$이면 해들이 기저이고, 초기조건 $\mathbf y(t_0)=\mathbf K$는 $Y(t_0)\mathbf c=\mathbf K$로 상수를 정합니다.
+:::
 ` },
       { k: '4.3', p: '140', title: '상수계수 연립 ODE와 상평면', body: R`
 이제 $A$가 상수인 동차 선형계 $\mathbf y'=A\mathbf y$를 풉니다. 단일 ODE $y'=ky$의 해가 $Ce^{kt}$였으므로
@@ -399,6 +405,13 @@ $$J=\begin{pmatrix}0&1\\1-3y_1^2&0\end{pmatrix}$$
 $(0,0)$: $q=-1<0$ → **안장점**(불안정). $(\pm1,0)$: $J=\begin{pmatrix}0&1\\-2&0\end{pmatrix}$, $p=0$, $q=2$ → 선형화는 중심.
 위의 방법으로 $\frac{dy_2}{dy_1}=\frac{y_1-y_1^3}{y_2}$를 변수분리하면 에너지 $E=\frac12y_2^2-\frac12y_1^2+\frac14y_1^4$가 보존되어 궤적이 $E=$상수인 닫힌 곡선이므로 실제로도 중심입니다[[ch01:1.3|변수분리형 ODE.]]. 두 우물 바닥에서 흔들리는 입자, 좌굴된 보의 진동 모델입니다.
 :::
+
+:::key 임계점의 선형화
+임계점 $P_0$ ($f_1=f_2=0$)을 원점으로 옮기면
+$$\mathbf y'=J\mathbf y+\mathbf h(\mathbf y)$$
+$$J=\Big[\frac{\partial f_i}{\partial y_j}\Big]_{P_0}$$
+$\det J\ne0$이면 임계점의 종류와 안정성은 선형계 $\mathbf y'=J\mathbf y$와 같습니다. 예외: $J$의 고유값이 중근이거나 순허수이면 나선점이 될 수 있습니다(선형화가 중심이면 믿을 수 없음). 진자 $\theta''+k\sin\theta=0$에서 $(0,0)$은 중심, $(\pi,0)$은 안장점입니다.
+:::
 ` },
       { k: '4.6', p: '160', title: '비동차 선형 연립 ODE', body: R`
 이 장의 마지막 절은 $\mathbf g(t)\not\equiv\mathbf 0$인
@@ -449,6 +462,13 @@ $$Y\mathbf u=t\begin{pmatrix}1\\1\end{pmatrix}e^{-t}-\frac13e^{3t}\begin{pmatrix
 :::
 
 라플라스 변환을 쓰면 연립 ODE도 연립 **일차**방정식으로 바뀝니다[[ch05:6.7|라플라스 변환으로 연립 ODE 풀기.]].
+
+:::key 비동차 선형계
+$$\mathbf y'=A\mathbf y+\mathbf g$$
+$$\mathbf y=\mathbf y^{(h)}+\mathbf y^{(p)}$$
+$$\mathbf y^{(p)}=Y(t)\int Y^{-1}(t)\,\mathbf g(t)\,dt$$
+$A$가 상수이고 $\mathbf g$가 상수·거듭제곱·지수·삼각함수이면 미정계수법을 씁니다($\mathbf g$의 지수 $\lambda$가 $A$의 고유값이면 $\mathbf ate^{\lambda t}+\mathbf be^{\lambda t}$로 놓음). $A=XDX^{-1}$이면 $\mathbf y=X\mathbf z$로 서로 분리된 방정식이 됩니다.
+:::
 ` },
     ],
   });

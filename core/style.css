@@ -634,7 +634,7 @@ textarea.scratch {
 
 /* ---------- formula sheet ---------- */
 .sheet { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-.sheet-item { border-top: 1px solid var(--ink); padding-top: 14px; display: grid; gap: 8px; min-width: 0; }
+.sheet-item { border-top: 1px solid var(--ink); padding-top: 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
 .sheet-item .caps { color: var(--camel-ink); font-size: 0.68rem; }
 .sheet-item h4 { font-family: var(--f-serif); font-size: 1.02rem; }
 .sheet-item .body > * + * { margin-top: 0.6em; }

@@ -175,6 +175,13 @@ $$\mathbf y=\begin{pmatrix}1\\1\end{pmatrix}(a_1\cos t+b_1\sin t)+\begin{pmatrix
 :::
 
 연속체(현, 막)에서는 행렬 대신 미분연산자의 고유값 문제가 되어 고유함수와 고유진동수가 나옵니다[[ch10:11.5|스투름-리우빌 문제: 미분방정식의 고유값 문제.]][[ch11:12.9|직사각형 막의 고유진동.]].
+
+:::key 고유값 문제의 응용
+- 주방향: 대칭행렬 $A$의 고유벡터 방향으로는 늘이기만 하고, 늘이는 비율이 고유값
+- 마르코프 극한 상태: $A\mathbf x=\mathbf x$ (고유값 1의 고유벡터를 성분 합 1로 맞춤)
+- 레슬리 모델: $L\mathbf x=\lambda\mathbf x$, 양의 고유값 $\lambda$가 한 주기의 변화율
+- 진동계 $\mathbf y''=A\mathbf y$: $\mathbf y=\mathbf xe^{\omega t}$를 넣으면 $A\mathbf x=\omega^2\mathbf x$, 고유값 $\lambda<0$이면 진동 $\cos\sqrt{-\lambda}\,t$, $\sin\sqrt{-\lambda}\,t$
+:::
 ` },
       { k: '8.3', p: '334', title: '대칭·반대칭·직교 행렬', body: R`
 놀라운 성질 때문에 응용에 자주 나오는 세 종류의 실정사각행렬을 봅니다.
@@ -400,6 +407,12 @@ $$\bar{\mathbf x}^TA\mathbf x=(3+i)-i(1+4i)=3+i-i+4=7$$
 
 :::tip 시험 포인트
 특성다항식을 전개하기 전에 $\tr A$와 $\det A$를 적어 두면, 구한 고유값의 합과 곱으로 바로 검산할 수 있습니다. 행렬의 “종류”를 먼저 확인하면 고유값이 실수인지, 단위원 위에 있는지 미리 알 수 있습니다.
+:::
+
+:::key 에르미트·반에르미트·유니터리 행렬
+$$\bar A^T=A\ (\text{에르미트}),\qquad \bar A^T=-A\ (\text{반에르미트})$$
+$$\bar A^T=A^{-1}\ (\text{유니터리})$$
+고유값은 각각 실수, 순허수 또는 0, 절댓값 1입니다. 복소 내적은 $\mathbf a\cdot\mathbf b=\bar{\mathbf a}^T\mathbf b$, 노름은 $\|\mathbf a\|=\sqrt{|a_1|^2+\cdots+|a_n|^2}$.
 :::
 ` },
     ],

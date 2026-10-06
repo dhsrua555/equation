@@ -84,6 +84,11 @@ $$u_{tt}=c^2u_{xx},\qquad c^2=\frac{T}{\rho}$$
 :::tip 모델링 포인트
 시험에서 유도를 물으면 “장력의 수평 성분 일정 → 수직 성분의 차 = 질량 × 가속도 → 극한” 세 줄을 쓰면 됩니다.
 :::
+
+:::key 1차원 파동방정식
+$$u_{tt}=c^2u_{xx},\qquad c^2=\frac{T}{\rho}$$
+$T$는 현의 장력, $\rho$는 단위 길이당 질량이고 $c$는 파동의 속력입니다.
+:::
 ` },
       { k: '12.3', p: '545', title: '변수분리와 푸리에 급수 풀이', body: R`
 진동하는 현의 모델은 파동방정식
@@ -287,6 +292,11 @@ $K$는 열전도율, $\sigma$는 비열, $\rho$는 밀도입니다. 한 물질�
 :::note 파동방정식과의 차이
 열방정식은 $u_{tt}$ 대신 $u_t$가 있을 뿐이지만, 해의 성질은 전혀 다릅니다. 파동은 진동하며 모양을 유지해 전파되고, 열은 진동 없이 지수적으로 고르게 퍼집니다(다음 절).
 :::
+
+:::key 열방정식
+$$u_t=c^2\nabla^2u,\qquad c^2=\frac{K}{\sigma\rho}$$
+$K$는 열전도율, $\sigma$는 비열, $\rho$는 밀도이고, 열 흐름 속도는 $\mathbf v=-K\operatorname{grad}u$입니다. 정상상태($u_t=0$)이면 라플라스 방정식 $\nabla^2u=0$.
+:::
 ` },
       { k: '12.6', p: '558', title: '열방정식의 푸리에 급수 풀이, 정상상태 2차원 문제', body: R`
 옆면이 완전히 단열되어 열이 $x$ 방향으로만 흐르는, 단면이 일정한 가는 금속 막대(또는 철사)의 온도를 봅니다. 1차원 열방정식
@@ -457,6 +467,11 @@ $$u_{tt}=\frac T\rho\Big[\frac{u_x(x+\Delta x,y_1)-u_x(x,y_2)}{\Delta x}+\frac{u
 $\Delta x,\Delta y\to0$이면
 $$u_{tt}=c^2\big(u_{xx}+u_{yy}\big)=c^2\nabla^2u,\qquad c^2=\frac T\rho$$
 를 얻습니다. 이것이 **2차원 파동방정식**이고, 1차원 현의 식이 자연스럽게 2차원으로 확장된 모양입니다.
+
+:::key 2차원 파동방정식
+$$u_{tt}=c^2\big(u_{xx}+u_{yy}\big)=c^2\nabla^2u,\qquad c^2=\frac{T}{\rho}$$
+$T$는 막의 단위 길이당 장력, $\rho$는 단위 넓이당 질량입니다.
+:::
 ` },
       { k: '12.9', p: '577', title: '직사각형 막과 이중 푸리에 급수', body: R`
 가장자리가 고정된 직사각형 막 $R: 0\le x\le a$, $0\le y\le b$의 모델은
@@ -651,6 +666,13 @@ $$U(x,s)=\frac{U_0}se^{-x\sqrt s/c}$$
 변환표의 $\mathcal L^{-1}\big\{\frac1se^{-a\sqrt s}\big\}=\operatorname{erfc}\frac a{2\sqrt t}$ ($\operatorname{erfc}=1-\operatorname{erf}$)를 쓰면
 $$u(x,t)=U_0\operatorname{erfc}\frac x{2c\sqrt t}$$
 §12.7의 오차함수 해와 같은 꼴이며, 열이 들어가는 깊이가 $\sqrt t$에 비례합니다.
+:::
+
+:::key 라플라스 변환으로 푸는 PDE
+$t$에 대해 변환하면 $\mathcal L\{w_t\}=sW-w(x,0)$, $\mathcal L\{w_{tt}\}=s^2W-sw(x,0)-w_t(x,0)$, $\mathcal L\{w_{xx}\}=W_{xx}$이므로 $x$에 대한 ODE가 됩니다.
+$$w_{tt}=c^2w_{xx},\ \ w(0,t)=f(t)\ \Longrightarrow\ w(x,t)=f\Big(t-\frac xc\Big)\,u\Big(t-\frac xc\Big)$$
+($u$는 단위계단함수)
+$$u_t=c^2u_{xx},\ \ u(0,t)=U_0\ \Longrightarrow\ u(x,t)=U_0\operatorname{erfc}\frac{x}{2c\sqrt t}$$
 :::
 ` },
     ],

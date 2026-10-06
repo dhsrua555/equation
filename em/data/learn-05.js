@@ -640,6 +640,12 @@ $$y_1=\tfrac12\big(\cos\sqrt k\,t+\cos\sqrt{3k}\,t\big),\qquad y_2=\tfrac12\big(
 
 :::fig f05mass
 :::
+
+:::key 라플라스 변환으로 푸는 연립 ODE
+$$\mathbf y'=A\mathbf y+\mathbf g(t)\ \Longrightarrow\ (sI-A)\mathbf Y=\mathbf y(0)+\mathbf G(s)$$
+$$\mathbf Y=(sI-A)^{-1}\big[\mathbf y(0)+\mathbf G(s)\big]$$
+2계 계 $\mathbf y''=A\mathbf y$는 $(s^2I-A)\mathbf Y=s\,\mathbf y(0)+\mathbf y'(0)$. 성분마다 부분분수로 나누어 역변환합니다.
+:::
 ` },
       { k: '6.8', label: '6.8–6.9', p: '248', title: '일반 공식과 변환표', body: R`
 교재 6.8절의 일반 공식을 한 표로 모았습니다. 시험에서는 이 표와 6.1절의 기본 변환표만 있으면 거의 모든 문제가 풀립니다.
@@ -669,6 +675,16 @@ $$y_1=\tfrac12\big(\cos\sqrt k\,t+\cos\sqrt{3k}\,t\big),\qquad y_2=\tfrac12\big(
 
 :::tip 시험 포인트
 라플라스 문제는 거의 항상 부분분수에서 점수가 갈립니다. 분해한 뒤 $s=0$ 같은 값을 넣어 원래 식과 같은지 확인하는 30초가 가장 값진 검산입니다.
+:::
+
+:::key 라플라스 변환의 일반 공식
+$$\mathcal L\{f'\}=sF-f(0),\qquad \mathcal L\{f''\}=s^2F-sf(0)-f'(0)$$
+$$\mathcal L\Big\{\int_0^tf\,d\tau\Big\}=\frac{F}{s}$$
+$$\mathcal L\{e^{at}f\}=F(s-a),\qquad \mathcal L\{f(t-a)u(t-a)\}=e^{-as}F(s)$$
+$$\mathcal L\{f*g\}=FG$$
+$$\mathcal L\{tf\}=-F'(s)$$
+$$\mathcal L\Big\{\frac{f}{t}\Big\}=\int_s^\infty F(\sigma)\,d\sigma$$
+$$\mathcal L\{\delta(t-a)\}=e^{-as}$$
 :::
 ` },
     ],

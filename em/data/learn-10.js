@@ -377,6 +377,13 @@ $b_n=\frac4{n\pi}$ (홀수 $n$)이므로
 :::tip 시험 포인트
 공학수학 2 과제·시험의 단골입니다. 외력의 푸리에 급수 → 성분별 $y_p$ → 합. 공진에 가까운 $n$ (즉 $n^2\approx k$)을 먼저 찾으면 답의 모양을 예상할 수 있습니다. 진폭 공식 $C_n=|a_n|/\sqrt{(k-n^2)^2+(cn)^2}$은 $m=1$일 때입니다. $m\ne1$이면 양변을 $m$으로 나누고 시작하세요.
 :::
+
+:::key 주기적 외력에 대한 정상상태 응답
+$y''+cy'+ky=r(t)$의 외력을 $r=\sum a_n\cos nt$로 나누고 성분마다의 응답 $y_n=A_n\cos nt+B_n\sin nt$를 더합니다.
+$$A_n=\frac{(k-n^2)\,a_n}{D_n},\qquad B_n=\frac{cn\,a_n}{D_n}$$
+$$C_n=\sqrt{A_n^2+B_n^2}=\frac{|a_n|}{\sqrt{D_n}},\qquad D_n=(k-n^2)^2+(cn)^2$$
+$n^2$이 $k$에 가까운 고조파가 크게 증폭됩니다.
+:::
 ` },
       { k: '11.4', p: '495', title: '삼각다항식에 의한 근사', body: R`
 푸리에 급수는 미분방정식뿐 아니라 **근사 이론**에서도 중요합니다. 실제 계산에서는 무한급수를 끝까지 더할 수 없으므로, 차수 $N$을 고정하고
@@ -561,6 +568,14 @@ $$(py')'+\big(pg+\lambda\,ph\big)y=0,\qquad q=pg,\quad r=ph$$
 
 :::tip 과제 포인트
 “주어진 방정식을 스투름-리우빌 꼴로 쓰고 $p,q,r,\lambda$를 말하라”는 형태가 자주 나옵니다. $y''$의 계수를 $P$라 할 때 적분인자 $\frac1P e^{\int Q/P\,dx}$를 곱하면 항상 이 꼴로 만들 수 있습니다. 고유값 문제에서는 $\lambda<0$, $\lambda=0$, $\lambda>0$ 세 경우를 모두 확인하는 것이 채점 포인트입니다.
+:::
+
+:::key 스투름-리우빌 문제와 가중 직교
+$$\big[p(x)y'\big]'+\big[q(x)+\lambda r(x)\big]y=0$$
+$$k_1y(a)+k_2y'(a)=0,\quad l_1y(b)+l_2y'(b)=0$$
+$$\int_a^b r(x)\,y_m(x)\,y_n(x)\,dx=0\quad(\lambda_m\ne\lambda_n)$$
+$$\|y_m\|=\sqrt{\int_a^b r\,y_m^2\,dx}$$
+$y''+f(x)y'+\big(g(x)+\lambda h(x)\big)y=0$은 $p=e^{\int f\,dx}$를 곱하면 $q=pg$, $r=ph$인 꼴이 됩니다.
 :::
 ` },
       { k: '11.6', p: '504', title: '직교급수와 일반화된 푸리에 급수', body: R`
@@ -896,6 +911,18 @@ $$\hat f_s=\sqrt{\frac2\pi}\frac{w}{a^2+w^2}$$
 | $xe^{-x^2/2}$ | — | $we^{-w^2/2}$ |
 
 가우스 함수 $e^{-x^2/2}$는 코사인 변환이 자기 자신이라는 특별한 성질을 가집니다(다음 절에서 유도).
+
+:::key 푸리에 코사인·사인 변환
+$$\hat f_c(w)=\sqrt{\frac2\pi}\int_0^\infty f(x)\cos wx\,dx$$
+$$\hat f_s(w)=\sqrt{\frac2\pi}\int_0^\infty f(x)\sin wx\,dx$$
+역변환은 $f$와 $\hat f$의 자리를 바꾼 같은 꼴입니다.
+$$\mathcal F_c\{f'\}=w\hat f_s-\sqrt{\tfrac2\pi}\,f(0)$$
+$$\mathcal F_s\{f'\}=-w\hat f_c$$
+$$\mathcal F_c\{f''\}=-w^2\hat f_c-\sqrt{\tfrac2\pi}\,f'(0)$$
+$$\mathcal F_s\{f''\}=-w^2\hat f_s+\sqrt{\tfrac2\pi}\,wf(0)$$
+$$\mathcal F_c\{e^{-ax}\}=\sqrt{\frac2\pi}\,\frac{a}{a^2+w^2}$$
+$$\mathcal F_s\{e^{-ax}\}=\sqrt{\frac2\pi}\,\frac{w}{a^2+w^2}\qquad(a>0)$$
+:::
 ` },
       { k: '11.9', p: '522', title: '푸리에 변환, 이산·고속 푸리에 변환', body: R`
 앞 절의 두 변환은 실수값이지만 우함수·기함수 성질에 기대고 $x>0$에서만 정의됩니다. 이 절에서는 $x$축 전체의 함수를 한 번에 다루는 복소 변환, **푸리에 변환**을 복소 푸리에 적분에서 얻습니다. 그리고 컴퓨터에서 쓰는 이산 버전(DFT)과 그 빠른 계산법(FFT)을 봅니다.
@@ -1069,6 +1096,14 @@ $$\hat{\mathbf f}_{ev}=(1+0,\ 1-0)=(1,1),\qquad \hat{\mathbf f}_{od}=(2+1,\ 2-1)
 $w_4=-i$를 써서 합치면
 $$\hat f_0=1+3=4,\quad \hat f_1=1+(-i)\cdot1=1-i,\quad \hat f_2=1-3=-2,\quad \hat f_3=1-(-i)\cdot1=1+i$$
 예제 6과 같습니다. 곱셈은 $w_4$를 곱하는 한 번뿐입니다.
+:::
+
+:::key 이산·고속 푸리에 변환 (DFT·FFT)
+$$\hat f_n=\sum_{k=0}^{N-1}f_k\,w^{nk},\qquad w=w_N=e^{-2\pi i/N}$$
+$$\hat{\mathbf f}=F_N\mathbf f,\qquad F_N^{-1}=\frac1N\overline{F_N}$$
+$$N=2M:\qquad \hat f_n=\hat f_{ev,n}+w_N^n\hat f_{od,n}$$
+$$\hat f_{n+M}=\hat f_{ev,n}-w_N^n\hat f_{od,n}\qquad(n=0,\dots,M-1)$$
+계산량은 DFT가 $O(N^2)$, FFT가 $O(N\log_2N)$입니다. 실수 신호이면 $\hat f_{N-n}=\overline{\hat f_n}$.
 :::
 
 **변환표(§11.10).** 교재 끝의 표에 코사인·사인·푸리에 변환 쌍이 정리되어 있습니다. 시험에는 아래 정도를 외워 두거나 유도할 수 있으면 충분합니다.

@@ -58,6 +58,13 @@ $$c(\mathbf a+\mathbf b)=c\mathbf a+c\mathbf b,\quad(c+k)\mathbf a=c\mathbf a+k\
 :::
 
 $n$개의 실수의 순서쌍으로 확장한 $\mathbb R^n$이 선형대수의 벡터공간입니다[[ch06:7.9|벡터공간 $\mathbb R^n$.]]. 3차원 공간의 벡터는 그 가장 친숙한 예이고, 이 장에서는 여기에 “길이와 각”(내적)과 “방향이 있는 넓이”(외적)라는 기하 구조를 더합니다.
+
+:::key 벡터의 성분과 길이
+$$\mathbf a=[a_1,a_2,a_3]=[x_2-x_1,\ y_2-y_1,\ z_2-z_1]$$
+$$|\mathbf a|=\sqrt{a_1^2+a_2^2+a_3^2}$$
+$$\mathbf a+\mathbf b=[a_1+b_1,\ a_2+b_2,\ a_3+b_3]$$
+$$c\mathbf a=[ca_1,\ ca_2,\ ca_3]$$
+:::
 ` },
       { k: '9.2', p: '361', title: '내적', body: R`
 일정한 힘이 한 일, 힘의 한 방향 성분처럼 “두 벡터를 곱해 스칼라를 얻는” 계산이 자주 필요합니다. 여기에 두 벡터의 길이와 사잇각이 관여합니다.
@@ -302,6 +309,12 @@ $\mathbf v\cdot\mathbf v=c^2$을 미분하면 $(\mathbf v\cdot\mathbf v)'=2\math
 :::
 
 **편도함수.** 성분이 여러 변수 $t_1,\dots,t_n$의 함수이면 $\dfrac{\partial\mathbf v}{\partial t_m}=\Big[\dfrac{\partial v_1}{\partial t_m},\dfrac{\partial v_2}{\partial t_m},\dfrac{\partial v_3}{\partial t_m}\Big]$로 정의하고, 2계 편도함수도 같습니다. 예를 들어 원기둥면 $\mathbf r(u,v)=[a\cos u,\ a\sin u,\ v]$에서 $\mathbf r_u=[-a\sin u,\ a\cos u,\ 0]$ (원을 따라가는 접벡터), $\mathbf r_v=[0,0,1]$ (모선 방향)입니다. 곡면을 $\mathbf r(u,v)$로 나타낼 때 $\mathbf r_u$, $\mathbf r_v$가 접벡터가 되고, 그 외적이 법선이 됩니다[[ch09:10.5|곡면의 매개변수 표현과 법선.]].
+
+:::key 벡터함수의 미분
+$$\mathbf v'(t)=[v_1'(t),\ v_2'(t),\ v_3'(t)]\qquad(\text{성분마다 미분})$$
+$$(\mathbf u\cdot\mathbf v)'=\mathbf u'\cdot\mathbf v+\mathbf u\cdot\mathbf v'$$
+$$(\mathbf u\times\mathbf v)'=\mathbf u'\times\mathbf v+\mathbf u\times\mathbf v'\ \ (\text{순서 유지})$$
+:::
 ` },
       { k: '9.5', p: '381', title: '곡선, 호의 길이, 곡률, 비틀림', body: R`
 벡터 미적분을 곡선에 적용하는 것이 **미분기하**의 일부입니다. 곡선은 역학에서 움직이는 물체의 경로이고, 다음 장의 선적분에 필요합니다.
@@ -468,6 +481,12 @@ $$f(P_0+\mathbf h)-f(P_0)=\nabla f(P_0+\theta\mathbf h)\cdot\mathbf h\qquad(0<\t
 :::
 
 선분 $P_0+t\mathbf h$ ($0\le t\le1$) 위에서 $F(t)=f(P_0+t\mathbf h)$에 한 변수 평균값 정리를 쓰고 연쇄법칙으로 $F'(t)=\nabla f\cdot\mathbf h$를 대입하면 됩니다. 두 변수, 한 변수의 경우도 같은 꼴입니다. “볼록” 조건은 선분이 영역 밖으로 나가지 않게 하려는 것입니다.
+
+:::key 연쇄법칙과 평균값 정리
+$$\frac{\partial w}{\partial u}=\frac{\partial w}{\partial x}\frac{\partial x}{\partial u}+\frac{\partial w}{\partial y}\frac{\partial y}{\partial u}+\frac{\partial w}{\partial z}\frac{\partial z}{\partial u}$$
+$$\frac{d}{dt}f(\mathbf r(t))=\nabla f\cdot\mathbf r'(t)$$
+$$f(P_0+\mathbf h)-f(P_0)=\nabla f(P_0+\theta\mathbf h)\cdot\mathbf h\qquad(0<\theta<1)$$
+:::
 ` },
       { k: '9.7', p: '395', title: '기울기와 방향도함수', body: R`
 응용에 나오는 벡터장 가운데 일부(전부는 아님!)는 스칼라장에서 얻을 수 있습니다. 벡터 세 성분 대신 스칼라 하나를 다루면 훨씬 쉬우므로 큰 이점이고, 스칼라장에서 벡터장을 만드는 도구가 **기울기**입니다.
@@ -631,6 +650,12 @@ $n=-3$일 때만 0입니다. 중력장 $-c\,\mathbf r/r^3$의 발산이 0인 것
 :::
 
 발산이 “단위 부피당 유출량”이라는 뜻은 발산 정리로 정확해집니다[[ch09:10.7|발산 정리.]].
+
+:::key 발산과 연속방정식
+$$\operatorname{div}\mathbf v=\nabla\cdot\mathbf v=\frac{\partial v_1}{\partial x}+\frac{\partial v_2}{\partial y}+\frac{\partial v_3}{\partial z}$$
+$$\operatorname{div}(\operatorname{grad}f)=\nabla^2f$$
+$$\frac{\partial\rho}{\partial t}+\operatorname{div}(\rho\mathbf v)=0\qquad(\text{비압축성이면 }\operatorname{div}\mathbf v=0)$$
+:::
 ` },
       { k: '9.9', p: '406', title: '벡터장의 회전', body: R`
 기울기, 발산과 함께 벡터 미적분의 세 번째 기본 연산이 **회전**입니다.
