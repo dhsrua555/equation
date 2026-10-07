@@ -53,6 +53,12 @@ $$L_\cD\big(A(S)\big)\le\min_{h'\in\cH}L_\cD(h')+\varepsilon.$$
 :::warn 비교 대상은 베이즈 최적이 아니다
 불가지 PAC는 $\cH$ 안의 최선과 겨룹니다. $\cH$ 밖의 모든 함수(베이즈 최적 분류기 포함)와 겨루는 것은 사전 지식 없이 불가능하다는 것이 4단원의 공짜 점심은 없다 정리입니다.
 :::
+
+:::key 불가지 PAC 학습가능성
+$$L_\cD(h)=\Prob_{(x,y)\sim\cD}[h(x)\ne y],\qquad L_S(h)=\frac1m\big\lvert\{i:h(x_i)\ne y_i\}\big\rvert$$
+$m\ge m_\cH(\varepsilon,\delta)$이면 모든 분포 $\cD$에서 확률 $1-\delta$ 이상으로
+$$L_\cD\big(A(S)\big)\le\min_{h'\in\cH}L_\cD(h')+\varepsilon$$
+:::
 ` },
       { k: '3.2b', p: 47, title: '일반 손실함수로 넓히기', body: R`
 회귀나 다중 클래스 문제도 같은 틀에 넣기 위해 예제 공간을 $\cZ$($=\cX\times\cY$ 또는 그 밖의 집합)로 두고 손실함수를 일반화합니다.

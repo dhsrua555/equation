@@ -30,6 +30,11 @@ $$\delta E\simeq\delta\mathbf w^T\nabla E(\mathbf w).$$
 :::note 국소 이차 근사 (교재 7.1.1)
 최소점 $\mathbf w^\star$ 근처에서 $E(\mathbf w)\simeq E(\mathbf w^\star)+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$ ($\nabla E(\mathbf w^\star)=0$).[[@base:ch04:4.3|다변수 테일러 전개와 헤시안: 최소점 근처의 이차 근사.]] 헤시안 $\mathbf H$의 고유벡터 $\mathbf u_i$ 방향으로 등고선이 타원이고, 고윳값 $\lambda_i$가 클수록(곡률이 클수록) 그 방향 축이 짧습니다. $\mathbf H$가 양의 정부호이면 극소입니다[[@em:ch07:8.4|이차형식의 주축 변환.]].
 :::
+
+:::key 오차 곡면
+$$\delta E\simeq\delta\mathbf w^T\nabla E(\mathbf w),\qquad \nabla E(\mathbf w)=0\ \ (\text{정류점})$$
+$$E(\mathbf w)\simeq E(\mathbf w^\star)+\tfrac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)\quad(\text{최소점 근처})$$
+:::
 ` },
       { k: '7.2', label: '7.2–7.2.4', p: '213', src: '슬라이드 5–10', title: '배치, 확률적, 미니배치 경사하강법', body: R`
 :::key 배치·확률적 경사하강법
@@ -111,6 +116,12 @@ $U[-\epsilon,\epsilon]$의 분산은 $\epsilon^2/3$이므로 $\epsilon=\sqrt{3}\
 
 :::note 곡률과 학습률의 상한
 이차 근사에서 고유방향 $\mathbf u_i$의 성분은 $(1-\eta\lambda_i)$배씩 줄어듭니다. 모든 방향이 수렴하려면 $\eta<2/\lambda_{\max}$이고, 수렴 속도는 가장 완만한 방향($\lambda_{\min}$)이 정합니다. 곡률 비 $\lambda_{\max}/\lambda_{\min}$이 크면 느립니다 — 모멘텀과 적응형 학습률, 입력 정규화가 필요한 이유입니다.
+:::
+
+:::key 학습률과 곡률
+고유방향 $\mathbf u_i$의 성분은 매 걸음 $(1-\eta\lambda_i)$배가 되므로
+$$\eta<\frac2{\lambda_{\max}}\quad(\text{발산하지 않을 조건})$$
+수렴 속도는 가장 완만한 방향 $\lambda_{\min}$이 정하고, $\lambda_{\max}/\lambda_{\min}$이 크면 좁은 골짜기를 가로질러 진동하며 느려진다.
 :::
 ` },
       { k: '7.3b', label: '7.3.1', p: '220', src: '슬라이드 15–16', title: '모멘텀', body: R`

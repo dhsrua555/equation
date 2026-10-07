@@ -30,6 +30,11 @@ window.EM = window.EM || { chapters: [], exams: [] };
 ---
 (a) 경사면을 따라 잰 거리 $s$ 하나: 1. (b) 두 막대의 각 $\theta_1,\theta_2$: 2. (c) 수레 위치 $x$와 진자 각 $\theta$: 2.
 :::
+
+:::key 일반화 좌표와 자유도
+계의 형상을 완전히 정하고 서로 독립인 좌표 $q=(q_1,\dots,q_n)$의 최소 개수 $n$이 자유도이다.
+$$\text{진자}:\ x=L\sin\theta,\quad y=-L\cos\theta\qquad(q=\theta,\ n=1)$$
+:::
 ` },
       { k: '6.2b', src: '수업 필기 · 4월 1일 · Lagrangian 자료 6.2', title: '라그랑지안과 오일러-라그랑주 방정식', body: R`
 :::key 라그랑주 방정식 (보존력만 있을 때)
@@ -89,6 +94,12 @@ $r=0.2$ m, $\omega=10$ rad/s면 $\cos\theta=0.4905$, $\theta=60.6°$. 고리를 
 :::warn 이 계에서는 $T+V$가 보존되지 않는다
 고리를 일정한 $\omega$로 돌리는 모터가 계에 일을 합니다. 대신 $L$이 $t$를 직접 포함하지 않아 $h=\dot\theta\,\partial L/\partial\dot\theta-L=\tfrac12mr^2\dot\theta^2-\tfrac12mr^2\omega^2\sin^2\theta-mgr\cos\theta$가 보존됩니다(야코비 적분). $T$가 $\dot q$의 이차 동차식일 때만 $h=T+V$입니다.
 :::
+
+:::key 회전하는 고리 위의 구슬
+$$T=\tfrac12m\big(r^2\dot\theta^2+r^2\omega^2\sin^2\theta\big),\qquad V=-mgr\cos\theta$$
+$$\ddot\theta=\Big(\omega^2\cos\theta-\frac gr\Big)\sin\theta$$
+평형은 $\theta=0$ 또는 $\cos\theta=\frac g{r\omega^2}$ ($\omega^2>\frac gr$일 때). 보존되는 것은 $T+V$가 아니라 야코비 적분 $h=\dot\theta\,\frac{\partial L}{\partial\dot\theta}-L$이다.
+:::
 ` },
       { k: '6.2e', title: '예제: 두 자유도 — 스프링 수레와 진자', body: R`
 :::fig dCartPend
@@ -104,6 +115,12 @@ $$(M+m)\ddot x+ml(\ddot\theta\cos\theta-\dot\theta^2\sin\theta)+kx=0$$
 $\theta$: $\frac{d}{dt}\big[ml\dot x\cos\theta+ml^2\dot\theta\big]-\big(-ml\dot x\dot\theta\sin\theta-mgl\sin\theta\big)=0$ →
 $$l\ddot\theta+\ddot x\cos\theta+g\sin\theta=0$$
 ($ml\dot x\dot\theta\sin\theta$ 항이 양쪽에서 지워짐). $k=0$이면 수평 운동량 $(M+m)\dot x+ml\dot\theta\cos\theta$가 보존됩니다.
+:::
+
+:::key 스프링 수레와 진자
+$$(M+m)\ddot x+ml\big(\ddot\theta\cos\theta-\dot\theta^2\sin\theta\big)+kx=0$$
+$$l\ddot\theta+\ddot x\cos\theta+g\sin\theta=0$$
+$k=0$이면 수평 운동량 $(M+m)\dot x+ml\dot\theta\cos\theta$가 보존된다.
 :::
 ` },
       { k: '6.2f', title: '순환 좌표와 보존량', body: R`

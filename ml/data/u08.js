@@ -43,6 +43,11 @@ $$L_D(h)=\sum_{i=1}^mD_i\one[h(x_i)\ne y_i]$$
 :::tip b = ±1의 역할
 $b$를 뒤집으면 가중 오차가 $1-L_D$가 됩니다. 그래서 오차가 $\tfrac12$보다 큰 그루터기는 뒤집으면 $\tfrac12$보다 작아집니다 — “찍기보다 나쁜” 규칙도 약한 학습기의 재료가 됩니다.
 :::
+
+:::key 결정 그루터기의 ERM
+$$h_{j,\theta,b}(x)=b\cdot\sign(\theta-x_j),\qquad L_D(h)=\sum_{i=1}^mD_i\,\one[h(x_i)\ne y_i]$$
+좌표마다 정렬한 뒤 이웃 값의 중점 $m+1$개만 보면 되므로 누적합으로 $O(dm)$. $b$를 뒤집으면 가중 오차가 $1-L_D$가 된다.
+:::
 ` },
       { k: '10.2', p: 134, title: 'AdaBoost', body: R`
 :::def AdaBoost
@@ -64,6 +69,12 @@ $t=1,\dots,T$:
 $m=5$, 균등 분포에서 $h_1$이 한 예제만 틀렸다. $\varepsilon_1,w_1$과 갱신 후 틀린 예제의 가중치는?
 ---
 $\varepsilon_1=0.2$, $w_1=\frac12\ln4=\ln2\approx0.693$. 틀린 예제 $0.2\cdot e^{w_1}=0.4$, 맞힌 예제 각각 $0.2\cdot e^{-w_1}=0.1$. 합 $0.4+4(0.1)=0.8$로 나누면 틀린 예제 $0.5$, 맞힌 예제 각각 $0.125$. 틀린 예제의 무게가 $\tfrac12$이 되었습니다.
+:::
+
+:::key AdaBoost
+$$\varepsilon_t=\sum_iD^{(t)}_i\one[y_i\ne h_t(x_i)],\qquad w_t=\frac12\ln\Big(\frac1{\varepsilon_t}-1\Big)$$
+$$D^{(t+1)}_i\propto D^{(t)}_i\,e^{-w_ty_ih_t(x_i)},\qquad h_S(x)=\sign\Big(\sum_{t=1}^Tw_th_t(x)\Big)$$
+갱신 후 $h_t$의 가중 오차는 정확히 $\frac12$이다.
 :::
 ` },
       { k: '10.2b', p: 135, src: '강의 노트 · Theorem 10.2', title: 'AdaBoost의 훈련 오차', body: R`

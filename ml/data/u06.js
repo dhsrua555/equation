@@ -27,6 +27,12 @@ $$L_\cD\big(A(S)\big)\le L_\cD(h)+\varepsilon.$$
 :::warn 양화사를 한 번 더
 PAC: $\exists m(\varepsilon,\delta)\ \forall\cD\ \forall h$. 비균등: $\forall h\ \exists m(\varepsilon,\delta,h)\ \forall\cD$. 분포에 대해서는 여전히 균등합니다 — 다른 것은 $h$의 위치뿐입니다. 분포에 기대는 것까지 허용하면 7.4절의 일치성이 됩니다.
 :::
+
+:::key 비균등 학습가능성
+모든 $\varepsilon,\delta$, 모든 $h\in\cH$, 모든 $\cD$에 대해 $m\ge m^{\mathrm{NUL}}_\cH(\varepsilon,\delta,h)$이면 확률 $1-\delta$ 이상으로
+$$L_\cD\big(A(S)\big)\le L_\cD(h)+\varepsilon$$
+PAC는 $\exists m(\varepsilon,\delta)\ \forall\cD\ \forall h$, 비균등은 $\forall h\ \exists m(\varepsilon,\delta,h)\ \forall\cD$.
+:::
 ` },
       { k: '7.1b', p: 84, src: '강의 노트 · Theorem 7.2–7.3', title: '비균등 학습가능성의 특징', body: R`
 :::key 비균등 학습가능성의 특징
@@ -139,6 +145,11 @@ $$\text{PAC 학습가능}\ \subsetneq\ \text{비균등 학습가능}\ \subsetneq
 
 :::note 공짜 점심은 없다, 다시
 비균등 학습은 모든 가산 합집합 클래스를 다룰 수 있지만, 공짜 점심은 없다 정리를 우회하지는 못합니다. 가중치 $w$를 정하는 순간 “어떤 가설을 먼저 믿을지”라는 사전 지식을 넣은 것이고, 뒤쪽 가설과 겨루려면 그만큼 표본이 더 듭니다.
+:::
+
+:::key 학습가능성의 위계
+$$\text{PAC 학습가능}\ \subsetneq\ \text{비균등 학습가능}\ \subsetneq\ \text{일치 학습가능}$$
+일치성은 표본 수가 분포 $\cD$에도 기댈 수 있다. $\cX$가 가산이면 외우기 알고리즘이 모든 함수의 클래스에 대해 일치 학습기이다.
 :::
 ` },
     ],

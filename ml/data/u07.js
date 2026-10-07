@@ -32,6 +32,11 @@ $$\text{찾기: }w\in\mathbb R^d\quad\text{조건: }y_i\langle w,x_i\rangle\ge1\
 :::tip 엄격한 부등식을 ≥ 1로
 LP는 $>0$ 같은 열린 제약을 다룰 수 없습니다. 척도 불변성($w$를 양수배해도 부호가 같음)으로 여유 1을 만든 것이 핵심입니다. SVM(15장)도 같은 정규화를 씁니다.
 :::
+
+:::key 반공간과 선형계획법
+$$HS_d=\{x\mapsto\sign(\langle w,x\rangle+b)\},\qquad \langle w,x\rangle+b=\langle w',x'\rangle\ \ \big(w'=(b,w),\ x'=(1,x)\big)$$
+$$\text{실현가능한 ERM}:\ \text{찾기 }w\ \ \text{조건 }y_i\langle w,x_i\rangle\ge1\ \ (i=1,\dots,m)$$
+:::
 ` },
       { k: '9.1b', p: 120, src: '강의 노트 · Exercise 9.3, 9.4', title: '퍼셉트론', body: R`
 :::def 퍼셉트론 (로젠블랫)
@@ -99,6 +104,11 @@ $\psi(x)=(1,x)$. $A=\sum\psi\psi^\top=\begin{pmatrix}3&3\\3&5\end{pmatrix}$, $b=
 
 :::note 심층 신경망 과목과의 연결
 정규방정식의 유도와 정사영 해석은 심층 신경망 과목의 첫 단원과 같습니다[[@dnn:ch01:1.3|$X^\top X\beta=X^\top y$, 열이 일차독립이면 해가 하나.]]. 이 과목은 열이 일차종속인 경우까지 유사역행렬로 마무리한다는 점이 다릅니다.
+:::
+
+:::key 다항 회귀는 선형 회귀다
+$$p(x)=\sum_{i=0}^na_ix^i=\langle a,\psi(x)\rangle,\qquad \psi(x)=(1,x,\dots,x^n)$$
+$$A=\sum_{i=1}^m\psi(x_i)\psi(x_i)^\top,\qquad b=\sum_{i=1}^my_i\psi(x_i),\qquad a=A^{-1}b\ \ (A\text{가 가역일 때})$$
 :::
 ` },
       { k: '9.3', p: 126, title: '로지스틱 회귀', body: R`

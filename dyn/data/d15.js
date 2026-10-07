@@ -87,6 +87,11 @@ $m=0.5$ kg, $l=0.3$ m, $\omega=20$ rad/s, $\alpha=30°$면 $M=15.6$ N·m. 베어
 $m=4$ kg, $r=0.2$ m, $L=0.6$ m, $\omega_1=30$ rad/s면 $N=39.2+40=79.2$ N — 무게의 두 배. 맷돌이 빨리 돌수록 더 세게 가는 이유입니다.
 핀 반력: 질량 중심은 반지름 $L$의 원을 $\omega_2$로 돌므로 $\mathbf a_G=-L\omega_2^2\mathbf i$, $R_x=-\tfrac{mr^2\omega_1^2}{L}$, $R_y=mg-N=-\tfrac12m\tfrac{r^3}{L^2}\omega_1^2$, $R_z=0$.
 :::
+
+:::key 축 끝에서 구르는 원판
+$$v_G=r\omega_1=L\omega_2,\qquad \dot{\mathbf H}_O=\boldsymbol\Omega\times\mathbf H_O$$
+$$N=mg+\frac12m\frac{r^3}{L^2}\omega_1^2$$
+:::
 ` },
       { k: '18.10', p: 1186, title: '자이로스코프의 정상 세차', body: R`
 자전하는 원판의 축이 수평이고, 한 끝이 받침점에 얹혀 있다. 떨어질 것 같은데 옆으로 천천히 돕니다(세차).

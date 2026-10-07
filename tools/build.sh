@@ -66,6 +66,7 @@ for f in $FIELDS; do
 <link rel="stylesheet" href="../core/katex.css">
 <link rel="stylesheet" href="../core/style.css">
 <link rel="stylesheet" href="../core/fields.css">
+<script src="../core/theme.js"></script>
 <link rel="icon" href="../assets/icons/$f-32.png" sizes="32x32">
 <link rel="icon" href="../assets/icons/$f.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../assets/icons/$f-180.png">

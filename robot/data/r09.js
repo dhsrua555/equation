@@ -61,6 +61,11 @@ $x=L_1c_1+L_2c_{12}+L_3c_{123}$, $y=L_1s_1+L_2s_{12}+L_3s_{123}$, 방향각 $\th
 $\mathcal S_1=(0,0,1,0,0,0)$, 병진 관절은 영 자세에서 $\hat x$ 방향: $\mathcal S_2=(0,0,0,1,0,0)$.
 $e^{[\mathcal S_2]\theta_2}M$은 끝점을 $(L_0+\theta_2,0,0)$으로, $e^{[\mathcal S_1]\theta_1}$이 그것을 돌려 끝점 $\big((L_0+\theta_2)\cos\theta_1,(L_0+\theta_2)\sin\theta_1,0\big)$ — 극좌표 그대로입니다.
 :::
+
+:::key 평면 3R 팔의 지수곱
+$$\mathcal S_i=(0,0,1,\ 0,-q_{i,x},0),\qquad T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}e^{[\mathcal S_3]\theta_3}M$$
+$$x=L_1c_1+L_2c_{12}+L_3c_{123},\qquad y=L_1s_1+L_2s_{12}+L_3s_{123},\qquad \phi=\theta_1+\theta_2+\theta_3$$
+:::
 ` },
       { k: '4.1.3', p: 148, title: '물체 형태의 지수곱 공식', body: R`
 $e^{[\mathcal S]\theta}M=Me^{[M^{-1}\mathcal SM]\theta}$ (행렬 지수는 닮음 변환과 바꿔 쓸 수 있음)를 되풀이해 $M$을 맨 앞으로 옮깁니다.

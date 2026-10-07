@@ -30,6 +30,11 @@ $$A(S)\in\argmin_w\big(L_S(w)+R(w)\big).$$
 :::note 용어
 regularization은 “규제”, normalization(배치 정규화 등)은 “정규화”로 구분해 씁니다. 의료 인공지능 과목의 가중치 감쇠가 같은 티호노프 규제입니다[[@med:ch11:9.2|가중치 감쇠 $\frac\lambda2\lVert w\rVert^2$.]].
 :::
+
+:::key 규제 손실 최소화
+$$A(S)\in\argmin_w\big(L_S(w)+R(w)\big),\qquad R(w)=\lambda\lVert w\rVert^2\ \ (\text{티호노프 규제})$$
+규제항이 목적함수를 강볼록하게 만들어 해를 안정하게 한다.
+:::
 ` },
       { k: '13.1b', p: 172, src: '강의 노트 · 13.1.1', title: '릿지 회귀', body: R`
 제곱 손실의 RLM:

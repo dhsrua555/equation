@@ -1032,6 +1032,20 @@ body.ko-on .bi > .ko-btn { visibility: hidden; }
   border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); font-size: 0.78rem; box-shadow: var(--shadow); cursor: pointer;
 }
 .ko-all b { font-family: var(--f-caps); font-size: 0.62rem; letter-spacing: 0.1em; padding: 4px 6px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+/* light/dark switch (core/theme.js), bottom left; the KO button and toasts use the right and the middle */
+.theme-btn {
+  position: fixed; left: calc(16px + env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+  width: 42px; height: 42px; display: grid; place-items: center; padding: 0; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); box-shadow: var(--shadow); cursor: pointer;
+  transition: transform 0.14s var(--ease-out, ease), background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.theme-btn:hover { border-color: var(--ink-2); }
+.theme-btn:active { transform: scale(0.94); }
+.theme-btn:focus-visible { outline: 2px solid var(--denim); outline-offset: 2px; }
+.theme-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-btn.turn svg { animation: theme-turn 0.42s var(--ease-out, ease); }
+@keyframes theme-turn { from { transform: rotate(-90deg) scale(0.6); opacity: 0; } }
+@media print { .theme-btn { display: none; } }
 .ko-all[aria-pressed="true"] b { background: var(--camel-ink); }
 body[data-view="exam-live"] .ko-all { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 @media (max-width: 700px) {

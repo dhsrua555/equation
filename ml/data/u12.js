@@ -117,6 +117,11 @@ $\theta^{(1)}=0$. $t=1,\dots,T$: $w^{(t)}=\frac1{\lambda t}\theta^{(t)}$; $i\sim
 :::
 
 $\theta$는 “마진을 어긴 예제들의 $y_ix_i$ 누적합”이고 $w^{(t)}=-\frac1{\lambda t}\sum v_i$와 같은 식입니다. 퍼셉트론과 닮았지만 틀린 예제뿐 아니라 **마진 1 안쪽**의 예제에서도 갱신하고, $\frac1{\lambda t}$로 줄여 규제 효과를 냅니다. 상한은 $\E[f(\bar w)]-f(w^\star)\le\frac{2\rho^2}{\lambda T}(1+\ln T)$ ($\lVert x_i\rVert\le\rho$).
+
+:::key 소프트 SVM의 SGD
+$$w^{(t)}=\frac1{\lambda t}\theta^{(t)},\qquad \theta^{(t+1)}=\theta^{(t)}+y_ix_i\ \ (y_i\langle w^{(t)},x_i\rangle<1\text{일 때}),\qquad \bar w=\frac1T\sum_tw^{(t)}$$
+$$\E[f(\bar w)]-f(w^\star)\le\frac{2\rho^2}{\lambda T}(1+\ln T)\qquad(\lVert x_i\rVert\le\rho)$$
+:::
 ` },
     ],
     problems: [

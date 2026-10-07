@@ -278,6 +278,8 @@
       const mq = matchMedia('(prefers-color-scheme: dark)');
       if (mq.addEventListener) mq.addEventListener('change', () => window.EMPlots.redrawAll());
     }
+    // the light/dark button (core/theme.js) sets data-theme
+    new MutationObserver(() => window.EMPlots.redrawAll()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
   const q = $('#hub-q');
   q.addEventListener('input', () => renderResults(q.value));

@@ -73,6 +73,12 @@ $\mathbb R^2$의 임의의 다섯 점이 축에 나란한 직사각형으로 분
 :::warn 모수의 개수와 VC 차원
 많은 클래스에서 VC 차원 ≈ 모수 개수이지만(이산화 기법의 직관), 늘 그렇지는 않습니다. $\lceil\sin(\theta x)\rceil$은 모수가 하나인데 VC 차원이 무한입니다. VC 차원은 “자유도”가 아니라 “조합적 풍부함”입니다.
 :::
+
+:::key VC 차원의 예
+임계 함수 1, 구간 2, $\mathbb R^2$의 축에 나란한 직사각형 4, $\{\lceil\sin(\theta x)\rceil\}$ $\infty$, 유한 클래스는
+$$\operatorname{VCdim}(\cH)\le\log_2\lvert\cH\rvert\qquad(\text{분쇄하려면 }2^{\lvert C\rvert}\le\lvert\cH\rvert)$$
+VC 차원은 모수의 개수가 아니라 조합적 풍부함이다.
+:::
 ` },
       { k: '6.4', p: 72, title: '학습의 기본 정리', body: R`
 :::key 학습의 기본 정리

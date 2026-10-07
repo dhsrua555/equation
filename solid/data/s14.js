@@ -32,6 +32,13 @@ $$\frac{\partial\sigma_x}{\partial x}+\frac{\partial\tau_{xy}}{\partial y}+f_x=0
 :::note 원통 좌표 (강의 Remark)
 축대칭 문제(두꺼운 관, 회전 원판)는 $r,\theta,z$ 좌표에서 같은 세 식을 씁니다. 기하 관계가 $\varepsilon_r=\partial u_r/\partial r$, $\varepsilon_\theta=u_r/r$처럼 바뀌는 것이 특징입니다. 원이 반지름 $u_r$만큼 커지면 둘레가 $2\pi u_r$ 늘어 원주 변형률이 $u_r/r$입니다.
 :::
+
+:::key 탄성 문제의 세 식
+$$\frac{\partial\sigma_x}{\partial x}+\frac{\partial\tau_{xy}}{\partial y}+f_x=0\quad(\text{평형})$$
+$$\varepsilon_x=\frac{\partial u}{\partial x},\qquad \gamma_{xy}=\frac{\partial u}{\partial y}+\frac{\partial v}{\partial x}\quad(\text{기하})$$
+$$\varepsilon_x=\frac1E\big(\sigma_x-\nu(\sigma_y+\sigma_z)\big)\quad(\text{구성})$$
+3차원에서 미지수 15개(응력 6, 변형률 6, 변위 3)와 식 15개(평형 3, 기하 6, 구성 6).
+:::
 ` },
       { k: '2.5', p: 95, src: '강의 슬라이드 · Lecture 11 A (Constitutive Equations)', title: '일반화된 훅의 법칙', body: R`
 $\sigma_x$ 하나는 $x$로 $\sigma_x/E$만큼 늘리고 $y,z$로 $\nu\sigma_x/E$만큼 줄입니다(4단원). 선형이므로 세 방향 응력의 효과를 더합니다.

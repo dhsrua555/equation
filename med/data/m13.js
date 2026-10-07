@@ -52,6 +52,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 :::fig pixperm
 :::
+
+:::key 구조화된 자료와 CNN
+영상은 가까운 화소끼리 상관이 높다(국소 상관). CNN은 이를 모델 구조로 넣는다: **희소 연결**과 **공유 모수**.
+$$\#\text{params}_{\text{합성곱}}=K^2C_{\text{in}}C_{\text{out}}+C_{\text{out}}\qquad(\text{영상 크기와 무관})$$
+사전 지식을 넣는 세 방법: 규제항, 자료 증강, 모델 구조.
+:::
 ` },
       { k: '10.2', label: '10.2–10.2.1', p: '290', src: '슬라이드 9–11', title: '왜 CNN인가: 네 원리와 특징 검출기', body: R`
 :::idea 쉽게 말하면

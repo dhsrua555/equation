@@ -26,6 +26,11 @@ $\cY=\{1,\dots,k\}$.
 :::warn 환원의 대가
 이진 학습기는 자기 출력이 다중 클래스 예측에 쓰인다는 것을 모릅니다. 예: 평면 위에서 세 클래스가 한 줄로 놓인 세 원판(확률 40%, 20%, 40%)이면, “가운데 클래스 대 나머지”를 가르는 **최선의 반공간은 전부 음성**이라 일대다는 가운데 클래스를 모두 틀릴 수 있습니다. 그런데 $h(x)=\argmax_i\langle w_i,x\rangle$ 꼴의 예측기 중에는 세 클래스를 완벽히 가르는 것이 있습니다(가운데 클래스에 “가운데 방향” $w_2$를 주면 됨). **근사 오차는 0인데 환원이 그것을 찾지 못합니다.**
 :::
+
+:::key 이진 분류로의 환원
+$$\text{일대다}:\ h(x)=\argmax_{i\in[k]}h_i(x)\ \ (\text{분류기 }k\text{개}),\qquad \text{모든 쌍}:\ \binom k2\text{개의 }h_{i,j}\text{로 다수결}$$
+이진 학습기는 자기 출력이 다중 클래스 예측에 쓰인다는 것을 모르므로, 환원은 최선의 다중 클래스 예측기를 놓칠 수 있다.
+:::
 ` },
       { k: '17.2', p: 230, title: '선형 다중 클래스 예측기', body: R`
 클래스에 따라 달라지는 특징 사상 $\Psi:\cX\times\cY\to\mathbb R^d$를 두고
@@ -44,6 +49,11 @@ $$\Psi(x,y)=[\underbrace{0,\dots,0}_{(y-1)n},\underbrace{x_1,\dots,x_n}_{n},\und
 
 :::note 심층 신경망 과목과의 연결
 다중 벡터 구성의 점수 $\langle w_y,x\rangle$에 소프트맥스를 씌우고 교차 엔트로피로 학습한 것이 소프트맥스 회귀입니다[[@dnn:ch06:6.1|클래스마다 가중치 벡터 하나.]]. 이 장은 로그 손실 대신 힌지형 손실을 씁니다.
+:::
+
+:::key 선형 다중 클래스 예측기
+$$h_w(x)=\argmax_{y\in\cY}\langle w,\Psi(x,y)\rangle,\qquad \langle w,\Psi(x,y)\rangle=\langle w_y,x\rangle\ \ (\text{다중 벡터 구성})$$
+$$L^\Delta_\cD(h)=\E\big[\Delta(h(x),y)\big],\qquad \Delta(y,y)=0$$
 :::
 ` },
       { k: '17.2b', p: 233, src: '강의 노트 · Corollary 17.1 (Lemma A, B)', title: '일반화 힌지 손실', body: R`

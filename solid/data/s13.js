@@ -75,6 +75,12 @@ $\sigma=1.2(1500)/30=60$ MPa. 면내 원은 한 점이라 면내 전단은 0, �
 $\sigma_n=37.5(0.75)+75(0.25)=46.9$ MPa. $\tau=-\tfrac{\sigma_x-\sigma_y}{2}\sin2\theta=18.75\sin300°=-16.2$ MPa(크기 16.2 MPa).
 축 방향 이음(원주 응력 75 MPa를 받음)보다 용접선의 수직 응력이 작아, 나선관이 같은 두께로 더 높은 압력을 견딥니다.
 :::
+
+:::key 나선 용접선의 응력
+원통 축을 $x$, 원주를 $y$로 두면 $\sigma_x=\sigma_2=\frac{pr}{2t}$, $\sigma_y=\sigma_1=\frac{pr}t$, $\tau_{xy}=0$이고, 용접선 법선이 축과 이루는 각 $\theta$에 대해
+$$\sigma_n=\sigma_x\cos^2\theta+\sigma_y\sin^2\theta$$
+$$\tau=-\frac{\sigma_x-\sigma_y}2\sin2\theta$$
+:::
 ` },
       { k: '8.2', p: 562, src: '강의 슬라이드 · Lecture 10 (add) A', title: '내압과 조합 하중', body: R`
 탱크나 배관은 내압과 함께 비틀림(밸브를 돌림), 굽힘(자중), 축력을 받습니다. 11단원의 방법대로 성분마다 응력을 구해 더합니다.

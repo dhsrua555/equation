@@ -26,6 +26,11 @@ window.EM = window.EM || { chapters: [], exams: [] };
 1. **통계적**: 특징 공간의 차원(단항식이면 $\binom{n+k}k$ 정도)만큼 VC 차원이 커진다. → 마진·노름 기반 상한(15장)으로 해결: 차원 대신 $\lVert w\rVert$와 $\max\lVert\psi(x)\rVert$가 복잡도를 잰다.
 2. **계산적**: $\psi(x)$를 저장·계산하는 것 자체가 불가능할 수 있다(무한차원). → 다음 절의 커널 트릭으로 해결.
 :::
+
+:::key 특징 공간으로 옮기기
+$$h(x)=\sign\big(\langle w,\psi(x)\rangle\big),\qquad \psi:\cX\to\mathcal F$$
+예: $\psi(x)=(x,x^2)$, $w=(0,1)$, 문턱 5이면 $\lvert x\rvert>2$인 정수 점만 양성. 차수 $k$ 이하 단항식이면 특징 차원이 약 $\binom{n+k}k$로 커진다(통계적·계산적 비용).
+:::
 ` },
       { k: '16.2', p: 217, src: '강의 노트 · 16장 보충', title: '표현자 정리와 커널 트릭', body: R`
 :::key 표현자 정리
