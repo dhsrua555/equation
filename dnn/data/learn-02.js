@@ -325,6 +325,12 @@ $$\E[\theta_1^3]=\frac{91}{102}\cdot\frac{92}{103}\cdot\frac{93}{104}\approx0.71
 ### 더 깊이: 몬테카를로로 풀기
 
 적분이 복잡하면 표본으로 추정합니다. $\theta_1^{(s)}\sim\operatorname{Beta}(91,11)$, $\theta_2^{(s)}\sim\operatorname{Beta}(3,1)$를 $S$쌍 뽑아 $\theta_1^{(s)}>\theta_2^{(s)}$인 비율을 세면 $P(\theta_1>\theta_2)$의 불편추정량이고, 표준오차는 약 $\sqrt{0.71\cdot0.29/S}$ — $S=10^4$이면 $\pm0.005$ 정도입니다. 베이지안 딥러닝에서 “사후분포에서 가중치를 여러 번 뽑아 예측을 평균”하는 것이 같은 발상입니다.
+
+:::key 두 베타 사후분포의 비교
+$$\theta_2\sim\Beta(3,1)\ \Longrightarrow\ P(\theta_1>\theta_2)=\E\big[\theta_1^3\big]$$
+$$\E[\theta^m]=\prod_{j=0}^{m-1}\frac{a+j}{a+b+j}\ \ (\theta\sim\Beta(a,b))$$
+$\theta_1\sim\Beta(91,11)$이면 $\E[\theta_1^3]=\frac{91}{102}\cdot\frac{92}{103}\cdot\frac{93}{104}\approx0.7126$.
+:::
 ` },
       { k: '2.8', src: 'Problem Set 1 · 문제 2', title: '가우시안 평균의 MAP: 수축과 편향-분산 분해', body: R`
 :::idea 쉽게 말하면

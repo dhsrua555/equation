@@ -46,6 +46,14 @@ With $w=(1,-1)$ and $b=0.5$, on which side are $x=(2,1)$ and $x'=(0,3)$? What is
 ---
 $f(x)=2-1+0.5=1.5>0$, so $+1$; $f(x')=0-3+0.5=-2.5<0$, so $-1$. The distance to the origin is $\lvert b\rvert/\lVert w\rVert=0.5/\sqrt2\approx0.354$.
 :::
+
+:::key Hyperplanes and linear classification
+$$f(x)=x^Tw+b=0$$
+$$\frac{\lvert b\rvert}{\lVert w\rVert}\ (\text{distance to the origin})$$
+$$\hat y=\sign(f(x))$$
+$$y_i(x_i^Tw+b)\ge0\ \ \forall i\ (\text{all correct})$$
+$w$ is the normal of the hyperplane.
+:::
 ` },
       '7.2': { title: 'Distance from a Point to a Hyperplane', body: R`
 :::idea In plain words
@@ -251,6 +259,16 @@ $w^{*T}x_3+b^*=2+0.5-1=1.5>1$, so the old solution still satisfies every constra
 
 :::tip Checklist for the solution order
 (1) Write the constraints as $1-y_i(w^Tx_i+b)\le0$ (2) $L=\frac12\lVert w\rVert^2+\sum\alpha_i(1-y_i(\cdot))$ (3) $\nabla_w=0$, $\partial_b=0$ (4) substitute to get a function of $\alpha$ alone (5) maximize under the constraints $\sum\alpha_iy_i=0$, $\alpha\ge0$ (6) $w=\sum\alpha_iy_ix_i$ (7) $b=y_i-w^Tx_i$ at a point with $\alpha_i>0$ (8) the margin $1/\lVert w\rVert$ ($2/\lVert w\rVert$ if the width is asked). Finally, check that the primal value = the dual value.
+:::
+
+:::key The solution of the two-point SVM (Problem Set 1, Problem 3)
+With $x_1=(0,0)$, $y_1=-1$; $x_2=(2,2)$, $y_2=+1$,
+$$\alpha_1^*=\alpha_2^*=\tfrac14$$
+$$w^*=\sum_i\alpha_i^*y_ix_i=\big(\tfrac12,\tfrac12\big)$$
+$$b^*=-1$$
+$$\text{hyperplane }x_1+x_2=2$$
+$$\text{margin }\frac1{\lVert w^*\rVert}=\sqrt2$$
+$$\tfrac12\lVert w^*\rVert^2=g^*=\tfrac14\ \ (\text{strong duality})$$
 :::
 ` },
       '7.7': { title: 'The Max–Min Inequality and Saddle Points', body: R`

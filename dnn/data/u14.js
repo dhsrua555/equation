@@ -249,6 +249,12 @@ $m_1=0.1g_1$, $m_2=0.001g_1^2$ (성분별).
 :::tip 시험 대비 요약
 (1) 조건수 예제의 좌표별 점화식과 수렴 조건 (2) 모멘텀의 펼친 식과 $\alpha/(1-\rho)$ (3) 네스테로프의 앞 지점 계산 (4) AdaGrad 첫걸음 = 모든 좌표 $\alpha$ (5) RMSProp이 AdaGrad를 고치는 이유 (6) Adam의 편향 보정 $\E m_t=(1-\beta^t)\bar g$와 첫걸음 $\alpha\operatorname{sign}(g)$. 모두 한두 줄 계산으로 나옵니다.
 :::
+
+:::key 최적화기 한눈에
+$$\text{모멘텀}:\ v\leftarrow\rho v-\alpha g,\ \ x\leftarrow x+v$$
+$$\text{RMSProp}:\ z\leftarrow\beta z+(1-\beta)g^2,\ \ x\leftarrow x-\frac{\alpha\,g}{\sqrt z+\epsilon}$$
+$$\text{Adam}:\ m_1\leftarrow\beta_1m_1+(1-\beta_1)g,\ \ m_2\leftarrow\beta_2m_2+(1-\beta_2)g^2,\ \ x\leftarrow x-\frac{\alpha\,\hat m_1}{\sqrt{\hat m_2}+\epsilon},\ \ \hat m_k=\frac{m_k}{1-\beta_k^t}$$
+:::
 ` },
     ],
     problems: [

@@ -89,6 +89,11 @@ The logistic function is smooth, non-decreasing, and takes values in $(0,1)$, so
 ### Going deeper: why make the log-odds linear
 
 If the inputs of the two classes are Gaussians with a common covariance, $x\mid y=k\sim\N(\mu_k,\Sigma)$, then the posterior computed by Bayes' theorem has **exactly** the form $\sigma(w^Tx+b)$ ($w=\Sigma^{-1}(\mu_1-\mu_0)$). This is because taking the log of “posterior odds = likelihood ratio × prior odds” from Section 2.2 makes the log-likelihood ratio a linear function of $x$. Logistic regression is a discriminative model that assumes only the **shape** of the posterior, without this distributional assumption, and fits it directly. It is also “a single neuron with a single nonlinear activation”, the smallest unit of a neural network[[ch08:8.3|Sigmoid activations and the output layer.]].
+
+:::key The logistic regression model
+$$\log\frac{p}{1-p}=w^Tx\ \Longleftrightarrow\ p=P(y=1\mid x,w)=\sigma(w^Tx)=\frac1{1+e^{-w^Tx}}$$
+The decision boundary is the hyperplane $p=\frac12\iff w^Tx=0$.
+:::
 ` },
       '5.3': { title: 'Likelihood and the Cross-Entropy Loss', body: R`
 :::idea In plain words

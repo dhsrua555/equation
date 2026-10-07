@@ -128,6 +128,13 @@ $z=(1000,1001,999)$의 소프트맥스는?
 ### 더 깊이: 로그-합-지수는 부드러운 최댓값
 
 $\operatorname{LSE}(z)=\log\sum_je^{z_j}$에 대해 $\max_jz_j\le\operatorname{LSE}(z)\le\max_jz_j+\log C$ (합이 가장 큰 항 이상, $C$배 이하). 온도를 넣으면 $T\operatorname{LSE}(z/T)\to\max_jz_j$ ($T\to0$). LSE의 기울기가 정확히 소프트맥스이고($\partial\operatorname{LSE}/\partial z_k=p_k$), 헤시안이 $\diag(p)-pp^T$라서 LSE는 볼록함수입니다. 즉 소프트맥스는 “max의 기울기(argmax 원-핫)를 부드럽게 만든 것”입니다. 어텐션의 가중치도 이 소프트맥스로 만듭니다.
+
+:::key 소프트맥스의 성질
+$$\softmax(z+c\mathbf 1)=\softmax(z)$$
+$$\nabla_z^2\Big(\log\sum_je^{z_j}\Big)=\diag(p)-pp^T\succeq0$$
+$$\max_jz_j\le\log\sum_je^{z_j}\le\max_jz_j+\log C$$
+수치 계산은 $m=\max_jz_j$를 빼고 $\softmax(z-m\mathbf 1)$로 한다.
+:::
 ` },
     ],
   });

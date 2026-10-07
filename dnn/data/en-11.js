@@ -46,6 +46,12 @@ we have $\sigma'\approx0$ (almost zero gradient due to saturation in the nonline
 :::warn The two kinds of “no learning” have different causes
 With a small initialization the **forward signal** ($z$) becomes 0, so the weight gradient $\delta z^T$ is 0; with a large initialization, $\sigma'$ becomes 0 in the **backward signal** and the gradient is cut. Use the two formulas ($\partial L/\partial W=\delta z^T$ and $\delta_\ell=\sigma'\odot W^T\delta_{\ell+1}$) separately.
 :::
+
+:::key Initialization scale and signal size
+$$\operatorname{std}\Big(\sum_{i=1}^{D}w_ix_i\Big)\approx\sqrt D\cdot\operatorname{std}(w)\cdot(\text{input size})$$
+$$\frac{\partial L}{\partial W}=\frac{\partial L}{\partial h}\,z^T$$
+With $D=4096$, $\operatorname{std}(w)=0.01$ shrinks the signal by about 0.64 per layer (vanishing activations), and $0.05$ grows it by about 3.2 so tanh saturates. $\operatorname{std}(w)=1/\sqrt D$ (Xavier) keeps it at about 1.
+:::
 ` },
       '11.2': { title: 'Xavier (Glorot) Initialization', body: R`
 :::idea In plain words

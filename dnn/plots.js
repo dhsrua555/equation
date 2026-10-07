@@ -228,6 +228,31 @@
       ctx.globalAlpha = 1;
       ctx.strokeStyle = c.b; ctx.lineWidth = 2; curve(ctx, f, -6, 6, 500, T);
     },
+    // 15 — convolution as a moving average: a noisy step and the same signal smoothed by a length-5 box filter
+    conv(ctx, w, h, c) {
+      const T = frame(w, h, -0.5, 60.5, -0.45, 1.5);
+      const x = Array.from({ length: 61 }, (_, k) => (k > 18 && k < 42 ? 1 : 0) + 0.18 * noise(k + 3));
+      const y = x.map((_, k) => { let s = 0, n = 0; for (let j = -2; j <= 2; j++) if (x[k + j] != null) { s += x[k + j]; n++; } return s / n; });
+      const draw = (v) => { ctx.beginPath(); v.forEach((u, k) => (k ? ctx.lineTo(T.X(k), T.Y(u)) : ctx.moveTo(T.X(k), T.Y(u)))); ctx.stroke(); };
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -1, 0, 61, 0);
+      ctx.strokeStyle = c.a; ctx.lineWidth = 1.1; draw(x);
+      ctx.fillStyle = c.a; x.forEach((u, k) => dot(ctx, T, k, u, 1.6));
+      ctx.strokeStyle = c.b; ctx.lineWidth = 2.2; draw(y);
+    },
+    // 16 — ImageNet top-5 error by year: two shallow methods, then CNNs
+    imagenet(ctx, w, h, c) {
+      const E = [28.2, 25.8, 16.4, 11.7, 7.3, 6.7, 3.6];
+      const T = frame(w, h, -0.6, 7, -2, 31);
+      E.forEach((e, k) => {
+        const x0 = T.X(k + 0.1), x1 = T.X(k + 0.8), y0 = T.Y(0), y1 = T.Y(e);
+        ctx.fillStyle = k < 2 ? c.faint : c.b; ctx.globalAlpha = k < 2 ? 0.9 : 0.75;
+        ctx.fillRect(x0, y1, x1 - x0, y0 - y1);
+      });
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = c.a; ctx.lineWidth = 1.4; ctx.beginPath();
+      E.forEach((e, k) => (k ? ctx.lineTo(T.X(k + 0.45), T.Y(e)) : ctx.moveTo(T.X(k + 0.45), T.Y(e)))); ctx.stroke();
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -0.6, 0, 7, 0);
+    },
     // exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);

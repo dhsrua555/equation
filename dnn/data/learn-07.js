@@ -39,6 +39,14 @@ $w=(1,-1)$, $b=0.5$일 때 $x=(2,1)$, $x'=(0,3)$은 어느 쪽인가? 원점에�
 ---
 $f(x)=2-1+0.5=1.5>0$이므로 $+1$, $f(x')=0-3+0.5=-2.5<0$이므로 $-1$. 원점까지 거리 $\lvert b\rvert/\lVert w\rVert=0.5/\sqrt2\approx0.354$.
 :::
+
+:::key 초평면과 선형 분류
+$$f(x)=x^Tw+b=0$$
+$$\frac{\lvert b\rvert}{\lVert w\rVert}\ (\text{원점까지의 거리})$$
+$$\hat y=\sign(f(x))$$
+$$y_i(x_i^Tw+b)\ge0\ \ \forall i\ (\text{모두 맞음})$$
+$w$는 초평면의 법선이다.
+:::
 ` },
       { k: '7.2', src: 'W3 월 필기', title: '점과 초평면 사이의 거리', body: R`
 :::idea 쉽게 말하면
@@ -244,6 +252,16 @@ $x_3$는 $w^{*T}x_3+b^*=2+0.5-1=1.5>1$이라 기존 해가 여전히 모든 제�
 
 :::tip 풀이 순서 체크리스트
 (1) 제약을 $1-y_i(w^Tx_i+b)\le0$ 꼴로 (2) $L=\frac12\lVert w\rVert^2+\sum\alpha_i(1-y_i(\cdot))$ (3) $\nabla_w=0$, $\partial_b=0$ (4) 대입해 $\alpha$만의 함수 (5) 제약 $\sum\alpha_iy_i=0$, $\alpha\ge0$ 아래 최대화 (6) $w=\sum\alpha_iy_ix_i$ (7) $\alpha_i>0$인 점에서 $b=y_i-w^Tx_i$ (8) 마진 $1/\lVert w\rVert$ (폭을 물으면 $2/\lVert w\rVert$). 마지막에 원문제 값 = 쌍대 값인지 확인.
+:::
+
+:::key 두 점 SVM의 해 (Problem Set 1 문제 3)
+$x_1=(0,0)$, $y_1=-1$; $x_2=(2,2)$, $y_2=+1$이면
+$$\alpha_1^*=\alpha_2^*=\tfrac14$$
+$$w^*=\sum_i\alpha_i^*y_ix_i=\big(\tfrac12,\tfrac12\big)$$
+$$b^*=-1$$
+$$\text{초평면 }x_1+x_2=2$$
+$$\text{마진 }\frac1{\lVert w^*\rVert}=\sqrt2$$
+$$\tfrac12\lVert w^*\rVert^2=g^*=\tfrac14\ \ (\text{강한 쌍대성})$$
 :::
 ` },
       { k: '7.7', src: 'Problem Set 1 · 문제 4', title: '최대-최소 부등식과 안장점', body: R`

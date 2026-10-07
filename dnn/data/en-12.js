@@ -41,6 +41,11 @@ For $f(x)=\frac12x^2$ ($\beta=1$), $x_0=1$, what happens after 5 steps of GD $x\
 ---
 $x_t=(1-\eta)^t$. $\eta=0.1$: $0.9^5\approx0.59$ (slow). $\eta=1$: 0 in one step (optimal for this problem). $\eta=1.9$: $(-0.9)^5\approx-0.59$ (bouncing left and right, slowly). $\eta=2.1$: $(-1.1)^5\approx-1.61$ (explosion). In real problems where the curvature is unknown, it is safe to find a moderate value in between and reduce it over time.
 :::
+
+:::key Learning rate and learning curves
+For $f=\frac\beta2x^2$, GD is $x_{t+1}=(1-\eta\beta)x_t$: monotone decrease if $\eta<\frac1\beta$, the minimum in one step if $\eta=\frac1\beta$, decrease with oscillation if $\frac1\beta<\eta<\frac2\beta$, divergence if $\eta>\frac2\beta$.
+$$\text{learning rate: (b) low}<\text{(d) good}<\text{(c) high}<\text{(a) very high}$$
+:::
 ` },
       '12.2': { title: 'Learning Rate Decay Schedules', body: R`
 :::idea In plain words

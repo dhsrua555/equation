@@ -41,6 +41,13 @@ How many dimensions does a $32\times32$ color image (CIFAR10) and a $28\times28$
 ---
 A color image has three values R, G, B per pixel, so $32\times32\times3=3072$ dimensions. A gray-scale image has one value per pixel, so $28\times28=784$ dimensions. This is the size of the network's input layer.
 :::
+
+:::key The classification problem and input dimensions
+$$f(x;W):\ \mathcal X\to\mathcal Y=\{C_1,\dots,C_K\}$$
+$$\mathcal X=R_1\cup\cdots\cup R_K\ (\text{decision regions})$$
+$$32\times32\times3=3072,\quad 28\times28=784$$
+Deep learning learns the features and the classifier together (end to end).
+:::
 ` },
       '8.2': { title: 'Composing Linear Functions and Nonlinearities', body: R`
 :::idea In plain words
@@ -109,6 +116,13 @@ $z=W_2h+b_2=0-1+1+0.5=0.5$, $\sigma(0.5)\approx0.622$.
 :::
 
 **Terminology.** “2-layer neural network” = “1 hidden layer” (the input layer is not counted). With two hidden layers as on the slide, it is called a “3-layer network” or “a network with 2 hidden layers”, and if every neuron of adjacent layers is connected, the layer is **fully connected**.
+
+:::key Activation functions and a two-layer network
+$$\sigma(x)=\frac1{1+e^{-x}}$$
+$$\tanh x=2\sigma(2x)-1$$
+$$\ReLU(x)=\max(0,x)$$
+$$f(x)=\softmax\big(W_2\max(0,W_1x)\big)$$
+:::
 ` },
       '8.4': { title: 'The Perceptron and the Limits of Linear Separation', body: R`
 :::idea In plain words
@@ -161,6 +175,11 @@ As on slides 32–33, in the 3D space made by the hidden layer, the red points (
 ### Going deeper: the universal approximation theorem and the benefit of depth
 
 With **one** hidden layer and enough neurons (if the activation is not a polynomial), any continuous function on a compact set can be approximated to any accuracy (the universal approximation theorem). One-dimensional ReLU makes this easy to see: a linear combination of the $\max(0,x-t)$ is a **piecewise linear function** bending at the points $t$, and with densely placed bends it can follow any continuous curve. Then why stack deep? Because there are cases where **depth needs exponentially fewer neurons** to represent the same function. Example: composing the sawtooth function $g(x)=2\max(0,x)-4\max(0,x-\tfrac12)$ with itself $k$ times gives a sawtooth with $2^{k-1}$ teeth, built from 2 neurons per layer $\times$ $k$ layers, whereas a single hidden layer needs about $2^k$ neurons.
+
+:::key A hidden layer is a learned nonlinear embedding
+$$x\ \mapsto\ h=\sigma(W_1x+b_1)\ \mapsto\ \hat y=\softmax(W_2h+b_2)$$
+The output layer is a linear classifier on the hidden representation $h$. Example: $(x_1,x_2)\mapsto(x_1,x_2,x_1^2+x_2^2)$ separates concentric-circle data with one plane.
+:::
 ` },
       '8.6': { title: 'The Multilayer Perceptron (MLP)', body: R`
 :::idea In plain words

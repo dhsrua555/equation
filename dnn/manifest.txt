@@ -12,11 +12,14 @@ u11.js
 u12.js
 u13.js
 u14.js
+u15.js
+u16.js
 proofs-a.js
 proofs-b.js
 proofs-c.js
 proofs-d.js
 proofs-e.js
+proofs-f.js
 exams.js
 exams-2.js
 quiz-1.js
@@ -60,6 +63,8 @@ learn-13.js
 more-13.js
 fig-13.js
 fig-14.js
+fig-15.js
+fig-16.js
 quizprep-a.js
 quizprep-b.js
 en-01.js
@@ -77,10 +82,13 @@ en-11.js
 en-12.js
 en-13.js
 en-14.js
+en-15.js
+en-16.js
 en-proofs-a.js
 en-proofs-b.js
 en-proofs-c.js
 en-proofs-d.js
 en-proofs-e.js
+en-proofs-f.js
 en-exams.js
 en-quiz.js

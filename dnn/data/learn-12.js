@@ -35,6 +35,11 @@ $f(x)=\frac12x^2$ ($\beta=1$), $x_0=1$에서 GD $x\leftarrow x-\eta x$를 $\eta=
 ---
 $x_t=(1-\eta)^t$. $\eta=0.1$: $0.9^5\approx0.59$ (느림). $\eta=1$: 한 걸음에 0 (이 문제의 최적). $\eta=1.9$: $(-0.9)^5\approx-0.59$ (좌우로 튀며 느리게). $\eta=2.1$: $(-1.1)^5\approx-1.61$ (폭발). 곡률을 모르는 실제 문제에서는 이 사이의 적당한 값을 찾고, 시간이 지나면 줄이는 것이 안전합니다.
 :::
+
+:::key 학습률과 학습 곡선
+$f=\frac\beta2x^2$에서 GD는 $x_{t+1}=(1-\eta\beta)x_t$: $\eta<\frac1\beta$이면 단조 감소, $\eta=\frac1\beta$이면 한 걸음에 최소, $\frac1\beta<\eta<\frac2\beta$이면 진동하며 감소, $\eta>\frac2\beta$이면 발산.
+$$\text{학습률: (b) 낮음}<\text{(d) 좋음}<\text{(c) 높음}<\text{(a) 매우 높음}$$
+:::
 ` },
       { k: '12.2', src: 'W4 월(2) · 슬라이드 29–32, W4 수 필기', title: '학습률 감소 스케줄', body: R`
 :::idea 쉽게 말하면

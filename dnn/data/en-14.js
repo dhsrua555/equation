@@ -255,6 +255,12 @@ All the methods come from the same root, “go down along the slope”, and bran
 :::tip Exam summary
 (1) The per-coordinate recursion and convergence condition of the condition-number example (2) the unrolled momentum formula and $\alpha/(1-\rho)$ (3) the look-ahead computation of Nesterov (4) AdaGrad's first step = $\alpha$ in every coordinate (5) why RMSProp fixes AdaGrad (6) Adam's bias correction $\E m_t=(1-\beta^t)\bar g$ and first step $\alpha\operatorname{sign}(g)$. Each comes out of a line or two of computation.
 :::
+
+:::key Optimizers at a glance
+$$\text{momentum}:\ v\leftarrow\rho v-\alpha g,\ \ x\leftarrow x+v$$
+$$\text{RMSProp}:\ z\leftarrow\beta z+(1-\beta)g^2,\ \ x\leftarrow x-\frac{\alpha\,g}{\sqrt z+\epsilon}$$
+$$\text{Adam}:\ m_1\leftarrow\beta_1m_1+(1-\beta_1)g,\ \ m_2\leftarrow\beta_2m_2+(1-\beta_2)g^2,\ \ x\leftarrow x-\frac{\alpha\,\hat m_1}{\sqrt{\hat m_2}+\epsilon},\ \ \hat m_k=\frac{m_k}{1-\beta_k^t}$$
+:::
 ` },
     },
     probs: [

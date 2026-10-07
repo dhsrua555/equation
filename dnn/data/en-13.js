@@ -216,6 +216,12 @@ Either way, the goal is qualitative insight rather than theoretical guarantees. 
 ### Going deeper: the edge of stability
 
 Recent research observed that when neural networks are trained with GD, the largest eigenvalue of the Hessian (the local $\beta$) **rises by itself to around $2/\eta$ and stays there** during training (the edge of stability). Rather than the condition $\eta<2/\beta$ of Section 13.4 being “respected”, training walks a tightrope at the boundary and the loss goes down non-monotonically. It is an example not of the simplified theory being wrong, but of the boundary it points to playing an important role in actual training.
+
+:::key The role of convergence theory
+The convergence theorems rely on $\nabla f$ being $\beta$-Lipschitz, which deep learning losses usually do not satisfy. So the conclusions are qualitative insight, not guarantees.
+$$\eta<\frac2\beta\ \ (\text{large curvature, small learning rate})$$
+$$\lambda_{\max}\big(\nabla^2f\big)\approx\frac2\eta\ \ (\text{the edge of stability of GD})$$
+:::
 ` },
       '13.6': { title: 'The Stochastic Gradient Descent Lemma', body: R`
 :::idea In plain words

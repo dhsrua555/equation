@@ -99,6 +99,12 @@ In practice the data are often **shuffled** every epoch and then cut in order (s
 In PyTorch it is four lines: “clear previously computed gradients (zero_grad) → forward → backward → update (step)” (Section 8.5). The first line is needed because the library **accumulates** gradients (adding them, like a copy gate).
 
 **Choosing the batch size.** Too small, and the noise is large and the GPU sits idle; too large, and each step is expensive and memory runs out. Powers of 2 between 32 and 512 are common, and with batch normalization (Unit 12) the batch size also affects the estimation of the statistics.
+
+:::key Minibatch SGD
+$$g=\frac1B\sum_{i\in K}\nabla_\theta f_i(\theta)$$
+$$\theta\leftarrow\theta-\eta\,g$$
+Each epoch, shuffle the data, cut it into batches of $B$, and repeat (forward → loss → backward → update). One epoch is $\lceil n/B\rceil$ updates.
+:::
 ` },
       '10.4': { title: 'Revisiting Nonlinear Activation Functions', body: R`
 :::idea In plain words

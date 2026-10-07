@@ -76,6 +76,13 @@ In a derivation, write down the size of every term first; then you will not be c
 ### Going deeper: the language of mean and variance
 
 $f(\beta)/n$ is called the **mean squared error** (MSE). A constant factor does not move the minimizer, so minimizing the SSE or the MSE gives the same $\hat\beta$. In machine learning the MSE is used more often because it can be compared regardless of the sample size. Also, in a model with an intercept, the optimal $\hat\beta_0$ is always $\bar y-\sum_j\hat\beta_j\bar x_j$ (end of §1.3), so the line always passes through the **centroid** $(\bar x,\bar y)$.
+
+:::key Matrix form and objective of linear regression
+$$y=X\beta+\varepsilon$$
+$$X\in\mathbb R^{n\times(k+1)}\ (\text{first column }1)$$
+$$\beta\in\mathbb R^{k+1}$$
+$$f(\beta)=\sum_{i=1}^n\varepsilon_i^2=\lVert y-X\beta\rVert^2=(y-X\beta)^T(y-X\beta)$$
+:::
 ` },
       '1.2': { title: 'Two Formulas for Vector Derivatives', body: R`
 :::idea In plain words
@@ -234,6 +241,12 @@ is called the **coefficient of determination**. In Example 3 (§1.3), $S_{yy}=4.
 
 :::warn A small training error does not mean a good model
 If we use a very wiggly curve instead of a line, we can drive the SSE all the way to 0. But on new data it performs terribly (overfitting). This problem is treated with polynomial regression and regularization in Unit 4[[ch04:4.2|Fitting a degree-9 polynomial to 10 points gives zero training error but poor predictions.]].
+:::
+
+:::key The benchmark and the coefficient of determination
+$$S_{yy}=\sum_i(y_i-\bar y)^2\ \ (\text{the SSE of the benchmark }\hat y=\bar y)$$
+$$R^2=1-\frac{\mathrm{SSE}}{S_{yy}}$$
+The three ingredients of machine learning: the model $\hat y=X\beta$, the loss $\lVert y-X\beta\rVert^2$, and learning (the normal equations or gradient descent).
 :::
 ` },
       '1.5': { title: 'Gradient Descent Algorithm', body: R`

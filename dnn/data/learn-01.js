@@ -69,6 +69,13 @@ $f$를 최소로 하는 $\hat\beta$를 **최소제곱추정량**(LSE)이라 합�
 ### 더 깊이: 평균·분산 언어로 보기
 
 $f(\beta)/n$을 **평균제곱오차**(MSE)라 합니다. 상수배는 최솟점을 바꾸지 않으므로 SSE를 최소화하든 MSE를 최소화하든 같은 $\hat\beta$가 나옵니다. 머신러닝에서는 표본 수와 상관없이 비교하기 위해 MSE를 더 자주 씁니다. 또 절편이 있는 모델에서는 최적의 $\hat\beta_0$이 항상 $\bar y-\sum_j\hat\beta_j\bar x_j$가 되어(1.3절 끝), 직선이 **무게중심** $(\bar x,\bar y)$를 반드시 지납니다.
+
+:::key 선형회귀의 행렬 표현과 목적함수
+$$y=X\beta+\varepsilon$$
+$$X\in\mathbb R^{n\times(k+1)}\ (\text{첫 열이 }1)$$
+$$\beta\in\mathbb R^{k+1}$$
+$$f(\beta)=\sum_{i=1}^n\varepsilon_i^2=\lVert y-X\beta\rVert^2=(y-X\beta)^T(y-X\beta)$$
+:::
 ` },
       { k: '1.2', src: 'W1 수 · 슬라이드 6 필기', title: '벡터 미분의 두 공식', body: R`
 :::idea 쉽게 말하면
@@ -227,6 +234,12 @@ $$R^2=1-\frac{\mathrm{SSE}}{S_{yy}}$$
 
 :::warn 훈련 오차가 작다고 좋은 모델은 아니다
 직선 대신 매우 구불구불한 곡선을 쓰면 SSE를 0까지 줄일 수 있습니다. 하지만 새 자료에서는 엉망이 됩니다(과적합). 이 문제는 4단원의 다항회귀·규제에서 다룹니다[[ch04:4.2|점 10개에 9차 다항식을 맞추면 훈련 오차는 0이지만 예측은 나빠집니다.]].
+:::
+
+:::key 기준선과 결정계수
+$$S_{yy}=\sum_i(y_i-\bar y)^2\ \ (\text{기준선 }\hat y=\bar y\text{의 제곱오차합})$$
+$$R^2=1-\frac{\mathrm{SSE}}{S_{yy}}$$
+머신러닝의 세 요소: 모델 $\hat y=X\beta$, 손실 $\lVert y-X\beta\rVert^2$, 학습(정규방정식 또는 경사하강법).
 :::
 ` },
       { k: '1.5', src: 'W1 수 · 슬라이드 11–12', title: '경사하강법으로 풀기', body: R`

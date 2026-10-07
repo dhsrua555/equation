@@ -41,6 +41,12 @@ $$\frac{\partial L}{\partial z}=\frac{\partial L}{\partial h}\frac{\partial h}{\
 :::warn 두 가지 “학습 없음”은 원인이 다르다
 작은 초기화는 **순방향 신호**($z$)가 0이 되어 가중치 기울기 $\delta z^T$가 0, 큰 초기화는 **역방향 신호**에서 $\sigma'$가 0이 되어 기울기가 끊깁니다. 두 식($\partial L/\partial W=\delta z^T$, $\delta_\ell=\sigma'\odot W^T\delta_{\ell+1}$)을 구별해서 쓰세요.
 :::
+
+:::key 초기화 크기와 신호의 크기
+$$\operatorname{std}\Big(\sum_{i=1}^{D}w_ix_i\Big)\approx\sqrt D\cdot\operatorname{std}(w)\cdot(\text{입력 크기})$$
+$$\frac{\partial L}{\partial W}=\frac{\partial L}{\partial h}\,z^T$$
+$D=4096$에서 $\operatorname{std}(w)=0.01$이면 층마다 약 0.64배로 줄고(활성화 소멸), $0.05$이면 약 3.2배로 커져 tanh가 포화한다. $\operatorname{std}(w)=1/\sqrt D$ (Xavier)이면 약 1배.
+:::
 ` },
       { k: '11.2', src: 'W4 월(2) · 슬라이드 22–23 필기', title: 'Xavier(Glorot) 초기화', body: R`
 :::idea 쉽게 말하면

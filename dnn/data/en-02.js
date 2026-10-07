@@ -332,6 +332,12 @@ The less data, the wider the posterior. $\operatorname{Beta}(3,1)$ retains the u
 ### Going deeper: solving it by Monte Carlo
 
 When an integral is complicated, we estimate it by sampling. Draw $S$ pairs $\theta_1^{(s)}\sim\operatorname{Beta}(91,11)$, $\theta_2^{(s)}\sim\operatorname{Beta}(3,1)$ and count the fraction with $\theta_1^{(s)}>\theta_2^{(s)}$: this is an unbiased estimator of $P(\theta_1>\theta_2)$, with standard error about $\sqrt{0.71\cdot0.29/S}$ — about $\pm0.005$ for $S=10^4$. In Bayesian deep learning, “drawing the weights from the posterior several times and averaging the predictions” is the same idea.
+
+:::key Comparing two beta posteriors
+$$\theta_2\sim\Beta(3,1)\ \Longrightarrow\ P(\theta_1>\theta_2)=\E\big[\theta_1^3\big]$$
+$$\E[\theta^m]=\prod_{j=0}^{m-1}\frac{a+j}{a+b+j}\ \ (\theta\sim\Beta(a,b))$$
+If $\theta_1\sim\Beta(91,11)$, then $\E[\theta_1^3]=\frac{91}{102}\cdot\frac{92}{103}\cdot\frac{93}{104}\approx0.7126$.
+:::
 ` },
       '2.8': { title: 'MAP of a Gaussian Mean: Shrinkage and the Bias–Variance Decomposition', body: R`
 :::idea In plain words

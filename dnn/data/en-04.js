@@ -89,6 +89,15 @@ We want to choose the degree with 100 data points. Write the procedure.
 ### Going deeper: the bias–variance trade-off
 
 Imagine drawing a fresh training set of the same size many times and fitting the model each time; then the prediction error at a point $x$ splits into **bias²** (how far the average prediction is from the truth) + **variance** (how much the prediction fluctuates with the data) + noise. A low degree has large bias (underfitting), a high degree large variance (overfitting). The shrinkage estimator of §2.8 is the simplest example of this trade[[ch02:2.8|Shrinking introduces bias but reduces variance, so the MSE can shrink.]]. In today's very large neural networks, whose parameters far outnumber the data, **double descent** — the validation error coming down again — has been observed, so this trade-off is known not to be the whole story[[@med:ch11:9.3|Learning curves, early stopping, double descent.]].
+
+:::key Polynomial regression and generalization error
+$$y=\beta_0+\beta_1x+\cdots+\beta_Mx^M\ \ (\text{linear in }\beta)$$
+$$X_{i\cdot}=(1,x_i,\dots,x_i^M)$$
+$$\hat\beta=(X^TX)^{-1}X^Ty$$
+$$E_{\text{RMS}}=\sqrt{f(\hat\beta)/n}\ \ (\text{measured on validation data to choose }M)$$
+$$\text{expected error}=\text{bias}^2+\text{variance}+\text{noise}$$
+With $M=n-1$ the Vandermonde matrix is invertible and the training error becomes 0 (overfitting).
+:::
 ` },
       '4.3': { title: 'Regularization: Ridge and Lasso', body: R`
 :::idea In plain words
@@ -176,6 +185,13 @@ Building all second-order terms $x_ix_j$ of $x\in\mathbb R^d$ as features gives 
 For $x=(1,2)$ and $z=(3,-1)$, compute $\varphi(x)^T\varphi(z)$ directly with $\varphi(x)=(x_1^2,x_2^2,\sqrt2x_1x_2)$ and compare with $(x^Tz)^2$.
 ---
 $\varphi(x)=(1,4,2\sqrt2)$, $\varphi(z)=(9,1,-3\sqrt2)$. The inner product is $9+4-12=1$. Meanwhile $x^Tz=3-2=1$, whose square is $1$. The same.
+:::
+
+:::key The kernel trick
+$$K(x,z)=\varphi(x)^T\varphi(z)$$
+$$(x^Tz)^2=\varphi(x)^T\varphi(z)\ \ \big(\varphi(x)=(x_1^2,x_2^2,\sqrt2x_1x_2)\big)$$
+$$K_{\text{Gauss}}(x,z)=e^{-\lVert x-z\rVert^2/2\sigma^2}$$
+If learning and prediction need only inner products, compute them with $K$ without building the features $\varphi(x)$.
 :::
 ` },
       '4.5': { title: 'Kernel Ridge Regression', body: R`

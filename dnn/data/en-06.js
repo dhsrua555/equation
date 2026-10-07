@@ -133,6 +133,13 @@ Computing $e^{1000}$ as is overflows the floating point. Subtracting the maximum
 ### Going deeper: log-sum-exp is a soft maximum
 
 For $\operatorname{LSE}(z)=\log\sum_je^{z_j}$, $\max_jz_j\le\operatorname{LSE}(z)\le\max_jz_j+\log C$ (the sum is at least its largest term and at most $C$ times it). With a temperature, $T\operatorname{LSE}(z/T)\to\max_jz_j$ ($T\to0$). The gradient of LSE is exactly the softmax ($\partial\operatorname{LSE}/\partial z_k=p_k$), and its Hessian is $\diag(p)-pp^T$, so LSE is a convex function. That is, the softmax is “a smoothed version of the gradient of max (the one-hot argmax)”. The weights of attention are also made with this softmax.
+
+:::key Properties of the softmax
+$$\softmax(z+c\mathbf 1)=\softmax(z)$$
+$$\nabla_z^2\Big(\log\sum_je^{z_j}\Big)=\diag(p)-pp^T\succeq0$$
+$$\max_jz_j\le\log\sum_je^{z_j}\le\max_jz_j+\log C$$
+Compute numerically by subtracting $m=\max_jz_j$: $\softmax(z-m\mathbf 1)$.
+:::
 ` },
     },
     probs: [
