@@ -40,7 +40,7 @@
     {
       id: 'robot', group: 'mech', short: '로봇공학', tiny: '로봇', name: '로봇공학입문', en: 'Introduction to Robotics',
       path: 'robot/', key: 'equation-robot-v1', plot: 'rbWorkspace', live: true,
-      desc: 'Lynch & Park, Modern Robotics: 자유도와 C-공간, 파지와 힘 닫힘, 회전과 강체 운동, 지수곱 정기구학, 야코비안, 역기구학, 동역학, 궤적 생성.',
+      desc: 'Lynch & Park, Modern Robotics를 시험 범위로 묶음: 자유도·파지·회전·오일러 각·D-H(중간 1), 지수곱·야코비안·역기구학(중간 2), 동역학·운동 계획·제어·강화 학습(기말). 과제·기출 풀이.',
     },
     {
       id: 'ml', group: 'ai', short: '기계 학습', tiny: '기계학습', name: '데이터 마이닝과 기계 학습', en: 'Machine Learning: Theory & Algorithms',

@@ -69,7 +69,7 @@
   const BOOKS = [
     { key: 'quiz', pre: 'qz', sets: QUIZ, label: QUIZ_LABEL, caps: 'Worked problems', h1: 'Corrigés', lede: 'quizLede',
       ledeDef: '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.', intro: '답안 작성 원칙', practice: true },
-    { key: 'hard', pre: 'hd', sets: EM.hard || [], label: TX.hardNav || '고난이도', caps: 'Challenge problems', h1: 'Défis', lede: 'hardLede',
+    { key: 'hard', pre: 'hd', sets: EM.hard || [], label: TX.hardNav || '고난이도', caps: TX.hardCaps || 'Challenge problems', h1: TX.hardH1 || 'Défis', lede: 'hardLede',
       ledeDef: '교재 연습문제 가운데 어려운 문제를 골라 풀이와 함께 정리했습니다.', intro: '이 장을 푸는 법', practice: false },
   ].filter((b) => b.sets.length);
   const BOOK = new Map(BOOKS.map((b) => [b.key, b]));

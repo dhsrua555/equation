@@ -1,140 +1,126 @@
-/* 13 라그랑주 동역학 — MR 8.1 */
+/* 13 지수곱 정기구학 — MR 4.1 */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 13, part: 'C', title: '로봇의 라그랑주 동역학', en: 'Lagrangian Dynamics of Robots', ref: 'MR 8.1', plot: 'rbDynamics',
-    fig: R`토크 없이 풀어 놓은 2R 팔(이중 진자)의 끝점이 그리는 궤적. 작은 차이가 금세 벌어진다`,
-    tagline: R`운동에너지와 위치에너지만 관절각으로 쓰면 나머지는 미분이 해 줍니다. 결과는 늘 같은 모양: 질량 행렬, 속도의 제곱 항, 중력 항.`,
-    summary: R`관절각 $\theta$를 일반화 좌표로 삼고 라그랑지안 $\mathcal L=\mathcal K-\mathcal P$를 쓰면, 관절 토크는 $\tau=\dfrac{d}{dt}\dfrac{\partial\mathcal L}{\partial\dot\theta}-\dfrac{\partial\mathcal L}{\partial\theta}$입니다(회전 관절의 일반화 힘은 토크, 병진 관절은 힘). 링크를 잇는 구속력은 일을 하지 않아 식에서 빠집니다. 운동에너지는 관절 속도의 이차 형식 $\mathcal K=\tfrac12\dot\theta^TM(\theta)\dot\theta$라 결과는 언제나 $\tau=M(\theta)\ddot\theta+c(\theta,\dot\theta)+g(\theta)$ 꼴입니다. **질량 행렬** $M$은 대칭 양의 정부호이고 자세에 따라 변합니다. $c$는 속도의 곱($\dot\theta_i\dot\theta_j$: 코리올리 항, $\dot\theta_i^2$: 원심 항)으로 이루어지며 크리스토펠 기호 $\Gamma_{ijk}=\tfrac12\big(\partial_km_{ij}+\partial_jm_{ik}-\partial_im_{jk}\big)$로 $M$에서 곧바로 나옵니다. $g$는 위치에너지의 기울기입니다. 2R 팔(끝에 점질량)에서 모든 항을 손으로 구할 수 있습니다.`,
+    n: 13, part: 'B', title: '지수곱 정기구학', en: 'Forward Kinematics: Product of Exponentials', ref: 'MR 4.1', plot: 'rbWorkspace',
+    fig: R`평면 2R 팔 끝점이 관절각 격자에 따라 찍히는 점들. 곧게 편 바깥 경계와 접힌 안쪽 경계 사이를 채운다`,
+    tagline: R`영 자세에서 관절마다 나사 축 하나만 적어 두면 됩니다. 관절각이 주어지면 그 나사 운동을 차례로 곱해 끝점의 자세가 나옵니다.`,
+    summary: R`**정기구학**은 관절각 $\theta$에서 끝점 좌표계의 자세 $T(\theta)\in SE(3)$를 구하는 일입니다. 지수곱(PoE) 방법은 링크마다 좌표계를 붙이는 대신 두 가지만 씁니다: 모든 관절각이 0인 **영 자세**에서의 끝점 자세 $M$, 그리고 영 자세에서 {s}로 쓴 관절의 **나사 축** $\mathcal S_i$(회전 관절은 $(\omega_i,-\omega_i\times q_i)$, 병진 관절은 $(0,v_i)$). 그러면 $T(\theta)=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}\cdots e^{[\mathcal S_n]\theta_n}M$ — 끝 관절부터 차례로 움직였다고 생각하면, 앞 관절이 뒤쪽 축을 옮기지 않은 상태에서 각 나사 운동을 적용할 수 있기 때문입니다. 나사 축을 끝점 좌표계 {b}로 쓰면 $T(\theta)=Me^{[\mathcal B_1]\theta_1}\cdots e^{[\mathcal B_n]\theta_n}$, $\mathcal B_i=[\mathrm{Ad}_{M^{-1}}]\mathcal S_i$입니다.`,
     goals: [
-      R`관절각을 일반화 좌표로 라그랑지안을 쓰고 오일러-라그랑주 방정식을 적용할 수 있다`,
-      R`2R 팔의 질량 행렬, 속도 항, 중력 항을 유도할 수 있다`,
-      R`동역학 방정식의 표준형 $M\ddot\theta+c+g=\tau$의 각 항을 설명할 수 있다`,
-      R`크리스토펠 기호로 질량 행렬에서 속도 항을 계산할 수 있다`,
-      R`질량 행렬의 성질과 자세에 따른 겉보기 질량의 변화를 설명할 수 있다`,
+      R`영 자세, 끝점 자세 $M$, 관절의 나사 축을 정할 수 있다`,
+      R`회전·병진 관절의 나사 축을 공간 좌표계에서 쓸 수 있다`,
+      R`공간 형태의 지수곱 공식으로 정기구학을 계산할 수 있다`,
+      R`물체 형태의 지수곱 공식과 두 형태의 관계를 설명할 수 있다`,
+      R`지수곱 공식이 성립하는 이유를 설명할 수 있다`,
     ],
-    secTitles: { '8.1': '라그랑주 방정식과 2R 팔', '8.1.2': '일반형과 크리스토펠 기호', '8.1.3': '질량 행렬의 뜻' },
+    secTitles: { '4.1.1': '공간 형태의 지수곱', '4.1.2': '예제', '4.1.3': '물체 형태의 지수곱' },
     sections: [
-      { k: '8.1', p: 272, title: '라그랑주 방정식과 2R 팔', body: R`
-동역학에서 배운 라그랑주 방정식[[@dyn:ch08:6.2b|라그랑지안 L = T − V와 오일러-라그랑주 방정식. 구속력이 식에서 사라집니다.]]을 로봇에 쓰면, 일반화 좌표는 관절 변수 $\theta$이고 일반화 힘은 관절 토크(병진 관절이면 힘) $\tau$입니다.
-
-:::key 로봇의 라그랑주 방정식
-$$\mathcal L(\theta,\dot\theta)=\mathcal K(\theta,\dot\theta)-\mathcal P(\theta),\qquad\tau_i=\frac{d}{dt}\frac{\partial\mathcal L}{\partial\dot\theta_i}-\frac{\partial\mathcal L}{\partial\theta_i}$$
-링크 사이의 구속력은 가상 일을 하지 않아 나타나지 않는다.
+      { k: '4.1.1', p: 141, title: '공간 형태의 지수곱 공식', body: R`
+:::key 지수곱 공식 (공간 형태)
+1. 고정 좌표계 {s}와 끝점 좌표계 {b}를 정하고, 모든 관절각이 0인 영 자세에서 $M=T_{sb}(0)$을 구한다.
+2. 영 자세에서 관절 $i$의 나사 축 $\mathcal S_i=(\omega_i,v_i)$를 {s}로 쓴다.
+ 회전 관절: $\omega_i$ = 단위 회전축, $v_i=-\omega_i\times q_i$ ($q_i$: 축 위의 아무 점). 병진 관절: $\omega_i=0$, $v_i$ = 단위 이동 방향.
+3. $$T(\theta)=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}\cdots e^{[\mathcal S_n]\theta_n}M$$
 :::
 
-:::fig rTwoR
+곱의 순서가 중요합니다. 바닥 쪽 관절이 왼쪽입니다. 끝 관절 $n$만 $\theta_n$만큼 움직이면 끝점은 $e^{[\mathcal S_n]\theta_n}M$. 이어서 관절 $n-1$을 움직이면 관절 $n-1$보다 바깥 부분 전체(관절 $n$의 축 포함)가 강체처럼 $e^{[\mathcal S_{n-1}]\theta_{n-1}}$만큼 움직입니다. 관절 $n-1$의 축은 관절 $n$의 운동에 영향받지 않으므로 영 자세의 $\mathcal S_{n-1}$을 그대로 씁니다. 바닥까지 반복하면 공식이 됩니다.
+
+:::fig rPoeStack
 :::
 
-:::ex 예제 1 — 2R 팔(끝에 점질량)
-링크 1 끝에 $m_1$, 링크 2 끝에 $m_2$가 있고 링크 질량은 무시한다. 중력은 $-\hat y$. 운동 방정식은?
----
-$m_1$의 위치 $(L_1c_1,L_1s_1)$ → 속력² $L_1^2\dot\theta_1^2$.
-$m_2$의 위치 $(L_1c_1+L_2c_{12},L_1s_1+L_2s_{12})$ → 속력² $L_1^2\dot\theta_1^2+L_2^2(\dot\theta_1+\dot\theta_2)^2+2L_1L_2c_2\dot\theta_1(\dot\theta_1+\dot\theta_2)$.
-$\mathcal P=m_1gL_1s_1+m_2g(L_1s_1+L_2s_{12})$.
-미분해 정리하면 $\tau=M\ddot\theta+c+g$:
-$$M=\begin{bmatrix}m_1L_1^2+m_2(L_1^2+2L_1L_2c_2+L_2^2)&m_2(L_1L_2c_2+L_2^2)\\m_2(L_1L_2c_2+L_2^2)&m_2L_2^2\end{bmatrix}$$
-$$c=\begin{bmatrix}-m_2L_1L_2s_2(2\dot\theta_1\dot\theta_2+\dot\theta_2^2)\\m_2L_1L_2s_2\dot\theta_1^2\end{bmatrix},\qquad g=\begin{bmatrix}(m_1+m_2)L_1g\,c_1+m_2gL_2c_{12}\\m_2gL_2c_{12}\end{bmatrix}$$
+:::warn 영 자세의 축으로 적는다
+$\mathcal S_i$는 **영 자세에서의** 축입니다. 실제로 팔이 움직인 뒤의 축 위치를 넣으면 앞 관절의 운동을 두 번 세게 됩니다.
 :::
 
-:::ex 예제 2 — 멈춰 있는 팔
-$m_1=m_2=1$ kg, $L_1=L_2=1$ m인 팔을 수평으로 편 채($\theta=(0,0)$) 멈춰 두는 토크는?
----
-$\dot\theta=\ddot\theta=0$ → $\tau=g(\theta)$: $\tau_1=(2)(1)(9.81)+9.81=29.4$ N·m, $\tau_2=9.81$ N·m. 정역학의 모멘트 $m_1gL_1+m_2g(L_1+L_2)$와 같습니다.
-:::
-
-:::idea 세 항을 몸으로 느끼기
-- $M(\theta)\ddot\theta$: 팔을 **가속**하는 데 드는 토크. 팔을 펼수록 첫 관절이 무겁습니다.
-- $c(\theta,\dot\theta)$: 팔이 **움직이고 있다는 것만으로** 생기는 토크. 빙글빙글 도는 팔꿈치는 원심력으로 바깥쪽으로 펴지려 합니다($c_2=m_2L_1L_2s_2\dot\theta_1^2$).
-- $g(\theta)$: 멈춰 있어도 **중력을 버티는** 토크(예제 2).
-:::
-
-:::sim dynamics
-예제 1의 팔을 운동 방정식 그대로 적분합니다. ‘토크 0’에서는 이중 진자처럼 움직이며 에너지 $E$가 일정하고, ‘PD’는 중력 때문에 목표보다 아래에서 멈추며, ‘PD + 중력 보상’은 예제 2의 $g(\theta)$를 더해 그 오차를 없앱니다. 아래 행렬 $M(\theta)$, $c$, $g$가 매 순간 바뀌는 것을 보세요.
+:::sim poe ur5
+교재 예제 4.5의 UR5 산업용 팔입니다. 관절 막대를 움직이면 팔과 $T(\theta)$가 함께 바뀌고, 흐린 팔이 영 자세입니다. ‘끝 관절부터 쌓기’를 켜고 $k$를 0, 1, 2, …로 올리면 위 그림처럼 끝 관절부터 하나씩 돌린 중간 단계가 보입니다. 아래의 나사 축 $\mathcal S_i$는 관절을 아무리 돌려도 바뀌지 않습니다 — 언제나 영 자세에서 적은 값입니다.
 :::
 ` },
-      { k: '8.1.2', p: 277, title: '일반형: 질량 행렬, 속도 항, 중력 항', body: R`
-각 링크의 운동에너지는 관절 속도의 이차식이므로 전체는 $\mathcal K=\tfrac12\dot\theta^TM(\theta)\dot\theta=\tfrac12\sum_{i,j}m_{ij}(\theta)\dot\theta_i\dot\theta_j$입니다. 이것을 라그랑주 방정식에 넣으면:
-
-:::key 동역학의 표준형
-$$\tau=M(\theta)\ddot\theta+c(\theta,\dot\theta)+g(\theta),\qquad g_i=\frac{\partial\mathcal P}{\partial\theta_i}$$
-$$c_i=\sum_{j,k}\Gamma_{ijk}(\theta)\dot\theta_j\dot\theta_k,\qquad\Gamma_{ijk}=\frac12\Big(\frac{\partial m_{ij}}{\partial\theta_k}+\frac{\partial m_{ik}}{\partial\theta_j}-\frac{\partial m_{jk}}{\partial\theta_i}\Big)$$
-$\Gamma_{ijk}$는 크리스토펠 기호. $\dot\theta_j\dot\theta_k$ ($j\ne k$) 항은 코리올리 항, $\dot\theta_j^2$ 항은 원심 항. 행렬로 $c=C(\theta,\dot\theta)\dot\theta$, $C_{ij}=\sum_k\Gamma_{ijk}\dot\theta_k$로 쓰면 $\dot M-2C$는 반대칭이다.
+      { k: '4.1.2', p: 143, title: '예제: 평면 3R 팔과 RP 팔', body: R`
+:::fig rThreeR
 :::
 
-:::ex 예제 3 — 2R 팔의 크리스토펠 기호
-예제 1의 $M$은 $\theta_2$에만 의존합니다: $\partial m_{11}/\partial\theta_2=-2m_2L_1L_2s_2$, $\partial m_{12}/\partial\theta_2=-m_2L_1L_2s_2$, $\partial m_{22}/\partial\theta_2=0$.
+:::ex 예제 1 — 평면 3R 팔
+링크 길이 $L_1,L_2,L_3$인 평면 3R 팔의 정기구학을 지수곱으로 쓰세요.
 ---
-$\Gamma_{112}=\Gamma_{121}=\tfrac12\partial_2m_{11}=-m_2L_1L_2s_2$, $\Gamma_{122}=\partial_2m_{12}=-m_2L_1L_2s_2$, $\Gamma_{111}=0$.
-$\Gamma_{211}=-\tfrac12\partial_2m_{11}=m_2L_1L_2s_2$, $\Gamma_{212}=\Gamma_{221}=\Gamma_{222}=0$.
-$c_1=2\Gamma_{112}\dot\theta_1\dot\theta_2+\Gamma_{122}\dot\theta_2^2=-m_2L_1L_2s_2(2\dot\theta_1\dot\theta_2+\dot\theta_2^2)$, $c_2=\Gamma_{211}\dot\theta_1^2=m_2L_1L_2s_2\dot\theta_1^2$ — 예제 1과 같습니다.
+{s}는 관절 1에, {b}는 팔 끝에, 영 자세는 팔을 $\hat x_s$ 방향으로 편 자세. $M=\begin{bmatrix}I&(L_1+L_2+L_3,0,0)^T\\0&1\end{bmatrix}$.
+모든 축 $\omega_i=\hat z$, $q_1=0$, $q_2=(L_1,0,0)$, $q_3=(L_1+L_2,0,0)$. $v_i=-\hat z\times q_i=(0,-q_{i,x},0)$:
+$\mathcal S_1=(0,0,1,0,0,0)$, $\mathcal S_2=(0,0,1,0,-L_1,0)$, $\mathcal S_3=(0,0,1,0,-(L_1+L_2),0)$.
+$T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}e^{[\mathcal S_3]\theta_3}M$를 계산하면 끝점은
+$x=L_1c_1+L_2c_{12}+L_3c_{123}$, $y=L_1s_1+L_2s_{12}+L_3s_{123}$, 방향각 $\theta_1+\theta_2+\theta_3$ — 기하로 얻는 결과와 같습니다.
 :::
 
-:::note 뉴턴-오일러 방법과의 비교
-라그랑주 방법은 에너지만 쓰므로 식을 세우기 쉽고 구조($M$, $c$, $g$)가 잘 보입니다. 링크마다 힘과 모멘트를 주고받는 뉴턴-오일러 방법(MR 8.3)은 계산이 관절 수에 비례해 빠르고 관절 반력도 알려 주어, 실시간 제어에는 주로 그쪽을 씁니다. 두 방법의 결과는 같습니다.
+:::sim poe planar
+예제 1의 평면 3R 팔($L_1=1$, $L_2=0.8$, $L_3=0.5$)입니다. 아래 행렬의 위치 부분이 $x=L_1c_1+L_2c_{12}+L_3c_{123}$, $y=L_1s_1+L_2s_{12}+L_3s_{123}$과 같은지, 회전 부분의 각이 $\theta_1+\theta_2+\theta_3$인지 확인해 보세요.
+:::
+
+:::ex 예제 2 — RP 팔
+바닥이 $\hat z$ 둘레로 돌고($\theta_1$), 그 위의 팔이 자기 방향으로 늘어나는($\theta_2$) 평면 팔. 영 자세에서 끝점은 $(L_0,0,0)$.
+---
+$\mathcal S_1=(0,0,1,0,0,0)$, 병진 관절은 영 자세에서 $\hat x$ 방향: $\mathcal S_2=(0,0,0,1,0,0)$.
+$e^{[\mathcal S_2]\theta_2}M$은 끝점을 $(L_0+\theta_2,0,0)$으로, $e^{[\mathcal S_1]\theta_1}$이 그것을 돌려 끝점 $\big((L_0+\theta_2)\cos\theta_1,(L_0+\theta_2)\sin\theta_1,0\big)$ — 극좌표 그대로입니다.
+:::
+
+:::key 평면 3R 팔의 지수곱
+$$\mathcal S_i=(0,0,1,\ 0,-q_{i,x},0),\qquad T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}e^{[\mathcal S_3]\theta_3}M$$
+$$x=L_1c_1+L_2c_{12}+L_3c_{123},\qquad y=L_1s_1+L_2s_{12}+L_3s_{123},\qquad \phi=\theta_1+\theta_2+\theta_3$$
 :::
 ` },
-      { k: '8.1.3', p: 279, title: '질량 행렬의 뜻', body: R`
-:::key 질량 행렬의 성질
-- 대칭이고 양의 정부호: 움직이는 한 운동에너지 $\tfrac12\dot\theta^TM\dot\theta>0$.
-- 자세에 따라 변한다: 같은 토크라도 팔을 펴면 첫 관절이 느리게 가속한다(2R: $m_{11}$이 $\theta_2=0$에서 최대).
-- 끝점에서 느끼는 겉보기 질량은 방향마다 다르다: 가역인 $J$에 대해 $\Lambda(\theta)=J^{-T}MJ^{-1}$, 방향 $u$로 밀 때의 유효 질량은 $u^T\Lambda u$ 꼴의 이차 형식.
+      { k: '4.1.3', p: 148, title: '물체 형태의 지수곱 공식', body: R`
+$e^{[\mathcal S]\theta}M=Me^{[M^{-1}\mathcal SM]\theta}$ (행렬 지수는 닮음 변환과 바꿔 쓸 수 있음)를 되풀이해 $M$을 맨 앞으로 옮깁니다.
+
+:::key 지수곱 공식 (물체 형태)
+$$T(\theta)=Me^{[\mathcal B_1]\theta_1}e^{[\mathcal B_2]\theta_2}\cdots e^{[\mathcal B_n]\theta_n},\qquad\mathcal B_i=[\mathrm{Ad}_{M^{-1}}]\mathcal S_i$$
+$\mathcal B_i$는 영 자세에서 관절 $i$의 나사 축을 **끝점 좌표계 {b}**로 쓴 것.
 :::
 
-:::fig rMassPlot
-:::
-
-관절 공간의 관성 행렬은 동역학 3차원 강체의 관성 행렬[[@dyn:ch14:18.2|강체의 관성 행렬: 각속도와 각운동량을 잇는 대칭 양의 정부호 행렬.]]과 같은 역할을 합니다: 속도에서 운동량을, 가속도에서 힘을 만듭니다. 대각 성분이 아닌 $m_{12}$는 한 관절의 가속이 다른 관절에 토크를 요구하는 결합을 나타냅니다.
-
-:::ex 예제 4 — 수평면의 팔
-예제 1의 팔($m_1=m_2=L_1=L_2=1$)을 수평면에 눕혀(중력 효과 없음) $\theta=(0,\pi/2)$에서 정지 상태로 두고 $\tau=(1,0)$을 준다. 순간 각가속도는?
+:::ex 예제 3
+예제 1의 3R 팔의 $\mathcal B_i$는?
 ---
-$c_2=0$ → $M=\begin{bmatrix}3&1\\1&1\end{bmatrix}$, $c=0$(정지), $g=0$.
-$\ddot\theta=M^{-1}\tau=\tfrac12\begin{bmatrix}1&-1\\-1&3\end{bmatrix}\begin{bmatrix}1\\0\end{bmatrix}=(0.5,-0.5)$. 관절 2에는 토크를 주지 않았는데도 반대로 가속합니다 — 결합 항 $m_{12}$ 때문입니다.
+{b}에서 관절들은 $(-L_3,0,0)$, $(-(L_2+L_3),0,0)$, $(-(L_1+L_2+L_3),0,0)$에 있고 축은 $\hat z_b$. $v=-\hat z\times q=(0,-q_x,0)$:
+$\mathcal B_3=(0,0,1,0,L_3,0)$, $\mathcal B_2=(0,0,1,0,L_2+L_3,0)$, $\mathcal B_1=(0,0,1,0,L_1+L_2+L_3,0)$.
 :::
+
+두 형태는 같은 $T(\theta)$를 줍니다. 공간 형태는 바닥에서 본 축, 물체 형태는 손끝에서 본 축을 씁니다. 14단원의 공간·물체 야코비안이 각각 여기서 나옵니다.
 ` },
     ],
     problems: [
-      { sec: '8.1', type: 'num', lv: 1, q: R`한 관절 팔 끝(축에서 0.5 m)에 2 kg 점질량이 있다. 팔을 수평으로 멈춰 두는 토크(N·m)는?`, ans: '2*9.81*0.5', ansTex: R`9.81`,
-        sol: R`$\tau=\partial\mathcal P/\partial\theta=mgl\cos\theta$, $\theta=0$에서 $9.81$.` },
-      { sec: '8.1', type: 'num', lv: 2, q: R`예제 1의 2R 팔($m_1=m_2=1$ kg, $L_1=L_2=1$ m)을 $\theta=(0,0)$에 멈춰 두는 $\tau_1$ (N·m)은?`, ans: '2*9.81+9.81', ansTex: R`29.4`,
-        sol: R`$(m_1+m_2)gL_1+m_2gL_2$.` },
-      { sec: '8.1', type: 'num', lv: 2, q: R`같은 팔을 $\theta=(0,\pi/2)$에 멈춰 두는 $\tau_1$ (N·m)은?`, ans: '2*9.81', ansTex: R`19.6`,
-        sol: R`$c_{12}=0$ → $\tau_1=(m_1+m_2)gL_1=19.6$, $\tau_2=0$.` },
-      { sec: '8.1', type: 'num', lv: 1, q: R`같은 팔의 $\theta_2=0$에서 $m_{11}$ (kg·m²)은?`, ans: '5', ansTex: R`5`,
-        sol: R`$1+(1+2+1)=5$.` },
-      { sec: '8.1.2', type: 'num', lv: 1, q: R`같은 팔의 $\theta_2=\pi/2$에서 $m_{12}$는?`, ans: '1', ansTex: R`1`,
-        sol: R`$m_2(L_1L_2c_2+L_2^2)=0+1$.` },
-      { sec: '8.1.2', type: 'num', lv: 2, q: R`같은 팔이 $\theta_2=\pi/2$, $\dot\theta=(1,1)$일 때 $c_1$은?`, ans: '-3', ansTex: R`-3`,
-        sol: R`$-m_2L_1L_2s_2(2+1)=-3$.` },
-      { sec: '8.1.2', type: 'num', lv: 2, q: R`같은 팔이 $\theta_2=\pi/2$, $\dot\theta_1=2$일 때 $c_2$는?`, ans: '4', ansTex: R`4`,
-        sol: R`$m_2L_1L_2s_2\dot\theta_1^2=4$ — 첫 관절이 돌 때 둘째 링크를 바깥으로 던지는 원심 효과.` },
-      { sec: '8.1.2', type: 'mc', lv: 1, q: R`질량 행렬 $M(\theta)$가 양의 정부호인 이유는?`,
-        choices: [R`대칭이라서`, R`움직이는 한 운동에너지 $\tfrac12\dot\theta^TM\dot\theta$가 양수라서`, R`중력 때문에`, R`관절이 회전형이라서`], ans: 1,
-        sol: R`질량이 있는 물체가 움직이면 운동에너지는 0보다 큽니다.` },
-      { sec: '8.1.2', type: 'mc', lv: 2, q: R`속도 항 $c(\theta,\dot\theta)$에서 $\dot\theta_1\dot\theta_2$ 꼴의 항을 부르는 이름은?`,
-        choices: [R`원심 항`, R`코리올리 항`, R`중력 항`, R`마찰 항`], ans: 1,
-        sol: R`서로 다른 관절 속도의 곱은 코리올리 항, 같은 관절 속도의 제곱은 원심 항입니다.` },
-      { sec: '8.1.3', type: 'num', lv: 2, q: R`수평면에 눕힌 같은 팔이 $\theta=(0,\pi/2)$에서 정지해 있고 $\tau=(1,0)$을 받는다. $\ddot\theta_2$는?`, ans: '-0.5', ansTex: R`-0.5`,
-        sol: R`$M^{-1}(1,0)^T=(0.5,-0.5)$.` },
-      { sec: '8.1', type: 'mc', lv: 2, q: R`라그랑주 방법으로 로봇 동역학을 세울 때 링크 사이의 구속력이 나타나지 않는 이유는?`,
-        choices: [R`구속력이 0이라서`, R`관절각을 일반화 좌표로 쓰면 구속이 자동으로 만족되고, 구속력은 가상 변위에 일을 하지 않아서`, R`중력과 상쇄되어서`, R`질량 행렬에 포함되어서`], ans: 1,
-        sol: R`관절 반력이 필요하면 뉴턴-오일러 방법을 씁니다.` },
-      { sec: '8.1', type: 'open', lv: 2, proof: true, q: R`예제 1의 2R 팔에 대해 운동에너지와 위치에너지를 쓰고, 라그랑주 방정식으로 $\tau_2=m_2(L_1L_2c_2+L_2^2)\ddot\theta_1+m_2L_2^2\ddot\theta_2+m_2L_1L_2s_2\dot\theta_1^2+m_2gL_2c_{12}$를 유도하세요.`,
+      { sec: '4.1.2', type: 'num', lv: 1, q: R`$L_1=L_2=L_3=1$인 평면 3R 팔이 $\theta=(\pi/2,0,0)$일 때 끝점의 $y$ 좌표는?`, ans: '3', ansTex: R`3`,
+        sol: R`팔 전체가 $\hat y$ 방향으로 섭니다.` },
+      { sec: '4.1.2', type: 'num', lv: 2, q: R`같은 팔이 $\theta=(0,\pi/2,0)$일 때 끝점의 $y$ 좌표는?`, ans: '2', ansTex: R`2`,
+        sol: R`$x=L_1=1$, $y=L_2+L_3=2$.` },
+      { sec: '4.1.2', type: 'num', lv: 2, q: R`같은 팔이 $\theta=(\pi/2,-\pi/2,0)$일 때 끝점의 $x$ 좌표는?`, ans: '2', ansTex: R`2`,
+        sol: R`$c_1+c_{12}+c_{123}=0+1+1=2$ ($y=1$).` },
+      { sec: '4.1.1', type: 'num', lv: 1, q: R`$L_1=0.5$인 평면 3R 팔의 $\mathcal S_2=(\omega,v)$에서 $v$의 $y$ 성분은?`, ans: '-0.5', ansTex: R`-0.5`,
+        sol: R`$-\hat z\times(0.5,0,0)=(0,-0.5,0)$.` },
+      { sec: '4.1.1', type: 'mc', lv: 1, q: R`병진 관절의 나사 축은?`,
+        choices: [R`$(\hat s,-\hat s\times q)$`, R`$(0,\hat v)$ — 회전 부분 0, 단위 이동 방향`, R`$(\hat v,0)$`, R`$(\hat s,h\hat s)$`], ans: 1,
+        sol: R`피치가 무한대인 나사입니다.` },
+      { sec: '4.1.1', type: 'mc', lv: 2, q: R`공간 형태 지수곱 공식에서 $\mathcal S_i$를 쓸 때 옳은 것은?`,
+        choices: [R`현재 자세에서의 관절 축을 쓴다`, R`영 자세에서의 관절 축을 {s}로 쓴다`, R`{b}에서 쓴다`, R`관절 순서와 무관하게 곱한다`], ans: 1,
+        sol: R`끝 관절부터 움직였다고 보면 앞 관절의 축은 항상 영 자세 그대로입니다.` },
+      { sec: '4.1.3', type: 'num', lv: 1, q: R`$L_1=L_2=L_3=1$인 평면 3R 팔의 물체 나사 축 $\mathcal B_1$에서 $v$의 $y$ 성분은?`, ans: '3', ansTex: R`3`,
+        sol: R`$\mathcal B_1=(0,0,1,0,L_1+L_2+L_3,0)$.` },
+      { sec: '4.1.3', type: 'mc', lv: 2, q: R`물체 형태의 나사 축 $\mathcal B_i$와 공간 형태의 $\mathcal S_i$의 관계는?`,
+        choices: [R`$\mathcal B_i=\mathcal S_i$`, R`$\mathcal B_i=[\mathrm{Ad}_{M^{-1}}]\mathcal S_i$`, R`$\mathcal B_i=[\mathrm{Ad}_M]\mathcal S_i$`, R`$\mathcal B_i=-\mathcal S_i$`], ans: 1,
+        sol: R`같은 축을 {b}(영 자세)로 옮겨 쓴 것 — $T_{bs}=M^{-1}$의 수반 행렬.` },
+      { sec: '4.1.2', type: 'num', lv: 2, q: R`예제 2의 RP 팔($L_0=0.5$)이 $\theta_1=\pi/2$, $\theta_2=0.3$일 때 끝점의 $y$ 좌표는?`, ans: '0.8', ansTex: R`0.8`,
+        sol: R`$(L_0+\theta_2)\sin\theta_1=0.8$.` },
+      { sec: '4.1.1', type: 'num', lv: 1, q: R`6R 직렬 팔의 지수곱 공식에는 나사 축이 몇 개 필요한가?`, ans: '6', ansTex: R`6`,
+        sol: R`관절마다 하나, 그리고 $M$.` },
+      { sec: '4.1.2', type: 'num', lv: 3, q: R`$L_1=L_2=1$, $L_3=0.5$인 평면 3R 팔이 $\theta=(\pi/6,\pi/3,\pi/2)$일 때 끝점의 $x$ 좌표는?`, ans: 'cos(pi/6)+cos(pi/2)+0.5*cos(pi)', ansTex: R`0.366`,
+        sol: R`$c_1+c_{12}+0.5c_{123}=0.866+0+0.5(-1)=0.366$.` },
+      { sec: '4.1.1', type: 'open', lv: 2, proof: true, q: R`2관절 직렬 팔에 대해 공간 형태 지수곱 공식 $T(\theta)=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}M$을 유도하세요. 관절을 움직이는 순서를 어떻게 잡아야 하며, 왜 두 축 모두 영 자세의 축을 써도 되는지 설명하세요.`,
         sol: R`
-$\mathcal K=\tfrac12(m_1+m_2)L_1^2\dot\theta_1^2+\tfrac12m_2L_2^2(\dot\theta_1+\dot\theta_2)^2+m_2L_1L_2c_2\dot\theta_1(\dot\theta_1+\dot\theta_2)$.
-$\mathcal P=(m_1+m_2)gL_1s_1+m_2gL_2s_{12}$.
-$\dfrac{\partial\mathcal L}{\partial\dot\theta_2}=m_2L_2^2(\dot\theta_1+\dot\theta_2)+m_2L_1L_2c_2\dot\theta_1$.
-$\dfrac{d}{dt}(\cdot)=m_2L_2^2(\ddot\theta_1+\ddot\theta_2)+m_2L_1L_2c_2\ddot\theta_1-m_2L_1L_2s_2\dot\theta_2\dot\theta_1$.
-$\dfrac{\partial\mathcal L}{\partial\theta_2}=-m_2L_1L_2s_2\dot\theta_1(\dot\theta_1+\dot\theta_2)-m_2gL_2c_{12}$.
-빼면 $\tau_2=m_2(L_1L_2c_2+L_2^2)\ddot\theta_1+m_2L_2^2\ddot\theta_2-m_2L_1L_2s_2\dot\theta_1\dot\theta_2+m_2L_1L_2s_2\dot\theta_1(\dot\theta_1+\dot\theta_2)+m_2gL_2c_{12}$.
-$\dot\theta_1\dot\theta_2$ 항이 상쇄되어 $m_2L_1L_2s_2\dot\theta_1^2$만 남습니다.`,
+영 자세에서 끝점은 $M$.
+① 관절 2만 $\theta_2$만큼 움직인다: 관절 2 바깥쪽(링크 2와 끝점)이 축 $\mathcal S_2$ 둘레의 나사 운동을 해서 끝점은 $e^{[\mathcal S_2]\theta_2}M$. 이 동작은 관절 1의 축을 옮기지 않습니다(관절 1은 관절 2보다 바닥 쪽).
+② 이어서 관절 1을 $\theta_1$만큼 움직인다: 관절 1 바깥쪽 전체(관절 2의 축과 이미 움직인 링크 2 포함)가 축 $\mathcal S_1$ 둘레로 강체처럼 움직입니다. 관절 1의 축은 여전히 영 자세 그대로이므로 $e^{[\mathcal S_1]\theta_1}$을 왼쪽에 곱합니다: $T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}M$.
+최종 자세는 관절을 어떤 순서로 움직였든 같으므로(자세는 관절각만의 함수) 이 순서로 계산해도 됩니다. 반대 순서(관절 1 먼저)로 하면 관절 2의 축이 이미 옮겨져 있어 $\mathcal S_2$를 새로 계산해야 합니다.`,
         rubric: R`
-- 두 점질량의 속력과 운동에너지 — 3점
-- 위치에너지 — 1점
-- $\theta_2$에 대한 미분과 시간 미분 — 4점
-- 정리(코리올리 항 상쇄) — 2점` },
+- 끝 관절부터 움직이는 순서 — 3점
+- 각 단계의 변환과 왼쪽 곱 — 4점
+- 영 자세 축을 쓸 수 있는 이유(순서 무관성 포함) — 3점` },
     ],
   });
 })();

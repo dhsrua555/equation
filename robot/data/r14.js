@@ -1,128 +1,138 @@
-/* 14 궤적 생성 — MR 9.1–9.3 */
+/* 14 야코비안 — MR 5.1 */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 14, part: 'C', title: '궤적 생성', en: 'Trajectory Generation', ref: 'MR 9.1–9.3', plot: 'rbScaling',
-    fig: R`여러 시간 스케일링 s(t): 3차, 5차 다항식과 사다리꼴 속도가 0에서 1까지 가는 모습`,
-    tagline: R`어디를 지날지(경로)와 언제 지날지(시간 스케일링)를 나눠 정합니다. 둘을 합치면 모터에 줄 시간의 함수가 됩니다.`,
-    summary: R`**궤적**은 시간의 함수 $\theta(t)$이고, **경로** $\theta(s)$ ($s\in[0,1]$)와 **시간 스케일링** $s(t)$ ($t\in[0,T]$)의 합성으로 나눠 설계합니다. 속도와 가속도는 연쇄 법칙으로 $\dot\theta=\frac{d\theta}{ds}\dot s$, $\ddot\theta=\frac{d\theta}{ds}\ddot s+\frac{d^2\theta}{ds^2}\dot s^2$. 가장 단순한 경로는 관절 공간의 직선 $\theta_{\text{start}}+s(\theta_{\text{end}}-\theta_{\text{start}})$이고, 작업 공간에서 곧게 가려면 $X(s)=X_{\text{start}}\exp\big(\log(X_{\text{start}}^{-1}X_{\text{end}})s\big)$처럼 나사 운동을 따라갑니다. 시간 스케일링은 양 끝에서 멈추게 하는 **3차 다항식** $s=3(t/T)^2-2(t/T)^3$, 가속도까지 0으로 부드럽게 하는 **5차 다항식**, 등가속-등속-등감속의 **사다리꼴**이 흔합니다. 경유점을 지나야 하면 구간마다 끝의 위치와 속도를 맞춘 3차 다항식을 잇습니다.`,
+    n: 14, part: 'B', title: '야코비안', en: 'The Manipulator Jacobian', ref: 'MR 5.1', plot: 'rbJacobian',
+    fig: R`2R 팔의 끝점이 지나는 길을 따라 그린 속도 타원들. 같은 관절 속도라도 자세에 따라 끝점 속도가 달라진다`,
+    tagline: R`관절 속도를 끝점 속도로 옮기는 선형 사상입니다. 열 하나가 관절 하나의 기여이고, 그 열은 지금 자세에서 그 관절의 나사 축입니다.`,
+    summary: R`끝점의 속도는 관절 속도의 선형 결합입니다: $\mathcal V=J(\theta)\dot\theta$. 평면 2R 팔이면 끝점 좌표 $(x,y)$를 미분해 $2\times2$ 행렬을 얻고, 일반 팔은 지수곱 공식을 미분합니다. **공간 야코비안** $J_s$의 $i$번째 열은 $J_{si}=[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_{i-1}]\theta_{i-1}}}]\mathcal S_i$ — 앞 관절들이 옮겨 놓은 **현재 자세의 관절 $i$ 나사 축**을 {s}로 쓴 것이고, 관절 $i$만 단위 속도로 움직일 때의 공간 트위스트입니다. **물체 야코비안** $J_b$는 같은 것을 {b}로 쓴 것으로 뒤쪽 관절의 운동을 되돌려 $J_{bi}=[\mathrm{Ad}_{e^{-[\mathcal B_n]\theta_n}\cdots e^{-[\mathcal B_{i+1}]\theta_{i+1}}}]\mathcal B_i$이며, $J_s=[\mathrm{Ad}_{T_{sb}}]J_b$입니다. 속도 기구학, 정역학(15단원), 역기구학(16단원)이 모두 이 행렬 위에 섭니다.`,
     goals: [
-      R`경로와 시간 스케일링을 구분하고 합성된 궤적의 속도·가속도를 쓸 수 있다`,
-      R`관절 공간과 작업 공간의 직선 경로를 만들 수 있다`,
-      R`3차·5차 다항식 시간 스케일링의 계수와 최대 속도·가속도를 구할 수 있다`,
-      R`사다리꼴 속도 프로파일의 총 시간을 구할 수 있다`,
-      R`경유점을 지나는 3차 다항식 구간의 계수를 구할 수 있다`,
+      R`평면 팔의 끝점 좌표를 미분해 야코비안을 구할 수 있다`,
+      R`야코비안의 열을 “한 관절만 움직일 때의 속도”로 해석할 수 있다`,
+      R`지수곱 공식에서 공간 야코비안의 열을 계산할 수 있다`,
+      R`물체 야코비안을 구하고 공간 야코비안과의 관계를 쓸 수 있다`,
+      R`공간 트위스트에서 끝점의 선속도를 구할 수 있다`,
     ],
-    secTitles: { '9.1': '경로와 시간 스케일링', '9.2a': '직선 경로', '9.2b': '시간 스케일링', '9.3': '경유점 궤적' },
+    secTitles: { '5.1a': '평면 팔의 야코비안', '5.1.1': '공간 야코비안', '5.1.2': '물체 야코비안' },
     sections: [
-      { k: '9.1', p: 325, title: '경로와 시간 스케일링', body: R`
-:::key 궤적 = 경로 ∘ 시간 스케일링
-$$\theta(t)=\theta\big(s(t)\big),\qquad\dot\theta=\frac{d\theta}{ds}\dot s,\qquad\ddot\theta=\frac{d\theta}{ds}\ddot s+\frac{d^2\theta}{ds^2}\dot s^2$$
-경로 $\theta(s)$는 기하(어디를 지나는가), 시간 스케일링 $s(t)$는 빠르기(언제 지나는가)를 정한다. $s(0)=0$, $s(T)=1$.
+      { k: '5.1a', p: 178, title: '평면 2R 팔의 야코비안', body: R`
+:::fig rTwoR
 :::
 
-둘을 나누면 같은 경로를 느리게도 빠르게도 지날 수 있어, 모터의 속도·토크 한계를 시간 스케일링만 바꿔 맞출 수 있습니다. 가속도 식의 둘째 항은 경로가 휘어 있으면 속도만으로도 가속이 생긴다는 뜻입니다(원운동의 구심 가속도와 같은 이유).
-` },
-      { k: '9.2a', p: 326, title: '직선 경로: 관절 공간과 작업 공간', body: R`
-:::key 직선 경로
-- 관절 공간: $\theta(s)=\theta_{\text{start}}+s(\theta_{\text{end}}-\theta_{\text{start}})$. 관절 제한이 볼록(상자)이면 경로 전체가 제한 안에 있다. 끝점은 일반적으로 곧게 가지 않는다.
-- 작업 공간(위치만): $x(s)=x_{\text{start}}+s(x_{\text{end}}-x_{\text{start}})$. 관절각은 역기구학으로 매 순간 구한다.
-- 작업 공간(자세 전체): $X(s)=X_{\text{start}}\exp\big(\log(X_{\text{start}}^{-1}X_{\text{end}})\,s\big)$ — 한 나사 축을 따라 일정하게 돌며 미끄러진다. 원점은 곧게 가지 않을 수 있어, 위치는 직선, 방향은 $R_{\text{start}}\exp(\log(R_{\text{start}}^TR_{\text{end}})s)$로 따로 보간하기도 한다.
-:::
+$x=L_1c_1+L_2c_{12}$, $y=L_1s_1+L_2s_{12}$를 시간으로 미분하면
 
-:::warn 작업 공간 직선의 함정
-작업 공간에서 두 점을 잇는 직선이 특이점을 지나거나 작업 공간 밖으로 나가면, 역기구학이 실패하거나 관절 속도가 폭발합니다. 관절 공간 직선은 그런 문제가 없지만 끝점의 길을 예측하기 어렵습니다.
-:::
-
-:::sim trajectory
-출발점과 도착점을 끌어 놓고 두 경로를 번갈아 골라 보세요. 관절 공간 직선은 끝점이 곡선을 그리고, 작업 공간 직선은 끝점이 곧게 가는 대신 관절각이 고르지 않게 변합니다. 아래 그래프는 고른 시간 스케일링의 $s$, $\dot s$, $\ddot s$이고, 빨간 세로선이 지금 시각입니다.
-:::
-` },
-      { k: '9.2b', p: 328, title: '시간 스케일링: 다항식과 사다리꼴', body: R`
-:::key 3차·5차 다항식 시간 스케일링
-양 끝에서 속도 0($\dot s(0)=\dot s(T)=0$)인 3차: $s(t)=3\big(\tfrac tT\big)^2-2\big(\tfrac tT\big)^3$, 최대 $\dot s=\dfrac3{2T}$ ($t=T/2$), 최대 $\lvert\ddot s\rvert=\dfrac6{T^2}$ (양 끝).
-가속도도 0인 5차: $s(t)=10\big(\tfrac tT\big)^3-15\big(\tfrac tT\big)^4+6\big(\tfrac tT\big)^5$, 최대 $\dot s=\dfrac{15}{8T}$, 최대 $\lvert\ddot s\rvert=\dfrac{10}{\sqrt3T^2}$.
-:::
-
-:::fig rScaling
-:::
-
-:::key 사다리꼴 속도 프로파일
-가속도 $a$로 속도 $v$까지 올렸다가 등속, 같은 $a$로 감속. $v^2/a\le1$이면
-$$T=\frac{a+v^2}{va}$$
-($v^2/a>1$이면 등속 구간 없이 가속-감속만: 최대 속도 $\sqrt a$, $T=2/\sqrt a$.)
-:::
-
-:::fig rTrapezoid
-:::
-
-:::idea 무엇을 고를까
-3차는 식이 가장 간단하지만 출발과 도착 순간 가속도가 갑자기 생겨(토크가 계단처럼 튐) 기계에 충격을 줍니다. 5차는 가속도까지 0에서 시작해 부드럽고, 사다리꼴은 모터의 최대 속도와 최대 가속도를 가장 오래 쓰므로 같은 한계에서 가장 빠릅니다. 위 시뮬레이션에서 세 가지를 바꿔 가며 $\ddot s$ 그래프의 모양을 비교해 보세요.
+:::key 평면 2R 팔의 야코비안
+$$\begin{bmatrix}\dot x\\\dot y\end{bmatrix}=\begin{bmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{bmatrix}\begin{bmatrix}\dot\theta_1\\\dot\theta_2\end{bmatrix},\qquad\det J=L_1L_2\sin\theta_2$$
+열 $i$는 관절 $i$만 단위 속도로 돌 때의 끝점 속도.
 :::
 
 :::ex 예제 1
-관절 하나를 3차 스케일링으로 2 rad 움직인다. 관절 최대 속도가 1 rad/s이면 가장 짧은 시간은?
+$L_1=L_2=1$, $\theta=(0,\pi/2)$에서 (a) $\dot\theta=(1,0)$, (b) $\dot\theta=(0,1)$일 때 끝점 속도는?
 ---
-$\dot\theta=2\dot s$, 최대 $2\cdot\tfrac3{2T}=\tfrac3T\le1$ → $T\ge3$ s. 이때 양 끝의 가속도는 $2\cdot6/9=1.33$ rad/s².
+$J=\begin{bmatrix}-1&-1\\1&0\end{bmatrix}$. (a) $(-1,1)$: 관절 1이 끝점 $(1,1)$을 원점 둘레로 돌림. (b) $(-1,0)$: 관절 2가 끝점을 관절 2 $(1,0)$ 둘레로 돌림.
+:::
+
+$\det J=0$인 $\theta_2=0,\pi$(팔을 펴거나 완전히 접음)에서는 두 열이 나란해 어떤 방향으로는 속도를 낼 수 없습니다 — 특이점(15단원).
+
+:::fig rJacCols
+:::
+
+:::idea 열을 미분 없이 그리기
+관절 $i$만 돌리면 그보다 바깥의 모든 것이 관절 $i$ 둘레로 도는 강체입니다. 그래서 끝점 속도($J$의 $i$번째 열)는 “관절 $i$에서 끝점으로 그은 선분에 수직이고, 길이는 그 선분의 길이”입니다. 예제 1을 계산 없이 그림으로 확인해 보세요: 끝점 $(1,1)$, 관절 2는 $(1,0)$에 있으니 둘째 열은 길이 1, 방향 $(-1,0)$.
+:::
+
+:::sim jacobian
+관절 속도 막대 $\dot\theta_1$, $\dot\theta_2$를 움직이면 두 열의 기여(점선)가 더해져 끝점 속도(초록)가 됩니다. 끝점을 끌어 자세를 바꾸면서 열의 방향이 위 그림의 규칙대로 바뀌는지 보세요.
 :::
 ` },
-      { k: '9.3', p: 334, title: '경유점을 지나는 3차 다항식 궤적', body: R`
-여러 경유점 $\beta_0,\beta_1,\dots$을 시각 $T_0,T_1,\dots$에 지나야 하면, 구간마다 3차 다항식을 쓰고 경유점에서 위치와 속도 $\dot\beta_j$를 맞춰 잇습니다(가속도는 끊길 수 있음).
+      { k: '5.1.1', p: 178, title: '공간 야코비안', body: R`
+$T=e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_n]\theta_n}M$을 미분해 $\dot TT^{-1}$을 계산하면 관절마다 항이 하나씩 나옵니다.
 
-:::key 경유점 사이의 3차 다항식
-구간 $j$ ($\Delta T=T_{j+1}-T_j$, 구간 시작부터 잰 시간 $\Delta t$): $\beta(\Delta t)=a_0+a_1\Delta t+a_2\Delta t^2+a_3\Delta t^3$,
-$$a_0=\beta_j,\quad a_1=\dot\beta_j,\quad a_2=\frac{3\beta_{j+1}-3\beta_j-2\dot\beta_j\Delta T-\dot\beta_{j+1}\Delta T}{\Delta T^2},\quad a_3=\frac{2\beta_j+(\dot\beta_j+\dot\beta_{j+1})\Delta T-2\beta_{j+1}}{\Delta T^3}$$
+:::key 공간 야코비안
+$$\mathcal V_s=J_s(\theta)\dot\theta,\qquad J_{s1}=\mathcal S_1,\qquad J_{si}=\big[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_{i-1}]\theta_{i-1}}}\big]\mathcal S_i\ (i\ge2)$$
+$J_{si}$는 앞 관절 $1,\dots,i-1$이 움직인 뒤의 **현재 관절 $i$의 나사 축**을 {s}로 쓴 것. 뒤쪽 관절의 각에는 의존하지 않는다.
 :::
 
-:::ex 예제 2
-$\beta_0=0$ (속도 0)에서 1초 뒤 $\beta_1=1$을 속도 1로 지나야 한다. 구간의 계수는?
+:::idea 공간 야코비안의 열 = 지금의 관절 축
+$J_{si}$를 구하는 식은 길어 보이지만 뜻은 단순합니다. 관절 $1,\dots,i-1$을 돌려 놓은 **지금 자세에서** 관절 $i$의 나사 축을 {s}로 적은 것이 $J_{si}$입니다. 관절 $i$만 단위 속도로 돌리면 바깥 부분 전체가 그 나사 축을 따라 움직이므로, 그 공간 트위스트가 곧 열입니다. 관절 $i$보다 바깥의 관절각은 관절 $i$의 축 위치를 바꾸지 않으므로 $J_{si}$에 나타나지 않습니다.
+:::
+
+그래서 계산은 기하로도 할 수 있습니다: 지금 자세에서 관절 $i$의 축 방향 $\omega_{si}$와 축 위의 점 $q_{si}$를 {s}로 읽어 $J_{si}=(\omega_{si},-\omega_{si}\times q_{si})$ (회전 관절).
+
+:::ex 예제 2 — 평면 3R 팔
+13단원의 평면 3R 팔의 $J_s(\theta)$는?
 ---
-$a_0=0$, $a_1=0$, $a_2=(3-0-0-1)/1=2$, $a_3=(0+1-2)/1=-1$. $\beta(t)=2t^2-t^3$: $\beta(1)=1$, $\dot\beta(1)=4-3=1$ ✓.
+모든 축은 $\hat z$. 관절 2의 현재 위치 $q_2=(L_1c_1,L_1s_1,0)$, 관절 3은 $q_3=(L_1c_1+L_2c_{12},L_1s_1+L_2s_{12},0)$.
+$-\hat z\times q=(q_y,-q_x,0)$이므로
+$$J_s=\begin{bmatrix}0&0&0\\0&0&0\\1&1&1\\0&L_1s_1&L_1s_1+L_2s_{12}\\0&-L_1c_1&-L_1c_1-L_2c_{12}\\0&0&0\end{bmatrix}$$
 :::
 
-:::fig rVia
+:::tip 끝점의 선속도
+공간 트위스트의 $v_s$는 끝점의 속도가 아닙니다. 끝점 $p$의 속도는 $\dot p=v_s+\omega_s\times p$ — {s} 원점에 겹친 점의 속도에 회전 기여를 더합니다.
+:::
+` },
+      { k: '5.1.2', p: 183, title: '물체 야코비안', body: R`
+물체 형태 $T=Me^{[\mathcal B_1]\theta_1}\cdots e^{[\mathcal B_n]\theta_n}$을 미분해 $T^{-1}\dot T$를 계산합니다.
+
+:::key 물체 야코비안
+$$\mathcal V_b=J_b(\theta)\dot\theta,\qquad J_{bn}=\mathcal B_n,\qquad J_{bi}=\big[\mathrm{Ad}_{e^{-[\mathcal B_n]\theta_n}\cdots e^{-[\mathcal B_{i+1}]\theta_{i+1}}}\big]\mathcal B_i\ (i<n)$$
+$$J_s(\theta)=[\mathrm{Ad}_{T_{sb}}]J_b(\theta),\qquad J_b(\theta)=[\mathrm{Ad}_{T_{bs}}]J_s(\theta)$$
 :::
 
-경유점의 속도를 어떻게 고를지가 궤적의 모양을 정합니다. 흔한 선택은 이웃 두 구간 기울기의 평균(부호가 바뀌면 0)입니다.
+$J_{bi}$는 뒤쪽 관절 $i+1,\dots,n$에만 의존합니다(끝점에서 보면 뒤쪽 관절이 관절 $i$를 옮겨 놓은 것처럼 보임). 공간 야코비안과 물체 야코비안은 같은 선형 사상을 다른 좌표로 쓴 것이라 계수(rank)가 같고, 따라서 특이점도 같습니다.
+
+:::ex 예제 3
+평면 3R 팔($L_1=L_2=1$, $L_3=0.5$)의 $J_b$ 마지막 열은?
+---
+$J_{b3}=\mathcal B_3=(0,0,1,0,L_3,0)=(0,0,1,0,0.5,0)$ — 관절 3만 돌면 끝점은 자기 $\hat y_b$ 방향으로 $L_3$ 속도로 움직입니다.
+:::
+
+:::note 해석적 야코비안과의 차이
+끝점 자세를 오일러 각 같은 최소 좌표 $x$로 쓰고 $\dot x=J_a\dot\theta$로 정의한 해석적 야코비안도 있습니다. 좌표의 특이점(짐벌 잠김)이 섞여 들어오므로, 이 책은 트위스트로 정의한 기하학적 야코비안 $J_s$, $J_b$를 주로 씁니다.
+:::
 ` },
     ],
     problems: [
-      { sec: '9.2b', type: 'num', lv: 1, q: R`$T=2$ s인 3차 시간 스케일링의 최대 $\dot s$ (1/s)는?`, ans: '0.75', ansTex: R`0.75`,
-        sol: R`$3/(2T)$.` },
-      { sec: '9.2b', type: 'num', lv: 1, q: R`3차 시간 스케일링에서 $s(T/2)$는?`, ans: '0.5', ansTex: R`0.5`,
-        sol: R`$3/4-2/8=1/2$ — 대칭이라 절반 시간에 절반.` },
-      { sec: '9.2b', type: 'num', lv: 2, q: R`관절 하나를 3차 스케일링으로 $T=2$ s 동안 2 rad 움직인다. 관절의 최대 속도(rad/s)는?`, ans: '1.5', ansTex: R`1.5`,
-        sol: R`$2\times3/(2\cdot2)=1.5$.` },
-      { sec: '9.2b', type: 'num', lv: 2, q: R`2 rad를 3차 스케일링으로 움직이는데 관절 최대 속도가 1 rad/s이다. 가장 짧은 시간(s)은?`, ans: '3', ansTex: R`3`,
-        sol: R`$2\cdot3/(2T)\le1$.` },
-      { sec: '9.2b', type: 'num', lv: 2, q: R`$T=1$ s인 5차 시간 스케일링의 최대 $\lvert\ddot s\rvert$는?`, ans: '10/sqrt(3)', ansTex: R`5.77`,
-        sol: R`$\ddot s=60\tau-180\tau^2+120\tau^3$의 최대는 $\tau=\tfrac12\mp\tfrac{\sqrt3}6$에서 $10/\sqrt3$.` },
-      { sec: '9.2b', type: 'num', lv: 2, q: R`사다리꼴 스케일링에서 $v=1.25$, $a=5$일 때 총 시간 $T$는?`, ans: '(5+1.25^2)/(1.25*5)', ansTex: R`1.05`,
-        sol: R`$v^2/a=0.3125\le1$ → $T=(a+v^2)/(va)=1.05$.` },
-      { sec: '9.2b', type: 'mc', lv: 2, q: R`3차 대신 5차 다항식 스케일링을 쓰는 주된 이유는?`,
-        choices: [R`더 빨리 도착한다`, R`양 끝의 가속도도 0이라 출발·정지 때 가속도가 튀지 않는다`, R`최대 속도가 작다`, R`계산이 간단하다`], ans: 1,
-        sol: R`3차는 양 끝에서 가속도가 $6/T^2$로 계단처럼 튑니다. 대신 5차는 최대 속도가 더 큽니다.` },
-      { sec: '9.1', type: 'mc', lv: 2, q: R`궤적 $\theta(s(t))$의 가속도 $\ddot\theta$에 대해 옳은 것은?`,
-        choices: [R`$\frac{d\theta}{ds}\ddot s$뿐이다`, R`$\frac{d\theta}{ds}\ddot s+\frac{d^2\theta}{ds^2}\dot s^2$ — 휘어진 경로에서는 속도만으로도 가속이 생긴다`, R`항상 0이다`, R`$\ddot s$에 무관하다`], ans: 1,
-        sol: R`연쇄 법칙을 두 번 적용한 결과입니다.` },
-      { sec: '9.2a', type: 'mc', lv: 2, q: R`두 자세 $X_{\text{start}}$, $X_{\text{end}}\in SE(3)$ 사이를 한 나사 운동으로 일정하게 잇는 경로는?`,
-        choices: [R`$X_{\text{start}}+s(X_{\text{end}}-X_{\text{start}})$`, R`$X_{\text{start}}\exp\big(\log(X_{\text{start}}^{-1}X_{\text{end}})s\big)$`, R`$\exp(sX_{\text{end}})$`, R`관절각의 선형 보간`], ans: 1,
-        sol: R`행렬을 선형 보간하면 중간이 $SE(3)$에 속하지 않습니다.` },
-      { sec: '9.3', type: 'num', lv: 2, q: R`$\beta_0=0$에서 1초 뒤 $\beta_1=1$에 도착하며 양 끝 속도가 0이다. 3차 다항식의 $a_3$은?`, ans: '-2', ansTex: R`-2`,
-        sol: R`$a_2=3$, $a_3=-2$ — 3차 시간 스케일링과 같습니다.` },
-      { sec: '9.3', type: 'num', lv: 2, q: R`$\beta_0=0$ (속도 0)에서 1초 뒤 $\beta_1=1$을 속도 1로 지난다. $a_2$는?`, ans: '2', ansTex: R`2`,
-        sol: R`$(3-0-0-1)/1=2$.` },
-      { sec: '9.2b', type: 'open', lv: 2, proof: true, q: R`조건 $s(0)=0$, $s(T)=1$, $\dot s(0)=\dot s(T)=0$을 만족하는 3차 다항식 $s(t)$를 구하고, 최대 속도 $3/(2T)$와 최대 가속도 $6/T^2$를 보이세요.`,
+      { sec: '5.1a', type: 'num', lv: 1, q: R`$L_1=L_2=1$인 평면 2R 팔이 $\theta=(0,\pi/2)$이고 $\dot\theta=(1,0)$이다. 끝점 속도의 $y$ 성분은?`, ans: '1', ansTex: R`1`,
+        sol: R`$J$의 첫 열 $(-1,1)$.` },
+      { sec: '5.1a', type: 'num', lv: 1, q: R`같은 자세에서 $\dot\theta=(0,1)$일 때 끝점 속도의 $x$ 성분은?`, ans: '-1', ansTex: R`-1`,
+        sol: R`둘째 열 $(-L_2s_{12},L_2c_{12})=(-1,0)$.` },
+      { sec: '5.1a', type: 'num', lv: 1, q: R`$L_1=1$, $L_2=0.5$, $\theta_2=\pi/6$인 2R 팔의 $\det J$는?`, ans: '0.25', ansTex: R`0.25`,
+        sol: R`$L_1L_2\sin\theta_2=0.5(0.5)=0.25$.` },
+      { sec: '5.1a', type: 'mc', lv: 1, q: R`$n$관절 팔의 (공간) 야코비안의 크기는?`,
+        choices: [R`$n\times n$`, R`$6\times n$`, R`$n\times6$`, R`$6\times6$`], ans: 1,
+        sol: R`트위스트 6성분 × 관절 수.` },
+      { sec: '5.1.1', type: 'num', lv: 2, q: R`$L_1=1$인 평면 3R 팔에서 $\theta_1=\pi/2$일 때 $J_{s2}$의 $v_x$ 성분은?`, ans: '1', ansTex: R`1`,
+        sol: R`$L_1s_1=1$.` },
+      { sec: '5.1.1', type: 'num', lv: 2, q: R`$L_1=L_2=1$인 평면 3R 팔에서 $\theta_1=\theta_2=0$일 때 $J_{s3}$의 $v_y$ 성분은?`, ans: '-2', ansTex: R`-2`,
+        sol: R`$-L_1c_1-L_2c_{12}=-2$.` },
+      { sec: '5.1.1', type: 'mc', lv: 2, q: R`공간 야코비안의 $i$번째 열에 대해 옳은 것은?`,
+        choices: [R`모든 관절각에 의존한다`, R`현재 자세에서 관절 $i$의 나사 축을 {s}로 쓴 것으로, 관절 $1,\dots,i-1$의 각에만 의존한다`, R`영 자세의 축과 항상 같다`, R`끝점의 선속도다`], ans: 1,
+        sol: R`뒤쪽 관절은 관절 $i$의 축을 옮기지 않습니다.` },
+      { sec: '5.1.1', type: 'num', lv: 2, q: R`공간 트위스트가 $\omega_s=(0,0,1)$, $v_s=(0,-1,0)$이고 끝점이 $p=(2,0,0)$에 있다. 끝점 속도의 $y$ 성분은?`, ans: '1', ansTex: R`1`,
+        sol: R`$\dot p=v_s+\omega_s\times p=(0,-1,0)+(0,2,0)=(0,1,0)$.` },
+      { sec: '5.1.2', type: 'mc', lv: 1, q: R`공간 야코비안과 물체 야코비안의 관계는?`,
+        choices: [R`$J_s=J_b$`, R`$J_s=[\mathrm{Ad}_{T_{sb}}]J_b$`, R`$J_s=J_b^T$`, R`$J_s=-J_b$`], ans: 1,
+        sol: R`트위스트의 좌표 변환 $\mathcal V_s=[\mathrm{Ad}_{T_{sb}}]\mathcal V_b$를 열마다 적용한 것.` },
+      { sec: '5.1.2', type: 'num', lv: 1, q: R`평면 3R 팔($L_3=0.5$)의 $J_{b3}$에서 $v_y$ 성분은?`, ans: '0.5', ansTex: R`0.5`,
+        sol: R`$J_{b3}=\mathcal B_3=(0,0,1,0,L_3,0)$.` },
+      { sec: '5.1.2', type: 'mc', lv: 2, q: R`물체 야코비안의 $i$번째 열은 어떤 관절각에 의존하는가?`,
+        choices: [R`$\theta_1,\dots,\theta_{i-1}$`, R`$\theta_{i+1},\dots,\theta_n$`, R`모든 관절각`, R`어느 것에도 의존하지 않는다`], ans: 1,
+        sol: R`끝점에서 보면 관절 $i$와 끝점 사이의 관절들이 축을 옮겨 놓습니다.` },
+      { sec: '5.1.1', type: 'open', lv: 2, proof: true, q: R`2관절 팔 $T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}M$에서 $\dot TT^{-1}=[\mathcal S_1]\dot\theta_1+\big[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}}\mathcal S_2\big]\dot\theta_2$임을 보이고, 이로부터 공간 야코비안의 열 공식을 설명하세요.`,
         sol: R`
-$s=a_0+a_1t+a_2t^2+a_3t^3$. $s(0)=0$ → $a_0=0$, $\dot s(0)=0$ → $a_1=0$.
-$s(T)=a_2T^2+a_3T^3=1$, $\dot s(T)=2a_2T+3a_3T^2=0$ → $a_2=\dfrac3{T^2}$, $a_3=-\dfrac2{T^3}$.
-$\dot s=\dfrac{6t}{T^2}-\dfrac{6t^2}{T^3}$은 $\ddot s=\dfrac6{T^2}-\dfrac{12t}{T^3}=0$인 $t=T/2$에서 최대 $\dfrac3T-\dfrac3{2T}=\dfrac3{2T}$.
-$\ddot s$는 $t$의 일차식이라 양 끝에서 절댓값이 최대: $\ddot s(0)=6/T^2$, $\ddot s(T)=-6/T^2$.`,
+$E_i=e^{[\mathcal S_i]\theta_i}$라 쓰면 $\dot E_i=[\mathcal S_i]E_i\dot\theta_i$ (지수의 미분).
+$\dot T=\dot E_1E_2M+E_1\dot E_2M=[\mathcal S_1]\dot\theta_1E_1E_2M+E_1[\mathcal S_2]\dot\theta_2E_2M$.
+$T^{-1}=M^{-1}E_2^{-1}E_1^{-1}$을 오른쪽에 곱하면
+$\dot TT^{-1}=[\mathcal S_1]\dot\theta_1+E_1[\mathcal S_2]E_1^{-1}\dot\theta_2$.
+$E_1[\mathcal S_2]E_1^{-1}=[\mathrm{Ad}_{E_1}\mathcal S_2]$(수반 행렬의 행렬 형태)이므로 $\mathcal V_s=\mathcal S_1\dot\theta_1+[\mathrm{Ad}_{E_1}]\mathcal S_2\dot\theta_2$ — 두 열이 $J_{s1}=\mathcal S_1$, $J_{s2}=[\mathrm{Ad}_{E_1}]\mathcal S_2$.
+$n$관절에서도 같은 계산으로 $i$번째 항은 $E_1\cdots E_{i-1}$로 끼운 $\mathcal S_i$가 됩니다: 앞 관절들이 강체처럼 옮겨 놓은 관절 $i$의 축.`,
         rubric: R`
-- 경계 조건으로 계수 — 4점
-- 최대 속도 — 3점
-- 최대 가속도 — 3점` },
+- 곱의 미분 — 3점
+- $T^{-1}$을 곱해 정리 — 3점
+- 수반 행렬로의 해석 — 2점
+- 일반화 — 2점` },
     ],
   });
 })();

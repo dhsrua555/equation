@@ -1,142 +1,101 @@
-/* 11 정역학, 특이점, 조작성 — MR 5.2–5.4 */
+/* 11 트위스트와 나사 축 — MR 3.3.2 (동차 변환 3.3.1은 8단원으로 옮김) */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 11, part: 'C', title: '정역학, 특이점, 조작성', en: 'Statics, Singularities & Manipulability', ref: 'MR 5.2–5.4', plot: 'rbManip',
-    fig: R`2R 팔의 조작성 타원: 팔을 펴 갈수록 타원이 납작해지다 특이점에서 선분이 된다`,
-    tagline: R`야코비안의 전치는 끝점의 힘을 관절 토크로 옮깁니다. 야코비안이 계수를 잃는 자세가 특이점이고, 그 근처에서 속도와 힘의 능력이 한쪽으로 쏠립니다.`,
-    summary: R`관절이 한 일률과 끝점이 한 일률이 같다는 것($\tau^T\dot\theta=\mathcal F^T\mathcal V$)에서 **정역학 관계** $\tau=J^T(\theta)\mathcal F$가 나옵니다 — 끝점이 환경에 렌치 $\mathcal F$를 가하려면 필요한 관절 토크입니다. $J(\theta)$의 계수가 최대보다 작아지는 자세가 **기구학적 특이점**입니다: 어떤 방향으로는 끝점 속도를 낼 수 없고, 거꾸로 그 방향의 힘은 관절 토크 없이 버팁니다. 특이점은 좌표계 선택과 무관한 팔의 성질입니다(2R 팔의 $\theta_2=0,\pi$). 특이점에 얼마나 가까운지는 **조작성 타원체**로 봅니다: 단위 관절 속도가 만드는 끝점 속도는 $\mathcal V^T(JJ^T)^{-1}\mathcal V\le1$인 타원체이고, 반축은 $A=JJ^T$의 고윳값 제곱근입니다. 가장 긴 축과 짧은 축의 비 $\mu_1$, 부피 $\mu_3=\sqrt{\det A}$로 수치화하며, 힘의 타원체는 축이 역수로 바뀝니다.`,
+    n: 11, part: 'B', title: '트위스트와 나사 축', en: 'Twists & Screw Axes', ref: 'MR 3.3.2', plot: 'rbHelix',
+    fig: R`나사 축 둘레의 나선들. 강체의 모든 순간 운동은 어떤 축 둘레의 회전과 그 축 방향의 병진을 합친 나사 운동이다`,
+    tagline: R`8단원의 동차 변환 행렬을 시간에 대해 미분하면 여섯 성분의 속도 벡터, 트위스트가 나옵니다. 강체의 속도는 나사 하나로 그릴 수 있습니다.`,
+    summary: R`강체의 자세 $T(t)\in SE(3)$(8단원)를 미분하면 $T^{-1}\dot T=[\mathcal V_b]$, $\dot TT^{-1}=[\mathcal V_s]$가 되고, 이 $4\times4$ 행렬은 여섯 성분의 **트위스트** $\mathcal V=(\omega,v)$로 요약됩니다. 물체 트위스트 $\mathcal V_b$의 $v_b$는 {b} 원점의 속도, 공간 트위스트 $\mathcal V_s$의 $v_s$는 물체를 무한히 넓혔을 때 {s} 원점에 있는 점의 속도입니다. 둘은 **수반 행렬** $[\mathrm{Ad}_T]=\begin{bmatrix}R&0\\{}[p]R&R\end{bmatrix}$로 $\mathcal V_s=[\mathrm{Ad}_{T_{sb}}]\mathcal V_b$입니다. 모든 트위스트는 **나사 축** $\mathcal S=(\hat s,\,-\hat s\times q+h\hat s)$ 둘레의 속도 $\dot\theta$로 쓸 수 있습니다: $\mathcal V=\mathcal S\dot\theta$.`,
     goals: [
-      R`일률의 같음에서 $\tau=J^T\mathcal F$를 유도하고 계산할 수 있다`,
-      R`야코비안의 계수로 특이점을 판정할 수 있다`,
-      R`특이점에서 속도와 힘에 무슨 일이 생기는지 설명할 수 있다`,
-      R`조작성 타원체의 축과 조작성 지표를 계산할 수 있다`,
-      R`속도 타원체와 힘 타원체의 관계를 설명할 수 있다`,
+      R`$T^{-1}\dot T$와 $\dot TT^{-1}$에서 물체·공간 트위스트를 구할 수 있다`,
+      R`트위스트의 각 성분($\omega$, $v$)의 물리적 뜻을 설명할 수 있다`,
+      R`수반 행렬로 트위스트의 좌표계를 바꿀 수 있다`,
+      R`트위스트를 나사 축 $\{q,\hat s,h\}$와 속도 $\dot\theta$로 나타낼 수 있다`,
+      R`순수 회전·순수 병진·나사 운동을 트위스트로 구별할 수 있다`,
     ],
-    secTitles: { '5.2': '열린 사슬의 정역학', '5.3': '특이점', '5.4': '조작성' },
+    secTitles: { '3.3.2a': '트위스트와 수반 행렬', '3.3.2b': '나사 축' },
     sections: [
-      { k: '5.2', p: 190, title: '열린 사슬의 정역학', body: R`
-마찰과 중력을 무시하면(또는 따로 더하면) 관절이 공급하는 일률은 끝점이 환경에 하는 일률과 같습니다: $\tau^T\dot\theta=\mathcal F^T\mathcal V=\mathcal F^TJ\dot\theta$. 모든 $\dot\theta$에 대해 성립하므로:
+      { k: '3.3.2a', p: 97, title: '트위스트와 수반 행렬', body: R`
+$T(t)$를 미분해 $T^{-1}$을 곱하면
+$$T^{-1}\dot T=\begin{bmatrix}R^T\dot R&R^T\dot p\\0&0\end{bmatrix}=\begin{bmatrix}[\omega_b]&v_b\\0&0\end{bmatrix}=[\mathcal V_b].$$
 
-:::key 정역학 관계
-$$\tau=J^T(\theta)\,\mathcal F\qquad(\tau=J_b^T\mathcal F_b=J_s^T\mathcal F_s)$$
-$\mathcal F$는 끝점이 환경에 가하는 렌치(같은 좌표계의 야코비안과 짝을 맞춤). 평면 팔에서 끝점 힘만 보면 $\tau=J^Tf$ ($J$는 $2\times n$ 선속도 야코비안).
+:::key 물체 트위스트와 공간 트위스트
+$$\mathcal V_b=\begin{bmatrix}\omega_b\\v_b\end{bmatrix}:\ T^{-1}\dot T=[\mathcal V_b],\qquad\mathcal V_s=\begin{bmatrix}\omega_s\\v_s\end{bmatrix}:\ \dot TT^{-1}=[\mathcal V_s]$$
+$v_b=R^T\dot p$는 {b} 원점의 속도를 {b} 좌표로 쓴 것. $v_s=\dot p-\omega_s\times p$는 물체를 무한히 넓혔을 때 **{s} 원점에 겹친 점**의 속도를 {s} 좌표로 쓴 것(원점의 속도가 아님).
 :::
 
-:::ex 예제 1
-$L_1=L_2=1$인 2R 팔이 $\theta=(0,\pi/2)$(끝점 $(1,1)$)에서 아래로 $f=(0,-10)$ N을 누르려면 관절 토크는?
+:::key 수반 행렬
+$$[\mathrm{Ad}_T]=\begin{bmatrix}R&0\\{}[p]R&R\end{bmatrix}\in\mathbb R^{6\times6},\qquad\mathcal V_s=[\mathrm{Ad}_{T_{sb}}]\mathcal V_b,\qquad[\mathrm{Ad}_T]^{-1}=[\mathrm{Ad}_{T^{-1}}]$$
+일반적으로 $\mathcal V_a=[\mathrm{Ad}_{T_{ab}}]\mathcal V_b$. 행렬로는 $[\mathcal V_s]=T[\mathcal V_b]T^{-1}$.
+:::
+
+:::fig rTwistVs
+:::
+
+:::ex 예제 1 — 한 점 둘레로 도는 물체
+평면 물체가 고정점 $q=(3,0,0)$ 둘레로 반시계 2 rad/s로 돈다. {s}는 원점, 이 순간 {b}는 $(4,0,0)$에 있고 {s}와 방향이 같다. $\mathcal V_s$와 $\mathcal V_b$는?
 ---
-$J=\begin{bmatrix}-1&-1\\1&0\end{bmatrix}$, $\tau=J^Tf=\begin{bmatrix}-1&1\\-1&0\end{bmatrix}\begin{bmatrix}0\\-10\end{bmatrix}=(-10,0)$ N·m.
-관절 2는 끝점 바로 아래 $(1,0)$에 있어 연직 힘의 팔이 0이라 토크가 필요 없습니다. 관절 1의 토크는 $1\times(-10)$ — 정역학의 모멘트와 같습니다.
-:::
-
-:::idea 왜 전치인가
-야코비안은 관절 속도를 끝점 속도로 보내고($\mathcal V=J\dot\theta$), 전치 $J^T$는 반대 방향으로 끝점 힘을 관절 토크로 보냅니다($\tau=J^T\mathcal F$). 둘을 잇는 것은 일률이 같다는 사실 하나입니다: $\tau^T\dot\theta=\mathcal F^T\mathcal V=\mathcal F^TJ\dot\theta$가 모든 $\dot\theta$에서 성립하려면 $\tau=J^T\mathcal F$. 그래서 속도를 잘 내는 방향과 힘을 잘 내는 방향은 서로 반대로 움직입니다(§5.4의 두 타원).
-:::
-
-:::sim jacobian force
-끝점의 빨간 화살표(끝점이 환경에 가하는 힘 $f$)를 끌어 보세요. 관절의 호가 필요한 토크 $\tau=J^Tf$입니다. 예제 1의 자세 $\theta=(0,90°)$ 근처에서 아래로 누르면 관절 2의 토크가 거의 0인 것도 확인할 수 있습니다.
-:::
-
-:::note 거꾸로는?
-$J$가 정사각이고 가역이면 $\mathcal F=J^{-T}\tau$로 관절 토크에서 끝점 힘을 얻습니다. 관절이 끝점 자유도보다 많으면(여유 팔) 끝점 힘을 바꾸지 않는 토크, 곧 $J^T$의 영공간 밖의 “내부 운동”이 생깁니다.
+$\omega=(0,0,2)$. $v_s$: {s} 원점에 겹친 점의 속도 $=\omega\times(0-q)=(0,0,2)\times(-3,0,0)=(0,-6,0)$.
+$v_b$: {b} 원점의 속도 $=\omega\times(p-q)=(0,0,2)\times(1,0,0)=(0,2,0)$ ($R=I$라 좌표도 같음).
+확인: $v_s=[p]R\omega_b+Rv_b=p\times\omega+v_b=(0,-8,0)+(0,2,0)=(0,-6,0)$.
 :::
 ` },
-      { k: '5.3', p: 191, title: '기구학적 특이점', body: R`
-:::key 기구학적 특이점
-$\operatorname{rank}J(\theta)<\min(6,n)$ (평면 팔은 3 또는 끝점 자유도)인 자세. 이때
-- 어떤 방향으로는 관절을 어떻게 움직여도 끝점 속도를 낼 수 없다(속도의 차원 손실).
-- 그 방향의 렌치는 $J^T\mathcal F=0$이라 관절 토크 없이 버틴다.
-$J_s$와 $J_b$는 가역 행렬 $[\mathrm{Ad}_{T_{sb}}]$로 이어져 계수가 같으므로, 특이점은 좌표계 선택과 무관하다.
+      { k: '3.3.2b', p: 101, title: '나사 축으로 본 트위스트', body: R`
+모든 강체 속도는 어떤 축 둘레로 돌면서 그 축 방향으로 미끄러지는 **나사 운동**입니다(샬의 정리).
+
+:::fig rScrew
 :::
 
-:::ex 예제 2 — 2R 팔의 특이점
-$\det J=L_1L_2\sin\theta_2=0$ → $\theta_2=0$(곧게 폄) 또는 $\pi$(완전히 접음). 곧게 편 팔은 팔 방향으로 끝점을 움직일 수 없고, 팔 방향으로 미는 힘은 관절 토크 없이 링크가 받칩니다. 작업 공간의 경계(2단원 고리의 안팎 원)와 정확히 겹칩니다.
+:::key 나사 축과 피치
+단위 방향 $\hat s$, 축 위의 점 $q$, 피치 $h$(회전 1 rad당 축 방향 이동)인 나사 축
+$$\mathcal S=\begin{bmatrix}\hat s\\-\hat s\times q+h\hat s\end{bmatrix},\qquad\mathcal V=\mathcal S\dot\theta.$$
+트위스트 $\mathcal V=(\omega,v)$에서: $\omega\ne0$이면 $\dot\theta=\lVert\omega\rVert$, $\mathcal S=\mathcal V/\lVert\omega\rVert$, $h=\hat\omega^Tv/\dot\theta$. $\omega=0$(순수 병진)이면 $\dot\theta=\lVert v\rVert$, $\mathcal S=(0,v/\lVert v\rVert)$, 피치는 무한대.
 :::
 
-:::ex 예제 3 — 평면 3R 팔
-평면 3R 팔(끝점의 $\omega_z,v_x,v_y$만 보면 $3\times3$)은 언제 특이한가?
+:::ex 예제 2
+{s}에서 트위스트 $\mathcal V_s=((0,0,2),(4,0,1))$의 나사 축은?
 ---
-$\omega_z,v_x,v_y$ 행만 모은 $J_s$의 행렬식을 계산하면 $L_1L_2\sin\theta_2$ — 관절 3과 무관합니다. 예를 들어 $\theta_1=\theta_2=0$에서 $J_s$의 $v_x$ 행이 0이 되어 계수 2: 관절 1, 2, 3이 한 직선 위에 놓여 그 직선 방향 속도를 낼 수 없습니다.
+$\dot\theta=2$, $\mathcal S=((0,0,1),(2,0,0.5))$. 피치 $h=\hat s\cdot v_S=0.5$(1 rad에 0.5 m).
+축 위의 점: $-\hat s\times q=v_S-h\hat s=(2,0,0)$. $q=(0,q_y,0)$으로 두면 $-\hat z\times q=(q_y,0,0)$ → $q_y=2$. 축은 $(0,2,0)$을 지나는 $\hat z$ 방향 직선.
 :::
 
-공간 팔의 대표적인 특이점: 두 회전축이 한 직선 위에 놓일 때(두 열이 같은 나사), 평행한 세 회전축이 한 평면에 놓일 때, 네 회전축이 한 점에서 만날 때(구면 손목의 짐벌 잠김이 이 경우).
-
-:::fig rSingular
+:::note 두 트위스트는 같은 나사
+$\mathcal V_s$와 $\mathcal V_b$는 같은 나사 운동을 두 좌표계에서 쓴 것입니다. 나사 축, 피치, 회전 속도는 좌표계와 무관한 기하학적 대상이고, 수반 행렬은 그 표현만 바꿉니다.
 :::
 
-:::warn 특이점 근처가 더 위험하다
-정확히 특이점에서는 어떤 방향의 속도를 못 낼 뿐이지만, **근처**에서는 그 방향으로 조금만 움직이려 해도 $\dot\theta=J^{-1}\mathcal V$가 매우 커집니다($J^{-1}$의 크기가 $1/\det J$처럼 커짐). 작업 공간에서 곧게 가는 궤적이 특이점 근처를 지나면 관절 속도가 폭주하는 이유입니다(14단원).
-:::
-` },
-      { k: '5.4', p: 196, title: '조작성 타원체', body: R`
-특이점에서 멀고 가까운 정도를 봅니다. 단위 원(구) $\lVert\dot\theta\rVert=1$의 관절 속도가 만드는 끝점 속도의 집합은 $\dot\theta=J^T(JJ^T)^{-1}\mathcal V$ (최소 노름 해)를 넣어 계산하면 타원체입니다.
-
-:::fig rManip
-:::
-
-:::key 조작성 타원체와 지표
-$$\mathcal V^T(JJ^T)^{-1}\mathcal V\le1,\qquad A=JJ^T$$
-반축: $A$의 고유벡터 방향으로 길이 $\sqrt{\lambda_i}$.
-- $\mu_1=\sqrt{\lambda_{\max}/\lambda_{\min}}\ge1$: 등방성(1이면 원).
-- $\mu_2=\lambda_{\max}/\lambda_{\min}$: $A$의 조건수.
-- $\mu_3=\sqrt{\lambda_1\lambda_2\cdots}=\sqrt{\det A}$: 부피에 비례.
-**힘 타원체** $f^T(JJ^T)f\le1$은 같은 축을 갖되 반축이 $1/\sqrt{\lambda_i}$ — 속도를 잘 내는 방향으로는 힘을 잘 못 낸다.
-:::
-
-:::sim jacobian
-주황 타원이 크기 1인 관절 속도들이 만드는 끝점 속도의 집합(조작성 타원)입니다. 끝점을 끌어 팔을 펴면 타원이 납작해지다가 특이점에서 선분이 되고, ‘힘’으로 바꾸면 힘 타원이 반대로 그 방향으로 길어집니다. 배경의 진한 고리일수록 $\mu_3=\lvert\det J\rvert$가 큽니다.
-:::
-
-:::ex 예제 4
-$L_1=L_2=1$인 2R 팔이 $\theta=(0,\pi/2)$일 때 조작성 지표는?
----
-$J=\begin{bmatrix}-1&-1\\1&0\end{bmatrix}$, $A=JJ^T=\begin{bmatrix}2&-1\\-1&1\end{bmatrix}$. $\operatorname{tr}A=3$, $\det A=1$ → $\lambda=\dfrac{3\pm\sqrt5}2=2.618,\ 0.382$.
-$\mu_1=\sqrt{2.618/0.382}=2.618$, $\mu_3=\sqrt1=1$.
-2R 팔은 $\mu_3=\lvert\det J\rvert=L_1L_2\lvert\sin\theta_2\rvert$이라 $\theta_2=\pm90°$에서 부피가 최대입니다.
+:::sim screw
+나사 축의 방향 $\hat s$, 축 위의 점 $q$, 피치 $h$를 바꾸며 상자가 축 둘레로 돌면서 축 방향으로 미끄러지는 모습을 보세요. 아래의 $\mathcal S=(\omega,v)$에서 $v=-\hat s\times q+h\hat s$의 두 항이 각각 “축이 원점을 지나지 않아 생기는 부분”과 “피치 때문에 축 방향으로 나가는 부분”입니다.
 :::
 ` },
     ],
     problems: [
-      { sec: '5.2', type: 'num', lv: 1, q: R`$L_1=L_2=1$인 2R 팔이 $\theta=(0,\pi/2)$에서 끝점으로 $f=(0,-10)$ N을 가하려면 $\tau_1$ (N·m)은?`, ans: '-10', ansTex: R`-10`,
-        sol: R`$\tau=J^Tf=(-10,0)$.` },
-      { sec: '5.2', type: 'num', lv: 2, q: R`같은 자세에서 $f=(5,0)$ N을 가하려면 $\tau_2$ (N·m)는?`, ans: '-5', ansTex: R`-5`,
-        sol: R`$J^T=\begin{bmatrix}-1&1\\-1&0\end{bmatrix}$ → $\tau=(-5,-5)$.` },
-      { sec: '5.2', type: 'mc', lv: 1, q: R`$\tau=J^T\mathcal F$의 근거는?`,
-        choices: [R`뉴턴의 제2법칙`, R`관절이 공급하는 일률과 끝점이 하는 일률이 같다는 것`, R`야코비안이 대칭이라는 것`, R`특이점이 없다는 가정`], ans: 1,
-        sol: R`$\tau^T\dot\theta=\mathcal F^TJ\dot\theta$가 모든 $\dot\theta$에 대해 성립.` },
-      { sec: '5.3', type: 'mc', lv: 1, q: R`평면 2R 팔의 특이점은?`,
-        choices: [R`$\theta_1=0$`, R`$\theta_2=0$ 또는 $\pi$`, R`$\theta_2=\pi/2$`, R`특이점이 없다`], ans: 1,
-        sol: R`$\det J=L_1L_2\sin\theta_2=0$.` },
-      { sec: '5.3', type: 'mc', lv: 2, q: R`특이점에 대해 옳은 것은?`,
-        choices: [R`{s}를 어디에 두느냐에 따라 달라진다`, R`$J_s$와 $J_b$의 계수가 같으므로 좌표계 선택과 무관하다`, R`물체 야코비안에서만 정의된다`, R`관절 토크가 무한대가 되는 자세다`], ans: 1,
-        sol: R`$J_s=[\mathrm{Ad}_{T_{sb}}]J_b$이고 수반 행렬은 가역입니다.` },
-      { sec: '5.3', type: 'num', lv: 2, q: R`평면 3R 팔($L_1=L_2=1$)이 $\theta=(0,0,\theta_3)$일 때 $(\omega_z,v_x,v_y)$ 행으로 만든 $3\times3$ 야코비안의 계수는?`, ans: '2', ansTex: R`2`,
-        sol: R`$v_x$ 행 $(0,L_1s_1,L_1s_1+L_2s_{12})=(0,0,0)$ — 계수 2.` },
-      { sec: '5.3', type: 'mc', lv: 2, q: R`곧게 편 2R 팔을 팔 방향으로 미는 힘에 대해 옳은 것은?`,
-        choices: [R`무한한 관절 토크가 필요하다`, R`관절 토크 없이 링크가 버틴다`, R`버틸 수 없다`, R`관절 2의 토크만 필요하다`], ans: 1,
-        sol: R`그 방향 $f$에 대해 $J^Tf=0$입니다.` },
-      { sec: '5.4', type: 'num', lv: 1, q: R`$L_1=L_2=1$인 2R 팔이 $\theta_2=\pi/2$일 때 조작성 지표 $\mu_3=\sqrt{\det(JJ^T)}$는?`, ans: '1', ansTex: R`1`,
-        sol: R`$\lvert\det J\rvert=L_1L_2\lvert\sin\theta_2\rvert=1$.` },
-      { sec: '5.4', type: 'num', lv: 2, q: R`같은 팔이 $\theta=(0,\pi/2)$일 때 $A=JJ^T$의 가장 큰 고윳값은?`, ans: '(3+sqrt(5))/2', ansTex: R`2.618`,
-        sol: R`$\operatorname{tr}A=3$, $\det A=1$.` },
-      { sec: '5.4', type: 'num', lv: 2, q: R`같은 자세의 $\mu_1=\sqrt{\lambda_{\max}/\lambda_{\min}}$은?`, ans: 'sqrt(((3+sqrt(5))/2)/((3-sqrt(5))/2))', ansTex: R`2.618`,
-        sol: R`$\sqrt{2.618/0.382}=2.618$.` },
-      { sec: '5.4', type: 'num', lv: 2, q: R`$L_1=1$, $L_2=0.5$인 2R 팔에서 $\mu_3$의 최댓값은?`, ans: '0.5', ansTex: R`0.5`,
-        sol: R`$L_1L_2\lvert\sin\theta_2\rvert$의 최대 $=0.5$ ($\theta_2=\pm90°$).` },
-      { sec: '5.4', type: 'mc', lv: 2, q: R`속도 타원체와 힘 타원체의 관계로 옳은 것은?`,
-        choices: [R`같은 타원체다`, R`축 방향은 같고 반축의 길이가 서로 역수다`, R`축이 서로 수직이다`, R`힘 타원체는 항상 원이다`], ans: 1,
-        sol: R`속도는 $JJ^T$, 힘은 $(JJ^T)^{-1}$로 정해집니다. 빠르게 움직일 수 있는 방향으로는 힘을 적게 냅니다(지렛대).` },
-      { sec: '5.2', type: 'open', lv: 2, proof: true, q: R`(1) 일률의 같음에서 $\tau=J^T\mathcal F$를 유도하세요. (2) $J$의 계수가 떨어진 특이점에서 $J^T\mathcal F=0$인 0이 아닌 렌치가 있음을 보이고 그 물리적 뜻을 설명하세요.`,
+      { sec: '3.3.2a', type: 'num', lv: 2, q: R`고정점 $q=(3,0,0)$ 둘레로 반시계 2 rad/s로 도는 평면 물체의 공간 트위스트에서 $v_s$의 $y$ 성분은?`, ans: '-6', ansTex: R`-6`,
+        sol: R`$\omega\times(0-q)=(0,0,2)\times(-3,0,0)=(0,-6,0)$.` },
+      { sec: '3.3.2a', type: 'num', lv: 2, q: R`같은 물체에서 {b}가 $(4,0,0)$에 있고 {s}와 방향이 같다. $v_b$의 $y$ 성분은?`, ans: '2', ansTex: R`2`,
+        sol: R`$\omega\times(p-q)=(0,2,0)$.` },
+      { sec: '3.3.2a', type: 'mc', lv: 2, q: R`공간 트위스트의 $v_s$가 나타내는 것은?`,
+        choices: [R`{b} 원점의 속도`, R`물체를 무한히 넓혔을 때 {s} 원점에 겹친 점의 속도`, R`질량 중심의 속도`, R`각속도`], ans: 1,
+        sol: R`$v_s=\dot p-\omega_s\times p=\dot p+\omega_s\times(0-p)$ — {b} 원점의 속도에서 {s} 원점까지의 상대 회전 속도를 더한 것.` },
+      { sec: '3.3.2a', type: 'num', lv: 2, q: R`수반 행렬 $[\mathrm{Ad}_T]$의 행렬식은?`, ans: '1', ansTex: R`1`,
+        sol: R`블록 하삼각: $\det R\cdot\det R=1$.` },
+      { sec: '3.3.2b', type: 'num', lv: 1, q: R`트위스트 $((0,0,2),(0,0,1))$의 피치는?`, ans: '0.5', ansTex: R`0.5`,
+        sol: R`$h=\hat\omega^Tv/\lVert\omega\rVert=1/2$.` },
+      { sec: '3.3.2b', type: 'num', lv: 1, q: R`순수 병진 트위스트 $(0,(3,4,0))$의 속도 $\dot\theta$는?`, ans: '5', ansTex: R`5`,
+        sol: R`$\lVert v\rVert=5$, $\mathcal S=(0,(0.6,0.8,0))$.` },
+      { sec: '3.3.2b', type: 'num', lv: 2, q: R`점 $(0,2,0)$을 지나고 방향이 $\hat z$, 피치 0인 나사 축의 $v$ 부분의 $x$ 성분은?`, ans: '2', ansTex: R`2`,
+        sol: R`$-\hat z\times(0,2,0)=-(-2,0,0)=(2,0,0)$.` },
+      { sec: '3.3.2a', type: 'open', lv: 2, proof: true, q: R`$T=(R,p)$에 대해 $\dot TT^{-1}=\begin{bmatrix}[\omega_s]&\dot p-\omega_s\times p\\0&0\end{bmatrix}$임을 보이고, 이로부터 $\mathcal V_s=[\mathrm{Ad}_T]\mathcal V_b$를 유도하세요.`,
         sol: R`
-(1) 관절 일률 $\tau^T\dot\theta$, 끝점이 환경에 하는 일률 $\mathcal F^T\mathcal V=\mathcal F^TJ\dot\theta$. 정적(또는 준정적)이고 손실이 없으면 둘이 같습니다: $(\tau-J^T\mathcal F)^T\dot\theta=0$이 모든 $\dot\theta$에 대해 성립하므로 $\tau=J^T\mathcal F$.
-(2) $J$가 $m\times n$이고 계수 $r<m$이면 $J$의 열 공간은 $\mathbb R^m$의 진부분공간이라 그 직교 여공간에 0이 아닌 $\mathcal F$가 있습니다: 모든 열과 수직 → $J^T\mathcal F=0$.
-뜻: 이 방향의 렌치는 관절 토크 없이 구조가 버팁니다. 동시에 $\mathcal F^T\mathcal V=\mathcal F^TJ\dot\theta=0$이라 이 방향으로는 끝점 속도를 낼 수 없습니다 — 속도를 잃은 방향이 곧 공짜로 버티는 힘의 방향입니다.`,
+$\dot T=\begin{bmatrix}\dot R&\dot p\\0&0\end{bmatrix}$, $T^{-1}=\begin{bmatrix}R^T&-R^Tp\\0&1\end{bmatrix}$.
+$\dot TT^{-1}=\begin{bmatrix}\dot RR^T&-\dot RR^Tp+\dot p\\0&0\end{bmatrix}=\begin{bmatrix}[\omega_s]&\dot p-\omega_s\times p\\0&0\end{bmatrix}$ ($\dot RR^T=[\omega_s]$).
+물체 트위스트는 $\omega_b=R^T\omega_s$, $v_b=R^T\dot p$. 따라서 $\omega_s=R\omega_b$,
+$v_s=\dot p-\omega_s\times p=Rv_b+p\times\omega_s=Rv_b+[p]R\omega_b$.
+모으면 $\begin{bmatrix}\omega_s\\v_s\end{bmatrix}=\begin{bmatrix}R&0\\{}[p]R&R\end{bmatrix}\begin{bmatrix}\omega_b\\v_b\end{bmatrix}$.`,
         rubric: R`
-- 일률의 같음과 임의의 관절 속도 — 4점
-- 계수 부족에서 직교 여공간의 벡터 — 3점
-- 속도 손실과 힘 버팀의 대응 — 3점` },
+- $\dot TT^{-1}$의 블록 계산 — 4점
+- $\omega_b$, $v_b$와의 관계 — 3점
+- 수반 행렬로 정리 — 3점` },
     ],
   });
 })();

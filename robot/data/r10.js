@@ -1,138 +1,148 @@
-/* 10 야코비안 — MR 5.1 */
+/* 10 회전의 지수 좌표 — MR 3.2.3 (각속도 3.2.2는 5단원으로 옮김) */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
   EM.chapters.push({
-    n: 10, part: 'C', title: '야코비안', en: 'The Manipulator Jacobian', ref: 'MR 5.1', plot: 'rbJacobian',
-    fig: R`2R 팔의 끝점이 지나는 길을 따라 그린 속도 타원들. 같은 관절 속도라도 자세에 따라 끝점 속도가 달라진다`,
-    tagline: R`관절 속도를 끝점 속도로 옮기는 선형 사상입니다. 열 하나가 관절 하나의 기여이고, 그 열은 지금 자세에서 그 관절의 나사 축입니다.`,
-    summary: R`끝점의 속도는 관절 속도의 선형 결합입니다: $\mathcal V=J(\theta)\dot\theta$. 평면 2R 팔이면 끝점 좌표 $(x,y)$를 미분해 $2\times2$ 행렬을 얻고, 일반 팔은 지수곱 공식을 미분합니다. **공간 야코비안** $J_s$의 $i$번째 열은 $J_{si}=[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_{i-1}]\theta_{i-1}}}]\mathcal S_i$ — 앞 관절들이 옮겨 놓은 **현재 자세의 관절 $i$ 나사 축**을 {s}로 쓴 것이고, 관절 $i$만 단위 속도로 움직일 때의 공간 트위스트입니다. **물체 야코비안** $J_b$는 같은 것을 {b}로 쓴 것으로 뒤쪽 관절의 운동을 되돌려 $J_{bi}=[\mathrm{Ad}_{e^{-[\mathcal B_n]\theta_n}\cdots e^{-[\mathcal B_{i+1}]\theta_{i+1}}}]\mathcal B_i$이며, $J_s=[\mathrm{Ad}_{T_{sb}}]J_b$입니다. 속도 기구학, 정역학(11단원), 역기구학(12단원)이 모두 이 행렬 위에 섭니다.`,
+    n: 10, part: 'B', title: '회전의 지수 좌표', en: 'Exponential Coordinates of Rotation', ref: 'MR 3.2.3', plot: 'rbExp',
+    fig: R`한 축 둘레로 도는 여러 점이 그리는 원. 회전은 축 방향 단위 벡터와 각, 곧 벡터 하나로 적힌다`,
+    tagline: R`회전을 축과 각, 곧 세 수 $\hat\omega\theta$로 적습니다. 행렬 지수로 회전 행렬을 만들고 행렬 로그로 되찾으며, 모든 회전은 반지름 $\pi$인 공 안의 한 점이 됩니다.`,
+    summary: R`단위 축 $\hat\omega$ 둘레로 각 $\theta$만큼 도는 회전은, 5단원의 각속도로 쓰면 미분 방정식 $\dot p=[\hat\omega]p$를 $\theta$ 동안 푼 것이므로 **행렬 지수** $e^{[\hat\omega]\theta}$입니다. $[\hat\omega]^3=-[\hat\omega]$ 덕분에 급수가 닫힌 꼴 — **로드리게스 공식** $e^{[\hat\omega]\theta}=I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2$ — 이 됩니다. 세 수 $\hat\omega\theta\in\mathbb R^3$가 회전의 **지수 좌표**이고, 거꾸로 $R$에서 $\theta=\cos^{-1}\frac{\operatorname{tr}R-1}2$, $[\hat\omega]=\frac{R-R^T}{2\sin\theta}$로 되찾습니다(**행렬 로그**). $\theta\in[0,\pi]$로 정하면 모든 회전은 반지름 $\pi$인 공 안의 점 하나가 되고, 공 안쪽에서는 일대일이지만 겉면의 맞은편 두 점($\pm\hat\omega\pi$)은 같은 회전입니다.`,
     goals: [
-      R`평면 팔의 끝점 좌표를 미분해 야코비안을 구할 수 있다`,
-      R`야코비안의 열을 “한 관절만 움직일 때의 속도”로 해석할 수 있다`,
-      R`지수곱 공식에서 공간 야코비안의 열을 계산할 수 있다`,
-      R`물체 야코비안을 구하고 공간 야코비안과의 관계를 쓸 수 있다`,
-      R`공간 트위스트에서 끝점의 선속도를 구할 수 있다`,
+      R`회전을 미분 방정식의 해로 보고 행렬 지수로 쓸 수 있다`,
+      R`로드리게스 공식을 유도하고 축과 각에서 회전 행렬을 계산할 수 있다`,
+      R`행렬 로그로 회전 행렬의 축과 각을 구하고 $\theta=0,\pi$인 경우를 처리할 수 있다`,
+      R`$SO(3)$를 반지름 $\pi$인 공으로 그리고, 주어진 회전이 공의 어느 영역에 있는지 판정할 수 있다`,
+      R`지수 좌표가 방향의 최소 표현임을 설명할 수 있다`,
     ],
-    secTitles: { '5.1a': '평면 팔의 야코비안', '5.1.1': '공간 야코비안', '5.1.2': '물체 야코비안' },
+    secTitles: { '3.2.3a': '행렬 지수와 로드리게스 공식', '3.2.3b': '행렬 로그', '3.2.3c': 'SO(3)를 공으로 보기' },
     sections: [
-      { k: '5.1a', p: 178, title: '평면 2R 팔의 야코비안', body: R`
-:::fig rTwoR
+      { k: '3.2.3a', p: 79, title: '행렬 지수와 로드리게스 공식', body: R`
+점 $p$가 단위 축 $\hat\omega$(원점을 지남) 둘레로 단위 각속도로 돌면(5단원의 $\dot p=\omega\times p$) $\dot p=\hat\omega\times p=[\hat\omega]p$. 이 선형 미분 방정식의 해는 $p(\theta)=e^{[\hat\omega]\theta}p(0)$ — 행렬 지수 $e^{A}=I+A+A^2/2!+\cdots$입니다.
+
+$[\hat\omega]^2=\hat\omega\hat\omega^T-I$, $[\hat\omega]^3=-[\hat\omega]$이므로 거듭제곱이 $[\hat\omega]$와 $[\hat\omega]^2$ 둘로 되돌아옵니다. 급수를 모으면:
+
+:::key 로드리게스 공식
+$$\mathrm{Rot}(\hat\omega,\theta)=e^{[\hat\omega]\theta}=I+\sin\theta\,[\hat\omega]+(1-\cos\theta)[\hat\omega]^2\in SO(3)$$
+$\hat\omega\theta\in\mathbb R^3$을 회전의 **지수 좌표**라 한다(방향의 명시적 표현, 세 수).
 :::
 
-$x=L_1c_1+L_2c_{12}$, $y=L_1s_1+L_2s_{12}$를 시간으로 미분하면
+### 그림으로 보는 로드리게스 공식
+급수 없이 기하로도 같은 식이 나옵니다. 점 $p$를 축 방향 성분 $p_\parallel=\hat\omega(\hat\omega^Tp)$와 수직 성분 $p_\perp=p-p_\parallel$로 나누면, 회전은 $p_\parallel$을 그대로 두고 $p_\perp$만 축에 수직인 평면에서 $\theta$만큼 돌립니다. 그 평면의 두 직교 방향이 $p_\perp$와 $\hat\omega\times p$(길이가 같음)이므로
+$$Rp=p_\parallel+\cos\theta\,p_\perp+\sin\theta\,(\hat\omega\times p).$$
+$\hat\omega\times p=[\hat\omega]p$이고 $[\hat\omega]^2p=\hat\omega\times(\hat\omega\times p)=-p_\perp$이므로 $p_\perp=-[\hat\omega]^2p$, $p_\parallel=p+[\hat\omega]^2p$. 넣어 정리하면
+$$Rp=\big(I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2\big)p$$
+— 로드리게스 공식입니다.
 
-:::key 평면 2R 팔의 야코비안
-$$\begin{bmatrix}\dot x\\\dot y\end{bmatrix}=\begin{bmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{bmatrix}\begin{bmatrix}\dot\theta_1\\\dot\theta_2\end{bmatrix},\qquad\det J=L_1L_2\sin\theta_2$$
-열 $i$는 관절 $i$만 단위 속도로 돌 때의 끝점 속도.
+:::fig rRodrigues
+:::
+
+:::sim rotation axis
+축의 방위각·고도로 $\hat\omega$를, 막대로 $\theta$를 정하면 상자가 그만큼 돌고 아래에 로드리게스 공식으로 계산한 $R$이 나옵니다. 색 곡선은 세 물체 축의 끝이 지나온 원호로, 모두 축 $\hat\omega$에 수직인 평면 위에 있습니다.
 :::
 
 :::ex 예제 1
-$L_1=L_2=1$, $\theta=(0,\pi/2)$에서 (a) $\dot\theta=(1,0)$, (b) $\dot\theta=(0,1)$일 때 끝점 속도는?
+$\hat\omega=\tfrac1{\sqrt3}(1,1,1)$ 둘레로 $\theta=120°$ 돈 회전 행렬은?
 ---
-$J=\begin{bmatrix}-1&-1\\1&0\end{bmatrix}$. (a) $(-1,1)$: 관절 1이 끝점 $(1,1)$을 원점 둘레로 돌림. (b) $(-1,0)$: 관절 2가 끝점을 관절 2 $(1,0)$ 둘레로 돌림.
+$[\hat\omega]=\tfrac1{\sqrt3}\begin{bmatrix}0&-1&1\\1&0&-1\\-1&1&0\end{bmatrix}$, $[\hat\omega]^2=\tfrac13\mathbf 1\mathbf 1^T-I$. $\sin120°=\tfrac{\sqrt3}2$, $1-\cos120°=\tfrac32$.
+$R=I+\tfrac12\begin{bmatrix}0&-1&1\\1&0&-1\\-1&1&0\end{bmatrix}+\begin{bmatrix}-1&\frac12&\frac12\\\frac12&-1&\frac12\\\frac12&\frac12&-1\end{bmatrix}=\begin{bmatrix}0&0&1\\1&0&0\\0&1&0\end{bmatrix}$.
+$\hat x\to\hat y\to\hat z\to\hat x$로 축을 돌려 세우는 회전 — 대각선 둘레 120°의 대칭과 맞습니다.
 :::
 
-$\det J=0$인 $\theta_2=0,\pi$(팔을 펴거나 완전히 접음)에서는 두 열이 나란해 어떤 방향으로는 속도를 낼 수 없습니다 — 특이점(11단원).
-
-:::fig rJacCols
-:::
-
-:::idea 열을 미분 없이 그리기
-관절 $i$만 돌리면 그보다 바깥의 모든 것이 관절 $i$ 둘레로 도는 강체입니다. 그래서 끝점 속도($J$의 $i$번째 열)는 “관절 $i$에서 끝점으로 그은 선분에 수직이고, 길이는 그 선분의 길이”입니다. 예제 1을 계산 없이 그림으로 확인해 보세요: 끝점 $(1,1)$, 관절 2는 $(1,0)$에 있으니 둘째 열은 길이 1, 방향 $(-1,0)$.
-:::
-
-:::sim jacobian
-관절 속도 막대 $\dot\theta_1$, $\dot\theta_2$를 움직이면 두 열의 기여(점선)가 더해져 끝점 속도(초록)가 됩니다. 끝점을 끌어 자세를 바꾸면서 열의 방향이 위 그림의 규칙대로 바뀌는지 보세요.
+:::tip 앞 단원과의 연결
+$\mathrm{Rot}(\hat z,\theta)$에 $\hat\omega=\hat z$를 넣으면 로드리게스 공식이 6단원의 기본 회전 행렬을 그대로 줍니다. 로드리게스 공식은 임의의 축에 대한 일반화입니다.
 :::
 ` },
-      { k: '5.1.1', p: 178, title: '공간 야코비안', body: R`
-$T=e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_n]\theta_n}M$을 미분해 $\dot TT^{-1}$을 계산하면 관절마다 항이 하나씩 나옵니다.
+      { k: '3.2.3b', p: 84, title: '행렬 로그: 회전 행렬에서 축과 각으로', body: R`
+로드리게스 공식의 대각합과 반대칭 부분을 보면 거꾸로 풀 수 있습니다: $\operatorname{tr}R=1+2\cos\theta$, $R-R^T=2\sin\theta[\hat\omega]$.
 
-:::key 공간 야코비안
-$$\mathcal V_s=J_s(\theta)\dot\theta,\qquad J_{s1}=\mathcal S_1,\qquad J_{si}=\big[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}\cdots e^{[\mathcal S_{i-1}]\theta_{i-1}}}\big]\mathcal S_i\ (i\ge2)$$
-$J_{si}$는 앞 관절 $1,\dots,i-1$이 움직인 뒤의 **현재 관절 $i$의 나사 축**을 {s}로 쓴 것. 뒤쪽 관절의 각에는 의존하지 않는다.
+:::idea 왜 대각합과 반대칭 부분인가
+$[\hat\omega]$는 대각합이 0인 반대칭 행렬이고 $[\hat\omega]^2=\hat\omega\hat\omega^T-I$는 대칭 행렬(대각합 $1-3=-2$)입니다. 그래서 로드리게스 공식의 대각합에는 $I$와 $[\hat\omega]^2$만 남아 $3-2(1-\cos\theta)=1+2\cos\theta$가 되고, 반대칭 부분 $\frac12(R-R^T)$에는 $\sin\theta[\hat\omega]$만 남습니다. 각은 대각합에서, 축은 반대칭 부분에서 읽습니다.
 :::
 
-:::idea 공간 야코비안의 열 = 지금의 관절 축
-$J_{si}$를 구하는 식은 길어 보이지만 뜻은 단순합니다. 관절 $1,\dots,i-1$을 돌려 놓은 **지금 자세에서** 관절 $i$의 나사 축을 {s}로 적은 것이 $J_{si}$입니다. 관절 $i$만 단위 속도로 돌리면 바깥 부분 전체가 그 나사 축을 따라 움직이므로, 그 공간 트위스트가 곧 열입니다. 관절 $i$보다 바깥의 관절각은 관절 $i$의 축 위치를 바꾸지 않으므로 $J_{si}$에 나타나지 않습니다.
+:::key 행렬 로그
+$R\in SO(3)$에서 $\hat\omega\theta$를 구한다($\theta\in[0,\pi]$).
+- $R=I$: $\theta=0$, 축은 정해지지 않는다.
+- $\operatorname{tr}R=-1$: $\theta=\pi$, $\hat\omega$는 $R+I$의 0이 아닌 열을 정규화한 것(예: $\hat\omega=\frac1{\sqrt{2(1+r_{33})}}(r_{13},r_{23},1+r_{33})$). $\pm\hat\omega$ 둘 다 답.
+- 그 밖: $\theta=\cos^{-1}\dfrac{\operatorname{tr}R-1}2\in(0,\pi)$, $[\hat\omega]=\dfrac{R-R^T}{2\sin\theta}$.
 :::
 
-그래서 계산은 기하로도 할 수 있습니다: 지금 자세에서 관절 $i$의 축 방향 $\omega_{si}$와 축 위의 점 $q_{si}$를 {s}로 읽어 $J_{si}=(\omega_{si},-\omega_{si}\times q_{si})$ (회전 관절).
-
-:::ex 예제 2 — 평면 3R 팔
-9단원의 평면 3R 팔의 $J_s(\theta)$는?
+:::ex 예제 2
+$R=\begin{bmatrix}0&0&1\\1&0&0\\0&1&0\end{bmatrix}$의 지수 좌표는?
 ---
-모든 축은 $\hat z$. 관절 2의 현재 위치 $q_2=(L_1c_1,L_1s_1,0)$, 관절 3은 $q_3=(L_1c_1+L_2c_{12},L_1s_1+L_2s_{12},0)$.
-$-\hat z\times q=(q_y,-q_x,0)$이므로
-$$J_s=\begin{bmatrix}0&0&0\\0&0&0\\1&1&1\\0&L_1s_1&L_1s_1+L_2s_{12}\\0&-L_1c_1&-L_1c_1-L_2c_{12}\\0&0&0\end{bmatrix}$$
+$\operatorname{tr}R=0$ → $\cos\theta=-\tfrac12$, $\theta=120°$. $R-R^T=\begin{bmatrix}0&-1&1\\1&0&-1\\-1&1&0\end{bmatrix}$, $2\sin\theta=\sqrt3$ → $\hat\omega=\tfrac1{\sqrt3}(1,1,1)$. 예제 1로 돌아왔습니다.
 :::
 
-:::tip 끝점의 선속도
-공간 트위스트의 $v_s$는 끝점의 속도가 아닙니다. 끝점 $p$의 속도는 $\dot p=v_s+\omega_s\times p$ — {s} 원점에 겹친 점의 속도에 회전 기여를 더합니다.
+:::warn $\theta=\pi$ 근처
+$\sin\theta\to0$이라 $(R-R^T)/(2\sin\theta)$가 0/0에 가까워집니다. 수치 계산에서는 $\operatorname{tr}R$이 $-1$에 가까우면 둘째 경우의 공식으로 바꿉니다. $\theta$와 $2\pi-\theta$($-\hat\omega$ 둘레)가 같은 회전이라 지수 좌표는 $\lVert\hat\omega\theta\rVert\le\pi$인 공으로 모든 회전을 덮고, 경계($\theta=\pi$)에서는 두 점이 같은 회전입니다.
 :::
 ` },
-      { k: '5.1.2', p: 183, title: '물체 야코비안', body: R`
-물체 형태 $T=Me^{[\mathcal B_1]\theta_1}\cdots e^{[\mathcal B_n]\theta_n}$을 미분해 $T^{-1}\dot T$를 계산합니다.
+      { k: '3.2.3c', p: 88, title: 'SO(3)를 공으로 보기', body: R`
+행렬 로그로 얻은 지수 좌표 $r=\hat\omega\theta$에서 $\theta\in[0,\pi]$로 정하면, 모든 회전은 $\mathbb R^3$의 **반지름 $\pi$인 공** 안의 한 점이 됩니다. 점의 방향이 회전축, 원점에서의 거리가 회전각입니다.
 
-:::key 물체 야코비안
-$$\mathcal V_b=J_b(\theta)\dot\theta,\qquad J_{bn}=\mathcal B_n,\qquad J_{bi}=\big[\mathrm{Ad}_{e^{-[\mathcal B_n]\theta_n}\cdots e^{-[\mathcal B_{i+1}]\theta_{i+1}}}\big]\mathcal B_i\ (i<n)$$
-$$J_s(\theta)=[\mathrm{Ad}_{T_{sb}}]J_b(\theta),\qquad J_b(\theta)=[\mathrm{Ad}_{T_{bs}}]J_s(\theta)$$
+:::key SO(3)의 지수 좌표 공
+$$SO(3)\ \leftrightarrow\ \{r\in\mathbb R^3:\lVert r\rVert\le\pi\},\qquad r=\hat\omega\theta,\quad R=e^{[r]}$$
+- 원점 $r=0$: 항등 회전 $I$.
+- 안쪽 $\lVert r\rVert\lt\pi$: 회전과 점이 일대일.
+- 겉면 $\lVert r\rVert=\pi$: $r$과 $-r$이 같은 회전(반 바퀴는 어느 쪽으로 돌아도 같다).
 :::
 
-$J_{bi}$는 뒤쪽 관절 $i+1,\dots,n$에만 의존합니다(끝점에서 보면 뒤쪽 관절이 관절 $i$를 옮겨 놓은 것처럼 보임). 공간 야코비안과 물체 야코비안은 같은 선형 사상을 다른 좌표로 쓴 것이라 계수(rank)가 같고, 따라서 특이점도 같습니다.
+:::fig rSO3Ball
+:::
+
+이 그림으로 문제를 풀 때의 순서는 늘 같습니다. (1) 행렬 로그로 $\theta$와 $\hat\omega$를 구한다. (2) $r=\hat\omega\theta$를 공 안에 찍는다. (3) $\theta=\pi$이면 맞은편 점 $-r$도 같은 회전이므로 둘 중 하나라도 영역 안에 있는지 본다.
 
 :::ex 예제 3
-평면 3R 팔($L_1=L_2=1$, $L_3=0.5$)의 $J_b$ 마지막 열은?
+반지름 $\pi$인 공에서 $x,y,z$가 모두 0 이상인 팔분 공간 영역을 생각하자. (a) $R=\begin{bmatrix}0&1&0\\0&0&1\\1&0&0\end{bmatrix}$, (b) $R=\mathrm{Rot}(\hat z,\pi)$는 이 영역에 들어가는가?
 ---
-$J_{b3}=\mathcal B_3=(0,0,1,0,L_3,0)=(0,0,1,0,0.5,0)$ — 관절 3만 돌면 끝점은 자기 $\hat y_b$ 방향으로 $L_3$ 속도로 움직입니다.
+(a) $\operatorname{tr}R=0$ → $\theta=2\pi/3$. $R-R^T=\begin{bmatrix}0&1&-1\\-1&0&1\\1&-1&0\end{bmatrix}$, $2\sin\theta=\sqrt3$ → $\hat\omega=-\tfrac1{\sqrt3}(1,1,1)$. $r=-\tfrac{2\pi}{3\sqrt3}(1,1,1)$: 세 성분이 모두 음수이고 $\lVert r\rVert\lt\pi$라 맞은편 점을 볼 필요도 없으니 **들어가지 않습니다**. (예제 1의 회전의 역회전입니다.)
+(b) $\theta=\pi$, 축 $\pm\hat z$ → $r=(0,0,\pi)$와 $(0,0,-\pi)$가 같은 회전. 앞의 점이 영역(의 경계)에 있으므로 **들어갑니다**. 겉면에서는 맞은편 점을 꼭 확인하세요.
 :::
 
-:::note 해석적 야코비안과의 차이
-끝점 자세를 오일러 각 같은 최소 좌표 $x$로 쓰고 $\dot x=J_a\dot\theta$로 정의한 해석적 야코비안도 있습니다. 좌표의 특이점(짐벌 잠김)이 섞여 들어오므로, 이 책은 트위스트로 정의한 기하학적 야코비안 $J_s$, $J_b$를 주로 씁니다.
+:::idea 한 바퀴 돌기는 공을 가로지르는 길
+$\hat z$ 둘레로 0에서 $2\pi$까지 돌리면, 점은 원점에서 북극 $(0,0,\pi)$까지 올라갔다가 남극 $(0,0,-\pi)$로 “순간 이동”(같은 회전이므로)한 뒤 원점으로 돌아옵니다. 이 고리는 연속적으로 줄여 한 점으로 만들 수 없지만, 두 바퀴 돈 고리는 줄일 수 있습니다. 2단원에서 말한 $SO(3)$와 $S^2\times S^1$의 위상 차이가 바로 이것입니다.
+:::
+
+:::note 오일러 각과 비교
+오일러 각(7단원)도 세 수지만 특정 자세(짐벌 록)에서 두 각이 섞여 한 가지 회전에 무수히 많은 각이 대응합니다. 지수 좌표는 공의 안쪽 어디서도 그런 일이 없고 겉면에서만 두 점이 겹칩니다. 그래도 세 수로 된 표현이 $SO(3)$ 전체를 특이점 없이 덮을 수는 없다는 사실은 변하지 않습니다.
 :::
 ` },
     ],
     problems: [
-      { sec: '5.1a', type: 'num', lv: 1, q: R`$L_1=L_2=1$인 평면 2R 팔이 $\theta=(0,\pi/2)$이고 $\dot\theta=(1,0)$이다. 끝점 속도의 $y$ 성분은?`, ans: '1', ansTex: R`1`,
-        sol: R`$J$의 첫 열 $(-1,1)$.` },
-      { sec: '5.1a', type: 'num', lv: 1, q: R`같은 자세에서 $\dot\theta=(0,1)$일 때 끝점 속도의 $x$ 성분은?`, ans: '-1', ansTex: R`-1`,
-        sol: R`둘째 열 $(-L_2s_{12},L_2c_{12})=(-1,0)$.` },
-      { sec: '5.1a', type: 'num', lv: 1, q: R`$L_1=1$, $L_2=0.5$, $\theta_2=\pi/6$인 2R 팔의 $\det J$는?`, ans: '0.25', ansTex: R`0.25`,
-        sol: R`$L_1L_2\sin\theta_2=0.5(0.5)=0.25$.` },
-      { sec: '5.1a', type: 'mc', lv: 1, q: R`$n$관절 팔의 (공간) 야코비안의 크기는?`,
-        choices: [R`$n\times n$`, R`$6\times n$`, R`$n\times6$`, R`$6\times6$`], ans: 1,
-        sol: R`트위스트 6성분 × 관절 수.` },
-      { sec: '5.1.1', type: 'num', lv: 2, q: R`$L_1=1$인 평면 3R 팔에서 $\theta_1=\pi/2$일 때 $J_{s2}$의 $v_x$ 성분은?`, ans: '1', ansTex: R`1`,
-        sol: R`$L_1s_1=1$.` },
-      { sec: '5.1.1', type: 'num', lv: 2, q: R`$L_1=L_2=1$인 평면 3R 팔에서 $\theta_1=\theta_2=0$일 때 $J_{s3}$의 $v_y$ 성분은?`, ans: '-2', ansTex: R`-2`,
-        sol: R`$-L_1c_1-L_2c_{12}=-2$.` },
-      { sec: '5.1.1', type: 'mc', lv: 2, q: R`공간 야코비안의 $i$번째 열에 대해 옳은 것은?`,
-        choices: [R`모든 관절각에 의존한다`, R`현재 자세에서 관절 $i$의 나사 축을 {s}로 쓴 것으로, 관절 $1,\dots,i-1$의 각에만 의존한다`, R`영 자세의 축과 항상 같다`, R`끝점의 선속도다`], ans: 1,
-        sol: R`뒤쪽 관절은 관절 $i$의 축을 옮기지 않습니다.` },
-      { sec: '5.1.1', type: 'num', lv: 2, q: R`공간 트위스트가 $\omega_s=(0,0,1)$, $v_s=(0,-1,0)$이고 끝점이 $p=(2,0,0)$에 있다. 끝점 속도의 $y$ 성분은?`, ans: '1', ansTex: R`1`,
-        sol: R`$\dot p=v_s+\omega_s\times p=(0,-1,0)+(0,2,0)=(0,1,0)$.` },
-      { sec: '5.1.2', type: 'mc', lv: 1, q: R`공간 야코비안과 물체 야코비안의 관계는?`,
-        choices: [R`$J_s=J_b$`, R`$J_s=[\mathrm{Ad}_{T_{sb}}]J_b$`, R`$J_s=J_b^T$`, R`$J_s=-J_b$`], ans: 1,
-        sol: R`트위스트의 좌표 변환 $\mathcal V_s=[\mathrm{Ad}_{T_{sb}}]\mathcal V_b$를 열마다 적용한 것.` },
-      { sec: '5.1.2', type: 'num', lv: 1, q: R`평면 3R 팔($L_3=0.5$)의 $J_{b3}$에서 $v_y$ 성분은?`, ans: '0.5', ansTex: R`0.5`,
-        sol: R`$J_{b3}=\mathcal B_3=(0,0,1,0,L_3,0)$.` },
-      { sec: '5.1.2', type: 'mc', lv: 2, q: R`물체 야코비안의 $i$번째 열은 어떤 관절각에 의존하는가?`,
-        choices: [R`$\theta_1,\dots,\theta_{i-1}$`, R`$\theta_{i+1},\dots,\theta_n$`, R`모든 관절각`, R`어느 것에도 의존하지 않는다`], ans: 1,
-        sol: R`끝점에서 보면 관절 $i$와 끝점 사이의 관절들이 축을 옮겨 놓습니다.` },
-      { sec: '5.1.1', type: 'open', lv: 2, proof: true, q: R`2관절 팔 $T=e^{[\mathcal S_1]\theta_1}e^{[\mathcal S_2]\theta_2}M$에서 $\dot TT^{-1}=[\mathcal S_1]\dot\theta_1+\big[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}}\mathcal S_2\big]\dot\theta_2$임을 보이고, 이로부터 공간 야코비안의 열 공식을 설명하세요.`,
+      { sec: '3.2.3a', type: 'num', lv: 2, q: R`$\hat\omega=\tfrac1{\sqrt3}(1,1,1)$, $\theta=120°$인 회전 행렬의 (1, 3) 성분은?`, ans: '1', ansTex: R`1`,
+        sol: R`$R=\begin{bmatrix}0&0&1\\1&0&0\\0&1&0\end{bmatrix}$.` },
+      { sec: '3.2.3a', type: 'num', lv: 2, q: R`$\hat\omega=(0,\tfrac1{\sqrt2},\tfrac1{\sqrt2})$, $\theta=90°$인 회전 행렬의 (2, 2) 성분은?`, ans: '0.5', ansTex: R`0.5`,
+        sol: R`$R=I+[\hat\omega]+[\hat\omega]^2$. $([\hat\omega]^2)_{22}=\omega_2^2-1=-\tfrac12$, $[\hat\omega]_{22}=0$ → $1-\tfrac12=\tfrac12$.` },
+      { sec: '3.2.3a', type: 'mc', lv: 2, q: R`단위 벡터 $\hat\omega$에 대해 $[\hat\omega]^5$는?`,
+        choices: [R`$0$`, R`$[\hat\omega]$`, R`$-[\hat\omega]$`, R`$[\hat\omega]^2$`], ans: 1,
+        sol: R`$[\hat\omega]^3=-[\hat\omega]$ → $[\hat\omega]^5=[\hat\omega]^3[\hat\omega]^2=-[\hat\omega]^3=[\hat\omega]$.` },
+      { sec: '3.2.3b', type: 'num', lv: 1, q: R`회전 행렬의 대각합이 2다. 회전각(rad)은?`, ans: 'pi/3', ansTex: R`\pi/3`,
+        sol: R`$1+2\cos\theta=2$ → $\theta=\pi/3$.` },
+      { sec: '3.2.3b', type: 'num', lv: 2, q: R`$R=\mathrm{Rot}(\hat y,\pi/2)$에 행렬 로그를 적용해 얻는 $\hat\omega$의 $y$ 성분은?`, ans: '1', ansTex: R`1`,
+        sol: R`$\operatorname{tr}R=1$ → $\theta=\pi/2$. $(R-R^T)/2$에서 $[\hat\omega]_{13}=\omega_2=1$.` },
+      { sec: '3.2.3b', type: 'mc', lv: 2, q: R`대각합이 $-1$인 회전 행렬에 대해 옳은 것은?`,
+        choices: [R`회전이 없다`, R`$\theta=\pi$이고, 축 $\hat\omega$와 $-\hat\omega$가 모두 같은 회전을 준다`, R`$\theta=\pi/2$`, R`행렬 로그가 없다`], ans: 1,
+        sol: R`$\cos\theta=-1$. 반 바퀴는 어느 쪽으로 돌아도 같습니다.` },
+      { sec: '3.2.3b', type: 'num', lv: 2, q: R`$R=\mathrm{Rot}(\hat z,300°)$에 행렬 로그를 적용하면 $\theta\in[0,\pi]$와 $\hat\omega$가 나온다. $\hat\omega$의 $z$ 성분은?`, ans: '-1', ansTex: R`-1`,
+        sol: R`300° 반시계 = 60° 시계: $\theta=\pi/3$, $\hat\omega=-\hat z$.` },
+      { sec: '3.2.3a', type: 'open', lv: 2, proof: true, q: R`단위 벡터 $\hat\omega$에 대해 $[\hat\omega]^3=-[\hat\omega]$임을 보이고, 이를 이용해 행렬 지수의 급수에서 로드리게스 공식 $e^{[\hat\omega]\theta}=I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2$을 유도하세요.`,
         sol: R`
-$E_i=e^{[\mathcal S_i]\theta_i}$라 쓰면 $\dot E_i=[\mathcal S_i]E_i\dot\theta_i$ (지수의 미분).
-$\dot T=\dot E_1E_2M+E_1\dot E_2M=[\mathcal S_1]\dot\theta_1E_1E_2M+E_1[\mathcal S_2]\dot\theta_2E_2M$.
-$T^{-1}=M^{-1}E_2^{-1}E_1^{-1}$을 오른쪽에 곱하면
-$\dot TT^{-1}=[\mathcal S_1]\dot\theta_1+E_1[\mathcal S_2]E_1^{-1}\dot\theta_2$.
-$E_1[\mathcal S_2]E_1^{-1}=[\mathrm{Ad}_{E_1}\mathcal S_2]$(수반 행렬의 행렬 형태)이므로 $\mathcal V_s=\mathcal S_1\dot\theta_1+[\mathrm{Ad}_{E_1}]\mathcal S_2\dot\theta_2$ — 두 열이 $J_{s1}=\mathcal S_1$, $J_{s2}=[\mathrm{Ad}_{E_1}]\mathcal S_2$.
-$n$관절에서도 같은 계산으로 $i$번째 항은 $E_1\cdots E_{i-1}$로 끼운 $\mathcal S_i$가 됩니다: 앞 관절들이 강체처럼 옮겨 놓은 관절 $i$의 축.`,
+$[\hat\omega]^2x=\hat\omega\times(\hat\omega\times x)=\hat\omega(\hat\omega\cdot x)-x(\hat\omega\cdot\hat\omega)=(\hat\omega\hat\omega^T-I)x$.
+$[\hat\omega]^3=[\hat\omega](\hat\omega\hat\omega^T-I)=(\hat\omega\times\hat\omega)\hat\omega^T-[\hat\omega]=-[\hat\omega]$.
+따라서 $[\hat\omega]^{2k+1}=(-1)^k[\hat\omega]$, $[\hat\omega]^{2k+2}=(-1)^k[\hat\omega]^2$ ($k\ge0$).
+$e^{[\hat\omega]\theta}=I+\displaystyle\sum_{k\ge0}\frac{\theta^{2k+1}}{(2k+1)!}(-1)^k[\hat\omega]+\sum_{k\ge0}\frac{\theta^{2k+2}}{(2k+2)!}(-1)^k[\hat\omega]^2$.
+첫 급수는 $\sin\theta$, 둘째 급수는 $\dfrac{\theta^2}{2!}-\dfrac{\theta^4}{4!}+\cdots=1-\cos\theta$.`,
         rubric: R`
-- 곱의 미분 — 3점
-- $T^{-1}$을 곱해 정리 — 3점
-- 수반 행렬로의 해석 — 2점
-- 일반화 — 2점` },
+- $[\hat\omega]^2=\hat\omega\hat\omega^T-I$ — 3점
+- $[\hat\omega]^3=-[\hat\omega]$와 거듭제곱의 규칙 — 3점
+- 급수를 사인과 코사인으로 묶음 — 4점` },
+      { sec: '3.2.3c', type: 'num', lv: 1, q: R`대각합이 0인 회전 행렬을 지수 좌표의 공에 찍었을 때, 원점에서의 거리는?`, ans: '2*pi/3', ansTex: R`2\pi/3`,
+        sol: R`거리 = 회전각 $\theta$, $1+2\cos\theta=0$ → $2\pi/3$.` },
+      { sec: '3.2.3c', type: 'mc', lv: 1, q: R`지수 좌표의 공에서 같은 회전을 나타내는 서로 다른 두 점의 쌍은?`,
+        choices: [R`$(0,0,1)$과 $(0,0,-1)$`, R`$(0,0,\pi)$와 $(0,0,-\pi)$`, R`$(0,0,0)$과 $(0,0,\pi)$`, R`$(1,0,0)$과 $(0,1,0)$`], ans: 1,
+        sol: R`겉면($\lVert r\rVert=\pi$)의 맞은편 두 점만 같은 회전입니다. $\pm1$ rad는 서로 역회전입니다.` },
+      { sec: '3.2.3c', type: 'mc', lv: 2, q: R`$R=\begin{bmatrix}0&0&-1\\-1&0&0\\0&1&0\end{bmatrix}$의 지수 좌표 $r$은 공의 어느 쪽에 있는가?`,
+        choices: [R`$x\gt0,\ y\gt0,\ z\gt0$`, R`$x\gt0,\ y\lt0,\ z\lt0$`, R`$x\lt0,\ y\gt0,\ z\gt0$`, R`겉면 위(같은 점이 둘)`], ans: 1,
+        sol: R`$\operatorname{tr}R=0$ → $\theta=2\pi/3$. $\omega_1=(r_{32}-r_{23})/\sqrt3=1/\sqrt3$, $\omega_2=(r_{13}-r_{31})/\sqrt3=-1/\sqrt3$, $\omega_3=(r_{21}-r_{12})/\sqrt3=-1/\sqrt3$. $r=\tfrac{2\pi}{3\sqrt3}(1,-1,-1)$, $\lVert r\rVert\lt\pi$.` },
     ],
   });
 })();

@@ -64,13 +64,13 @@
       [0.15, 0.3, 0.5, 0.75, 1.0, 1.4].forEach((mu, i) => { const al = Math.atan(mu), L = 1.25; pick(ctx, c, i === 2); seg(ctx, T, 0, 0, L * Math.sin(al), L * Math.cos(al)); seg(ctx, T, 0, 0, -L * Math.sin(al), L * Math.cos(al)); });
       ctx.strokeStyle = c.b; ctx.lineWidth = 1.3; ellipse(ctx, T, 0, 1.25 * Math.cos(Math.atan(0.5)), 1.25 * Math.sin(Math.atan(0.5)), 0.08, 0);
     },
-    // 05 — a frame turning about its z axis: successive x and y axes
+    // 06 — a frame turning about its z axis: successive x and y axes
     rbFrames(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -1.25 * asp, 1.25 * asp, -1.25, 1.25);
       for (let k = 0; k <= 8; k++) { const t = (k * Math.PI) / 16; pick(ctx, c, k === 4); seg(ctx, T, 0, 0, Math.cos(t), Math.sin(t)); seg(ctx, T, 0, 0, -0.7 * Math.sin(t), 0.7 * Math.cos(t)); }
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; curve(ctx, (x) => Math.sqrt(Math.max(1 - x * x, 0)), 0, 1, 80, T);
     },
-    // 06 — circles traced by points turning about a tilted axis (exponential coordinates)
+    // 10 — circles traced by points turning about a tilted axis (exponential coordinates)
     rbExp(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -1.4 * asp, 1.4 * asp, -1.4, 1.4), tilt = 0.5;
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, -1.3 * Math.sin(tilt), -1.3 * Math.cos(tilt), 1.3 * Math.sin(tilt), 1.3 * Math.cos(tilt));
@@ -79,19 +79,19 @@
         pick(ctx, c, i === 3); ellipse(ctx, T, cx, cy, rr, 0.32 * rr, -tilt);
       });
     },
-    // 07 — helices of equal pitch at several radii about one screw axis
+    // 11 — helices of equal pitch at several radii about one screw axis
     rbHelix(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.3, 6.6 * asp / 1.6, -1.3, 1.3);
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, -1, 0, 12, 0);
       [0.3, 0.55, 0.8, 1.05].forEach((rr, i) => { pick(ctx, c, i === 2); param(ctx, (t) => 0.35 * t, (t) => rr * Math.cos(t), 0, 6 * TAU / 1.6, 500, T); });
     },
-    // 08 — screw motions of one radius with increasing pitch
+    // 12 — screw motions of one radius with increasing pitch
     rbPitch(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.3, 6.6 * asp / 1.6, -1.3, 1.3);
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, -1, 0, 12, 0);
       [0.08, 0.16, 0.3, 0.5, 0.8].forEach((p, i) => { pick(ctx, c, i === 2); param(ctx, (t) => p * t, (t) => (0.35 + 0.15 * i) * Math.cos(t), 0, 11 / p, 600, T); });
     },
-    // 09 — reachable points of a 2R arm on a joint-angle grid, with the two boundary circles
+    // 13 — reachable points of a 2R arm on a joint-angle grid, with the two boundary circles
     rbWorkspace(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -2.1 * asp, 2.1 * asp, -2.1, 2.1), L1 = 1.2, L2 = 0.7;
       ctx.fillStyle = c.a;
@@ -101,14 +101,14 @@
       }
       ctx.strokeStyle = c.b; ctx.lineWidth = 1.6; ellipse(ctx, T, 0, 0, L1 + L2, L1 + L2, 0); ellipse(ctx, T, 0, 0, L1 - L2, L1 - L2, 0);
     },
-    // 10 — velocity ellipses of a 2R arm along an end-effector path
+    // 14 — velocity ellipses of a 2R arm along an end-effector path
     rbJacobian(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.2, -0.2 + 2.6 * asp, -0.4, 2.2);
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1;
       param(ctx, (t) => Math.cos(t) + Math.cos(t + 1.9 - 1.2 * t), (t) => Math.sin(t) + Math.sin(t + 1.9 - 1.2 * t), 0, 1.3, 80, T);
       for (let k = 0; k <= 8; k++) { const t = (1.3 * k) / 8; pick(ctx, c, k === 4); velEllipse(ctx, T, 1, 1, t, 1.9 - 1.2 * t, 0.16); }
     },
-    // 11 — manipulability ellipses as the elbow angle opens toward the straight (singular) arm
+    // 15 — manipulability ellipses as the elbow angle opens toward the straight (singular) arm
     rbManip(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.4, -0.4 + 3.4 * asp, -0.9, 1.9);
       [2.6, 2.1, 1.6, 1.1, 0.7, 0.35, 0.12].forEach((t2, i) => {
@@ -117,7 +117,7 @@
         pick(ctx, c, i === 3); velEllipse(ctx, T, 1, 1, t1, t2, 0.2);
       });
     },
-    // 12 — elbow-up and elbow-down solutions of a 2R arm for targets along a line
+    // 16 — elbow-up and elbow-down solutions of a 2R arm for targets along a line
     rbIK(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.3, -0.3 + 2.4 * asp, -0.5, 1.9), L1 = 1, L2 = 0.8;
       for (let k = 0; k < 6; k++) {
@@ -130,7 +130,7 @@
         });
       }
     },
-    // 13 — tip path of an unactuated 2R arm (double pendulum with point masses)
+    // 17 — tip path of an unactuated 2R arm (double pendulum with point masses)
     rbDynamics(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -2.2 * asp, 2.2 * asp, -2.3, 1.6), g = 9.81;
       const acc = (s) => {
@@ -154,7 +154,7 @@
       });
       ctx.globalAlpha = 1;
     },
-    // 14 — time scalings s(t): cubic, quintic and trapezoids of several cruise speeds
+    // 18 — time scalings s(t): cubic, quintic and trapezoids of several cruise speeds
     rbScaling(ctx, w, h, c) {
       const asp = w / h, T = frame(w, h, -0.08, -0.08 + 1.25 * asp / 1.15, -0.08, 1.1);
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, 0, 3, 0); seg(ctx, T, 0, 0, 0, 1.05); seg(ctx, T, 1, 0, 1, 1.05);
@@ -162,6 +162,114 @@
       [1.2, 1.35, 1.6, 1.85].forEach((v) => { ctx.strokeStyle = c.a; ctx.lineWidth = 1; curve(ctx, trap(v), 0, 1, 120, T); });
       ctx.strokeStyle = c.b; ctx.lineWidth = 1.9; curve(ctx, (t) => 3 * t * t - 2 * t ** 3, 0, 1, 120, T);
       ctx.lineWidth = 1.4; curve(ctx, (t) => 10 * t ** 3 - 15 * t ** 4 + 6 * t ** 5, 0, 1, 120, T);
+    },
+    // 05 — paths of bugs crawling outward on a turning disk (Archimedean spirals in the fixed frame)
+    rbMoving(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -1.35 * asp, 1.35 * asp, -1.35, 1.35);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; param(ctx, (t) => 1.2 * Math.cos(t), (t) => 1.2 * Math.sin(t), 0, TAU, 120, T);
+      [0.45, 0.75, 1.1, 1.6, 2.3].forEach((k, i) => {
+        pick(ctx, c, i === 2);
+        param(ctx, (t) => 1.2 * t * Math.cos(k * TAU * t + 0.9 * i), (t) => 1.2 * t * Math.sin(k * TAU * t + 0.9 * i), 0, 1, 300, T);
+      });
+    },
+    // 07 — gimbal rings: three circles about mutually turning axes, the middle angle sweeping toward 90°
+    rbGimbal(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -1.5 * asp, 1.5 * asp, -1.5, 1.5);
+      const P = (p) => [p[1] - 0.45 * p[0], p[2] - 0.3 * p[0]];
+      const ring = (n, r) => {
+        const t0 = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0];
+        const e1 = [n[1] * t0[2] - n[2] * t0[1], n[2] * t0[0] - n[0] * t0[2], n[0] * t0[1] - n[1] * t0[0]], m = Math.hypot(...e1);
+        const u = e1.map((v) => v / m), v2 = [n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0]];
+        param(ctx, (t) => P(u.map((x, i) => r * (Math.cos(t) * x + Math.sin(t) * v2[i])))[0], (t) => P(u.map((x, i) => r * (Math.cos(t) * x + Math.sin(t) * v2[i])))[1], 0, TAU, 90, T);
+      };
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; ring([0, 0, 1], 1.35); ring([0, 1, 0], 1.08);
+      [0, 20, 40, 60, 80].forEach((b, i) => {
+        const br = (b * Math.PI) / 180, n3 = [Math.cos(br), 0, -Math.sin(br)];
+        pick(ctx, c, i === 2); ring(n3, 0.8);
+      });
+    },
+    // 08 — a chain of rigid links: each pose is the product of the transforms before it
+    rbChain(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -0.3, -0.3 + 3.2 * asp, -1.6, 1.6);
+      [0.25, 0.45, 0.65, 0.85, 1.05].forEach((bend, i) => {
+        let x = 0, y = -1.2, a = 0.9;
+        pick(ctx, c, i === 2); ctx.beginPath(); ctx.moveTo(T.X(x), T.Y(y));
+        for (let k = 0; k < 7; k++) { a -= bend * 0.38 * (k % 2 ? -0.6 : 1); x += 0.62 * Math.cos(a); y += 0.62 * Math.sin(a); ctx.lineTo(T.X(x), T.Y(y)); }
+        ctx.stroke();
+        if (i === 2) { let xx = 0, yy = -1.2, aa = 0.9; for (let k = 0; k < 7; k++) { aa -= bend * 0.38 * (k % 2 ? -0.6 : 1); ctx.lineWidth = 1.1; seg(ctx, T, xx, yy, xx + 0.22 * Math.cos(aa + 1.57), yy + 0.22 * Math.sin(aa + 1.57)); xx += 0.62 * Math.cos(aa); yy += 0.62 * Math.sin(aa); } }
+      });
+    },
+    // 09 — lines at a fixed distance and twist from a central axis (a ruled hyperboloid): every pair has a common normal
+    rbDH(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -1.6 * asp, 1.6 * asp, -1.6, 1.6), al = 0.7, r = 0.7;
+      const P = (p) => [p[0] + 0.38 * p[1], p[2] + 0.25 * p[1]];
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, -1.5, 0, 1.5);
+      for (let k = 0; k < 14; k++) {
+        const ph = (TAU * k) / 14, o = [r * Math.cos(ph), r * Math.sin(ph), 0], d = [-Math.sin(ph) * Math.sin(al), Math.cos(ph) * Math.sin(al), Math.cos(al)];
+        const a = P(o.map((v, i) => v - 1.5 * d[i])), b = P(o.map((v, i) => v + 1.5 * d[i]));
+        pick(ctx, c, k === 3); seg(ctx, T, a[0], a[1], b[0], b[1]);
+        if (k === 3) { const q = P(o); ctx.lineWidth = 1.4; seg(ctx, T, 0, 0, q[0], q[1]); }
+      }
+    },
+    // 19 — a rapidly-exploring random tree grown from the start, one branch reaching the goal
+    rbPlan(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, 0, 2 * asp, 0, 2);
+      let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      const nodes = [[0.25, 0.3, -1]], step = 0.13;
+      for (let i = 0; i < 260; i++) {
+        const q = [rnd() * 2 * asp, rnd() * 2];
+        let best = 0, bd = 1e9; nodes.forEach((n, j) => { const d = Math.hypot(n[0] - q[0], n[1] - q[1]); if (d < bd) { bd = d; best = j; } });
+        const n = nodes[best], s = Math.min(step, bd) / (bd || 1), p = [n[0] + (q[0] - n[0]) * s, n[1] + (q[1] - n[1]) * s];
+        if (Math.hypot(p[0] - asp, p[1] - 1) < 0.35) continue; // an obstacle in the middle
+        nodes.push([p[0], p[1], best]);
+      }
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; param(ctx, (t) => asp + 0.33 * Math.cos(t), (t) => 1 + 0.33 * Math.sin(t), 0, TAU, 60, T);
+      ctx.strokeStyle = c.a; ctx.lineWidth = 1;
+      nodes.forEach((n) => { if (n[2] >= 0) { const m = nodes[n[2]]; seg(ctx, T, m[0], m[1], n[0], n[1]); } });
+      let g = 0, gd = 1e9; nodes.forEach((n, j) => { const d = Math.hypot(n[0] - (2 * asp - 0.3), n[1] - 1.7); if (d < gd) { gd = d; g = j; } });
+      ctx.strokeStyle = c.b; ctx.lineWidth = 2;
+      for (let j = g; nodes[j][2] >= 0; j = nodes[j][2]) { const m = nodes[nodes[j][2]]; seg(ctx, T, m[0], m[1], nodes[j][0], nodes[j][1]); }
+    },
+    // 20 — step responses of second-order error dynamics for several damping ratios
+    rbStep(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -0.3, -0.3 + 7.5 * asp / 1.4, -0.1, 1.75);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, 0, 30, 0); seg(ctx, T, 0, 1, 30, 1);
+      [0.15, 0.3, 0.5, 0.7, 1.0, 1.6].forEach((z, i) => {
+        const f = (t) => {
+          if (z < 1) { const wd = Math.sqrt(1 - z * z); return 1 - Math.exp(-z * t) * (Math.cos(wd * t) + (z / wd) * Math.sin(wd * t)); }
+          if (z === 1) return 1 - Math.exp(-t) * (1 + t);
+          const s1 = -z + Math.sqrt(z * z - 1), s2 = -z - Math.sqrt(z * z - 1); return 1 + (s2 * Math.exp(s1 * t) - s1 * Math.exp(s2 * t)) / (s1 - s2);
+        };
+        pick(ctx, c, i === 3); curve(ctx, f, 0, 30, 400, T);
+      });
+    },
+    // 21 — value iteration: V_k(s) rising toward V*(s) for several states
+    rbValue(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -0.5, -0.5 + 16 * asp / 1.3, -0.6, 10.6);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, 0, 60, 0);
+      [10, 8.1, 6.4, 4.8, 3.3, 1.9].forEach((vs, i) => {
+        const g = 0.82 - 0.05 * i;
+        ctx.strokeStyle = i === 1 ? c.b : c.a; ctx.lineWidth = i === 1 ? 1.9 : 1.1;
+        ctx.beginPath();
+        for (let k = 0; k <= 40; k++) { const v = vs * (1 - Math.pow(g, k)); k ? ctx.lineTo(T.X(k * 0.5), T.Y(v)) : ctx.moveTo(T.X(0), T.Y(0)); }
+        ctx.stroke();
+        ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, vs, 20, vs);
+      });
+    },
+    // 22 — learning curves: noisy returns of several runs and their running mean
+    rbReturn(ctx, w, h, c) {
+      const asp = w / h, T = frame(w, h, -0.03, -0.03 + 1.2 * asp / 1.3, -0.08, 1.12);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; seg(ctx, T, 0, 0, 3, 0); seg(ctx, T, 0, 1, 3, 1);
+      let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      const n = 160, mean = new Array(n).fill(0);
+      for (let r = 0; r < 4; r++) {
+        const rate = 4 + 2.5 * r; ctx.strokeStyle = c.a; ctx.lineWidth = 1; ctx.globalAlpha = 0.55; ctx.beginPath();
+        for (let k = 0; k < n; k++) { const t = k / (n - 1), base = 1 - Math.exp(-rate * t), y = Math.max(0, Math.min(1.08, base + (rnd() - 0.5) * 0.28 * (1 - 0.6 * t))); mean[k] += y / 4; k ? ctx.lineTo(T.X(t), T.Y(y)) : ctx.moveTo(T.X(t), T.Y(y)); }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2; ctx.beginPath();
+      for (let k = 0; k < n; k++) { let s = 0, m = 0; for (let j = Math.max(0, k - 8); j <= Math.min(n - 1, k + 8); j++) { s += mean[j]; m++; } const t = k / (n - 1); k ? ctx.lineTo(T.X(t), T.Y(s / m)) : ctx.moveTo(T.X(t), T.Y(s / m)); }
+      ctx.stroke();
     },
   });
 })();

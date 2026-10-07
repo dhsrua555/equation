@@ -73,7 +73,7 @@ $\cos\theta_2\in[-1,1]$이므로 $d\in[\lvert L_1-L_2\rvert,L_1+L_2]$. 그 사�
 $f_{\text{ext}}+\sum x_i\hat n_i=0$, $m_{\text{ext}}+\sum r_i\times(x_i\hat n_i)=0$.
 둘째 식에서 $x_i$는 스칼라라 밖으로 나옵니다: $\sum x_i(r_i\times\hat n_i)$. 두 식을 쌓으면 $\sum x_i\begin{bmatrix}\hat n_i\\r_i\times\hat n_i\end{bmatrix}=-\begin{bmatrix}f_{\text{ext}}\\m_{\text{ext}}\end{bmatrix}$ — $Ax=b$.
 $x_i\ge0$은 접촉이 밀기만 한다는 조건입니다.`,
-    note: R`렌치를 $(m,f)$ 순서로 쓰는 교재의 관례(8단원)와 순서가 바뀌어도 판정에는 영향이 없습니다. 행의 순서를 바꾸는 것은 가역 행 연산입니다.` },
+    note: R`렌치를 $(m,f)$ 순서로 쓰는 교재의 관례(12단원)와 순서가 바뀌어도 판정에는 영향이 없습니다. 행의 순서를 바꾸는 것은 가역 행 연산입니다.` },
   { ch: 'ch03', id: 'posSpanLemma', title: '양의 생성, 볼록 껍질, 양의 영공간 벡터', keys: ['볼록 껍질과 양의 생성', '힘 닫힘 판정 (마찰 없는 점 접촉)'], src: '강의 자료 · Week 3-1',
     tags: 'positive span convex hull interior null vector force closure test 양의 생성 볼록 껍질 영공간',
     stmt: R`$A=[a_1\cdots a_m]\in\mathbb R^{n\times m}$에 대해 다음은 동치다. (i) $\mathrm{pos}\{a_i\}=\mathbb R^n$. (ii) $\operatorname{rank}A=n$이고 모든 성분이 양수인 $k$로 $Ak=0$. (iii) 원점이 $\mathrm{conv}\{a_i\}$의 내부에 있다. 따라서 $m\ge n+1$이어야 한다.`,
@@ -119,7 +119,7 @@ $Q>0$이면 원점이 껍질의 내부 — 3단원의 동치 (iii)⇒(i)로 힘 
 뜻: 외부 렌치 $w$ ($\lVert w\rVert\le Q$)를 버티려면 $-w=\sum\lambda_ia_i$가 필요한데, $-w$가 반지름 $Q$의 공 안에 있으므로 $\lambda_i\ge0$, $\sum\lambda_i=1$인 볼록 결합이 존재합니다. 즉 “접촉력 크기의 합 1”로 모든 방향의 크기 $Q$ 렌치를 버팁니다.`,
     note: R`렌치의 모멘트(N·m)와 힘(N)은 단위가 달라, 공의 “반지름”은 길이 척도를 정해야 의미가 있습니다. 보통 물체의 크기로 모멘트를 나눕니다.` },
   // ───── 05
-  { ch: 'ch05', id: 'planarTransform', title: '평면에서 좌표 바꾸기', keys: ['평면의 자세와 변환'],
+  { ch: 'ch06', id: 'planarTransform', title: '평면에서 좌표 바꾸기', keys: ['평면의 자세와 변환'],
     tags: 'planar rigid body frame transformation rotation translation 평면 좌표 변환',
     stmt: R`{b}의 원점이 {s}에서 $p$, 방향각이 $\theta$이면 {b}에서 $r_b$인 점은 {s}에서 $r_s=P(\theta)r_b+p$이다.`,
     body: R`
@@ -127,15 +127,15 @@ $Q>0$이면 원점이 껍질의 내부 — 3단원의 동치 (iii)⇒(i)로 힘 
 {s} 좌표로 $\hat x_b=(\cos\theta,\sin\theta)$, $\hat y_b=(-\sin\theta,\cos\theta)$이므로 $r_{b,x}\hat x_b+r_{b,y}\hat y_b=[\hat x_b\ \hat y_b]r_b=Pr_b$.
 따라서 $r_s=p+Pr_b$. 동차 좌표로 $(r_s,1)=T(r_b,1)$.`,
     note: R`$P$의 열이 {b}의 축이라는 것이 모든 회전 행렬 공식의 출발점입니다.` },
-  { ch: 'ch05', id: 'so3Props', title: '회전 행렬이 직교하고 행렬식이 1인 이유', keys: ['특수 직교군 SO(3)'],
+  { ch: 'ch06', id: 'so3Props', title: '회전 행렬이 직교하고 행렬식이 1인 이유', keys: ['특수 직교군 SO(3)'],
     tags: 'SO(3) orthogonal determinant right handed group 직교 행렬 행렬식 군',
     stmt: R`물체 좌표계의 단위 축을 열로 하는 행렬 $R$은 $R^TR=I$, $\det R=1$을 만족하고, 이런 행렬 전체는 곱에 대해 군을 이룬다.`,
     body: R`
 $R^TR$의 $(i,j)$ 성분은 $i$번째 열과 $j$번째 열의 내적 — 단위 벡터이고 서로 수직이므로 $\delta_{ij}$.
 $\det R=\hat x_b\cdot(\hat y_b\times\hat z_b)$이고 오른손 좌표계라 $\hat y_b\times\hat z_b=\hat x_b$ → $1$.
 군: $(R_1R_2)^T(R_1R_2)=I$, $\det(R_1R_2)=1$(닫힘), $R^{-1}=R^T$도 같은 조건(역원), $I$(항등원), 행렬 곱의 결합법칙.`,
-    note: R`5단원 연습 문제에서 내적 보존과 $\det=-1$을 빼는 이유까지 다룹니다.` },
-  { ch: 'ch05', id: 'basicRot', title: '좌표축 둘레 기본 회전 행렬 읽기', keys: ['좌표축 둘레의 기본 회전'],
+    note: R`6단원 연습 문제에서 내적 보존과 $\det=-1$을 빼는 이유까지 다룹니다.` },
+  { ch: 'ch06', id: 'basicRot', title: '좌표축 둘레 기본 회전 행렬 읽기', keys: ['좌표축 둘레의 기본 회전'],
     tags: 'elementary rotation Rot x y z columns 기본 회전 좌표축',
     stmt: R`$\mathrm{Rot}(\hat z,\theta)$의 열은 $\hat z$ 둘레로 $\theta$ 돌린 $\hat x,\hat y,\hat z$이다. $\hat x$, $\hat y$ 둘레도 같다.`,
     body: R`
@@ -143,25 +143,25 @@ $\hat z$ 둘레로 $\theta$ 돌리면 $\hat x\mapsto(\cos\theta,\sin\theta,0)$, 
 $\hat x$ 둘레: $\hat y\mapsto(0,\cos\theta,\sin\theta)$, $\hat z\mapsto(0,-\sin\theta,\cos\theta)$.
 $\hat y$ 둘레: 오른손 규칙으로 $\hat z$가 $\hat x$ 쪽으로 돈다: $\hat z\mapsto(\sin\theta,0,\cos\theta)$, $\hat x\mapsto(\cos\theta,0,-\sin\theta)$. 그래서 $\mathrm{Rot}(\hat y,\theta)$에서만 $\sin\theta$의 부호 위치가 다른 두 행렬과 반대로 보입니다.`,
     note: R`순환 순서 $x\to y\to z\to x$에서 $y$ 둘레 회전은 $(z,x)$ 평면의 회전이라 행렬에서 $(1,3)$ 성분이 $+\sin\theta$입니다.` },
-  { ch: 'ch05', id: 'prePost', title: '아래첨자 지우기와 앞곱·뒷곱', keys: ['아래첨자 지우기 규칙', '앞곱과 뒷곱'],
+  { ch: 'ch06', id: 'prePost', title: '아래첨자 지우기와 앞곱·뒷곱', keys: ['아래첨자 지우기 규칙', '앞곱과 뒷곱'],
     tags: 'subscript cancellation premultiply postmultiply fixed frame body frame 앞곱 뒷곱',
     stmt: R`$R_{ab}R_{bc}=R_{ac}$. 또 $\mathrm{Rot}(\hat\omega,\theta)R_{sb}$는 {s}에서 읽은 축 $\hat\omega$ 둘레의 회전, $R_{sb}\mathrm{Rot}(\hat\omega,\theta)$는 {b}에서 읽은 축 둘레의 회전이다.`,
     body: R`
 $R_{bc}$의 열은 {c}의 축을 {b} 좌표로 쓴 것. $R_{ab}$는 {b} 좌표를 {a} 좌표로 바꾸므로 $R_{ab}R_{bc}$의 열은 {c}의 축을 {a} 좌표로 쓴 것 $=R_{ac}$.
 앞곱: $R_{sb}$의 각 열(축 벡터, {s} 좌표)에 {s} 좌표로 쓴 회전을 적용 — {s}에서 읽은 축 $\hat\omega$ 둘레로 {b}의 세 축을 돌린 것.
-뒷곱: 항등식 $R\,\mathrm{Rot}(\hat\omega,\theta)R^T=\mathrm{Rot}(R\hat\omega,\theta)$(6단원 $R[\omega]R^T=[R\omega]$와 로드리게스 공식)로
+뒷곱: 항등식 $R\,\mathrm{Rot}(\hat\omega,\theta)R^T=\mathrm{Rot}(R\hat\omega,\theta)$(5단원 $R[\omega]R^T=[R\omega]$와 로드리게스 공식)로
 $R_{sb}\mathrm{Rot}(\hat\omega,\theta)=\mathrm{Rot}(R_{sb}\hat\omega,\theta)R_{sb}$. 즉 {s}에서 본 축 $R_{sb}\hat\omega$ — {b} 좌표로 $\hat\omega$인 축 — 둘레의 회전입니다.`,
     note: R`여러 번 돌릴 때 “고정 축 기준이면 왼쪽에 쌓고, 물체 축 기준이면 오른쪽에 쌓는다”고 기억하면 됩니다.` },
   // ───── 06
-  { ch: 'ch06', id: 'skewConj', title: '반대칭 행렬의 켤레 항등식', keys: ['반대칭 행렬'],
+  { ch: 'ch05', id: 'skewConj', title: '반대칭 행렬의 켤레 항등식', keys: ['반대칭 행렬'],
     tags: 'skew symmetric matrix cross product rotation conjugation 반대칭 외적',
     stmt: R`$[x]y=x\times y$이고, $R\in SO(3)$에 대해 $R[\omega]R^T=[R\omega]$이다.`,
     body: R`
 첫째는 성분 비교: $[x]y=(-x_3y_2+x_2y_3,\ x_3y_1-x_1y_3,\ -x_2y_1+x_1y_2)=x\times y$.
 둘째: 회전은 외적을 보존합니다: $R(a\times b)=(Ra)\times(Rb)$ (길이·각·방향(오른손)을 보존하므로). 임의의 $y$에 대해
 $R[\omega]R^Ty=R(\omega\times R^Ty)=(R\omega)\times(RR^Ty)=(R\omega)\times y=[R\omega]y$.`,
-    note: R`이 항등식으로 $\omega_s=R\omega_b$와 뒷곱 규칙(5단원)이 모두 한 줄로 나옵니다.` },
-  { ch: 'ch06', id: 'angVelSkew', title: '회전 행렬의 미분은 반대칭 행렬을 만든다', keys: ['고정·물체 좌표계의 각속도'],
+    note: R`이 항등식으로 $\omega_s=R\omega_b$와 뒷곱 규칙(6단원)이 모두 한 줄로 나옵니다.` },
+  { ch: 'ch05', id: 'angVelSkew', title: '회전 행렬의 미분은 반대칭 행렬을 만든다', keys: ['고정·물체 좌표계의 각속도'],
     tags: 'angular velocity derivative rotation matrix skew symmetric space body 각속도 미분',
     stmt: R`$R(t)\in SO(3)$이면 $\dot RR^T$와 $R^T\dot R$은 반대칭이고, $\dot RR^T=[\omega_s]$, $R^T\dot R=[\omega_b]$로 정의한 두 각속도는 $\omega_s=R\omega_b$이다.`,
     body: R`
@@ -169,7 +169,7 @@ $RR^T=I$를 미분: $\dot RR^T+R\dot R^T=0$ → $\dot RR^T=-(\dot RR^T)^T$ — �
 $[\omega_b]=R^T\dot R=R^T(\dot RR^T)R=R^T[\omega_s]R=[R^T\omega_s]$ (켤레 항등식) → $\omega_b=R^T\omega_s$.
 뜻: 각 열 $\hat x_b$의 속도 $\dot{\hat x}_b=[\omega_s]\hat x_b=\omega_s\times\hat x_b$ — 순간 축 $\omega_s$ 둘레의 회전.`,
     note: R`$\omega_s$와 $\omega_b$는 같은 물리적 각속도를 {s}와 {b}에서 쓴 것이지, 서로 다른 두 회전이 아닙니다.` },
-  { ch: 'ch06', id: 'rodriguesProof', title: '로드리게스 공식', keys: ['로드리게스 공식'],
+  { ch: 'ch10', id: 'rodriguesProof', title: '로드리게스 공식', keys: ['로드리게스 공식'],
     tags: 'Rodrigues formula matrix exponential series 로드리게스 행렬 지수 급수',
     stmt: R`단위 벡터 $\hat\omega$에 대해 $e^{[\hat\omega]\theta}=I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2$이다.`,
     body: R`
@@ -178,7 +178,7 @@ $[\hat\omega]^2=\hat\omega\hat\omega^T-I$(외적 두 번), $[\hat\omega]^3=-[\ha
 $=I+\Big(\theta-\frac{\theta^3}{3!}+\cdots\Big)[\hat\omega]+\Big(\frac{\theta^2}{2!}-\frac{\theta^4}{4!}+\cdots\Big)[\hat\omega]^2=I+\sin\theta[\hat\omega]+(1-\cos\theta)[\hat\omega]^2$.
 결과가 회전인지 확인: $\hat\omega$는 고정되고($[\hat\omega]\hat\omega=0$), $\hat\omega$에 수직인 벡터는 그 평면에서 $\theta$만큼 돕니다.`,
     note: R`기하로도 보입니다: $p$를 축 성분 $\hat\omega\hat\omega^Tp$와 수직 성분으로 나누면 수직 성분만 $\cos\theta$, $\sin\theta$로 섞이며 돕니다.` },
-  { ch: 'ch06', id: 'logDerive', title: '행렬 로그 공식', keys: ['행렬 로그'],
+  { ch: 'ch10', id: 'logDerive', title: '행렬 로그 공식', keys: ['행렬 로그'],
     tags: 'matrix logarithm trace axis angle rotation 행렬 로그 대각합',
     stmt: R`$R=e^{[\hat\omega]\theta}$이면 $\operatorname{tr}R=1+2\cos\theta$, $R-R^T=2\sin\theta[\hat\omega]$이다. 따라서 $\theta\in(0,\pi)$에서 $\theta=\cos^{-1}\frac{\operatorname{tr}R-1}2$, $[\hat\omega]=\frac{R-R^T}{2\sin\theta}$.`,
     body: R`
@@ -188,7 +188,7 @@ $\operatorname{tr}R=3+(1-\cos\theta)(-2)=1+2\cos\theta$.
 $\theta=\pi$면 $\sin\theta=0$이라 둘째 식을 쓸 수 없고 $R=I+2[\hat\omega]^2=2\hat\omega\hat\omega^T-I$에서 $\hat\omega\hat\omega^T=(R+I)/2$ — 0이 아닌 열을 정규화합니다.`,
     note: R`$\theta=\pi$일 때 $(R+I)/2=\hat\omega\hat\omega^T$의 셋째 열은 $\omega_3\hat\omega$ → $\hat\omega=(r_{13},r_{23},1+r_{33})/\sqrt{2(1+r_{33})}$ ($r_{33}\ne-1$일 때).` },
   // ───── 07
-  { ch: 'ch07', id: 'se3Inv', title: '동차 변환 행렬의 역행렬', keys: ['특수 유클리드 군 SE(3)'],
+  { ch: 'ch08', id: 'se3Inv', title: '동차 변환 행렬의 역행렬', keys: ['특수 유클리드 군 SE(3)'],
     tags: 'SE(3) homogeneous transformation inverse group 동차 변환 역행렬',
     stmt: R`$T=\begin{bmatrix}R&p\\0&1\end{bmatrix}$의 역행렬은 $\begin{bmatrix}R^T&-R^Tp\\0&1\end{bmatrix}$이고, $SE(3)$는 곱에 닫힌 군이다.`,
     body: R`
@@ -196,7 +196,7 @@ $\theta=\pi$면 $\sin\theta=0$이라 둘째 식을 쓸 수 없고 $R=I+2[\hat\om
 닫힘: $T_1T_2=\begin{bmatrix}R_1R_2&R_1p_2+p_1\\0&1\end{bmatrix}$, $R_1R_2\in SO(3)$.
 뜻: $T^{-1}$은 {b}에서 본 {s}. {s} 원점은 {b} 원점에서 $-p$만큼, 그것을 {b}의 축으로 읽으면 $-R^Tp$.`,
     note: R`$T_1T_2$의 위치 부분 $R_1p_2+p_1$은 “$p_2$를 $T_1$의 방향으로 돌린 뒤 $p_1$만큼 더한다”는 좌표 바꾸기 그대로입니다.` },
-  { ch: 'ch07', id: 'twistAdjoint', title: '두 트위스트와 수반 행렬', keys: ['물체 트위스트와 공간 트위스트', '수반 행렬'],
+  { ch: 'ch11', id: 'twistAdjoint', title: '두 트위스트와 수반 행렬', keys: ['물체 트위스트와 공간 트위스트', '수반 행렬'],
     tags: 'body twist spatial twist adjoint map velocity 트위스트 수반 행렬',
     stmt: R`$T^{-1}\dot T=[\mathcal V_b]$, $\dot TT^{-1}=[\mathcal V_s]$에서 $\mathcal V_s=[\mathrm{Ad}_T]\mathcal V_b$, $[\mathrm{Ad}_T]=\begin{bmatrix}R&0\\{}[p]R&R\end{bmatrix}$이다.`,
     body: R`
@@ -205,7 +205,7 @@ $\dot TT^{-1}=\begin{bmatrix}\dot RR^T&\dot p-\dot RR^Tp\\0&0\end{bmatrix}$ → 
 $\omega_s=R\omega_b$. $v_s=Rv_b-(R\omega_b)\times p=Rv_b+p\times(R\omega_b)=Rv_b+[p]R\omega_b$.
 또 $[\mathcal V_s]=\dot TT^{-1}=T(T^{-1}\dot T)T^{-1}=T[\mathcal V_b]T^{-1}$ — 행렬 형태의 수반 변환.`,
     note: R`$v_s=\dot p+\omega_s\times(0-p)$: {b} 원점의 속도에 “{b} 원점에서 {s} 원점까지”의 회전 기여를 더한 것 — 물체를 넓혀 {s} 원점에 겹친 점의 속도입니다.` },
-  { ch: 'ch07', id: 'screwAxisPoint', title: '트위스트에서 나사 축의 점과 피치 찾기', keys: ['나사 축과 피치'],
+  { ch: 'ch11', id: 'screwAxisPoint', title: '트위스트에서 나사 축의 점과 피치 찾기', keys: ['나사 축과 피치'],
     tags: 'screw axis pitch twist Chasles point on axis 나사 축 피치 샬',
     stmt: R`$\mathcal S=(\hat s,-\hat s\times q+h\hat s)$이면 축 위의 점은 축 방향으로만 $h\dot\theta$로 움직인다. 거꾸로 $\omega\ne0$인 트위스트 $(\omega,v)$의 축은 점 $q=\dfrac{\omega\times v}{\lVert\omega\rVert^2}$를 지나고 피치는 $h=\dfrac{\omega\cdot v}{\lVert\omega\rVert^2}$이다.`,
     body: R`

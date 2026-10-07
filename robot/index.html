@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Équation 로봇공학</title>
-<meta name="description" content="로봇공학입문: Lynch & Park, Modern Robotics — 자유도와 그뤼블러 공식, C-공간, 파지와 힘 닫힘, 마찰 원뿔, 회전 행렬과 지수 좌표, 강체 운동과 트위스트·렌치, 지수곱 정기구학, 야코비안과 특이점, 역기구학, 라그랑주 동역학, 궤적 생성. 개념 정리, 유도, 연습문제, 모의고사">
+<meta name="description" content="로봇공학입문: Lynch & Park, Modern Robotics — 중간고사 1(자유도와 그뤼블러 공식, C-공간, 파지와 힘 닫힘, 움직이는 좌표계, 회전 행렬, 오일러 각, 동차 변환, D-H), 중간고사 2(지수 좌표, 트위스트와 렌치, 지수곱, 야코비안, 역기구학), 기말고사(동역학, 궤적, 운동 계획, 제어, 강화 학습). 개념 정리, 유도, 과제·기출 풀이, 모의고사, 시뮬레이션">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Équation 로봇공학">
-<meta property="og:description" content="로봇공학입문: Lynch & Park, Modern Robotics — 자유도와 그뤼블러 공식, C-공간, 파지와 힘 닫힘, 마찰 원뿔, 회전 행렬과 지수 좌표, 강체 운동과 트위스트·렌치, 지수곱 정기구학, 야코비안과 특이점, 역기구학, 라그랑주 동역학, 궤적 생성. 개념 정리, 유도, 연습문제, 모의고사">
+<meta property="og:description" content="로봇공학입문: Lynch & Park, Modern Robotics — 중간고사 1(자유도와 그뤼블러 공식, C-공간, 파지와 힘 닫힘, 움직이는 좌표계, 회전 행렬, 오일러 각, 동차 변환, D-H), 중간고사 2(지수 좌표, 트위스트와 렌치, 지수곱, 야코비안, 역기구학), 기말고사(동역학, 궤적, 운동 계획, 제어, 강화 학습). 개념 정리, 유도, 과제·기출 풀이, 모의고사, 시뮬레이션">
 <meta property="og:url" content="https://dhsrua555.github.io/equation/robot/">
 <meta property="og:image" content="https://dhsrua555.github.io/equation/assets/og.png">
 <meta property="og:image:width" content="1280">
@@ -32,40 +32,58 @@
 <div id="toast-root" aria-live="polite"></div>
 <noscript><p style="padding:24px">이 사이트는 JavaScript가 필요합니다.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="../core/net.js?v=8f6d1a70"></script>
-<script src="../core/net-index.js?v=0c3972a3"></script>
-<script src="site.js?v=5f372e58"></script>
+<script src="../core/net.js?v=5fa43f67"></script>
+<script src="../core/net-index.js?v=6d35958d"></script>
+<script src="site.js?v=6f18819d"></script>
 <script src="../core/figkit.js?v=f0aa6f1b"></script><script src="figs.js?v=a646094a"></script>
-<script src="data/r01.js?v=d0792681"></script>
-<script src="data/r02.js?v=5d90c88f"></script>
+<script src="data/r01.js?v=f2636628"></script>
+<script src="data/r02.js?v=464480a2"></script>
 <script src="data/r03.js?v=effde256"></script>
 <script src="data/r04.js?v=0c711c45"></script>
-<script src="data/r05.js?v=1884f603"></script>
-<script src="data/r06.js?v=ca9740fe"></script>
-<script src="data/r07.js?v=74abb3aa"></script>
-<script src="data/r08.js?v=804164ef"></script>
-<script src="data/r09.js?v=42a0eed3"></script>
-<script src="data/r10.js?v=b7319879"></script>
-<script src="data/r11.js?v=a88efe3c"></script>
-<script src="data/r12.js?v=3c58b558"></script>
-<script src="data/r13.js?v=e4caf5a8"></script>
-<script src="data/r14.js?v=94f21af5"></script>
-<script src="data/proofs-a.js?v=430f6742"></script>
-<script src="data/proofs-b.js?v=c4ad04a2"></script>
-<script src="data/exams.js?v=5e96c35a"></script>
+<script src="data/r05.js?v=b2dab82c"></script>
+<script src="data/r06.js?v=a3d8e306"></script>
+<script src="data/r07.js?v=70078c06"></script>
+<script src="data/r08.js?v=5ef23235"></script>
+<script src="data/r09.js?v=9d6918f9"></script>
+<script src="data/r10.js?v=eaf94dbc"></script>
+<script src="data/r11.js?v=bfd9e2d5"></script>
+<script src="data/r12.js?v=81b67490"></script>
+<script src="data/r13.js?v=fafea8e8"></script>
+<script src="data/r14.js?v=1f3aae67"></script>
+<script src="data/r15.js?v=7849da1b"></script>
+<script src="data/r16.js?v=f7b2abae"></script>
+<script src="data/r17.js?v=f16e49ad"></script>
+<script src="data/r18.js?v=df1e26ba"></script>
+<script src="data/r19.js?v=23fe5eec"></script>
+<script src="data/r20.js?v=318ffaf2"></script>
+<script src="data/r21.js?v=fa4e7cf1"></script>
+<script src="data/r22.js?v=f319d91b"></script>
+<script src="data/proofs-a.js?v=7d4cdff6"></script>
+<script src="data/proofs-b.js?v=1c936662"></script>
+<script src="data/proofs-c.js?v=a7492afe"></script>
+<script src="data/proofs-d.js?v=aceadaae"></script>
+<script src="data/exams.js?v=5a2da7d4"></script>
 <script src="data/fig-grasp.js?v=3866f1c4"></script>
+<script src="data/fig-more.js?v=7ca92caf"></script>
+<script src="data/fig-mid1.js?v=11f96514"></script>
+<script src="data/fig-ps.js?v=940c72b2"></script>
+<script src="data/fig-past.js?v=7d835e8b"></script>
+<script src="data/quiz-ps1.js?v=c4977781"></script>
 <script src="data/quiz-ps2.js?v=14ca4b1d"></script>
+<script src="data/quiz-ps3.js?v=c4581695"></script>
+<script src="data/past-m1.js?v=39cb63e3"></script>
 <script src="data/quizprep-ps2.js?v=d73aa824"></script>
-<script src="data/fig-more.js?v=c4657bcc"></script>
+<script src="data/quizprep-ps13.js?v=381da174"></script>
 <script src="../core/calc.js?v=b965d12c"></script>
 <script src="../core/plots.js?v=342f3884"></script>
-<script src="plots.js?v=ccc13368"></script>
+<script src="plots.js?v=d2befa87"></script>
 <script src="../core/simkit.js?v=b238c13c"></script>
 <script src="sims-a.js?v=a690a0a2"></script>
 <script src="sims-b.js?v=d62c39ff"></script>
-<script src="sims-c.js?v=fe905937"></script>
-<script src="sims-d.js?v=4b5f5f94"></script>
+<script src="sims-c.js?v=d5645112"></script>
+<script src="sims-d.js?v=d0fb818b"></script>
+<script src="sims-e.js?v=903cad84"></script>
 <script src="../core/ambient.js?v=13ddb6c9"></script>
-<script src="../core/app.js?v=fafc4002"></script>
+<script src="../core/app.js?v=c8b41e86"></script>
 </body>
 </html>
