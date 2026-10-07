@@ -20,19 +20,50 @@
     return L(x1, y1, x2 - (h * 0.6) * Math.cos(a), y2 - (h * 0.6) * Math.sin(a), c) + head(x1, y1, x2, y2, c, h);
   }
   const A2 = (x1, y1, x2, y2, c = 'dm', h = 7) => A((x1 + x2) / 2, (y1 + y2) / 2, x2, y2, c, h) + A((x1 + x2) / 2, (y1 + y2) / 2, x1, y1, c, h);
-  // label text; "R_A" or "σ_{max}" puts the part after _ in a subscript
+  // label text; "R_A" or "σ_{max}" puts the part after _ in a subscript (a bare subscript stops at a space or at | , ; : = ) ]).
+  // Combining hats and dots (x̂, θ̇, ω̂) are drawn as separate accents centred over the letter: the label fonts
+  // have no Greek, so a combining mark would otherwise land in a fallback font beside the letter.
+  // g: glyph, w: advance (em; pinned with textLength when `fit`, since fonts disagree), up: raise above the baseline (em)
+  const uc = String.fromCharCode;
+  const ACC = {
+    [uc(0x302)]: { g: uc(0x2c6), w: 0.34, fit: true, up: 0 }, // hat → spacing circumflex
+    [uc(0x307)]: { g: '.', w: 0.27, fit: false, up: 0.6 }, // dot → a raised full stop (the spacing dot is a hairline in some fonts)
+    [uc(0x308)]: { g: uc(0xa8), w: 0.34, fit: true, up: 0 }, // diaeresis
+  };
+  const wid = (ch) => /[ilj.,:;'|!]/.test(ch) ? 0.3 : /[mwMWωΩ]/.test(ch) ? 0.74 : /[A-Z]/.test(ch) ? 0.64 : /[ftr]/.test(ch) ? 0.38 : 0.54;
   function T(x, y, s, o = {}) {
     const cls = o.c ? ` class="${o.c}"` : '';
     const sz = o.s ? ` font-size="${o.s}"` : '';
-    const str = String(s), re = /_(\{([^}]*)\}|[^\s_{]+)/g;
-    let body = '', last = 0, down = false, m;
-    const plain = (t) => { if (t) { body += down ? `<tspan dy="-3">${esc(t)}</tspan>` : esc(t); down = false; } };
+    const fs = o.s || (/\bit\b/.test(o.c || '') ? 13 : 12);
+    const str = String(s), re = /_(\{([^}]*)\}|[^\s_{|,;:=)\]]+)/g;
+    let body = '', cur = 0, pdx = 0, last = 0, m;
+    // emit text whose baseline sits `off` px below the label's baseline, at relative size k
+    const out = (t, off, k, tl) => {
+      if (!t) return;
+      const a = (tl ? ` textLength="${f1(tl)}" lengthAdjust="spacingAndGlyphs"` : '') + (off !== cur ? ` dy="${f1(off - cur)}"` : '') + (pdx ? ` dx="${f1(pdx)}"` : '') + (k !== 1 ? ` font-size="${k}em"` : '');
+      body += a ? `<tspan${a}>${esc(t)}</tspan>` : esc(t);
+      cur = off; pdx = 0;
+    };
+    const run = (t, off, k) => {
+      const em = fs * k;
+      let buf = '';
+      // precomposed letters (ŷ, ẑ, ṡ) are split too, since the italic font lacks most of them
+      const chars = [...t].flatMap((c) => { const d = c.normalize('NFD'); return d.length === 2 && ACC[d[1]] && c.codePointAt(0) < 0x2000 ? [...d] : [c]; });
+      for (const ch of chars) {
+        if (!ACC[ch]) { buf += ch; continue; }
+        const b = [...buf].pop() || ' ';
+        out(buf, off, k); buf = '';
+        const ac = ACC[ch], wb = wid(b) * em, wa = ac.w * em, up = (ac.up + (/[A-Zbdfhkltβδζθλξφψ]/.test(b) ? 0.2 : 0)) * em;
+        pdx = -(wb + wa) / 2; out(ac.g, off - up, k, ac.fit ? wa : 0); pdx = (wb - wa) / 2;
+      }
+      out(buf, off, k);
+    };
     while ((m = re.exec(str))) {
-      plain(str.slice(last, m.index));
-      body += `<tspan dy="${down ? 0 : 3}" font-size="0.78em">${esc(m[2] != null ? m[2] : m[1])}</tspan>`;
-      down = true; last = re.lastIndex;
+      run(str.slice(last, m.index), 0, 1);
+      run(m[2] != null ? m[2] : m[1], 3, 0.78);
+      last = re.lastIndex;
     }
-    plain(str.slice(last));
+    run(str.slice(last), 0, 1);
     return `<text x="${f1(x)}" y="${f1(y)}" text-anchor="${o.a || 'middle'}"${cls}${sz}>${body}</text>`;
   }
   const R = (x, y, w, h, c = 'bm') => `<rect class="${c}" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}"/>`;
@@ -154,7 +185,22 @@
   // stems (spectra, sequences) and dots drawn in data coordinates inside extra/inner
   const stems = (X, Y, pts, c = 'ld') => pts.map(([x, y]) => L(X(x), Y(0), X(x), Y(y), c) + `<circle class="dotf" cx="${f1(X(x))}" cy="${f1(Y(y))}" r="2.6"/>`).join('');
   const dot = (X, Y, x, y, open) => `<circle class="${open ? 'doto' : 'dotf'}" cx="${f1(X(x))}" cy="${f1(Y(y))}" r="3"/>`;
+  // wire-frame torus seen from above at a slant (k: sine of the view elevation), tube-centre radius R, tube radius r.
+  // The loop around the hole (o.l1, on top) and one loop around the tube (o.l2, front right) are drawn bold and labelled.
+  function torus(cx, cy, R, r, o = {}) {
+    const k = o.k || 0.42, c = Math.sqrt(1 - k * k), TAU = 2 * Math.PI;
+    const pt = (ph, ps) => { const w = R + r * Math.cos(ps); return [cx + w * Math.cos(ph), cy - (w * Math.sin(ph) * k + r * Math.sin(ps) * c)]; };
+    const loop = (f, cls, n = 72) => `<path class="${cls}" d="M${Array.from({ length: n + 1 }, (_, i) => f((TAU * i) / n).map(f1).join(',')).join('L')}"/>`;
+    let s = '';
+    for (let i = 0; i < 12; i++) s += loop((t) => pt((TAU * i) / 12, t), 'dm', 36);
+    s += loop((t) => pt(t, Math.PI), 'dm') + loop((t) => pt(t, 0), 'gd');
+    s += loop((t) => pt(t, Math.PI / 2), 'rx') + loop((t) => pt(-Math.PI / 3, t), 'ld', 36);
+    const p1 = pt(Math.PI, Math.PI / 2), p2 = pt(-Math.PI / 3, 0);
+    if (o.l1) s += T(p1[0] - 6, p1[1] - 6, o.l1, { a: 'end', c: 'rl' });
+    if (o.l2) s += T(p2[0] + 8, p2[1] + 12, o.l2, { a: 'start', c: 'lb' });
+    return s;
+  }
   // legend rows at a pixel position: [[line class, text], ...]
   const legend = (px, py, items) => items.map(([c, t], i) => L(px, py + i * 16 - 4, px + 20, py + i * 16 - 4, c) + T(px + 26, py + i * 16, t, { a: 'start' })).join('');
-  window.FK = { fig, L, A, A2, T, R, C, P, ground, wall, pin, roller, dist, dim, dimv, mom, fn, area, f1, Gp, G, G2, stems, dot, legend };
+  window.FK = { fig, L, A, A2, T, R, C, P, ground, wall, pin, roller, dist, dim, dimv, mom, fn, area, f1, Gp, G, G2, stems, dot, legend, torus };
 })();

@@ -1,7 +1,7 @@
 /* 로봇공학 그림 — 파지(3·4단원, 보충 노트 Grasp Statics)와 Problem Set #2(교재 연습문제 12.15–12.20).
    그리는 도구는 core/figkit.js(FK). 각도는 수학 방향(반시계, y 위)으로 받고 화면 좌표(y 아래)로 바꿉니다. */
 (function () {
-  const { fig, L, A, T, R, C, P, f1 } = window.FK;
+  const { fig, L, A, T, R, C, P, f1, mom } = window.FK;
   const rad = (d) => (d * Math.PI) / 180;
   const dir = (a) => [Math.cos(rad(a)), -Math.sin(rad(a))]; // math angle → screen direction
   const poly = (pts, cls) => P('M' + pts.map((p) => `${f1(p[0])},${f1(p[1])}`).join('L') + 'Z', cls);
@@ -25,37 +25,51 @@
   const pr = (cx, cy, s) => (p) => [cx + s * (p[0] + 0.45 * p[1]), cy - s * (p[2] + 0.32 * p[1])];
 
   window.SITE_FIGS = Object.assign(window.SITE_FIGS || {}, {
-    // 03 — the three contact models
+    // 03 — the three contact models; arrows and cones show the force the object receives, so they point into the object
     rContactModels() {
-      const y = 112, body = (cx) => R(cx - 80, y, 160, 62, 'rg') + L(cx - 80, y, cx + 80, y, 'gd');
+      const y = 100, al = 31;
+      const body = (cx) => R(cx - 82, y, 164, 74, 'rg') + L(cx - 82, y, cx + 82, y, 'gd') + T(cx - 74, y + 66, '물체', { a: 'start', s: 10.5 }) + L(cx, y - 44, cx, y + 70, 'dm ds');
+      const force = (x, ang, len = 46) => { const d = dir(ang); return A(x, y, x + len * d[0], y + len * d[1], 'rx', 8); };
+      // twist about the normal: an ellipse seen a little from above, front half solid, arrowhead at the right end
+      const twist = (cx, cy, rx, ry) => {
+        const pt = (t) => [cx + rx * Math.cos(rad(t)), cy + ry * Math.sin(rad(t))];
+        const half = (t0, t1) => 'M' + Array.from({ length: 19 }, (_, k) => pt(t0 + ((t1 - t0) * k) / 18).map(f1).join(',')).join('L');
+        return P(half(195, 345), 'dm ds') + P(half(170, 30), 'ld') + A(...pt(36), ...pt(4), 'ld', 7);
+      };
       const a = 100, b = 300, c = 500;
-      return fig(600, 228, '세 가지 접촉 모델: 마찰 없는 점 접촉, 마찰이 있는 점 접촉, 소프트 핑거',
+      return fig(600, 236, '세 가지 접촉 모델: 손가락이 아래 물체를 누를 때 물체가 받는 힘. 마찰 없는 점 접촉은 법선 방향, 마찰 점 접촉은 마찰 원뿔 안, 소프트 핑거는 원뿔에 법선 둘레 비틀림을 더한다',
         body(a) + body(b) + body(c) +
-        finger(a, y, -90, 11) + push(a, y, -90, 40) + T(a, 200, 'f = x n̂,  x ≥ 0', { s: 11.5 }) + T(a, 22, '마찰 없는 점 접촉', { c: 'em', s: 12 }) +
-        wedge(b, y, -90, 31, 56) + finger(b, y, -90, 11) + A(b - 24, y - 60, b - 6, y - 14, 'rx', 8) + arc(b, y, 30, -90, -59) + T(b + 18, y + 40, 'α', { c: 'it' }) +
-        T(b, 200, '원뿔 안의 힘: |f_t| ≤ μ f_n', { s: 11.5 }) + T(b, 22, '마찰 점 접촉 (α = tan⁻¹μ)', { c: 'em', s: 12 }) +
-        wedge(c, y, -90, 31, 56) + finger(c, y, -90, 11) + A(c, y - 52, c, y - 22, 'rx', 8) +
-        P(`M${c - 22},${y - 34}A22,7 0 1 0 ${c + 22},${y - 34}`, 'ld') + A(c + 18, y - 30, c + 24, y - 35, 'ld', 7) + T(c + 30, y - 40, 'τ', { a: 'start', c: 'it' }) +
-        T(c, 200, '+ 법선 둘레 비틀림 |τ| ≤ γ f_n', { s: 11.5 }) + T(c, 22, '소프트 핑거', { c: 'em', s: 12 }),
-        '마찰이 없으면 손끝은 면에 수직으로 **밀기만** 합니다. 마찰이 있으면 법선 둘레의 원뿔(반각 $\\alpha=\\tan^{-1}\\mu$) 안의 어떤 방향으로도 밀 수 있고, 손끝이 넓게 눌리는 소프트 핑거는 법선 둘레로 비트는 모멘트도 냅니다.');
+        finger(a, y, -90, 11) + force(a, -90) + T(a + 8, y + 42, 'f', { a: 'start', c: 'it' }) +
+        T(a, 22, '마찰 없는 점 접촉', { c: 'em', s: 12 }) + T(a, 204, 'f = x n̂,  x ≥ 0', { s: 11.5 }) + T(a, 222, '법선 방향으로 밀기만', { s: 11 }) +
+        wedge(b, y, -90, al, 60) + finger(b, y, -90, 11) + force(b, -90 - 17) + T(b - 17, y + 60, 'f', { a: 'end', c: 'it' }) +
+        arc(b, y, 26, -90, -90 + al) + T(b + 32, y + 28, 'α', { a: 'start', c: 'it' }) +
+        T(b, 22, '마찰 점 접촉', { c: 'em', s: 12 }) + T(b, 204, '원뿔 안의 힘: |f_t| ≤ μ f_n', { s: 11.5 }) + T(b, 222, '반각 α = tan⁻¹μ', { s: 11 }) +
+        wedge(c, y, -90, al, 60) + finger(c, y, -90, 11) + force(c, -90) + T(c + 8, y + 42, 'f', { a: 'start', c: 'it' }) +
+        twist(c, y - 36, 22, 6) + T(c + 28, y - 40, 'τ', { a: 'start', c: 'it' }) +
+        T(c, 22, '소프트 핑거', { c: 'em', s: 12 }) + T(c, 204, '원뿔 + 법선 둘레 비틀림', { s: 11.5 }) + T(c, 222, '|τ| ≤ γ f_n', { s: 11 }),
+        '세 그림 모두 손가락(원)이 아래 물체를 누릅니다. 화살표 $f$는 접촉점에서 **물체가 받는 힘**이라 물체 안쪽을 향하고, 색칠한 원뿔은 그 힘이 가질 수 있는 방향입니다(점선은 법선). 마찰이 없으면 손끝은 면에 수직으로 **밀기만** 합니다. 마찰이 있으면 법선 둘레 반각 $\\alpha=\\tan^{-1}\\mu$의 원뿔 안 어느 방향으로도 밀 수 있고, 손끝이 넓게 눌리는 소프트 핑거는 법선 둘레로 비트는 모멘트 $\\tau$도 냅니다.');
     },
     // 03 — form closure, force closure, and a grasp that is force closure but not form closure
     rClosures() {
       const sq = (cx, cy) => R(cx - 56, cy - 42, 112, 84, 'bm');
-      const a = 100, b = 300, cy = 108;
+      const a = 100, b = 300, cy = 104;
       const ca = [[a, cy - 42, -90], [a + 56, cy, 180], [a, cy + 42, 90], [a - 56, cy, 0]];
-      const cb = [[b + 30, cy - 42, -90], [b + 56, cy + 22, 180], [b - 30, cy + 42, 90], [b - 56, cy - 22, 0]];
-      const tri = [[440, 160], [560, 160], [500, 56]];
-      const pA = [470, 108], pB = [530, 108];
-      return fig(600, 230, '형상 닫힘과 힘 닫힘: 법선이 한 점에 모이면 돌 수 있고, 엇갈리면 꼼짝 못 하며, 마찰에 기대면 힘 닫힘이지만 형상 닫힘은 아니다',
+      // (b): top-right and bottom-left push a clockwise couple, right-upper and left-lower a counter-clockwise one.
+      // (A pinwheel — every contact turning the same way — would leave that rotation free; checked with the null vector of the 3 × 4 wrench matrix.)
+      const cb = [[b + 30, cy - 42, -90], [b + 56, cy - 22, 180], [b - 30, cy + 42, 90], [b - 56, cy + 22, 0]];
+      // (c): equilateral triangle, contacts 60 px up both sides, cones of half-angle 40° (μ = 0.84 > tan 30°)
+      const tb = 180, tri = [[430, tb], [570, tb], [500, tb - 140 * Math.sin(rad(60))]];
+      const yc = tb - 60, dx = 60 / Math.tan(rad(60)), pA = [430 + dx, yc], pB = [570 - dx, yc];
+      return fig(600, 236, '형상 닫힘과 힘 닫힘: 법선이 한 점에 모이면 돌 수 있고, 두 쌍이 반대 방향 우력을 내도록 엇갈리면 꼼짝 못 하며, 마찰에 기대면 힘 닫힘이지만 형상 닫힘은 아니다',
         sq(a, cy) + ca.map(([x, y, n]) => finger(x, y, n) + push(x, y, n, 22)).join('') + arc(a, cy, 20, 120, 400, 'ld') + A(a + 19.1, cy - 8.3, a + 15.3, cy - 12.9, 'ld', 7) +
-        T(a, 200, '(a) 법선이 모두 중심을 지남', { s: 11.5 }) + T(a, 218, '→ 중심 둘레로 돌 수 있다', { s: 11.5 }) +
+        T(a, 204, '(a) 법선이 모두 중심을 지남', { s: 11.5 }) + T(a, 222, '→ 중심 둘레로 돌 수 있다', { s: 11.5 }) +
         sq(b, cy) + cb.map(([x, y, n]) => finger(x, y, n) + push(x, y, n, 22)).join('') +
-        T(b, 200, '(b) 법선이 바람개비처럼 엇갈림', { s: 11.5 }) + T(b, 218, '→ 형상 닫힘 = 힘 닫힘', { s: 11.5 }) +
-        poly(tri, 'bm') + wedge(...pA, -30, 34, 34) + wedge(...pB, 210, 34, 34) + finger(...pA, -30, 7) + finger(...pB, 210, 7) +
-        A(500, 120, 500, 156, 'ld', 8) + T(510, 150, 'mg', { a: 'start', c: 'it' }) +
-        T(500, 200, '(c) 마찰 접촉 두 개', { s: 11.5 }) + T(500, 218, '→ 힘 닫힘, 형상 닫힘은 아님', { s: 11.5 }),
-        '(a) 네 법선이 한 점을 지나면 그 점 둘레의 작은 회전을 아무 접촉도 막지 못합니다. (b) 엇갈리게 놓으면 어떤 운동도 막힙니다(마찰 없는 접촉에서는 형상 닫힘과 힘 닫힘이 같습니다). (c) 마찰 원뿔 덕분에 어떤 외력이든 버틸 접촉력이 있지만(힘 닫힘), 손가락이 충분히 세게 누르지 못하면 미끄러져 빠집니다.');
+        mom(b - 24, cy - 4, 12, 150, -120, 'rx') + T(b - 24, cy + 26, '위·아래', { s: 10 }) + mom(b + 24, cy - 4, 12, 30, 300, 'rx') + T(b + 24, cy + 26, '좌·우', { s: 10 }) +
+        T(b, 204, '(b) 두 쌍이 반대로 돌리도록 엇갈림', { s: 11.5 }) + T(b, 222, '→ 형상 닫힘 = 힘 닫힘', { s: 11.5 }) +
+        poly(tri, 'bm') + wedge(...pA, -30, 40, 30) + wedge(...pB, 210, 40, 30) + L(...pA, ...pB, 'dm ds') + finger(...pA, -30, 8) + finger(...pB, 210, 8) +
+        A(500, 150, 500, 174, 'ld', 8) + T(506, 170, 'mg', { a: 'start', c: 'it' }) +
+        T(500, 204, '(c) 마찰 접촉 두 개', { s: 11.5 }) + T(500, 222, '→ 힘 닫힘, 형상 닫힘은 아님', { s: 11.5 }),
+        '(a) 네 법선이 한 점을 지나면 그 점 둘레의 작은 회전을 아무 접촉도 막지 못합니다. (b) 위·아래 손가락 쌍은 시계 방향, 좌·우 쌍은 반시계 방향 우력을 냅니다. 두 쌍이 서로 반대로 돌리므로 어느 쪽 회전도, 어떤 병진도 막힙니다(마찰 없는 접촉에서는 형상 닫힘과 힘 닫힘이 같습니다). 네 접촉이 모두 같은 방향으로 돌리는 바람개비 배치라면 그 방향의 회전이 막히지 않습니다. (c) 접촉을 잇는 선(점선)이 두 마찰 원뿔 안에 있어 어떤 외력이든 버틸 접촉력이 있지만(힘 닫힘), 손가락이 충분히 세게 누르지 못하면 미끄러져 빠집니다.');
     },
     // 03 — the four wrench columns of the rectangle grasp as vertices of a tetrahedron
     rTetra() {
@@ -85,7 +99,7 @@
       return fig(600, 232, '접촉의 속도 구속 a_i·q ≥ 0: 반평면들의 공통부분이 원점뿐이면 형상 닫힘',
         one(150, 112, [90, 210, 330], '세 벡터가 평면을 양으로 생성', '→ 공통부분 = {0}: 움직일 수 없음') +
         wedgeOK + one(cx2, cy2, [60, 90, 120], '모두 한쪽에 몰림', '→ 색칠한 방향으로 빠져나감'),
-        '접촉 $i$에서 물체가 손끝 쪽으로 파고들지 않을 조건은 $a_i^Tq\\ge0$ ($q=(v_x,v_y,\\omega)$, $a_i$는 그 접촉의 렌치 열)입니다. 빨간 벡터 하나가 점선 한쪽의 반평면을 허락합니다. 왼쪽처럼 벡터들이 원점을 둘러싸면 모든 반평면의 공통부분이 원점뿐이라 움직일 수 없고, 오른쪽처럼 한쪽에 몰리면 색칠한 방향의 운동이 남습니다. 렌치 열의 양의 생성 조건(힘 닫힘)과 똑같은 조건입니다(그림은 2차원으로 줄인 모습).');
+        '접촉 $i$에서 물체가 손끝 쪽으로 파고들지 않을 조건은 $a_i^Tq\\ge0$ ($q=(v_x,v_y,\\omega)$, $a_i$는 그 접촉의 렌치 열)입니다. 화살표 하나가 점선 한쪽의 반평면을 허락합니다. 왼쪽처럼 벡터들이 원점을 둘러싸면 모든 반평면의 공통부분이 원점뿐이라 움직일 수 없고, 오른쪽처럼 한쪽에 몰리면 색칠한 방향의 운동이 남습니다. 렌치 열의 양의 생성 조건(힘 닫힘)과 똑같은 조건입니다(그림은 2차원으로 줄인 모습).');
     },
     // 04 — the four cases in the proof of Nguyen's theorem
     rNguyenCases() {
@@ -115,8 +129,8 @@
         c.map((q) => C(...p(q), 3.4, 'jt')).join('') +
         c.map((q, i) => { const o = p(q), w = [[8, 24], [172, 22], [214, 22]][i]; return wedge(...o, w[0], w[1], 30); }).join('') +
         A(...p([1.75, 1.6, 0]), ...p([1.75, 1.6, 0.9]), 'vl', 7) + T(...p([1.95, 1.6, 0.95]), 'N', { c: 'it' }) + T(...p([-1.3, 1.75, 0]), 'S', { c: 'it' }) +
-        ins(380, 52, 90, '평면 원뿔') + ins(470, 52, 90 - 33, '선') + ins(560, 52, 10, '점') +
-        T(470, 196, '원뿔 ∩ 평면 S', { s: 11.5 }),
+        ins(372, 70, 90, '평면 원뿔') + ins(452, 70, 90 - 33, '선') + ins(530, 70, 10, '점') +
+        T(452, 30, '원뿔과 평면 S가 만나는 모양 (옆모습)', { s: 11.5 }),
         '세 접촉이 한 직선 위에 있지 않으면 평면 $S$ 하나를 정합니다. 각 원뿔이 $S$를 **평면 원뿔**(쐐기)로 자르고, 그 평면 파지가 평면 힘 닫힘이면 공간 파지도 힘 닫힘이며 그 역도 성립합니다. 원뿔이 $S$와 선이나 점에서만 만나면 그 접촉은 평면 안의 힘을 거의 못 내므로 힘 닫힘이 될 수 없습니다.');
     },
 
@@ -146,7 +160,7 @@
     },
     // 12.17: the L-shaped object, contact 1 on the left side at height x and contact 2 in the inner corner
     fps1217() {
-      const u = 50;
+      const u = 58;
       const Lsh = (ox, oy) => { const W = (x, y) => [ox + u * x, oy - u * y]; return { W, g: poly([W(0, 0), W(2, 0), W(2, 1), W(1, 1), W(1, 2), W(0, 2)], 'bm') }; };
       const pan = (ox, mu2, x, title, sub) => {
         const { W, g } = Lsh(ox, 150);
@@ -154,7 +168,7 @@
         let s = g + wedge(...c1, 0, 45, 34) + finger(...c1, 0, 7);
         if (mu2 > 0) s += wedge(...c2, 180, 45, 30) + wedge(...c2, 270, 45, 30);
         else s += A(c2[0] + 30, c2[1], c2[0] + 3, c2[1], 'rx', 7) + A(c2[0], c2[1] - 30, c2[0], c2[1] - 3, 'rx', 7);
-        s += C(...c2, 3, 'jt') + T(c1[0] - 12, c1[1] + 4, '1', { a: 'end', s: 12, c: 'em' }) + T(c2[0] + 8, c2[1] - 12, '2', { a: 'start', s: 12, c: 'em' });
+        s += C(...c2, 3, 'jt') + T(c1[0] - 19, c1[1] + 4, '1', { a: 'end', s: 12, c: 'em' }) + T(c2[0] + 8, c2[1] - 12, '2', { a: 'start', s: 12, c: 'em' });
         if (x !== null) s += L(...c1, ...c2, 'cv');
         return s + T(ox + u, 182, title, { s: 11.5 }) + T(ox + u, 198, sub, { s: 11 });
       };
@@ -165,7 +179,7 @@
         Lsh(420, 150).g + thick(...W(0, 0.03), ...W(0, 0.97)) + C(...W(1, 1), 3, 'jt') +
         A(W(1, 1)[0] + 30, W(1, 1)[1], W(1, 1)[0] + 3, W(1, 1)[1], 'rx', 7) + A(W(1, 1)[0], W(1, 1)[1] - 30, W(1, 1)[0], W(1, 1)[1] - 3, 'rx', 7) +
         L(...W(0, 0.45), ...W(1, 1), 'cv') + T(W(0, 0.5)[0] - 8, W(0, 0.5)[1], '0 < x < L', { a: 'end', s: 11 }) +
-        T(470, 182, '(c) μ₂ = 0', { s: 11.5 }) + T(470, 198, '굵은 구간이 답', { s: 11 }),
+        T(478, 182, '(c) μ₂ = 0', { s: 11.5 }) + T(478, 198, '굵은 구간이 답', { s: 11 }),
         '안쪽 모서리의 손가락은 두 면을 함께 누르므로, 마찰이 없어도 왼쪽($-\\hat x$)과 아래쪽($-\\hat y$) 사이 90°의 어느 방향으로든 밀 수 있습니다. 마찰 계수 1이면 두 면의 45° 원뿔이 합쳐져 반평면이 됩니다. 접촉 1은 $\\pm45°$ 원뿔입니다.');
     },
     // 12.18: the square with f1 (friction), f2 and f3 (frictionless); the three lines of action must meet

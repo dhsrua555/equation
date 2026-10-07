@@ -65,20 +65,20 @@
           for (let k = 0; k <= 60; k++) { const u = k / 60, r = sb * u, a = ang - (1 - u) * 230; pts.push([cx + r * Math.cos(rad(a)), cy - r * Math.sin(rad(a))]); }
           s += path(pts, 'dm ds');
           const v1 = [bug[0] + 38 * yb[0], bug[1] + 38 * yb[1]], v2 = [bug[0] - 54 * xb[0], bug[1] - 54 * xb[1]];
-          s += A(...bug, ...v1, 'ld', 8) + T(v1[0] + 8, v1[1] - 2, 'ṡ ŷ_b', { a: 'start', c: 'it' });
-          s += A(...bug, ...v2, 'rx', 8) + T(v2[0] - 4, v2[1] + 16, '−Ωs x̂_b', { a: 'end', c: 'it' });
+          s += A(...bug, ...v1, 'ld', 8) + T(v1[0] - 8, v1[1] + 2, 'ṡ ŷ_b', { a: 'end', c: 'it' });
+          s += A(...bug, ...v2, 'rx', 8) + T(cx - R - 6, v2[1] + 8, '−Ωs x̂_b', { a: 'end', c: 'it' });
           s += A(...bug, v1[0] - 54 * xb[0], v1[1] - 54 * xb[1], 'vl', 8) + T(v1[0] - 54 * xb[0] - 6, v1[1] - 54 * xb[1] - 4, 'v', { a: 'end', c: 'it' });
           s += T(cx, cy + R + 32, '속도: 기기 + 휩쓸림', { c: 'em', s: 12 });
         } else {
           const a1 = [bug[0] - 46 * xb[0], bug[1] - 46 * xb[1]], a2 = [bug[0] - 52 * yb[0], bug[1] - 52 * yb[1]];
-          s += A(...bug, ...a1, 'rx', 8) + T(a1[0] - 4, a1[1] - 6, '코리올리 −2Ωṡ x̂_b', { a: 'end', s: 11.5 });
+          s += A(...bug, ...a1, 'rx', 8) + T(cx - R + 8, a1[1] - 14, '코리올리', { a: 'end', s: 11.5 }) + T(cx - R + 2, a1[1] + 4, '−2Ωṡ x̂_b', { a: 'end', s: 11.5 });
           s += A(...bug, ...a2, 'ld', 8) + T((bug[0] + a2[0]) / 2 + 10, (bug[1] + a2[1]) / 2 + 6, '구심 −Ω²s ŷ_b', { a: 'start', s: 11.5 });
           s += T(cx, cy + R + 32, '가속도 (ṡ, Ω 일정)', { c: 'em', s: 12 });
         }
         return s;
       };
-      return fig(580, 270, '돌아가는 원판 위의 벌레: 왼쪽은 속도의 두 성분과 고정 좌표계에서 본 나선 궤적, 오른쪽은 코리올리 항과 구심 항',
-        panel(150, 126, false) + panel(430, 126, true),
+      return fig(580, 278, '돌아가는 원판 위의 벌레: 왼쪽은 속도의 두 성분과 고정 좌표계에서 본 나선 궤적, 오른쪽은 코리올리 항과 구심 항',
+        panel(176, 132, false) + panel(452, 132, true),
         '{b}는 원판에 붙어 함께 돌고 벌레는 $\\hat y_b$를 따라 기어갑니다(점선은 고정 좌표계에서 본 벌레의 길 — 아르키메데스 나선). 속도는 $\\dot s\\hat y_b-\\Omega s\\hat x_b$, 기는 빠르기와 원판의 회전이 일정하면 가속도는 코리올리 $-2\\Omega\\dot s\\,\\hat x_b$(앞쪽)와 구심 $-\\Omega^2s\\,\\hat y_b$(중심 쪽)만 남습니다.');
     },
     // 07 — the ZYX gimbal at its zero position and in gimbal lock
@@ -91,7 +91,7 @@
         // joint axes (dashed) with labels
         const ax = (d, lab, cls, len = 1.75) => L(...q(sc(d, -len)), ...q(sc(d, len)), cls + ' ds') + A(...q(sc(d, len - 0.25)), ...q(sc(d, len)), cls, 7) + T(...add(q(sc(d, len + 0.1)), [6, -4]), lab, { a: 'start', s: 11.5 });
         s += ax(Z, '축 1 (α)', 'dm');
-        s += ax(Y, '축 2 (β)', 'dm', 1.55);
+        s += ax(Y, '축 2 (β)', 'dm', 1.9);
         s += ax(Ry(X), lock ? '축 3 (γ) — 축 1과 겹침' : '축 3 (γ)', lock ? 'rx' : 'dm', lock ? 1.35 : 1.6);
         // rings: outer around z, middle around y, inner around (rotated) x
         s += ring(q, O, X, Y, 1.3, 'gd');
@@ -115,24 +115,24 @@
         let s = '';
         if (kind === 'roll') { // front view: wings left-right, fin up, x out of the page
           s += L(cx - 70, cy, cx + 70, cy, 'th') + C(cx, cy, 13, 'bm') + L(cx, cy - 13, cx, cy - 36, 'th') + L(cx - 22, cy - 4, cx + 22, cy - 4, 'gd');
-          s += dotAxis(cx, cy, false) + T(cx, cy + 34, 'x̂ (기수, 화면 밖)', { s: 11 });
-          s += spin(cx, cy, 54, 200, 340, 'rx') + T(cx, 178, '롤 γ — 기수 축 x̂ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '앞에서 본 모습', { s: 11 });
+          s += dotAxis(cx, cy, false) + T(cx, cy + 76, 'x̂ (기수, 화면 밖)', { s: 11 });
+          s += spin(cx, cy, 54, 200, 340, 'rx') + T(cx, 204, '롤 γ — 기수 축 x̂ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '앞에서 본 모습', { s: 11 });
         } else if (kind === 'pitch') { // side view: nose to the right, y into the page
           s += P(`M${cx - 70},${cy}L${cx + 58},${cy}Q${cx + 74},${cy} ${cx + 66},${cy + 6}L${cx - 70},${cy + 6}Z`, 'bm') + L(cx - 66, cy, cx - 72, cy - 30, 'th') + L(cx - 6, cy + 3, cx + 14, cy + 3, 'gd');
-          s += A(cx + 74, cy + 3, cx + 104, cy + 3, 'vl', 7) + T(cx + 106, cy - 6, 'x̂', { a: 'start', c: 'it' });
+          s += A(cx + 72, cy + 3, cx + 92, cy + 3, 'vl', 7) + T(cx + 94, cy - 6, 'x̂', { a: 'start', c: 'it' });
           s += A(cx, cy + 3, cx, cy + 36, 'vl', 7) + T(cx + 6, cy + 46, 'ẑ (아래)', { a: 'start', s: 11 });
           s += dotAxis(cx, cy + 3, true) + T(cx - 16, cy + 26, 'ŷ (날개, 화면 안)', { a: 'end', s: 11 });
-          s += spin(cx, cy + 3, 50, 20, 160, 'rx') + T(cx, 178, '피치 β — 날개 축 ŷ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '옆에서 본 모습', { s: 11 });
+          s += spin(cx, cy + 3, 50, 20, 160, 'rx') + T(cx, 204, '피치 β — 날개 축 ŷ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '옆에서 본 모습', { s: 11 });
         } else { // top view: nose to the right, wings up-down, z into the page (down)
           s += L(cx - 70, cy, cx + 66, cy, 'th') + P(`M${cx + 10},${cy}L${cx - 14},${cy - 62}L${cx - 26},${cy - 62}L${cx - 12},${cy}L${cx - 26},${cy + 62}L${cx - 14},${cy + 62}Z`, 'bm') + L(cx - 60, cy - 18, cx - 60, cy + 18, 'th');
           s += A(cx + 66, cy, cx + 96, cy, 'vl', 7) + T(cx + 98, cy - 6, 'x̂', { a: 'start', c: 'it' });
-          s += dotAxis(cx + 28, cy, true) + T(cx + 30, cy + 48, 'ẑ (아래, 화면 안)', { s: 11 });
-          s += spin(cx + 28, cy, 30, 100, 240, 'rx') + T(cx, 178, '요 α — 수직축 ẑ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '위에서 본 모습', { s: 11 });
+          s += dotAxis(cx + 28, cy, true) + T(cx + 4, cy + 50, 'ẑ (아래, 화면 안)', { a: 'start', s: 11 });
+          s += spin(cx + 28, cy, 30, 100, 240, 'rx') + T(cx, 204, '요 α — 수직축 ẑ 둘레', { c: 'em', s: 12 }) + T(cx, 22, '위에서 본 모습', { s: 11 });
         }
         return s;
       };
-      return fig(600, 196, '비행기의 롤(기수 축 x̂ 둘레), 피치(날개 축 ŷ 둘레), 요(수직축 ẑ 둘레)',
-        panel(100, 'roll') + panel(300, 'pitch') + panel(486, 'yaw'),
+      return fig(600, 216, '비행기의 롤(기수 축 x̂ 둘레), 피치(날개 축 ŷ 둘레), 요(수직축 ẑ 둘레)',
+        panel(96, 'roll') + panel(292, 'pitch') + panel(490, 'yaw'),
         'XYZ 롤-피치-요: 고정 축 $\\hat x$ 둘레로 $\\gamma$(롤), $\\hat y$ 둘레로 $\\beta$(피치), $\\hat z$ 둘레로 $\\alpha$(요)를 차례로 돌린 방향은 $\\mathrm{Rot}(\\hat z,\\alpha)\\mathrm{Rot}(\\hat y,\\beta)\\mathrm{Rot}(\\hat x,\\gamma)$ — ZYX 오일러 각과 같은 행렬입니다. 비행기에서는 $\\hat x$를 기수, $\\hat y$를 오른쪽 날개, $\\hat z$를 아래로 잡는 경우가 많습니다.');
     },
     // 08 — a chain of frames: compose along a path, invert edges walked backwards
@@ -159,7 +159,7 @@
     },
     // 09 — two skew joint axes, their common normal and the four D-H parameters
     rDHFrames() {
-      const q = pr(160, 236, 66);
+      const q = pr(150, 258, 74);
       const al = 40, ph = 38, a = 2.4, d = 1.5;
       const zi = [0, -Math.sin(rad(al)), Math.cos(rad(al))], xi = [Math.cos(rad(ph)), Math.sin(rad(ph)) * Math.cos(rad(al)), Math.sin(rad(ph)) * Math.sin(rad(al))];
       const Oi1 = [0, 0, 0], Fa = [a, 0, 0], Oi = add(Fa, sc(zi, d));
@@ -183,7 +183,7 @@
       const arcP = []; for (let k = 0; k <= 16; k++) { const t = (k / 16) * rad(ph); arcP.push(q(add(Oi, add(sc([1, 0, 0], 0.65 * Math.cos(t)), sc([0, Math.cos(rad(al)), Math.sin(rad(al))], 0.65 * Math.sin(t)))))); }
       s += path(arcP, 'rx') + T(...add(q(add(Oi, [0.8, 0.2, 0.1])), [10, 10]), 'φ_i', { a: 'start', c: 'rl' });
       s += C(...q(Oi), 3.5, 'jt') + T(...add(q(Oi), [-10, -6]), '{i}', { a: 'end', c: 'em' });
-      return fig(580, 300, 'D-H 매개변수: 공통 수선의 길이 a, 그 둘레의 꼬임 α, 축 i를 따른 오프셋 d, 축 i 둘레의 관절 각 φ',
+      return fig(580, 322, 'D-H 매개변수: 공통 수선의 길이 a, 그 둘레의 꼬임 α, 축 i를 따른 오프셋 d, 축 i 둘레의 관절 각 φ',
         s,
         '꼬인 두 관절 축 사이의 **공통 수선**(주황)이 {i−1}의 $\\hat x_{i-1}$입니다. $a_{i-1}$은 그 길이, $\\alpha_{i-1}$은 $\\hat x_{i-1}$ 둘레로 $\\hat z_{i-1}$(점선으로 옮겨 그림)에서 $\\hat z_i$까지의 각, $d_i$는 공통 수선의 끝에서 {i}의 원점까지 축 $i$를 따른 거리, $\\phi_i$는 $\\hat z_i$ 둘레로 $\\hat x_{i-1}$(점선)에서 $\\hat x_i$까지의 각입니다.');
     },

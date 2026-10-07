@@ -1,6 +1,6 @@
 /* 로봇공학 본문 그림: 콘텐츠에서 ":::fig 이름"으로 부릅니다. 그리는 도구는 core/figkit.js(FK)입니다. */
 (function () {
-  const { fig, L, A, T, R, C, P, ground, pin, dim, dimv, mom, fn, f1 } = window.FK;
+  const { fig, L, A, T, R, C, P, ground, pin, dim, dimv, mom, fn, f1, torus } = window.FK;
   const rad = (d) => (d * Math.PI) / 180;
   // a link from (x1,y1) to (x2,y2) with revolute joints drawn at both ends
   const link = (x1, y1, x2, y2) => L(x1, y1, x2, y2, 'th') + C(x1, y1, 5, 'jt') + C(x2, y2, 5, 'jt');
@@ -59,14 +59,14 @@
     },
     // r02 — C-space of a 2R arm: a square with opposite edges glued is a torus
     rTorus() {
-      const x0 = 250, y0 = 40, s = 150;
+      const x0 = 236, y0 = 46, s = 136;
       const mark = (x1, y1, x2, y2, n) => { let o = ''; for (let k = 0; k < n; k++) { const t = 0.46 + 0.06 * k; o += A(x1 + (x2 - x1) * (t - 0.05), y1 + (y2 - y1) * (t - 0.05), x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, 'ld', 9); } return o; };
       return fig(560, 240, '2R 팔의 C-공간: 두 관절각 (θ₁, θ₂)의 정사각형에서 마주 보는 변을 붙이면 토러스가 된다',
         pin(80, 190) + link(80, 190, 140, 110) + link(140, 110, 215, 128) + arc(80, 190, 26, 0, 53) + T(114, 178, 'θ_1', { c: 'it' }) + arc(140, 110, 22, -13, 53) + T(170, 102, 'θ_2', { c: 'it' }) +
         R(x0, y0, s, s, 'bm2') + mark(x0, y0 + s, x0 + s, y0 + s, 1) + mark(x0, y0, x0 + s, y0, 1) + mark(x0, y0 + s, x0, y0, 2) + mark(x0 + s, y0 + s, x0 + s, y0, 2) +
-        T(x0 + s / 2, y0 + s + 20, 'θ_1 : 0 → 2π', { s: 12 }) + T(x0 - 8, y0 + s / 2, 'θ_2', { a: 'end', c: 'it' }) +
-        `<ellipse class="gd" cx="480" cy="115" rx="62" ry="36"/>` + P('M452,113Q480,128 508,113', 'gd') + P('M458,117Q480,106 502,117', 'gd') + T(480, 176, 'T² = S¹ × S¹', { s: 12 }) + T(424, 118, '=', { s: 18 }),
-        '같은 화살표끼리 붙입니다: 위아래 변을 붙이면 원기둥, 원기둥의 두 끝 원을 붙이면 토러스. $\\theta_1=0$과 $2\\pi$는 같은 자세이므로 정사각형의 가장자리는 실제 경계가 아닙니다.');
+        T(x0 + s / 2, y0 + s + 20, 'θ_1 : 0 → 2π', { s: 12, c: 'rl' }) + T(x0 - 8, y0 + s / 2, 'θ_2', { a: 'end', c: 'lb' }) +
+        torus(484, 110, 46, 19, { l1: 'θ_1', l2: 'θ_2' }) + A(380, 114, 410, 114, 'dm', 8) + T(395, 104, '붙이기', { s: 10.5 }) + T(484, 178, 'T² = S¹ × S¹', { s: 12 }),
+        '같은 화살표끼리 붙입니다: 위아래 변을 붙이면 원기둥, 원기둥의 두 끝 원을 붙이면 토러스. 토러스의 굵은 두 고리는 각각 $\\theta_1$만, $\\theta_2$만 한 바퀴 돌린 경로입니다. $\\theta_1=0$과 $2\\pi$는 같은 자세이므로 정사각형의 가장자리는 실제 경계가 아닙니다.');
     },
     // r02 — workspace of a planar 2R arm with L1 > L2: an annulus
     rWorkspace() {
@@ -78,11 +78,11 @@
         L(cx, cy, cx - (L1 + L2), cy, 'dm') + T(cx - (L1 + L2) / 2 - 16, cy - 6, 'L₁ + L₂', { s: 11 }) + L(cx, cy, cx + (L1 - L2) * Math.cos(rad(-60)), cy - (L1 - L2) * Math.sin(rad(-60)), 'dm') + T(cx + 26, cy + 40, 'L₁ − L₂', { a: 'start', s: 11 }),
         '끝점까지의 거리 $\\sqrt{x^2+y^2}$는 팔을 곧게 폈을 때 $L_1+L_2$, 완전히 접었을 때 $L_1-L_2$입니다. 관절 제한이 없으면 그 사이의 모든 점에 닿고, 경계 안쪽의 점에는 팔꿈치 위·아래 두 자세로 닿습니다.');
     },
-    // r03 — a square object held by four frictionless point contacts arranged like a pinwheel
+    // r03 — a square object held by four frictionless point contacts, each off the centre line (top/bottom turn it one way, left/right the other)
     rNails() {
       const cx = 280, cy = 125, h = 70, l1 = 42, l2 = 30, l3 = -42, l4 = -30;
       const nail = (x, y, dx, dy, lab) => A(x - 40 * dx, y - 40 * dy, x - 3 * dx, y - 3 * dy, 'rx') + T(x - 50 * dx + (dy ? 14 : 0), y - 50 * dy + (dx ? -8 : 4), lab, { c: 'rl' });
-      return fig(560, 250, '정사각형 물체를 마찰 없는 점 접촉 네 개(못)가 바람개비 모양으로 누른다. ℓᵢ는 각 접촉이 물체 중심선에서 떨어진 거리',
+      return fig(560, 250, '정사각형 물체를 마찰 없는 점 접촉 네 개(못)가 중심선에서 엇갈리게 누른다. ℓᵢ는 각 접촉이 물체 중심선에서 떨어진 거리',
         R(cx - h, cy - h, 2 * h, 2 * h, 'bm2') + L(cx - h - 20, cy, cx + h + 20, cy, 'dm ds') + L(cx, cy - h - 20, cx, cy + h + 20, 'dm ds') + C(cx, cy, 3, 'jt') +
         nail(cx + l1, cy - h, 0, 1, 'f_1') + nail(cx + h, cy - l2, -1, 0, 'f_2') + nail(cx + l3, cy + h, 0, -1, 'f_3') + nail(cx - h, cy - l4, 1, 0, 'f_4') +
         T(cx + l1 / 2, cy - h + 14, 'ℓ_1', { c: 'it', s: 11 }) + T(cx + h - 14, cy - l2 / 2 + 4, 'ℓ_2', { c: 'it', s: 11 }) + T(cx + l3 / 2, cy + h - 6, 'ℓ_3', { c: 'it', s: 11 }) + T(cx - h + 14, cy - l4 / 2 + 4, 'ℓ_4', { c: 'it', s: 11 }) +
@@ -101,16 +101,19 @@
         pan(420, [[1, 0], [0, 1], [-1, -1]], true) + T(140, 244, '원점이 껍질 밖 → 양의 생성 ≠ ℝ²', { s: 11 }) + T(420, 244, '원점이 껍질 안 → 양의 생성 = ℝ²', { s: 11 }),
         '열벡터들의 양의 결합 $\\sum k_ia_i$ ($k_i\\ge0$)가 모든 $b$를 만들려면 볼록 껍질 $\\mathrm{conv}\\{a_i\\}$가 원점 주위의 작은 원판을 품어야 합니다. 왼쪽에서는 아래쪽을 향하는 $b$를 어떤 양의 결합으로도 만들 수 없습니다.');
     },
-    // r04 — Coulomb friction cone at a point contact
+    // r04 — Coulomb friction cone at a point contact: the finger presses on the object, the cone holds the force the object receives
     rCone() {
-      const x = 280, y = 180, al = 30;
-      return fig(560, 240, '점 접촉의 마찰 원뿔: 법선에서 반각 α = tan⁻¹μ 안에 있는 힘은 미끄러지지 않고 전달된다',
-        R(80, y, 400, 40, 'bm') + cone(x, y, 90, al, 150) + A(x, y + 60, x, y + 4, 'dm', 7) +
-        A(x, y, x + 150 * Math.sin(rad(18)), y - 150 * Math.cos(rad(18)), 'rx') + T(x + 52, y - 150, 'f (안쪽: 붙음)', { a: 'start', c: 'rl', s: 11 }) +
-        P(`M${x},${y}L${f1(x - 140 * Math.sin(rad(48)))},${f1(y - 140 * Math.cos(rad(48)))}`, 'gd ds') + T(x - 112, y - 104, 'f′ (바깥: 미끄럼)', { a: 'end', s: 11 }) +
-        L(x, y, x, y - 170, 'dm ds') + arc(x, y, 60, 90, 90 - al) + T(x + 14, y - 66, 'α', { a: 'start', c: 'it' }) + arc(x, y, 60, 90, 90 + al) + T(x - 14, y - 66, 'α', { a: 'end', c: 'it' }) +
-        T(x + 6, y - 176, 'n', { a: 'start', c: 'it' }) + T(140, 208, '물체', { s: 11 }) + T(x + 70, y - 10, '마찰 원뿔 (반각 α)', { a: 'start', c: 'lb', s: 11 }),
-        '힘을 법선 성분 $f_n$과 접선 성분 $f_t$로 나누면 붙어 있을 조건은 $\\lvert f_t\\rvert\\le\\mu f_n$, 즉 힘과 법선 사이의 각이 $\\alpha=\\tan^{-1}\\mu$ 이하. $\\mu=0$이면 원뿔이 법선 한 줄로 좁아집니다.');
+      const x = 280, y = 62, al = 30, len = 150;
+      const at = (deg, r) => [x + r * Math.sin(rad(deg)), y + r * Math.cos(rad(deg))]; // deg measured from the inward normal (straight down), + to the right
+      return fig(560, 250, '점 접촉의 마찰 원뿔: 손가락이 물체를 누를 때, 안쪽 법선에서 반각 α = tan⁻¹μ 안에 있는 힘은 미끄러지지 않고 전달된다',
+        R(70, y, 420, 178, 'rg') + L(70, y, 490, y, 'gd') + T(84, y + 166, '물체', { a: 'start', s: 11 }) +
+        C(x, y - 16, 16, 'sp') + T(x - 22, y - 20, '손가락', { a: 'end', s: 11 }) +
+        cone(x, y, -90, al, len) + L(x, y - 34, x, y + len + 12, 'dm ds') + T(x - 6, y + len + 14, 'n̂ (안쪽 법선)', { a: 'end', s: 11 }) +
+        A(x, y, ...at(14, 128), 'rx') + T(...at(14, 136).map((v, i) => v + [6, 10][i]), 'f (원뿔 안: 붙음)', { a: 'start', c: 'rl', s: 11 }) +
+        P(`M${x},${y}L${at(-50, 120).map(f1).join(',')}`, 'gd ds') + T(...at(-50, 124).map((v, i) => v + [-4, 6][i]), 'f′ (원뿔 밖: 미끄럼)', { a: 'end', s: 11 }) +
+        arc(x, y, 56, -90, -90 + al) + T(...at(16, 72).map((v, i) => v + [0, 4][i]), 'α', { a: 'start', c: 'it' }) + arc(x, y, 56, -90 - al, -90) + T(...at(-17, 72).map((v, i) => v + [0, 4][i]), 'α', { a: 'end', c: 'it' }) +
+        T(...at(al, 84).map((v, i) => v + [12, 0][i]), '마찰 원뿔 (반각 α)', { a: 'start', c: 'lb', s: 11 }),
+        '손가락(위)이 물체(아래)를 누르면 물체가 받는 접촉력 $f$는 물체 안쪽을 향합니다. 이 힘을 법선 성분 $f_n$과 접선 성분 $f_t$로 나누면 붙어 있을 조건은 $\\lvert f_t\\rvert\\le\\mu f_n$, 즉 힘과 안쪽 법선 사이의 각이 $\\alpha=\\tan^{-1}\\mu$ 이하. 원뿔 밖의 힘 $f\'$는 접선 성분이 너무 커서 손끝이 미끄러집니다. $\\mu=0$이면 원뿔이 법선 한 줄로 좁아집니다.');
     },
     // r04 — a disk of radius r squeezed by two frictional contacts at opposite ends
     rTwoContact() {
@@ -119,7 +122,7 @@
         C(cx, cy, r, 'bm2') + cone(cx - r, cy, 0, al, 55) + cone(cx + r, cy, 180, al, 55) + L(cx - r, cy, cx + r, cy, 'gd ds') +
         T(cx - r + 60, cy - 28, 'e_1', { a: 'start', c: 'lb' }) + T(cx - r + 60, cy + 36, 'e_2', { a: 'start', c: 'lb' }) + T(cx + r - 60, cy + 36, 'e_3', { a: 'end', c: 'lb' }) + T(cx + r - 60, cy - 28, 'e_4', { a: 'end', c: 'lb' }) +
         A(cx - r - 60, cy, cx - r - 4, cy, 'rx') + T(cx - r - 64, cy + 4, 'f_a', { a: 'end', c: 'rl' }) + A(cx + r + 60, cy, cx + r + 4, cy, 'rx') + T(cx + r + 64, cy + 4, 'f_b', { a: 'start', c: 'rl' }) +
-        dim(cx - r, cx + r, cy + r + 18, '2r', { below: true, c: 'it' }) + arc(cx - r, cy, 30, -al, al) + T(cx - r + 30, cy - 18, '2α', { a: 'start', c: 'it', s: 11 }),
+        dim(cx - r, cx + r, cy + r + 18, '2r', { below: true, c: 'it' }) + arc(cx - r, cy, 30, -al, al) + T(cx - r + 20, cy - 22, '2α', { a: 'end', c: 'it', s: 11 }),
         '$\\hat e_1=(1,\\mu)$, $\\hat e_2=(1,-\\mu)$은 왼쪽 접촉, $\\hat e_3=(-1,-\\mu)$, $\\hat e_4=(-1,\\mu)$은 오른쪽 접촉의 원뿔 모서리입니다(크기는 정규화하지 않음). 두 접촉을 잇는 선이 두 원뿔 안에 있습니다.');
     },
     // r04 — Nguyen: equilateral triangle held at two edge points whose line of sight lies inside both cones
@@ -127,10 +130,12 @@
       const b = [[170, 215], [390, 215], [280, 215 - 220 * Math.sin(rad(60))]];
       const yc = 150, xl = 170 + (215 - yc) / Math.tan(rad(60)), xr = 390 - (215 - yc) / Math.tan(rad(60)), al = 45;
       return fig(560, 240, '정삼각형의 두 변을 마찰 계수 μ = 1인 두 손가락이 잡는다. 두 접촉을 잇는 선(점선)이 두 마찰 원뿔 안에 있어 힘 닫힘이다',
-        P(`M${b.map((q) => f1(q[0]) + ',' + f1(q[1])).join('L')}Z`, 'bm2') + cone(xl, yc, -30, al, 70) + cone(xr, yc, 210, al, 70) + L(xl, yc, xr, yc, 'gd ds') +
-        A(xl, yc, xl + 60 * Math.cos(rad(-30)), yc + 60 * Math.sin(rad(30)), 'vl', 7) + A(xr, yc, xr + 60 * Math.cos(rad(210)), yc - 60 * Math.sin(rad(210)), 'vl', 7) +
-        T(xl - 10, yc - 6, '1', { a: 'end', c: 'it' }) + T(xr + 10, yc - 6, '2', { a: 'start', c: 'it' }) + T(280, 232, '선분이 원뿔 안 ⇔ 법선과 선분의 각 30° < α', { s: 11 }),
-        '변의 법선은 수평선과 30°를 이룹니다. $\\alpha=\\tan^{-1}\\mu>30°$, 즉 $\\mu>\\tan30°=0.577$이면 두 접촉이 서로를 원뿔 안에서 “봅니다”. 이때 두 손가락이 선을 따라 서로 미는 내력을 만들 수 있고, 그것이 힘 닫힘의 열쇠입니다.');
+        P(`M${b.map((q) => f1(q[0]) + ',' + f1(q[1])).join('L')}Z`, 'bm2') + cone(xl, yc, -30, al, 50) + cone(xr, yc, 210, al, 50) + L(xl, yc, xr, yc, 'gd ds') +
+        A(xl, yc, xl + 42 * Math.cos(rad(-30)), yc + 42 * Math.sin(rad(30)), 'vl', 7) + A(xr, yc, xr + 42 * Math.cos(rad(210)), yc - 42 * Math.sin(rad(210)), 'vl', 7) +
+        C(xl - 10 * Math.cos(rad(30)), yc - 10 * Math.sin(rad(30)), 10, 'sp') + C(xr + 10 * Math.cos(rad(30)), yc - 10 * Math.sin(rad(30)), 10, 'sp') + C(xl, yc, 2.6, 'jt') + C(xr, yc, 2.6, 'jt') +
+        arc(xl, yc, 30, -30, 0, 'rx') + T(xl + 36, yc + 14, '30°', { a: 'start', s: 11 }) +
+        T(xl - 24, yc - 14, '1', { a: 'end', c: 'it' }) + T(xr + 24, yc - 14, '2', { a: 'start', c: 'it' }) + T(280, 232, '선분이 원뿔 안 ⇔ 법선과 선분의 각 30° < α', { s: 11 }),
+        '두 손가락(원)이 변을 누르고, 색칠한 쐐기가 각 접촉의 마찰 원뿔(μ = 1, 반각 45°), 짧은 화살표가 안쪽 법선입니다. 변의 법선은 수평선과 30°를 이룹니다. $\\alpha=\\tan^{-1}\\mu>30°$, 즉 $\\mu>\\tan30°=0.577$이면 두 접촉이 서로를 원뿔 안에서 “봅니다”. 이때 두 손가락이 선을 따라 서로 미는 내력을 만들 수 있고, 그것이 힘 닫힘의 열쇠입니다.');
     },
     // r05 — fixed frame {s} and body frame {b}; the columns of R_sb are b's axes written in s
     rFrames() {
@@ -170,13 +175,13 @@
       return fig(560, 240, '평면 2R 팔: 관절각 θ₁(바닥에서), θ₂(첫 링크에서 잰 상대각), 끝점 (x, y)',
         pin(...O) + link(...O, ...J) + link(...J, ...E) + C(...E, 4, 'jt') + L(O[0], O[1], O[0] + 200, O[1], 'dm ds') + L(J[0], J[1], J[0] + 70 * Math.cos(rad(t1)), J[1] - 70 * Math.sin(rad(t1)), 'dm ds') +
         arc(...O, 40, 0, t1) + T(O[0] + 48, O[1] - 12, 'θ_1', { a: 'start', c: 'it' }) + arc(...J, 34, t1, t1 + t2) + T(J[0] + 30, J[1] - 30, 'θ_2', { a: 'start', c: 'it' }) +
-        T((O[0] + J[0]) / 2 + 8, (O[1] + J[1]) / 2 + 18, 'L_1', { a: 'start', c: 'it' }) + T((J[0] + E[0]) / 2 - 10, (J[1] + E[1]) / 2, 'L_2', { a: 'end', c: 'it' }) +
+        T((O[0] + J[0]) / 2 - 10, (O[1] + J[1]) / 2 - 8, 'L_1', { a: 'end', c: 'it' }) + T((J[0] + E[0]) / 2 - 10, (J[1] + E[1]) / 2, 'L_2', { a: 'end', c: 'it' }) +
         T(E[0] + 10, E[1] - 6, '(x, y)', { a: 'start', s: 12 }) + A(60, 225, 100, 225, 'vl', 7) + A(60, 225, 60, 185, 'vl', 7) + T(106, 229, 'x', { a: 'start', c: 'it' }) + T(60, 177, 'y', { c: 'it' }),
         '$x=L_1\\cos\\theta_1+L_2\\cos(\\theta_1+\\theta_2)$, $y=L_1\\sin\\theta_1+L_2\\sin(\\theta_1+\\theta_2)$. 둘째 관절각은 첫 링크에 대해 잰 상대각이라, 둘째 링크의 절대 방향은 $\\theta_1+\\theta_2$입니다.');
     },
     // r11 — manipulability ellipses of a 2R arm at two configurations
     rManip() {
-      const L1 = 120, L2 = 90;
+      const L1 = 120, L2 = 85; // L1 ≈ √2 L2, so θ2 = 135° makes JJᵀ a multiple of I (a circle)
       const draw = (ox, oy, t1, t2, k) => {
         const a1 = rad(t1), a12 = rad(t1 + t2);
         const J = [[-L1 * Math.sin(a1) - L2 * Math.sin(a12), -L2 * Math.sin(a12)], [L1 * Math.cos(a1) + L2 * Math.cos(a12), L2 * Math.cos(a12)]];
@@ -187,9 +192,9 @@
         return pin(ox, oy, 0.8) + link(ox, oy, Jx, Jy) + link(Jx, Jy, Ex, Ey) +
           `<ellipse class="cv" cx="${f1(Ex)}" cy="${f1(Ey)}" rx="${f1(k * Math.sqrt(l1))}" ry="${f1(Math.max(k * Math.sqrt(l2), 1.5))}" transform="rotate(${f1(-ang)} ${f1(Ex)} ${f1(Ey)})"/>`;
       };
-      return fig(560, 250, '2R 팔의 조작성 타원: 관절 속도의 단위 원이 끝점 속도의 타원으로 옮겨진다. 팔을 거의 편 오른쪽 자세에서는 타원이 납작하다',
-        draw(110, 200, 50, 90, 0.35) + draw(330, 200, 30, 12, 0.35) + T(150, 236, 'θ₂ = 90°: 둥근 타원', { s: 11 }) + T(420, 236, 'θ₂ ≈ 0: 특이점 근처, 납작한 타원', { s: 11 }),
-        '끝점 속도 $\\dot x=J\\dot\\theta$에서 $\\lVert\\dot\\theta\\rVert=1$인 관절 속도가 만드는 끝점 속도는 타원 $\\dot x^T(JJ^T)^{-1}\\dot x=1$입니다. 축의 길이는 $JJ^T$ 고윳값의 제곱근이고, 팔을 곧게 펴면($\\theta_2\\to0$) 팔 방향 속도를 낼 수 없어 타원이 선분으로 납작해집니다.');
+      return fig(560, 250, '2R 팔의 조작성 타원: 관절 속도의 단위 원이 끝점 속도의 타원으로 옮겨진다. 왼쪽은 원(등방성), 팔을 거의 편 오른쪽 자세에서는 납작하다',
+        draw(130, 200, 50, 135, 0.35) + draw(330, 200, 30, 12, 0.35) + T(130, 236, 'L₁ = √2 L₂, θ₂ = 135°: 원', { s: 11 }) + T(420, 236, 'θ₂ ≈ 0: 특이점 근처, 납작한 타원', { s: 11 }),
+        '끝점 속도 $\\dot x=J\\dot\\theta$에서 $\\lVert\\dot\\theta\\rVert=1$인 관절 속도가 만드는 끝점 속도는 타원 $\\dot x^T(JJ^T)^{-1}\\dot x=1$입니다. 축의 길이는 $JJ^T$ 고윳값의 제곱근입니다. 왼쪽처럼 $L_1=\\sqrt2\\,L_2$인 팔이 $\\theta_2=135°$이면 $J^TJ=L_2^2I$가 되어 타원이 원이고(어느 방향으로나 같은 빠르기), 팔을 곧게 펴면($\\theta_2\\to0$) 팔 방향 속도를 낼 수 없어 타원이 선분으로 납작해집니다.');
     },
     // r12 — two inverse-kinematics solutions of the 2R arm (elbow up and elbow down)
     rElbow() {
@@ -200,20 +205,23 @@
       return fig(560, 240, '같은 끝점 (x, y)에 닿는 2R 팔의 두 자세: 팔꿈치가 원점-끝점 선분 아래(θ₂ > 0)와 위(θ₂ < 0)',
         pin(...O) + link(...O, ...Ja) + link(...Ja, ...E) + L(O[0], O[1], Jb[0], Jb[1], 'gd ds') + L(Jb[0], Jb[1], E[0], E[1], 'gd ds') + C(...Jb, 5, 'sp') + C(...E, 5, 'jt') +
         L(O[0], O[1], E[0], E[1], 'dm') + T(E[0] + 10, E[1] - 6, '(x, y)', { a: 'start', s: 12 }) + T(Ja[0] + 8, Ja[1] + 20, 'θ₂ > 0 (아래)', { a: 'start', s: 11 }) + T(Jb[0] - 8, Jb[1] - 10, 'θ₂ < 0 (위)', { a: 'end', s: 11 }) +
-        T((O[0] + E[0]) / 2 + 30, (O[1] + E[1]) / 2 + 26, 'r = √(x² + y²)', { a: 'start', s: 11 }),
+        T(O[0] + 0.3 * (E[0] - O[0]) + 4, O[1] + 0.3 * (E[1] - O[1]) + 15, 'r = √(x² + y²)', { a: 'start', s: 11 }),
         '코사인 법칙으로 $\\cos\\theta_2=\\dfrac{x^2+y^2-L_1^2-L_2^2}{2L_1L_2}$가 정해지고, $\\sin\\theta_2=\\pm\\sqrt{1-\\cos^2\\theta_2}$의 부호가 두 해를 가릅니다. 끝점이 작업 공간 경계에 있으면 두 해가 하나로 겹칩니다.');
     },
     // r14 — speed profiles ṡ(t) of cubic, quintic and trapezoidal time scalings (T = 1)
     rScaling() {
       const ox = 90, oy = 200, sx = 360, sy = 70;
       const cub = (t) => 6 * t - 6 * t * t, qui = (t) => 30 * t * t - 60 * t ** 3 + 30 * t ** 4;
-      const v = 1.5, a = v * v / (v - 1), tr = (t) => (t < v / a ? a * t : t > 1 - v / a ? a * (1 - t) : v);
+      // trapezoid with v = 1.25: a = v²/(v − 1) = 6.25, ramps of v/a = 0.2, area v(1 − v/a) = 1
+      const v = 1.25, a = v * v / (v - 1), tr = (t) => (t < v / a ? a * t : t > 1 - v / a ? a * (1 - t) : v);
       const path = (f) => { let d = ''; for (let i = 0; i <= 100; i++) { const t = i / 100; d += (i ? 'L' : 'M') + f1(ox + sx * t) + ',' + f1(oy - sy * f(t)); } return d; };
+      const key = (y, cls, text) => L(ox + 14, y - 4, ox + 36, y - 4, cls) + T(ox + 42, y, text, { a: 'start', s: 11 });
       return fig(560, 250, '시간 스케일링의 속도 ṡ(t) (T = 1): 3차 다항식, 5차 다항식, 사다리꼴',
-        L(ox, oy, ox + sx + 20, oy, 'ax') + L(ox, oy, ox, oy - 150, 'ax') + P(path(cub), 'cv') + P(path(qui), 'rx') + P(path(tr), 'gd') +
-        T(ox + sx + 24, oy + 4, 't', { a: 'start', c: 'it' }) + T(ox - 6, oy - 150, 'ṡ', { a: 'end', c: 'it' }) + T(ox + sx, oy + 18, 'T', { c: 'it' }) + T(ox, oy + 18, '0', {}) +
-        T(ox + sx / 2 + 6, oy - sy * 1.5 - 8, '3차: 최대 1.5/T', { a: 'start', c: 'lb', s: 11 }) + T(ox + sx / 2 + 6, oy - sy * 1.875 - 6, '5차: 최대 1.875/T', { a: 'start', c: 'rl', s: 11 }) + T(ox + 28, oy - sy * 1.5 - 6, '사다리꼴', { a: 'start', s: 11 }),
-        '세 곡선 아래 넓이는 모두 1(경로를 처음부터 끝까지 감). 3차는 양 끝의 가속도가 0이 아니어서 출발·정지 순간 가속도가 튀고, 5차는 가속도까지 0에서 시작해 부드럽지만 최대 속도가 더 큽니다. 사다리꼴은 등가속-등속-등감속입니다.');
+        L(ox, oy, ox + sx + 14, oy, 'ax') + L(ox, oy, ox, oy - 150, 'ax') + P(path(tr), 'gd ds') + P(path(cub), 'cv') + P(path(qui), 'rx') +
+        T(ox + sx + 18, oy + 4, 't', { a: 'start', c: 'it' }) + T(ox - 6, oy - 150, 'ṡ', { a: 'end', c: 'it' }) + T(ox + sx, oy + 18, 'T', { c: 'it' }) + T(ox, oy + 18, '0', {}) +
+        [[1.875, '1.875'], [1.5, '1.5'], [1.25, '1.25']].map(([u, s]) => L(ox - 3, oy - sy * u, ox + 3, oy - sy * u, 'ax') + T(ox - 6, oy - sy * u + 4, s, { a: 'end', s: 10.5 })).join('') +
+        key(30, 'rx', '5차: 최대 1.875') + key(48, 'cv', '3차: 최대 1.5') + key(66, 'gd ds', '사다리꼴: 1.25'),
+        '세 곡선 아래 넓이는 모두 1(경로를 처음부터 끝까지 감). 3차는 양 끝의 가속도가 0이 아니어서 출발·정지 순간 가속도가 튀고, 5차는 가속도까지 0에서 시작해 부드럽지만 최대 속도가 더 큽니다. 사다리꼴(점선)은 등가속-등속-등감속이고, 여기서는 최대 속도를 $1.25/T$로 잡아 가속 구간이 $T/5$입니다.');
     },
   });
 })();

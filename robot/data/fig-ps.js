@@ -1,7 +1,7 @@
 /* 로봇공학 그림 — 과제 풀이 Problem Set #1(교재 연습문제 2.10, 2.19, 2.26)과 #3(3.1/3.16, 3.20).
    교재 그림을 그대로 옮기지 않고 세기에 필요한 링크·관절·치수만 남겨 다시 그렸습니다. 그리는 도구는 core/figkit.js(FK). */
 (function () {
-  const { fig, L, A, T, C, P, R, f1 } = window.FK;
+  const { fig, L, A, T, C, P, R, f1, torus } = window.FK;
   const rad = (d) => (d * Math.PI) / 180;
   const pr = (cx, cy, s) => (p) => [cx + s * (p[0] + 0.42 * p[1]), cy - s * (p[2] + 0.3 * p[1])];
   const poly = (pts, cls) => P('M' + pts.map((q) => `${f1(q[0])},${f1(q[1])}`).join('L') + 'Z', cls);
@@ -113,9 +113,7 @@
       s += T(cx, cy + 3 * k + 22, '작업 공간: 1 ≤ r ≤ 3인 고리', { c: 'em', s: 12 });
       // torus sketch for the C-space
       const tx = 440, ty = 112;
-      s += `<ellipse class="sp" cx="${tx}" cy="${ty}" rx="96" ry="44"/><path class="gd" d="M${tx - 46},${ty - 2}Q${tx},${ty + 22} ${tx + 46},${ty - 2}"/><path class="gd" d="M${tx - 36},${ty + 6}Q${tx},${ty - 10} ${tx + 36},${ty + 6}"/>`;
-      s += `<path class="ld" d="M${tx + 52},${ty + 26}A18,40 0 1 0 ${tx + 52},${ty - 30}"/>` + T(tx + 80, ty - 34, 'θ₂', { a: 'start', c: 'it' });
-      s += `<path class="rx" d="M${tx - 96},${ty}A96,44 0 0 0 ${tx + 30},${ty + 43}"/>` + T(tx - 70, ty + 50, 'θ₁', { c: 'it' });
+      s += torus(tx, ty, 64, 27, { l1: 'θ_1', l2: 'θ_2' });
       s += T(tx, cy + 3 * k + 22, 'C-공간: 토러스 T² = S¹ × S¹', { c: 'em', s: 12 });
       return fig(600, 240, '2R 팔(링크 길이 2, 1): 끝점이 닿는 작업 공간은 고리, 관절 각의 C-공간은 토러스',
         s,
