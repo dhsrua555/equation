@@ -47,14 +47,14 @@
         '$N=4$, $J=4$, 관절마다 $f_i=1$: $3(4-1-4)+4=1$. 크랭크 각 $\\theta_1$ 하나를 정하면 나머지 모양이 정해집니다(조립 방식을 고른 뒤). 닫힌 고리 조건 두 개가 네 관절각 사이에 걸려 있습니다.');
     },
     // r01 — a parallelogram linkage with a redundant middle crank: Grübler says 0 but it moves
-    rParallel() {
-      const g = [140, 280, 420], v = [60, -110], v2 = [-32, -121];
+    rParallel(opt) { // opt 'bare' (in a problem): without the moved pose and the count
+      const g = [140, 280, 420], v = [60, -110], v2 = [-32, -121], bare = opt === 'bare';
       const top = g.map((x) => [x + v[0], 200 + v[1]]), top2 = g.map((x) => [x + v2[0], 200 + v2[1]]);
-      return fig(560, 240, '가운데에 같은 길이의 크랭크를 하나 더 단 평행사변형 링크: 그뤼블러 공식은 자유도 0이지만 실제로는 움직인다',
+      return fig(560, 240, bare ? '가운데에 같은 길이의 크랭크를 하나 더 단 평행사변형 링크' : '가운데에 같은 길이의 크랭크를 하나 더 단 평행사변형 링크: 그뤼블러 공식은 자유도 0이지만 실제로는 움직인다',
         L(100, 200, 470, 200, 'dm ds') + g.map((x) => pin(x, 200)).join('') +
-        top2.map((t, i) => L(g[i], 200, t[0], t[1], 'gd ds')).join('') + L(top2[0][0], top2[0][1], top2[2][0], top2[2][1], 'gd ds') +
+        (bare ? '' : top2.map((t, i) => L(g[i], 200, t[0], t[1], 'gd ds')).join('') + L(top2[0][0], top2[0][1], top2[2][0], top2[2][1], 'gd ds')) +
         top.map((t, i) => link(g[i], 200, t[0], t[1])).join('') + L(top[0][0], top[0][1], top[2][0], top[2][1], 'th') +
-        T(360, 72, '연결 막대', { s: 11 }) + T(290, 232, 'N = 5, J = 6 → 3(5 − 1 − 6) + 6 = 0', { s: 12 }),
+        T(360, 72, '연결 막대', { s: 11 }) + (bare ? '' : T(290, 232, 'N = 5, J = 6 → 3(5 − 1 − 6) + 6 = 0', { s: 12 })),
         '세 크랭크가 길이와 간격이 모두 같아 가운데 크랭크가 주는 구속 두 개가 나머지 구속에서 이미 따라 나옵니다(독립이 아님). 그뤼블러 공식은 구속이 독립이라고 가정하므로 이런 특수한 치수에서 자유도를 적게 셉니다. 점선은 조금 움직인 모습입니다.');
     },
     // r02 — C-space of a 2R arm: a square with opposite edges glued is a torus

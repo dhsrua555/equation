@@ -95,7 +95,11 @@ $$v=\dot s\,\hat y_b-\Omega s\,\hat x_b$$
 :::
 
 ### 스탠퍼드 팔: 관절 속도를 더해 각속도 얻기
-기둥이 $\hat z_s$ 둘레로 $\theta_1$, 어깨가 팔 방향에 수직인 축 $\hat x_b$ 둘레로 $\theta_2$만큼 돌고, 손이 팔을 따라 $\hat y_b$ 방향으로 $s$만큼 미끄러지는 RRP 팔(MR 그림 6.6의 스탠퍼드형)을 생각합니다. 어깨에 팔과 함께 도는 {b}를 붙이면, {b}는 기둥과 함께 $\hat z_s$ 둘레로 돌면서 어깨 축 $\hat x_b$ 둘레로도 도므로
+
+:::fig mStanford
+:::
+
+기둥이 $\hat z_s$ 둘레로 $\theta_1$, 어깨가 팔 방향에 수직인 축 $\hat x_b$ 둘레로 $\theta_2$만큼 돌고, 손이 팔을 따라 $\hat y_b$ 방향으로 $s$만큼 미끄러지는 RRP 팔(MR 그림 6.6의 [[atlas:stanford|스탠퍼드형]], 위 그림)을 생각합니다. 어깨에 팔과 함께 도는 {b}를 붙이면, {b}는 기둥과 함께 $\hat z_s$ 둘레로 돌면서 어깨 축 $\hat x_b$ 둘레로도 도므로
 $$\omega=\dot\theta_1\hat z_s+\dot\theta_2\hat x_b$$
 — 각속도의 덧셈 그대로입니다. 어깨 중심이 고정이면 손끝($r=s\hat y_b$)의 속도는
 $$v=\dot s\,\hat y_b+\omega\times s\hat y_b=\dot s\,\hat y_b+\dot\theta_1 s\,(\hat z_s\times\hat y_b)+\dot\theta_2 s\,\hat z_b.$$
@@ -161,13 +165,19 @@ $\omega\times v_{\text{rel}}$은 두 곳에서 나옵니다. (1) 상대 속도 �
       { sec: '3.2.2', type: 'mc', lv: 1, q: R`물체가 각속도 $\omega$로 돌 때 물체 축 $\hat x_b$의 시간 미분은?`,
         choices: [R`$0$ (단위 벡터라서)`, R`$\omega\times\hat x_b$`, R`$\hat x_b\times\omega$`, R`$\lVert\omega\rVert\hat x_b$`], ans: 1,
         sol: R`길이는 그대로이고 끝점이 $\omega$ 축 둘레의 원을 돌므로 $\omega\times\hat x_b$. 길이가 일정하다는 것은 미분이 $\hat x_b$에 수직이라는 뜻이지 0이라는 뜻이 아닙니다.` },
-      { sec: '3.2.2', type: 'num', lv: 2, q: R`기둥이 $\hat z_s$ 둘레로 1 rad/s로 돌고, 기둥 위의 팔이 팔과 함께 도는 수평축 $\hat x_b$ 둘레로 2 rad/s로 든다. 팔의 각속도 크기는? (두 축은 수직)`, ans: 'sqrt(5)', ansTex: R`\sqrt5`,
+      { sec: '3.2.2', type: 'num', lv: 2, q: R`기둥이 $\hat z_s$ 둘레로 1 rad/s로 돌고, 기둥 위의 팔이 팔과 함께 도는 수평축 $\hat x_b$ 둘레로 2 rad/s로 든다. 팔의 각속도 크기는? (두 축은 수직)
+
+:::fig mStanford bare
+:::`, ans: 'sqrt(5)', ansTex: R`\sqrt5`,
         sol: R`각속도의 덧셈: $\omega=1\cdot\hat z_s+2\hat x_b$, 두 축이 수직이므로 $\sqrt{1+4}=\sqrt5$.` },
       { sec: 'W4.1', type: 'num', lv: 1, q: R`원판이 2 rad/s로 돌고, 원판 위 중심에서 0.3 m인 곳에 벌레가 가만히 있다. 벌레의 속력(m/s)은?`, ans: '0.6', ansTex: R`0.6`,
         sol: R`$v_{\text{rel}}=0$, $\lVert\omega\times r\rVert=\Omega s=0.6$.` },
       { sec: 'W4.1', type: 'num', lv: 2, q: R`예제 2의 벌레가 $\Omega=2$ rad/s, $\dot s=0.1$ m/s, $s=0.3$ m일 때 속력(m/s)은?`, ans: 'sqrt(0.37)', ansTex: R`0.608`,
         sol: R`$v=0.1\hat y_b-0.6\hat x_b$, $\sqrt{0.01+0.36}$.` },
-      { sec: 'W4.1', type: 'num', lv: 2, q: R`스탠퍼드형 RRP 팔이 $\theta_1=\theta_2=0$(팔 수평)에서 $\dot\theta_1=0.5$, $\dot\theta_2=0.2$ rad/s, 팔 길이 $s=1.2$ m, $\dot s=0.3$ m/s이다. 손끝의 속력(m/s)은?`, ans: 'sqrt(0.5076)', ansTex: R`0.712`,
+      { sec: 'W4.1', type: 'num', lv: 2, q: R`스탠퍼드형 RRP 팔이 $\theta_1=\theta_2=0$(팔 수평)에서 $\dot\theta_1=0.5$, $\dot\theta_2=0.2$ rad/s, 팔 길이 $s=1.2$ m, $\dot s=0.3$ m/s이다. 손끝의 속력(m/s)은?
+
+:::fig mStanford bare
+:::`, ans: 'sqrt(0.5076)', ansTex: R`0.712`,
         sol: R`$v=\dot s\hat y_s-\dot\theta_1s\hat x_s+\dot\theta_2s\hat z_s=(−0.6,\ 0.3,\ 0.24)$, 크기 $\sqrt{0.36+0.09+0.0576}\approx0.712$.` },
       { sec: 'W4.2', type: 'num', lv: 1, q: R`3 rad/s로 일정하게 도는 원판의 반지름 0.5 m 지점에 고정된 점의 가속도 크기(m/s²)는?`, ans: '4.5', ansTex: R`4.5`,
         sol: R`구심 항만 남습니다: $\Omega^2r=9\times0.5$.` },

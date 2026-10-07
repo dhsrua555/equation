@@ -233,6 +233,30 @@
   A.CH.forEach((c) => c.sections.forEach((s) => simUse(s.body, `${c.id} §${s.k}`)));
   BOOKS.forEach((b) => b.sets.forEach((q) => { simUse(q.intro, `${b.key} ${q.id}`); q.problems.forEach((p) => simUse(p.body, `${b.key} ${q.id}-${p.id}`)); }));
   if ((A.SIMS || []).length) { routes.push('lab'); A.SIMS.forEach((s) => { routes.push(`lab-${s.id}`); if (s.ch && !A.chById.get(s.ch)) fail(`simulation ${s.id} names unknown unit ${s.ch}`); if (s.ch && s.k && !A.chById.get(s.ch).sections.some((x) => x.k === s.k)) fail(`simulation ${s.id} names unknown section ${s.k}`); }); }
+  // figures: every ":::fig name" anywhere in the content must name a registered figure
+  const FIGREG = window.SITE_FIGS || {};
+  const figUse = (src, where) => String(src || '').replace(/^\s*:::fig\s+(\S+)/gm, (_, n) => { if (!FIGREG[n]) fail(`${where} names a missing figure ${n}`); return ''; });
+  // the picture catalogue (atlas): each entry's figure, simulation and `where` places exist, and every [[atlas:id]] names an entry
+  const atlUse = (src, where) => String(src || '').replace(/\[\[atlas:([\w-]+)/g, (_, id) => { if (!A.atlById || !A.atlById.get(id)) fail(`${where} links a missing atlas entry ${id}`); return ''; });
+  const scan = (src, where) => { figUse(src, where); atlUse(src, where); };
+  A.CH.forEach((c) => { c.sections.forEach((s) => scan(s.body, `${c.id} §${s.k}`)); c.problems.forEach((p) => scan([p.q, p.sol].join('\n'), p.id)); });
+  BOOKS.forEach((b) => b.sets.forEach((q) => { scan(q.intro, `${b.key} ${q.id}`); q.problems.forEach((p) => scan(p.body, `${b.key} ${q.id}-${p.id}`)); }));
+  A.EXAMS.forEach((x) => x.problems.forEach((p) => scan([p.q, p.sol].join('\n'), p.id)));
+  if (A.ATLAS) {
+    routes.push('atlas');
+    const seen = new Set();
+    A.ATL.forEach((it) => {
+      if (seen.has(it.id)) fail(`atlas id ${it.id} repeated`); seen.add(it.id);
+      routes.push(`atlas-${it.id}`);
+      if (!FIGREG[it.fig]) fail(`atlas ${it.id} names a missing figure ${it.fig}`);
+      if (it.sim && !SIMREG[it.sim]) fail(`atlas ${it.id} names a missing simulation ${it.sim}`);
+      (it.where || []).forEach((w) => { if (!A.atlasWhere(w)) fail(`atlas ${it.id}: place ${w} does not resolve`); });
+      const k = it.count;
+      if (k && [k.m, k.N, k.J, k.f].some((v) => typeof v !== 'number')) fail(`atlas ${it.id} count needs m, N, J, f`);
+      scan(it.body, `atlas ${it.id}`);
+      checkHTML(md(it.body), `atlas ${it.id}`);
+    });
+  }
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);
@@ -243,6 +267,8 @@
       if (km && !document.getElementById(`sec-${km[2]}`)) fail(`route ${r} opened without its section`);
       const lm = /^lab-([\w-]+)$/.exec(r);
       if (lm && !document.getElementById(`lb-${lm[1]}`)) fail(`route ${r} opened without its simulation`);
+      const am = /^atlas-([\w-]+)$/.exec(r);
+      if (am && !document.getElementById(`at-${am[1]}`)) fail(`route ${r} opened without its atlas entry`);
       if (A.mountSims) A.mountSims(m, true); // simulations start lazily on the page; here every one mounts so its errors surface
       m.querySelectorAll('.katex-error').forEach((e) => fail(`route ${r} katex: ${(e.getAttribute('title') || '').slice(0, 120)}`));
       const clone = m.cloneNode(true); clone.querySelectorAll('code, textarea, input, script, .katex-mathml').forEach((n) => n.remove());
@@ -279,6 +305,7 @@
     A.keyBlocks(c).forEach((kb) => idx.search.push({ t: 'k', ch: c.id, k: kb.k || '', title: strip(kb.title) }));
   });
   A.PROOFS.forEach((p) => idx.search.push(Object.assign({ t: 'p', ch: p.ch, pid: p.pid, title: strip(p.titleKo || p.title), tags: strip(p.tags) }, p.titleKo ? { en: strip(p.title) } : {})));
+  (A.ATL || []).forEach((it) => idx.search.push({ t: 'a', ch: '', id: it.id, title: strip(it.name), en: strip(it.en), tags: strip(it.tags), lab: strip(A.ATLAS.label) }));
   const links = A.XLINKS.filter((l) => l.site).map((l) => ({ from: A.FIELD, fromCh: l.from, fromK: l.fromK, to: l.site, toCh: l.to, toK: l.toK }));
   // printed as JS statements so tools/netindex.sh only has to concatenate them
   const F = JSON.stringify(A.FIELD);

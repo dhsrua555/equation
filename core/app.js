@@ -82,6 +82,14 @@
   const SIMREG = window.SITE_SIMS || {};
   const SIMS = Object.keys(SIMREG).filter((k) => SIMREG[k] && SIMREG[k].title && SIMREG[k].mount).map((k) => Object.assign({ id: k }, SIMREG[k]));
   const LAB_LABEL = TX.labNav || '시뮬레이션';
+  // a picture catalogue (data/atlas.js: EM.atlas = { label, caps, h1, lede, groups: [{ id, title, desc, items }] }), e.g. robot's 기구 도감.
+  // An item is { id, name, en, fig, tags, count: { m, N, J, f, dof, note }, body, where: [...], sim }; content links to it with
+  // [[atlas:id]] or [[atlas:id|text]], and the sections and worked problems named in `where` list it under their title
+  const ATLAS = EM.atlas && (EM.atlas.groups || []).length ? EM.atlas : null;
+  const ATL = [];
+  if (ATLAS) ATLAS.groups.forEach((g, gi) => { g.mark = g.mark || String.fromCharCode(65 + gi); g.items.forEach((it, i) => { it.group = g; it.no = `${g.mark}${i + 1}`; ATL.push(it); }); });
+  const atlById = new Map(ATL.map((it) => [it.id, it]));
+  const ATL_LABEL = ATLAS ? ATLAS.label || '도감' : '';
   EXAMS.forEach((x) => {
     x.problems.forEach((p, k) => {
       p.no = k + 1; p.src = x.id;
@@ -158,6 +166,28 @@
   // cross-references between chapters: [[ch05:6.2|note text]] inside content.
   // [[@base:ch01:1.3|note]] points to another field of the Équation network (window.NET), or to a sister site in SITE.sisters.
   const XREF_RE = /\[\[(@[a-z]+:)?(ch\d{2})(?::(\d+\.\d+[a-z]?))?\|([\s\S]+?)\]\]/g;
+  // [[atlas:id]] / [[atlas:id|text]]: a link to an atlas entry (the entry's name when no text is given)
+  const ATL_RE = /\[\[atlas:([\w-]+)(?:\|([^\]]+))?\]\]/g;
+  function atlasLink(id, html) {
+    const it = atlById.get(id);
+    if (!it) return html;
+    return `<a class="atl" href="#atlas-${id}" data-route="atlas-${id}" title="${esc(`${ATL_LABEL} ${it.no}: ${it.name}`)}">${html || esc(it.name)}</a>`;
+  }
+  // where an atlas entry appears: a section 'ch01:2.2a', a unit 'ch01', a unit's practice 'ch01-practice',
+  // a worked problem 'quiz-ps1-p2' / 'hard-m23-p1', a mock exam 'exam-<id>'
+  function atlasWhere(w) {
+    let m;
+    if ((m = /^(ch\d{2})(?::([\w.]+))?$/.exec(w))) { const tg = xrefTarget(m[1], m[2]); return tg && (!m[2] || tg.route !== m[1]) ? { route: tg.route, label: tg.label } : null; }
+    if ((m = /^(ch\d{2})-practice$/.exec(w)) && chById.get(m[1])) { const c = chById.get(m[1]); return { route: w, label: `${pad(c.n)} ${c.title} · 연습문제` }; }
+    if ((m = /^exam-(.+)$/.exec(w))) { const x = (EM.exams || []).find((e) => e.id === m[1]); return x ? { route: 'exams', label: `모의고사 · ${x.title}` } : null; }
+    const x = WORKED.find((y) => `${y.b.key}-${y.id}` === w);
+    return x ? { route: w, label: `${x.b.label} · ${x.q.short || x.q.title} ${x.p.label || x.p.id} ${x.p.title}` } : null;
+  }
+  // the atlas entries a section or a worked problem shows under its title (place: 'ch01:2.2a' or 'hard-m23-p1')
+  function atlasChips(place) {
+    const its = ATL.filter((it) => (it.where || []).includes(place));
+    return its.length ? `<p class="sec-quiz sec-atl"><span class="caps">${esc(ATL_LABEL)}</span>${its.map((it) => `<a href="#atlas-${it.id}" data-route="atlas-${it.id}">${esc(it.no)} ${esc(it.name)} →</a>`).join('')}</p>` : '';
+  }
   const XLINKS = [];
   CH.forEach((c) => c.sections.forEach((s) => {
     String(s.body).replace(XREF_RE, (_, site, ch, k) => { XLINKS.push({ from: c.id, fromK: s.k || '', to: ch, toK: k || '', site: site ? site.slice(1, -1) : '' }); return ''; });
@@ -232,6 +262,7 @@
     t = esc(t)
       .replace(/\u0000(\d+)\u0000([^\s\u0000[\]*<]+)/g, '\u0001$1\u0001$2\u0002')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(ATL_RE, (_, id, text) => atlasLink(id, text ? restore(text) : ''));
     t = t.replace(XREF_RE, (_, site, ch, k, text) => xref(ch, k, restore(text), site ? site.slice(1, -1) : ''));
     return restore(t);
   }
@@ -296,6 +327,7 @@
       <div class="sec-title"><span>${num}</span><h2>${esc(sec.title)}${koT(sec.titleKo)}</h2></div>
       ${where ? `<p class="sec-page caps">${esc(where)}</p>` : ''}
       ${worked.length ? `<p class="sec-quiz">${worked.map((x) => `<a href="#${x.b.key}-${x.id}" data-route="${x.b.key}-${x.id}">${esc(x.b.label)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
+      ${sec.k ? atlasChips(`${c.id}:${sec.k}`) : ''}
       ${body}
       ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
         <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">${n.tg && n.tg.ext ? '↗' : '※'}${i + 1}</button>
@@ -554,9 +586,13 @@
   function container(type, title, inner) {
     if (type === 'sim') return simFig(title, inner);
     if (type === 'fig') {
-      const fn = FIGS[title.trim()];
-      const capEn = BI && EN.fig ? EN.fig[title.trim()] : '';
-      let h = fn ? fn() : '';
+      // ":::fig name [args…]": the words after the name go to the figure function; "bare" also drops the caption
+      // (a problem shows the drawing without the caption that would give its answer away)
+      const [nm, ...args] = title.trim().split(/\s+/);
+      const fn = FIGS[nm];
+      const capEn = BI && EN.fig ? EN.fig[nm] : '';
+      let h = fn ? fn(...args) : '';
+      if (args.includes('bare')) h = h.replace(/<figcaption>[\s\S]*?<\/figcaption>/, '');
       if (h && BI && EN.figText) { // labels drawn inside the figure
         const tr = (t) => { const s = t.trim(); const e = EN.figText[s]; return e ? t.replace(s, e) : t; };
         const at = h.indexOf('<figcaption>');
@@ -813,13 +849,14 @@
     document.documentElement.classList.toggle('has-net', !!NET);
     $('#site-header').innerHTML = `${netBar()}
       <div class="wrap header-row">
-        <nav class="nav nav-left${3 + NAV_X.length + BOOKS.length + (SIMS.length ? 1 : 0) > 5 ? ' many' : ''}" aria-label="주 메뉴">
+        <nav class="nav nav-left${3 + NAV_X.length + BOOKS.length + (SIMS.length ? 1 : 0) + (ATLAS ? 1 : 0) > 5 ? ' many' : ''}" aria-label="주 메뉴">
           <button class="menu-btn" data-act="menu" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
           <a href="#home" class="ko" data-act="to-catalogue">단원</a>
           <a href="#formulas" class="ko" data-route="formulas">공식집</a>
           <a href="#proofs" class="ko" data-route="proofs">증명</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" class="ko" data-route="${n.route}"${n.title ? ` title="${esc(n.title)}"` : ''}>${esc(n.label)}</a>`).join('')}
           ${BOOKS.map((b) => `<a href="#${b.key}" class="ko" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
+          ${ATLAS ? `<a href="#atlas" class="ko" data-route="atlas">${esc(ATL_LABEL)}</a>` : ''}
           ${SIMS.length ? `<a href="#lab" class="ko" data-route="lab">${esc(LAB_LABEL)}</a>` : ''}
         </nav>
         <a class="wordmark" href="#home" data-route="home" aria-label="${esc(HEAD.t)} 처음으로"><b>${esc(HEAD.t)}</b><span>${esc(HEAD.s)}</span></a>
@@ -849,7 +886,7 @@
     }
     $$('.nav a[data-route]').forEach((a) => {
       const r = a.dataset.route;
-      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || ((BOOK.has(r) || r === 'lab') && route.startsWith(`${r}-`)) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
+      if (route === r || (r === 'exams' && route.startsWith('result-')) || (r === 'proofs' && route.startsWith('pf-')) || ((BOOK.has(r) || r === 'lab' || r === 'atlas') && route.startsWith(`${r}-`)) || (/^ch\d{2}$/.test(r) && route.startsWith(`${r}-`))) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
   }
@@ -870,6 +907,7 @@
           <a href="#proofs" data-route="proofs">증명 찾기</a>
           ${NAV_X.map((n) => `<a href="#${n.route}" data-route="${n.route}">${esc(n.label)}</a>`).join('')}
           ${BOOKS.map((b) => `<a href="#${b.key}" data-route="${b.key}">${esc(b.label)}</a>`).join('')}
+          ${ATLAS ? `<a href="#atlas" data-route="atlas">${esc(ATL_LABEL)}</a>` : ''}
           ${SIMS.length ? `<a href="#lab" data-route="lab">${esc(LAB_LABEL)}</a>` : ''}
           <a href="#exams" data-route="exams">실전 모의고사</a>
           <a href="#review" data-route="review">오답노트</a>
@@ -1469,6 +1507,7 @@
                   <div class="sec-title"><span>${esc(p.label || p.id)}</span><h2>${esc(p.title)}${koT(p.titleKo)}</h2></div>
                   ${p.where ? `<p class="sec-page caps">${esc(p.where)}</p>` : ''}
                   ${quizUnits(p)}
+                  ${atlasChips(`${K}-${q.id}-${p.id}`)}
                   ${mdOf(p, 'body')}
                   ${b.practice ? quizMore(`${q.id}-${p.id}`) : ''}
                 </section>`).join('')}
@@ -1511,6 +1550,66 @@
           </section>`;
         }).join('')}
         </article></div>
+      </div>
+    </div>
+    ${footer()}`;
+  }
+
+  // the picture catalogue: a grid of thumbnails, then every entry with its figure, its count and where it appears
+  function atlasCount(k) {
+    if (!k) return '';
+    const v = k.m * (k.N - 1 - k.J) + k.f;
+    const real = k.dof != null && k.dof !== v;
+    return `<div class="atl-count">
+      <span class="caps">그뤼블러</span>
+      <span>${inline(`$m=${k.m}$ · $N=${k.N}$ · $J=${k.J}$ · $\\sum f_i=${k.f}$${k.note ? ` (${k.note})` : ''}`)}</span>
+      <span class="atl-dof">${inline(`$${k.m}(${k.N}-1-${k.J})+${k.f}=${v}$`)}</span>
+      ${real ? `<span class="atl-real">실제 자유도 <b>${k.dof}</b></span>` : `<span class="atl-real">자유도 <b>${v}</b></span>`}
+    </div>`;
+  }
+  function atlasThumb(it) {
+    const fn = FIGS[it.fig];
+    const h = fn ? fn() : '';
+    const m = /<svg[\s\S]*?<\/svg>/.exec(h);
+    return m ? m[0].replace(/ role="img" aria-label="[^"]*"/, ' aria-hidden="true"') : '';
+  }
+  function viewAtlas() {
+    const A0 = ATLAS;
+    const dofOf = (it) => (it.count ? (it.count.dof != null ? it.count.dof : it.count.m * (it.count.N - 1 - it.count.J) + it.count.f) : null);
+    return `
+    <div class="wrap">
+      <header class="page-head"><span class="caps">${esc(A0.caps || 'Atlas')}</span><h1>${esc(A0.h1 || 'Atlas')}<span class="ko">${esc(ATL_LABEL)}</span></h1>
+        ${proseP('atlasLede', A0.lede || '', 'lede', inline)}
+        <nav class="jump" aria-label="갈래로 이동">${A0.groups.map((g) => `<a href="#atlas" data-act="scroll" data-target="atg-${g.id}">${esc(g.mark)} · ${esc(g.title)}</a>`).join('')}</nav>
+      </header>
+      <div class="atl-grid" aria-label="${esc(ATL_LABEL)} 한눈에 보기">
+        ${ATL.map((it) => { const d = dofOf(it); return `<a class="atl-card" href="#atlas-${it.id}" data-act="scroll" data-target="at-${it.id}"><span class="fig atl-thumb">${atlasThumb(it)}</span><b><i>${esc(it.no)}</i>${esc(it.name)}</b>${d != null ? `<small>자유도 ${d}</small>` : it.short ? `<small>${esc(it.short)}</small>` : ''}</a>`; }).join('')}
+      </div>
+      <div class="ch-body quiz-body atl-body">
+        <nav class="toc" aria-label="${esc(ATL_LABEL)} 목차">
+          ${A0.groups.map((g) => `<span class="caps">${esc(g.mark)} · ${esc(g.title)}</span>
+            ${g.items.map((it) => `<a href="#atlas-${it.id}" data-act="scroll" data-target="at-${it.id}"><span>${esc(it.no)}</span>${esc(it.name)}</a>`).join('')}`).join('')}
+        </nav>
+        <div class="quiz-main">
+        ${A0.groups.map((g) => `
+          <div class="quiz-set" id="atg-${g.id}">
+            <div class="part-head"><span class="part-letter">${esc(g.mark)}</span><h3>${esc(g.title)}</h3><p>${inline(g.desc || '')}</p></div>
+            <article class="prose">
+            ${g.items.map((it) => {
+              const where = (it.where || []).map(atlasWhere).filter(Boolean);
+              const sim = it.sim && SIMREG[it.sim] ? SIMREG[it.sim] : null;
+              return `<section class="sec atl-sec" id="at-${it.id}">
+                <div class="sec-title"><span>${esc(it.no)}</span><h2>${esc(it.name)}${it.en ? ` <small class="atl-en">${esc(it.en)}</small>` : ''}</h2></div>
+                ${it.tags ? `<p class="sec-page caps">${esc(it.tags)}</p>` : ''}
+                ${container('fig', it.fig, '')}
+                ${atlasCount(it.count)}
+                ${md(it.body)}
+                ${where.length || sim ? `<p class="sec-quiz atl-where"><span class="caps">나오는 곳</span>${where.map((w) => `<a href="#${w.route}" data-route="${w.route}">${esc(w.label)} →</a>`).join('')}${sim ? `<a class="atl-sim" href="#lab-${it.sim}" data-route="lab-${it.sim}">${esc(LAB_LABEL)} · ${esc(sim.title)} →</a>` : ''}</p>` : ''}
+              </section>`;
+            }).join('')}
+            </article>
+          </div>`).join('')}
+        </div>
       </div>
     </div>
     ${footer()}`;
@@ -1897,6 +1996,8 @@
     else if (to === 'review') html = viewReview();
     else if (to === 'lab' && SIMS.length) html = viewLab();
     else if ((m = /^lab-([\w-]+)$/.exec(to)) && SIMREG[m[1]]) { html = viewLab(); opts = Object.assign({}, opts, { anchor: `lb-${m[1]}` }); }
+    else if (to === 'atlas' && ATLAS) html = viewAtlas();
+    else if ((m = /^atlas-([\w-]+)$/.exec(to)) && atlById.get(m[1])) { html = viewAtlas(); opts = Object.assign({}, opts, { anchor: `at-${m[1]}` }); }
     else if (BOOK.has(to)) html = viewBook(BOOK.get(to));
     else if ((m = /^([a-z]+)-([\w-]+)$/.exec(to)) && BOOK.has(m[1])) { const b = BOOK.get(m[1]); html = viewBook(b); opts = Object.assign({}, opts, { anchor: `${b.pre}-${m[2]}` }); }
     else { route = 'home'; view = 'home'; html = viewHome(); }
@@ -1914,14 +2015,14 @@
     window.EMPlots.mount(main);
     mountSims(main);
     if (view === 'home') startHero();
-    if (view === 'chapter' || bookOf(route) || route.startsWith('lab')) watchToc();
+    if (view === 'chapter' || bookOf(route) || route.startsWith('lab') || route.startsWith('atlas')) watchToc();
     if (route === 'proofs') filterProofs();
-    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', lab: LAB_LABEL };
+    const title = { home: '', formulas: '공식집', proofs: '증명 찾기', exams: '모의고사', review: '오답노트', 'exam-live': '시험 중', lab: LAB_LABEL, atlas: ATL_LABEL };
     BOOKS.forEach((b) => { title[b.key] = b.label; });
     const ch = chById.get(route.slice(0, 4));
     const pf = route.startsWith('pf-') && proofById.get(route.slice(3));
     const DT = SITE.title || SITE.name || '';
-    const tk = bookOf(route) ? bookOf(route).key : route.startsWith('lab-') ? 'lab' : route;
+    const tk = bookOf(route) ? bookOf(route).key : route.startsWith('lab-') ? 'lab' : route.startsWith('atlas-') ? 'atlas' : route;
     document.title = pf ? `${pf.title.replace(/\$/g, '')} · 증명` : view === 'chapter' && ch ? `${ch.title} · ${DT}` : title[tk] ? `${title[tk]} · ${DT}` : DT;
     const samePage = prevRoute.slice(0, 4) === route.slice(0, 4) && view === 'chapter';
     const target = opts.anchor && document.getElementById(opts.anchor);
@@ -2292,7 +2393,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd, mountSims };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd, mountSims, ATLAS, ATL, atlById, atlasWhere, ATL_RE };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

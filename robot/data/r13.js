@@ -34,7 +34,7 @@ $\mathcal S_i$는 **영 자세에서의** 축입니다. 실제로 팔이 움직�
 :::
 
 :::sim poe ur5
-교재 예제 4.5의 UR5 산업용 팔입니다. 관절 막대를 움직이면 팔과 $T(\theta)$가 함께 바뀌고, 흐린 팔이 영 자세입니다. ‘끝 관절부터 쌓기’를 켜고 $k$를 0, 1, 2, …로 올리면 위 그림처럼 끝 관절부터 하나씩 돌린 중간 단계가 보입니다. 아래의 나사 축 $\mathcal S_i$는 관절을 아무리 돌려도 바뀌지 않습니다 — 언제나 영 자세에서 적은 값입니다.
+교재 예제 4.5의 [[atlas:ur5|UR5]] 산업용 팔입니다. 관절 막대를 움직이면 팔과 $T(\theta)$가 함께 바뀌고, 흐린 팔이 영 자세입니다. ‘끝 관절부터 쌓기’를 켜고 $k$를 0, 1, 2, …로 올리면 위 그림처럼 끝 관절부터 하나씩 돌린 중간 단계가 보입니다. 아래의 나사 축 $\mathcal S_i$는 관절을 아무리 돌려도 바뀌지 않습니다 — 언제나 영 자세에서 적은 값입니다.
 :::
 ` },
       { k: '4.1.2', p: 143, title: '예제: 평면 3R 팔과 RP 팔', body: R`
@@ -56,7 +56,10 @@ $x=L_1c_1+L_2c_{12}+L_3c_{123}$, $y=L_1s_1+L_2s_{12}+L_3s_{123}$, 방향각 $\th
 :::
 
 :::ex 예제 2 — RP 팔
-바닥이 $\hat z$ 둘레로 돌고($\theta_1$), 그 위의 팔이 자기 방향으로 늘어나는($\theta_2$) 평면 팔. 영 자세에서 끝점은 $(L_0,0,0)$.
+바닥이 $\hat z$ 둘레로 돌고($\theta_1$), 그 위의 팔이 자기 방향으로 늘어나는($\theta_2$) 평면 팔([[atlas:rp|RP 팔]]). 영 자세에서 끝점은 $(L_0,0,0)$.
+
+:::fig mRP bare
+:::
 ---
 $\mathcal S_1=(0,0,1,0,0,0)$, 병진 관절은 영 자세에서 $\hat x$ 방향: $\mathcal S_2=(0,0,0,1,0,0)$.
 $e^{[\mathcal S_2]\theta_2}M$은 끝점을 $(L_0+\theta_2,0,0)$으로, $e^{[\mathcal S_1]\theta_1}$이 그것을 돌려 끝점 $\big((L_0+\theta_2)\cos\theta_1,(L_0+\theta_2)\sin\theta_1,0\big)$ — 극좌표 그대로입니다.
@@ -105,7 +108,10 @@ $\mathcal B_3=(0,0,1,0,L_3,0)$, $\mathcal B_2=(0,0,1,0,L_2+L_3,0)$, $\mathcal B_
       { sec: '4.1.3', type: 'mc', lv: 2, q: R`물체 형태의 나사 축 $\mathcal B_i$와 공간 형태의 $\mathcal S_i$의 관계는?`,
         choices: [R`$\mathcal B_i=\mathcal S_i$`, R`$\mathcal B_i=[\mathrm{Ad}_{M^{-1}}]\mathcal S_i$`, R`$\mathcal B_i=[\mathrm{Ad}_M]\mathcal S_i$`, R`$\mathcal B_i=-\mathcal S_i$`], ans: 1,
         sol: R`같은 축을 {b}(영 자세)로 옮겨 쓴 것 — $T_{bs}=M^{-1}$의 수반 행렬.` },
-      { sec: '4.1.2', type: 'num', lv: 2, q: R`예제 2의 RP 팔($L_0=0.5$)이 $\theta_1=\pi/2$, $\theta_2=0.3$일 때 끝점의 $y$ 좌표는?`, ans: '0.8', ansTex: R`0.8`,
+      { sec: '4.1.2', type: 'num', lv: 2, q: R`예제 2의 RP 팔($L_0=0.5$)이 $\theta_1=\pi/2$, $\theta_2=0.3$일 때 끝점의 $y$ 좌표는?
+
+:::fig mRP bare
+:::`, ans: '0.8', ansTex: R`0.8`,
         sol: R`$(L_0+\theta_2)\sin\theta_1=0.8$.` },
       { sec: '4.1.1', type: 'num', lv: 1, q: R`6R 직렬 팔의 지수곱 공식에는 나사 축이 몇 개 필요한가?`, ans: '6', ansTex: R`6`,
         sol: R`관절마다 하나, 그리고 $M$.` },

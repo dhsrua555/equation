@@ -11,9 +11,15 @@ window.EM = window.EM || { chapters: [], exams: [] };
     problems: [
       { ch: 'ch01', type: 'num', lv: 1, pts: 6, q: R`평면 기구가 링크 6개(바닥 포함), 회전 관절 6개, 병진 관절 1개로 이루어져 있다. 그뤼블러 공식의 자유도는?`, ans: '1', ansTex: R`1`,
         sol: R`$3(6-1-7)+7=1$.` },
-      { ch: 'ch01', type: 'num', lv: 2, pts: 8, q: R`바닥과 판을 UPU 다리 세 개(다리마다 링크 2개)로 이은 공간 병렬 기구의 그뤼블러 자유도는?`, ans: '3', ansTex: R`3`,
+      { ch: 'ch01', type: 'num', lv: 2, pts: 8, q: R`바닥과 판을 UPU 다리 세 개(다리마다 링크 2개)로 이은 공간 병렬 기구의 그뤼블러 자유도는?
+
+:::fig m3UPU bare
+:::`, ans: '3', ansTex: R`3`,
         sol: R`$N=2+6=8$, $J=9$, $\sum f_i=3(2+1+2)=15$: $6(8-1-9)+15=3$.` },
-      { ch: 'ch02', type: 'mc', lv: 1, pts: 6, q: R`직선 레일 위를 달리는 수레에 구면 진자(한 점 둘레로 자유롭게 도는 막대 끝의 질점)를 매달았다. C-공간은?`,
+      { ch: 'ch02', type: 'mc', lv: 1, pts: 6, q: R`직선 레일 위를 달리는 수레에 구면 진자(한 점 둘레로 자유롭게 도는 막대 끝의 질점)를 매달았다. C-공간은?
+
+:::fig mPendulum bare
+:::`,
         choices: [R`$\mathbb R^1\times S^1$`, R`$\mathbb R^1\times S^2$`, R`$T^3$`, R`$\mathbb R^3$`], ans: 1,
         sol: R`레일 위치 $\mathbb R^1$, 진자 끝의 방향 $S^2$ — 3차원.` },
       { ch: 'ch03', type: 'num', lv: 2, pts: 8, q: R`3단원 예제 1의 못 네 개 배치에서 $\ell_1=0.06$, $\ell_2=0.01$, $\ell_3=-0.02$, $\ell_4=-0.03$이다. 외력 없이 서로 밀어 붙이는 내력 $Ak=0$에서 $k_2/k_1$은?`, ans: '2', ansTex: R`2`,
@@ -42,7 +48,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 - 모서리 벡터와 내력의 분해(양의 계수) — 4점
 - 모멘트 합 0 확인 — 2점
 - 계수 3 논증과 결론 — 3점` },
-      { ch: 'ch09', type: 'open', lv: 3, pts: 13, proof: true, q: R`관절 1은 수직축, 관절 2는 관절 1과 만나는 수평축, 관절 3은 관절 2와 평행하고 $L_2$ 떨어진 축, 손끝은 관절 3에서 $L_3$ 떨어진 RRR 팔이다. (1) 링크 좌표계를 정하고 D-H 표를 쓰라. (2) 영 자세에서 $T_{04}$를 구해 그림과 맞는지 확인하라. (3) 관절 1과 2가 만나지 않고 $\hat x$ 방향으로 $a_1$만큼 떨어져 있다면 표의 어느 칸이 바뀌는가?`,
+      { ch: 'ch09', type: 'open', lv: 3, pts: 13, proof: true, q: R`관절 1은 수직축, 관절 2는 관절 1과 만나는 수평축, 관절 3은 관절 2와 평행하고 $L_2$ 떨어진 축, 손끝은 관절 3에서 $L_3$ 떨어진 RRR 팔이다(그림).
+
+:::fig mRRR bare
+:::
+
+(1) 링크 좌표계를 정하고 D-H 표를 쓰라. (2) 영 자세에서 $T_{04}$를 구해 그림과 맞는지 확인하라. (3) 관절 1과 2가 만나지 않고 $\hat x$ 방향으로 $a_1$만큼 떨어져 있다면 표의 어느 칸이 바뀌는가?`,
         sol: R`
 (1) {0}={1}(영 자세), $\hat z_1$ 수직. 축 1과 2가 만나므로 {1}의 원점은 교점, $\hat x_1$은 두 축에 수직, $a_1=0$, $\alpha_1=90°$. 축 2와 3은 평행: $\alpha_2=0$, $a_2=L_2$, 공통 수선을 팔이 있는 평면에 잡아 $d=0$. 끝 {4}: $a_3=L_3$.
 | $i$ | $\alpha_{i-1}$ | $a_{i-1}$ | $d_i$ | $\phi_i$ |
@@ -90,7 +101,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
         sol: R`$J=\begin{bmatrix}-0.866&-0.866\\1.5&0.5\end{bmatrix}$, $A=JJ^T=\begin{bmatrix}1.5&-1.732\\-1.732&2.5\end{bmatrix}$. $\operatorname{tr}=4$, $\det=0.75$ → $\lambda=2\pm1.803$. $\mu_1=\sqrt{3.803/0.197}=4.39$.` },
       { ch: 'ch16', type: 'num', lv: 2, pts: 8, q: R`$L_1=1$, $L_2=0.8$인 2R 팔이 목표 $(1.2,0.6)$에 닿는 해 중 $\theta_2>0$인 것의 $\theta_2$ (rad)는?`, ans: 'acos(0.1)', ansTex: R`1.471`,
         sol: R`$\cos\theta_2=(1.44+0.36-1-0.64)/1.6=0.1$.` },
-      { ch: 'ch14', type: 'open', lv: 3, pts: 14, proof: true, q: R`바닥이 $\hat z$ 둘레로 도는 회전 관절($\theta_1$) 위에 팔 방향으로 늘어나는 병진 관절($\theta_2$)이 있는 평면 RP 팔(영 자세 끝점 $(L_0,0,0)$). (1) 공간 야코비안의 두 열을 구하고, (2) 끝점 위치 $p$의 속도 $\dot p=J_p\dot\theta$의 $2\times2$ 행렬 $J_p$를 구해 특이점을 찾고 그 뜻을 설명하세요.`,
+      { ch: 'ch14', type: 'open', lv: 3, pts: 14, proof: true, q: R`바닥이 $\hat z$ 둘레로 도는 회전 관절($\theta_1$) 위에 팔 방향으로 늘어나는 병진 관절($\theta_2$)이 있는 평면 RP 팔(영 자세 끝점 $(L_0,0,0)$, 그림).
+
+:::fig mRP bare
+:::
+
+(1) 공간 야코비안의 두 열을 구하고, (2) 끝점 위치 $p$의 속도 $\dot p=J_p\dot\theta$의 $2\times2$ 행렬 $J_p$를 구해 특이점을 찾고 그 뜻을 설명하세요.`,
         sol: R`
 (1) $J_{s1}=\mathcal S_1=(0,0,1,0,0,0)$. $J_{s2}=[\mathrm{Ad}_{e^{[\mathcal S_1]\theta_1}}]\mathcal S_2$: 병진 방향 $(1,0,0)$이 $\theta_1$만큼 돌아 $(0,0,0,\cos\theta_1,\sin\theta_1,0)$.
 (2) $r=L_0+\theta_2$, $p=(r\cos\theta_1,r\sin\theta_1)$. $\dot p=v_s+\omega_s\times p$에서 관절 1의 기여 $\dot\theta_1\hat z\times p=\dot\theta_1(-r\sin\theta_1,r\cos\theta_1)$, 관절 2의 기여 $\dot\theta_2(\cos\theta_1,\sin\theta_1)$.

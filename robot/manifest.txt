@@ -30,9 +30,14 @@ fig-more.js
 fig-mid1.js
 fig-ps.js
 fig-past.js
+fig-mech.js
+fig-ps4.js
 quiz-ps1.js
 quiz-ps2.js
 quiz-ps3.js
+quiz-ps4.js
 past-m1.js
+atlas.js
 quizprep-ps2.js
 quizprep-ps13.js
+quizprep-ps4.js

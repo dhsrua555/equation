@@ -877,6 +877,30 @@ a.chip.quizc:hover { border-color: var(--camel-ink); }
 .sec-quiz { margin-block: -6px 18px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.84rem; }
 .sec-quiz a { color: var(--camel-ink); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--camel) 45%, transparent); }
 .sec-quiz a:hover { border-bottom-color: var(--camel-ink); }
+/* 그림 도감(로봇공학의 기구 도감): 절 제목 아래의 항목 링크, 본문의 [[atlas:…]] 링크, 도감 쪽 */
+.sec-atl { align-items: baseline; }
+.sec-atl .caps, .atl-where .caps { color: var(--ink-3); font-size: 0.68rem; margin-right: 2px; }
+.sec-atl a, .atl-where a { color: var(--denim); border-bottom-color: color-mix(in srgb, var(--denim) 45%, transparent); }
+.sec-atl a:hover, .atl-where a:hover { border-bottom-color: var(--denim); }
+a.atl { color: inherit; text-decoration: none; border-bottom: 1px dashed color-mix(in srgb, var(--denim) 70%, transparent); }
+a.atl::after { content: "도감"; font-family: var(--f-caps); font-size: 0.6em; font-weight: 600; letter-spacing: 0.04em; color: var(--denim); margin-left: 3px; vertical-align: 0.4em; }
+a.atl:hover { border-bottom-style: solid; }
+.atl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 30px; }
+.atl-card { display: grid; grid-template-rows: auto 1fr auto; gap: 4px; padding: 10px 10px 9px; border: 1px solid var(--rule); border-radius: 12px; text-decoration: none; color: var(--ink-2); background: var(--paper); transition: border-color 0.2s, transform 0.2s var(--ease-out); }
+.atl-card:hover { border-color: var(--ink-3); color: var(--ink); transform: translateY(-1px); }
+.atl-thumb.fig { margin: 0; display: block; }
+.atl-thumb.fig > svg { width: 100%; height: 92px; max-width: none; }
+.atl-card b { font-size: 0.82rem; font-weight: 600; color: var(--ink); line-height: 1.35; }
+.atl-card b i { font-style: normal; font-family: var(--f-caps); font-size: 0.72rem; color: var(--ink-3); margin-right: 6px; letter-spacing: 0.04em; }
+.atl-card small { font-size: 0.72rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.atl-en { font-family: var(--f-body); font-size: 0.62em; font-weight: 400; color: var(--ink-3); margin-left: 6px; letter-spacing: 0; }
+.atl-count { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; padding: 10px 14px; border: 1px solid var(--rule); border-radius: 10px; font-size: 0.92rem; }
+.atl-count .caps { color: var(--ink-3); font-size: 0.66rem; }
+.atl-count .atl-real { margin-left: auto; color: var(--ink-2); }
+.atl-count .atl-real b { color: var(--ink); font-size: 1.1em; }
+.atl-sec + .atl-sec { margin-top: 3.2em; }
+.sec > .atl-where { margin-block: 18px 0; }
+@media (max-width: 760px) { .atl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .atl-count .atl-real { margin-left: 0; } }
 .pf-ch .chip.hand { margin-left: auto; font-size: 0.68rem; }
 .pf-src { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 0.86rem; color: var(--ink-2); }
 .pf-chip.hand-chip { border-color: var(--hand); color: var(--hand); }

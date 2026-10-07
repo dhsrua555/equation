@@ -216,7 +216,7 @@
   }
 
   // ---------- find across fields ----------
-  const KIND = { u: '단원', s: '절', k: '핵심 공식', p: '증명' };
+  const KIND = { u: '단원', s: '절', k: '핵심 공식', p: '증명', a: '도감' };
   const norm = (s) => String(s || '').toLowerCase().replace(/\\([a-z]+)/g, '$1').replace(/[\s{}$^_\\()[\],.·:;'"`~!?=+*/|<>–—-]/g, '');
   const ENTRIES = [];
   Object.keys(NET.search || {}).forEach((fid) => {
@@ -228,7 +228,7 @@
   function findSection() {
     return `<section class="hub-find" id="find"><div class="wrap">
       <div class="section-head"><div><span class="caps">Chercher</span><h2>모든 분야에서 찾기</h2></div>
-        <p class="lede">단원·절 제목, 핵심 공식 상자, 증명을 분야를 가리지 않고 찾습니다. 한글 이름과 영어 용어 모두 됩니다. 예: 테일러, 연쇄법칙, Jensen, 라플라스, 헤시안.</p></div>
+        <p class="lede">단원·절 제목, 핵심 공식 상자, 증명, 로봇공학의 기구 도감을 분야를 가리지 않고 찾습니다. 한글 이름과 영어 용어 모두 됩니다. 예: 테일러, 연쇄법칙, Jensen, 라플라스, 헤시안.</p></div>
       <div class="pf-search"><label class="sr-only" for="hub-q">찾을 개념</label>
         <input id="hub-q" type="search" autocomplete="off" spellcheck="false" placeholder="찾을 개념이나 정리 (예: 테일러, chain rule, 코시)">
         <span class="pf-count" id="hub-count">${ENTRIES.length}개 항목</span></div>
@@ -240,13 +240,13 @@
     const terms = norm(q) ? q.split(/\s+/).map(norm).filter(Boolean) : [];
     if (!terms.length) { box.innerHTML = ''; cnt.textContent = `${ENTRIES.length}개 항목`; return; }
     const hits = ENTRIES.filter((e) => terms.every((t) => e.key.includes(t)));
-    const rank = { u: 0, s: 1, k: 2, p: 3 };
+    const rank = { u: 0, s: 1, k: 2, a: 2, p: 3 };
     hits.sort((a, b) => (rank[a.t] - rank[b.t]) || a.fid.localeCompare(b.fid));
     cnt.textContent = `${hits.length}개 찾음`;
     box.innerHTML = hits.slice(0, 40).map((e) => {
       const f = byId[e.fid];
-      const route = e.t === 'p' ? `pf-${e.pid}` : e.k ? `${e.ch}-k${e.k}` : e.ch;
-      const where = `${pad(e.ch.slice(2))} ${(NET.index[e.fid].chapters || {})[e.ch] || ''}${e.k && e.t !== 'u' ? ` · §${e.k}` : ''}`;
+      const route = e.t === 'a' ? `atlas-${e.id}` : e.t === 'p' ? `pf-${e.pid}` : e.k ? `${e.ch}-k${e.k}` : e.ch;
+      const where = e.t === 'a' ? [e.lab, e.tags].filter(Boolean).join(' · ') : `${pad(e.ch.slice(2))} ${(NET.index[e.fid].chapters || {})[e.ch] || ''}${e.k && e.t !== 'u' ? ` · §${e.k}` : ''}`;
       return `<li><a href="${esc(url(f, route))}"><span class="kind" data-f="${e.fid}">${esc(f.short)} · ${KIND[e.t]}</span><b>${esc(e.title.replace(/\$/g, ''))}</b><small>${esc(where)}</small></a></li>`;
     }).join('') + (hits.length > 40 ? `<li class="more">그 밖에 ${hits.length - 40}개. 검색어를 더 적어 보세요.</li>` : '');
   }
