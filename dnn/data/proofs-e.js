@@ -11,9 +11,13 @@ EM.proofs = EM.proofs || [];
     stmt: R`(i) $\E[aX+bY+c]=a\E X+b\E Y+c$ (ii) $\Var X=\E X^2-(\E X)^2$, $\Var(aX+b)=a^2\Var X$ (iii) $X,Y$ 독립이면 $\E[XY]=\E X\E Y$, $\Var(X+Y)=\Var X+\Var Y$ (iv) i.i.d.이고 분산 $\sigma^2$이면 $\Var(\bar X)=\sigma^2/n$.`,
     body: R`
 이산 확률변수로 씁니다(연속이면 합을 적분으로).
+
 **(i)** $\E[aX+bY+c]=\sum_{x,y}(ax+by+c)p(x,y)=a\sum_xx\sum_yp(x,y)+b\sum_yy\sum_xp(x,y)+c=a\E X+b\E Y+c$ (주변분포 $\sum_yp(x,y)=p(x)$). 독립은 필요 없습니다.
+
 **(ii)** $\mu=\E X$. $\Var X=\E[(X-\mu)^2]=\E[X^2-2\mu X+\mu^2]=\E X^2-2\mu^2+\mu^2=\E X^2-\mu^2$ ((i) 사용). $\Var(aX+b)=\E[(aX+b-a\mu-b)^2]=a^2\E[(X-\mu)^2]$.
+
 **(iii)** 독립이면 $p(x,y)=p(x)p(y)$이므로 $\E[XY]=\sum_{x,y}xyp(x)p(y)=\big(\sum_xxp(x)\big)\big(\sum_yyp(y)\big)$. $\Var(X+Y)=\E[(X-\E X+Y-\E Y)^2]=\Var X+\Var Y+2\Cov(X,Y)$, $\Cov(X,Y)=\E[XY]-\E X\E Y=0$.
+
 **(iv)** (iii)을 $n$개로 반복하면 $\Var\sum X_i=\sum\Var X_i=n\sigma^2$, (ii)로 $\Var(\frac1n\sum X_i)=\frac{n\sigma^2}{n^2}=\frac{\sigma^2}n$.`,
     note: R`(iv)는 미니배치 기울기의 분산이 $1/B$로 줄어드는 이유(10.2절), 초기화의 분산 계산(11.2절), 편향-분산 분해(2.8절)에서 모두 씁니다.` },
   { ch: 'ch02', id: 'mapridge', title: '가우시안 평균의 MAP은 릿지다 (Problem Set 1 문제 2)', keys: ['가우시안 MAP은 릿지'],
@@ -23,7 +27,9 @@ EM.proofs = EM.proofs || [];
 **MAP의 꼴.** 베이즈 정리로 $p(\theta\mid X)\propto p(X\mid\theta)p(\theta)=\prod_i\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}\cdot\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}$. 로그를 취하면
 $$\log p(\theta\mid X)=-\frac12\sum_i(X_i-\theta)^2-\frac{\theta^2}{2\tau^2}+C\qquad(C\text{는 }\theta\text{와 무관}).$$
 $\log$가 순증가이므로 사후밀도의 최대점 = 로그의 최대점. $-2$를 곱하면 최대화가 최소화로: $\argmin_\theta\sum(X_i-\theta)^2+\frac1{\tau^2}\theta^2$.
+
 **풀이.** $g(\theta)=\sum(X_i-\theta)^2+\lambda\theta^2$는 $g''=2(n+\lambda)>0$인 이차함수. $g'(\theta)=-2\sum X_i+2(n+\lambda)\theta=0$에서 $\theta=\frac{n\bar X}{n+\lambda}=\frac{n\tau^2}{n\tau^2+1}\bar X$.
+
 **사후분포.** 지수부 $-\frac12\big[(n+\lambda)\theta^2-2n\bar X\theta\big]+C$를 완전제곱하면 $-\frac{n+\lambda}2(\theta-a\bar X)^2+C'$. 가우시안 $\N\big(a\bar X,\frac1{n+\lambda}\big)$이고, 대칭이므로 MAP = 사후평균 = $a\bar X$.`,
     note: R`일반 선형모델 $y=X\beta+\varepsilon$, $\varepsilon\sim\N(0,\sigma^2I)$, $\beta\sim\N(0,\tau^2I)$로 넓히면 $\lambda=\sigma^2/\tau^2$인 릿지 $(\lambda I+X^TX)^{-1}X^Ty$ (4.3절). 문제 2는 $X$가 1로 된 열 하나, $\sigma^2=1$인 경우입니다.` },
   { ch: 'ch02', id: 'biasvar', title: '편향-분산 분해와 수축 추정량의 MSE (Problem Set 1 문제 2)', keys: ['편향-분산 분해'],
@@ -33,6 +39,7 @@ $\log$가 순증가이므로 사후밀도의 최대점 = 로그의 최대점. $-
 $b=\E\hat\theta-\theta$는 확률변수가 아닌 **상수**입니다(기댓값은 참값 $\theta$를 고정한 표본분포에 대해). $\hat\theta-\theta=(\hat\theta-\E\hat\theta)+b$로 쪼개어
 $$\E(\hat\theta-\theta)^2=\E(\hat\theta-\E\hat\theta)^2+2b\,\E(\hat\theta-\E\hat\theta)+b^2.$$
 가운데 항: $\E(\hat\theta-\E\hat\theta)=\E\hat\theta-\E\hat\theta=0$. 첫 항은 $\Var(\hat\theta)$의 정의. 따라서 $\mathrm{MSE}=b^2+\Var\hat\theta$.
+
 **수축 추정량.** $\E\bar X=\theta$, $\Var\bar X=1/n$ (i.i.d.). $\E[a\bar X]=a\theta$ → 편향 $(a-1)\theta$; $\Var(a\bar X)=a^2/n$. MSE $=(1-a)^2\theta^2+\frac{a^2}n$. $a=\frac{n\tau^2}{n\tau^2+1}$을 넣으면 $1-a=\frac1{n\tau^2+1}$이고 $\mathrm{MSE}=\frac{\theta^2+n\tau^4}{(n\tau^2+1)^2}$.`,
     note: R`$\bar X$ (MLE)의 MSE $1/n$보다 작을 필요충분조건은 $\theta^2<2\tau^2+\frac1n$. 편향을 조금 받아들이고 분산을 줄이는 거래가 규제의 핵심입니다.` },
   // ───── 03
@@ -41,9 +48,13 @@ $$\E(\hat\theta-\theta)^2=\E(\hat\theta-\E\hat\theta)^2+2b\,\E(\hat\theta-\E\hat
     stmt: R`$m=\frac12(p+q)$, $D_{JS}(p\Vert q)=\frac12\KL(p\Vert m)+\frac12\KL(q\Vert m)$에 대해 (i) $D_{JS}\ge0$ (ii) $D_{JS}=0\iff p=q$ (iii) $D_{JS}(p\Vert q)=D_{JS}(q\Vert p)$ (iv) $D_{JS}\le\log2$, 등호는 $p,q$의 받침이 서로소일 때.`,
     body: R`
 **준비.** $m\ge0$, $\sum_xm(x)=\frac12+\frac12=1$이라 $m$은 확률분포. $p(x)>0$이면 $m(x)\ge\frac12p(x)>0$이므로 $\KL(p\Vert m)$은 분모가 0이 되는 항이 없어 유한합니다($q$도 같음). Theorem 1: $\KL(a\Vert b)\ge0$이고 등호 $\iff a=b$.
+
 **(i)** 두 KL이 모두 $\ge0$이므로 그 평균도 $\ge0$.
+
 **(ii)** ($\Leftarrow$) $p=q\Rightarrow m=p\Rightarrow\KL(p\Vert m)=\KL(q\Vert m)=0$. ($\Rightarrow$) $D_{JS}=0$이면 음이 아닌 두 수의 합이 0이라 둘 다 0: $\KL(p\Vert m)=0$, $\KL(q\Vert m)=0$. Theorem 1의 등호 조건으로 $p=m=q$.
+
 **(iii)** $m$이 $p,q$에 대해 대칭이므로 순서를 바꾸면 두 항의 순서만 바뀝니다.
+
 **(iv)** $p(x)>0$에서 $\frac{p(x)}{m(x)}=\frac{2p(x)}{p(x)+q(x)}\le2$, 등호는 $q(x)=0$. 따라서 $\KL(p\Vert m)\le\sum_{p>0}p\log2=\log2$ (등호 $\iff$ $p>0$인 곳에서 $q=0$). 대칭으로 $\KL(q\Vert m)\le\log2$. 평균 $\le\log2$, 등호는 모든 $x$에서 $p(x)q(x)=0$.`,
     note: R`엔트로피로 쓰면 $D_{JS}=H(m)-\frac{H(p)+H(q)}2$ (엔트로피의 오목성 = 비음성). 공정한 동전 $Z$로 $p$ 또는 $q$에서 뽑은 $X$에 대해 $D_{JS}(p\Vert q)=I(X;Z)\le H(Z)=\log2$. $\sqrt{D_{JS}}$는 거리 함수입니다.` },
   // ───── 07
@@ -77,8 +88,11 @@ $$\E_tf(x_{t+1})\le f(x_t)-\eta_t\lVert\nabla f(x_t)\rVert^2+\frac{L\eta_t^2}2G.
     stmt: R`$f(x)=\frac12x^THx$ ($H\succ0$, 고윳값 $\lambda_{\min}\le\dots\le\lambda_{\max}$)에 GD $x_{t+1}=x_t-\alpha Hx_t$를 쓰면 고유방향 성분이 $(1-\alpha\lambda_i)^t$배가 된다. 수렴 $\iff0<\alpha<2/\lambda_{\max}$, 최적의 고정 $\alpha$에서 축소율은 $\frac{\kappa-1}{\kappa+1}$ ($\kappa=\lambda_{\max}/\lambda_{\min}$). 수업의 예 $H=\diag(1,100)$에서는 $x_{1,t+1}=(1-\alpha)x_{1,t}$, $x_{2,t+1}=(1-100\alpha)x_{2,t}$.`,
     body: R`
 $H=Q\Lambda Q^T$ (직교 $Q$). $u_t=Q^Tx_t$이면 $u_{t+1}=Q^T(I-\alpha H)Qu_t=(I-\alpha\Lambda)u_t$, 즉 $u_{t+1,i}=(1-\alpha\lambda_i)u_{t,i}$. 수업의 예는 $H$가 이미 대각이라 $Q=I$.
+
 **수렴.** 모든 초기값에서 $u_t\to0$ $\iff$ 모든 $i$에서 $\lvert1-\alpha\lambda_i\rvert<1$ $\iff$ $0<\alpha\lambda_i<2$ $\iff$ $\alpha<2/\lambda_{\max}$.
+
 **최적 고정 학습률.** $\phi(\alpha)=\max_i\lvert1-\alpha\lambda_i\rvert=\max(\lvert1-\alpha\lambda_{\min}\rvert,\lvert1-\alpha\lambda_{\max}\rvert)$. 첫째는 $\alpha\le1/\lambda_{\min}$에서 감소, 둘째는 $\alpha\ge1/\lambda_{\max}$에서 증가하므로 최소는 $1-\alpha\lambda_{\min}=\alpha\lambda_{\max}-1$, $\alpha=\frac2{\lambda_{\max}+\lambda_{\min}}$. 값 $\frac{\lambda_{\max}-\lambda_{\min}}{\lambda_{\max}+\lambda_{\min}}=\frac{\kappa-1}{\kappa+1}$.
+
 **수업 수치.** $\alpha=0.019$: $x_1$ 축소율 $0.981$, $x_2$는 $-0.9$ (부호가 번갈아 바뀌는 진동). $(-5,-1)\to(-4.905,0.9)\to(-4.812,-0.81)\to(-4.720,0.729)$.`,
     note: R`오차를 $1/e$로 줄이는 데 약 $\frac{\kappa}{2}$걸음. 최적 모멘텀은 이것을 $\frac{\sqrt\kappa-1}{\sqrt\kappa+1}$ (약 $\frac{\sqrt\kappa}2$걸음)로 바꿉니다.` },
   { ch: 'ch14', id: 'heavyball', title: '모멘텀의 두 형태와 펼친 식', keys: ['모멘텀 (heavy ball)', '모멘텀의 펼친 식'], src: '강의 필기 · W5 월',
@@ -118,8 +132,11 @@ $A_{t,j}=\sum_{k=1}^tg_{k,j}^2$.
     stmt: R`$m_t=\beta_1m_{t-1}+(1-\beta_1)g_t$, $m_0=0$이면 $m_t=(1-\beta_1)\sum_{k=1}^t\beta_1^{t-k}g_k$이고, $\E g_k=\bar g$ (모든 $k$)이면 $\E m_t=(1-\beta_1^t)\bar g$. 따라서 $\hat m_t=m_t/(1-\beta_1^t)$는 불편. 편향 보정된 Adam의 첫걸음은 $\alpha\operatorname{sign}(g_1)$ ($\epsilon$ 무시)이고, 보정이 없으면 $\frac{1-\beta_1}{\sqrt{1-\beta_2}}\alpha$ (기본값에서 약 $3.16\alpha$).`,
     body: R`
 **펼치기.** $m_1=(1-\beta_1)g_1$; $m_t=\beta_1m_{t-1}+(1-\beta_1)g_t$에 귀납 가정을 넣으면 $(1-\beta_1)\big(\sum_{k<t}\beta_1^{t-k}g_k+g_t\big)$.
+
 **기댓값.** $\E m_t=(1-\beta_1)\bar g\sum_{k=1}^t\beta_1^{t-k}=(1-\beta_1)\bar g\cdot\frac{1-\beta_1^t}{1-\beta_1}=(1-\beta_1^t)\bar g$. 같은 계산으로 $\E m_{2,t}=(1-\beta_2^t)\overline{g^2}$.
+
 **첫걸음.** $t=1$: $\hat m_1=\frac{(1-\beta_1)g_1}{1-\beta_1}=g_1$, $\hat m_2=\frac{(1-\beta_2)g_1^2}{1-\beta_2}=g_1^2$. 걸음 $\alpha\frac{g_1}{\sqrt{g_1^2}}=\alpha\operatorname{sign}(g_1)$ (성분별).
+
 **보정이 없으면** $\alpha\frac{(1-\beta_1)g_1}{\sqrt{(1-\beta_2)g_1^2}}=\frac{1-\beta_1}{\sqrt{1-\beta_2}}\alpha\operatorname{sign}(g_1)$. $\beta_1=0.9$, $\beta_2=0.999$이면 $\frac{0.1}{0.0316}\approx3.16$배.`,
     note: R`$\hat m_1/\sqrt{\hat m_2}$는 “기울기 평균 ÷ 기울기 RMS”라 성분별로 대략 $[-1,1]$에 있어, Adam의 걸음은 대략 $\alpha$ 이하로 제한됩니다. 기본값 $\beta_1=0.9$, $\beta_2=0.999$, $\alpha=10^{-3}$ 또는 $5\times10^{-4}$.` },
   );

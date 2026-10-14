@@ -1210,3 +1210,119 @@ details.sol[open] > summary::before { transform: rotate(180deg); }
 }
 .sim-sel { display: inline-flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--ink-2); }
 .sim-sel select { font: inherit; font-size: 0.84rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule-strong); border-radius: 999px; padding: 5px 12px; max-width: 100%; }
+
+/* ---------- logic maps (EM.maps, EM.plans) ----------
+   A unit opens with its story in plain words and a diagram of how the ideas lead to one another; each section then
+   starts with a track of the map's numbers (behind you, here, ahead) and a signpost saying what this step does.
+   Long proofs get the same: a roadmap under the statement and a signpost at each step. */
+.lm-unit .lm-cap { display: block; color: var(--camel-ink); }
+.lm-unit .lm-cap + .lm-easy { margin-top: 0.5em; }
+.lm-easy > * + * { margin-top: 0.75em; }
+.lm { border: 1px solid var(--rule-strong); background: var(--paper-3); padding: 16px 18px 14px; }
+.lm > * + * { margin-top: 12px; }
+.lm-top { display: flex; align-items: center; gap: 10px; }
+.lm-top .caps { color: var(--denim); }
+.lm-top .ko-card { margin-left: auto; }
+.lm-pf { margin-top: 26px; }
+.lm-pf .lm-easy { font-size: 0.97rem; line-height: 1.75; }
+.lm-graph { padding-top: 10px; font-size: 0.86rem; line-height: 1.35; }
+.lm-row { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); align-items: stretch; }
+.lm-node {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  margin-inline: max(6px, calc(50% - 128px)); padding: 10px 10px 8px 12px; min-width: 0;
+  color: var(--ink); text-decoration: none; background: var(--paper); border: 1px solid var(--rule-strong); border-radius: var(--radius);
+  overflow-wrap: break-word; transition: border-color 0.15s, transform 0.15s var(--ease-out, ease);
+}
+.lm-node:hover { border-color: var(--ink-2); transform: translateY(-1px); }
+.lm-node b { font-weight: 600; font-size: 0.9rem; line-height: 1.3; max-width: 100%; }
+.lm-node .lm-no { position: absolute; top: -9px; left: -8px; }
+.lm-node .ko-t { font-size: 0.78rem; }
+.lm-sec { margin-top: auto; padding-top: 3px; font-family: var(--f-caps); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--ink-3); }
+.lm-role { font-family: var(--f-caps); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+.lm-no {
+  display: inline-grid; place-items: center; flex: none; width: 19px; height: 19px; border-radius: 50%;
+  background: var(--ink); color: var(--paper); font-family: var(--f-caps); font-size: 0.64rem; font-weight: 600; font-style: normal; line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.r-res .lm-no { background: var(--denim); }
+.lm-node.r-res { border: 1.5px solid var(--denim); background: color-mix(in srgb, var(--denim) 9%, var(--paper)); }
+.lm-node.r-q { border-style: dashed; }
+.r-res .lm-role { color: var(--denim); }
+.r-lim .lm-role { color: var(--bad); }
+.r-alt .lm-role, .r-fix .lm-role, .r-app .lm-role { color: var(--camel-ink); }
+.r-check .lm-role { color: var(--ok); }
+.lm-gap { position: relative; height: 50px; }
+.lm-gap-none { height: 22px; }
+.lm-gap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.lm-gap path { fill: none; stroke: var(--ink-3); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.lm-head { position: absolute; bottom: -1px; width: 0; height: 0; border-inline: 5px solid transparent; border-top: 7px solid var(--ink-3); transform: translateX(-50%); }
+.lm-el {
+  position: absolute; top: 50%; transform: translate(-50%, -54%); width: max-content; padding: 1px 6px;
+  font-size: 0.72rem; line-height: 1.25; text-align: center; color: var(--ink-2); background: var(--paper-3); border-radius: 3px;
+}
+.lm-el .ko-t { font-size: 0.92em; }
+.lm-hint { font-size: 0.8rem; line-height: 1.55; color: var(--ink-3); }
+.lm-legend > summary { cursor: pointer; font-size: 0.84rem; color: var(--ink-2); }
+.lm-legend[open] > summary { margin-bottom: 10px; }
+.lm-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; font-size: 0.9rem; line-height: 1.5; }
+.lm-steps > li { position: relative; display: grid; grid-template-columns: 19px minmax(0, 1fr); column-gap: 12px; padding-bottom: 12px; }
+.lm-steps > li:not(.lm-g)::before { content: ""; position: absolute; left: 9px; top: 19px; bottom: 0; border-left: 1px solid var(--rule-strong); }
+.lm-steps > li:last-child { padding-bottom: 0; }
+.lm-steps > li:last-child::before, .lm-steps > li:has(+ .lm-g)::before { display: none; }
+.lm-steps a { display: contents; color: var(--ink); text-decoration: none; }
+.lm-steps a b { font-weight: 600; }
+.lm-steps a:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.lm-steps .lm-d { grid-column: 2; color: var(--ink-2); font-size: 0.94em; }
+.lm-steps > li.lm-g { display: block; padding: 4px 0 8px; font-family: var(--f-caps); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--camel-ink); }
+.lm-steps > li.lm-g .ko-t { letter-spacing: 0; }
+.lm-steps > li + li.lm-g { padding-top: 6px; border-top: 1px dashed var(--rule); }
+.lm-steps.lm-under { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+/* the track and the signposts */
+.lm-dots {
+  display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; text-decoration: none;
+  background: linear-gradient(var(--rule-strong), var(--rule-strong)) center / 100% 1px no-repeat;
+}
+.lm-dots i {
+  display: inline-grid; place-items: center; width: 17px; height: 17px; flex: none; border-radius: 50%;
+  border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink-3);
+  font-family: var(--f-caps); font-size: 0.58rem; font-weight: 600; font-style: normal; line-height: 1; font-variant-numeric: lining-nums tabular-nums;
+}
+.lm-dots i.done { background: color-mix(in srgb, var(--ink) 16%, var(--paper)); border-color: transparent; color: var(--ink-2); }
+.lm-dots i.cur { background: var(--denim); border-color: var(--denim); color: var(--paper); }
+.lm-dots:hover i { border-color: var(--ink-3); }
+.lm-mark {
+  display: grid; gap: 6px; padding: 10px 14px 11px; font-size: 0.88rem; line-height: 1.5;
+  border-left: 2px solid var(--denim); background: color-mix(in srgb, var(--denim) 6%, transparent);
+}
+.lm-mark.r-lim { border-left-color: var(--bad); background: color-mix(in srgb, var(--bad) 5%, transparent); }
+.lm-mark.r-alt, .lm-mark.r-fix, .lm-mark.r-app { border-left-color: var(--camel); background: color-mix(in srgb, var(--camel) 7%, transparent); }
+.lm-here { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 9px; }
+.lm-here b { font-weight: 600; color: var(--ink); }
+.lm-here .ko-t { flex-basis: 100%; }
+.lm-mark .lm-d { color: var(--ink-2); }
+.lm-mark .bi { padding-right: 34px; }
+.lm-mark .bi .ko-btn { top: 0; }
+.lm-list .lm-here a { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; color: var(--ink); text-decoration: none; }
+.lm-list .lm-here a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sec > .lm-mark.lm-at { margin-top: 2.2em; }
+.sec > .lm-mark.lm-at + h3.sub { margin-top: 0.75em; }
+.pf-body > .lm-mark.lm-at { margin-top: 1.6em; }
+.lm-tn { display: inline-flex; flex-wrap: wrap; gap: 3px; margin-left: 6px; font-style: normal; vertical-align: 1px; }
+.lm-tn i {
+  display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--rule-strong);
+  font-family: var(--f-caps); font-size: 0.52rem; font-style: normal; line-height: 1; color: var(--ink-3);
+}
+.toc a.active .lm-tn i { border-color: var(--denim); color: var(--denim); }
+.chip.lm-chip { border-color: var(--denim); color: var(--denim); }
+@media (max-width: 560px) {
+  .lm { padding: 14px 10px 12px; }
+  .lm-graph { font-size: 0.78rem; }
+  .lm-node { margin-inline: max(3px, calc(50% - 128px)); padding: 9px 6px 7px 9px; }
+  .lm-node b { font-size: 0.8rem; }
+  .lm-node .lm-no { left: -5px; }
+  .lm-role { font-size: 0.54rem; letter-spacing: 0.1em; }
+  .lm-gap { height: 46px; }
+  .lm-el { font-size: 0.64rem; padding: 1px 3px; }
+  .lm-mark { padding: 9px 10px 10px; }
+  .lm-mark .bi { padding-right: 0; }
+}

@@ -316,7 +316,8 @@
   function sectionHTML(c, sec, idx) {
     NOTES = [];
     NOTEKEY = `${c.id}-${idx}`;
-    const body = mdOf(sec, 'body');
+    const lm = secMarks(c, sec);
+    const body = lm ? mdMarked(sec, 'body', lm.before) : mdOf(sec, 'body');
     const notes = NOTES;
     const key = NOTEKEY;
     NOTES = null;
@@ -328,6 +329,7 @@
       ${where ? `<p class="sec-page caps">${esc(where)}</p>` : ''}
       ${worked.length ? `<p class="sec-quiz">${worked.map((x) => `<a href="#${x.b.key}-${x.id}" data-route="${x.b.key}-${x.id}">${esc(x.b.label)} · ${esc(x.q.short || x.q.title)} ${esc(x.p.label || x.p.id)} ${esc(x.p.title)} →</a>`).join('')}</p>` : ''}
       ${sec.k ? atlasChips(`${c.id}:${sec.k}`) : ''}
+      ${lm ? lm.head : ''}
       ${body}
       ${notes.length ? `<aside class="xnotes" aria-label="다른 단원과의 연결"><span class="caps">연결 주석</span><ol>${notes.map((n, i) => `
         <li id="fn-${key}-${i + 1}"><button class="fn-back" data-act="scroll" data-target="fnref-${key}-${i + 1}" aria-label="본문으로 돌아가기">${n.tg && n.tg.ext ? '↗' : '※'}${i + 1}</button>
@@ -713,6 +715,153 @@
   }
   // one KO switch for a whole problem card (its statement, choices and hint)
   const koCard = (p) => (BI && p.enData ? '<button class="ko-btn ko-card" type="button" data-act="ko-card" aria-pressed="false" aria-label="이 문제의 한국어 번역 보기" title="한국어 번역">KO</button>' : '');
+
+  // ---------- logic maps ----------
+  // EM.maps: a unit's story in plain words and a diagram of how its ideas lead to one another. Each node names the section (k)
+  // and, with `at`, the start of the piece of its Korean body (a "### " heading, a paragraph, a ::: box) where that step begins;
+  // every section then opens with a trail that marks where the reader is on the map. EM.plans does the same for a long proof
+  // (key: proof pid, `at` inside the proof body). Without `rows` a plan draws as a numbered roadmap instead of a diagram.
+  const MAPS = new Map((EM.maps || []).map((m) => [m.n, m]));
+  const PLANS = EM.plans || {};
+  const LM_ROLE = {
+    q: ['Question', '질문'], def: ['Definition', '정의'], idea: ['Picture', '직관'], tool: ['Tool', '도구'], step: ['Derivation', '유도'],
+    res: ['Result', '결론'], check: ['Check', '확인'], ex: ['Example', '예제'], app: ['Application', '응용'], alt: ['Another route', '다른 길'],
+    lim: ['Limit', '한계'], fix: ['Remedy', '해결책'], view: ['Viewpoint', '관점'],
+  };
+  const lmRole = (r) => (LM_ROLE[r] ? LM_ROLE[r][BI ? 0 : 1] : '');
+  const bil = (ko, en) => (BI && en ? `${inline(en)}${koT(ko)}` : inline(ko || ''));
+  const bilP = (ko, en, cls) => (BI && en ? koPair(`<p class="${cls}">${inline(en)}</p>`, `<p class="${cls}">${inline(ko)}</p>`) : `<p class="${cls}">${inline(ko)}</p>`);
+  const lmKo = BI ? '<button class="ko-btn ko-card" type="button" data-act="ko-card" aria-pressed="false" aria-label="지도의 한국어 보기" title="한국어">KO</button>' : '';
+  function lmPrep(m) {
+    if (m.byId) return m;
+    m.byId = new Map();
+    m.nodes.forEach((nd, i) => { nd.no = i + 1; m.byId.set(nd.id, nd); });
+    (m.rows || []).forEach((row, r) => row.forEach((id, k) => {
+      const nd = id && m.byId.get(id);
+      if (nd) { nd.row = r; nd.x = (k + 0.5) / row.length; }
+    }));
+    return m;
+  }
+  // does a piece of a body (scanSegs) open with the text a node names?
+  const lmAt = (seg, at) => { const s = seg.lines[0].trim(); return s.startsWith(at) || s.replace(/^###\s+/, '').startsWith(at); };
+  // a body drawn piece by piece with before(piece) in front of each piece (the same output as mdOf when before gives '')
+  function mdMarked(o, f, before) {
+    const B = scanSegs(o[f] || '');
+    const en = BI && o.enData && o.enData[f];
+    if (en) {
+      const A = scanSegs(en);
+      if (!segShape(A, B)) return bimd(en, o[f]);
+      return A.map((a, j) => before(B[j]) + biSeg(a, B[j])).join('');
+    }
+    return B.map((b) => before(b) + mdCore(b.lines)).join('');
+  }
+  // the numbered track: steps already passed, the current ones, the ones ahead
+  function lmDots(m, cur, mapId) {
+    const lo = Math.min(...cur);
+    return `<a class="lm-dots" href="#${mapId}" data-act="scroll" data-target="${mapId}" aria-label="${BI ? 'Back to the map' : '지도로 돌아가기'}">${m.nodes.map((nd) =>
+      `<i class="${cur.has(nd.no) ? 'cur' : nd.no < lo ? 'done' : ''}">${nd.no}</i>`).join('')}</a>`;
+  }
+  // a signpost where a step begins: its number, role and title, and what it does in the chain
+  function lmMark(m, nd, id, mapId, cls) {
+    return `<div class="lm-mark r-${nd.role || 'step'}${cls ? ` ${cls}` : ''}" id="${id}">
+      <p class="lm-here">${lmDots(m, new Set([nd.no]), mapId)}${nd.role ? `<span class="lm-role">${lmRole(nd.role)}</span>` : ''}<b>${bil(nd.t, nd.en)}</b></p>
+      ${nd.d ? bilP(nd.d, nd.dEn, 'lm-d') : ''}
+    </div>`;
+  }
+  function lmNode(nd, tg) {
+    return `<a class="lm-node r-${nd.role || 'step'}" href="${tg.href}" data-act="scroll" data-target="${tg.id}">
+      <span class="lm-no">${nd.no}</span>${nd.role ? `<span class="lm-role">${lmRole(nd.role)}</span>` : ''}<b>${bil(nd.t, nd.en)}</b>${nd.k ? `<span class="lm-sec">§${esc(nd.k)}</span>` : ''}</a>`;
+  }
+  // the arrows between two rows: curves in a stretched box (so they follow the page width), heads and labels placed in %
+  function lmGap(m, r) {
+    const es = (m.edges || []).map(([a, b, ko, en]) => ({ a: m.byId.get(a), b: m.byId.get(b), ko, en })).filter((e) => e.a && e.b && e.a.row === r && e.b.row === r + 1);
+    if (!es.length) return '<div class="lm-gap lm-gap-none"></div>';
+    const paths = es.map(({ a, b }) => { const x0 = (a.x * 1000).toFixed(1), x1 = (b.x * 1000).toFixed(1); return `<path d="M${x0} 0C${x0} 55 ${x1} 45 ${x1} 100"/>`; }).join('');
+    const heads = [...new Set(es.map((e) => e.b.x))].map((x) => `<i class="lm-head" style="left:${(x * 100).toFixed(2)}%"></i>`).join('');
+    const mids = es.map((e) => (e.a.x + e.b.x) / 2);
+    const labels = es.map((e, i) => {
+      if (!e.ko) return '';
+      let room = 0.5;
+      es.forEach((f, j) => { if (j !== i && f.ko) room = Math.min(room, Math.abs(mids[j] - mids[i])); });
+      return `<span class="lm-el" style="left:${(mids[i] * 100).toFixed(2)}%;max-width:${Math.max(18, room * 96).toFixed(1)}%">${bil(e.ko, e.en)}</span>`;
+    }).join('');
+    return `<div class="lm-gap"><svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${paths}</svg>${heads}${labels}</div>`;
+  }
+  function lmGraph(m, tgt) {
+    return `<div class="lm-graph">${m.rows.map((row, r) => `${r ? lmGap(m, r - 1) : ''}<div class="lm-row" style="--n:${row.length}">${row.map((id) =>
+      (id ? lmNode(m.byId.get(id), tgt(m.byId.get(id))) : '<span></span>')).join('')}</div>`).join('')}</div>`;
+  }
+  // the steps in order, each with what it does (the legend under a diagram, or a proof's whole roadmap)
+  function lmSteps(m, tgt, cls) {
+    return `<ol class="lm-steps${cls ? ` ${cls}` : ''}">${m.nodes.map((nd) => `${nd.g ? `<li class="lm-g">${bil(nd.g, nd.gEn)}</li>` : ''}<li class="r-${nd.role || 'step'}">
+      <a href="${tgt(nd).href}" data-act="scroll" data-target="${tgt(nd).id}"><span class="lm-no">${nd.no}</span><b>${bil(nd.t, nd.en)}</b></a>
+      ${nd.d ? `<span class="lm-d">${bil(nd.d, nd.dEn)}</span>` : ''}</li>`).join('')}</ol>`;
+  }
+  const lmTocNos = (m, sec) => { const h = m.nodes.filter((nd) => nd.k === sec.k); return h.length ? `<em class="lm-tn">${h.map((nd) => `<i>${nd.no}</i>`).join('')}</em>` : ''; };
+  const lmEasy = (m) => (BI && m.easyEn ? bimd(m.easyEn, m.easy) : md(m.easy));
+  const lmTx = (en, ko) => (BI ? `${en}${koT(ko)}` : ko);
+  // the first section of a unit's concept page: the plain-words story and the map
+  function unitMap(c) {
+    const m = MAPS.get(c.n);
+    if (!m) return '';
+    lmPrep(m);
+    const tgt = (nd) => ({ href: `#${c.id}-k${nd.k}`, id: `lm-${c.id}-${nd.id}` });
+    const hintKo = '아래의 각 절은 이 지도의 번호 띠로 시작합니다. 옅게 칠한 번호는 지나온 단계, 강조된 번호는 지금 읽는 단계입니다. 상자를 누르면 그 단계의 설명으로, 번호 띠를 누르면 이 지도로 옵니다.';
+    const hintEn = 'Every section below opens with this map’s track of numbers: the faintly filled ones are behind you, the highlighted one is where you are. Tap a box to jump to that step; tap a track to come back here.';
+    return `<section class="sec lm-unit" id="sec-map">
+      <div class="sec-title"><span>◇</span><h2>${lmTx('The unit at a glance', '이 단원 한눈에')}</h2></div>
+      <span class="caps lm-cap">${lmTx('In plain words', '쉽게 말하면')}</span>
+      <div class="lm-easy">${lmEasy(m)}</div>
+      <div class="lm">
+        <div class="lm-top"><span class="caps">${lmTx('Logic map', '논리 지도')}</span>${lmKo}</div>
+        ${m.rows ? lmGraph(m, tgt) : lmSteps(m, tgt)}
+        ${bilP(hintKo, BI ? hintEn : '', 'lm-hint')}
+        ${m.rows ? `<details class="lm-legend"><summary>${lmTx('What each step does', '단계마다 하는 일')}</summary>${lmSteps(m, tgt)}</details>` : ''}
+      </div>
+    </section>`;
+  }
+  // a section's opening trail and the signposts further down; null when the unit has no map
+  function secMarks(c, sec) {
+    const m = MAPS.get(c.n);
+    if (!m) return null;
+    lmPrep(m);
+    const here = m.nodes.filter((nd) => nd.k === sec.k);
+    if (!here.length) return null;
+    const id = (nd) => `lm-${c.id}-${nd.id}`;
+    const top = here.filter((nd) => !nd.at);
+    const later = here.filter((nd) => nd.at);
+    const head = top.length ? top.map((nd) => lmMark(m, nd, id(nd), 'sec-map')).join('')
+      : `<div class="lm-mark lm-list"><p class="lm-here">${lmDots(m, new Set(here.map((nd) => nd.no)), 'sec-map')}<span class="lm-role">${lmTx('In this section', '이 절에서')}</span>${later.map((nd) =>
+        `<a href="#${id(nd)}" data-act="scroll" data-target="${id(nd)}"><span class="lm-no">${nd.no}</span>${bil(nd.t, nd.en)}</a>`).join('')}</p></div>`;
+    const used = new Set();
+    const before = (seg) => {
+      const nd = later.find((x) => !used.has(x) && lmAt(seg, x.at));
+      if (!nd) return '';
+      used.add(nd);
+      return lmMark(m, nd, id(nd), 'sec-map', 'lm-at');
+    };
+    return { head, before };
+  }
+  // a long proof: the roadmap under its statement and a signpost at each step
+  function proofPlan(p) {
+    const m = PLANS[p.pid];
+    if (!m) return null;
+    lmPrep(m);
+    const tgt = (nd) => ({ href: `#pf-${p.pid}`, id: `lm-pf-${nd.id}` });
+    const used = new Set();
+    const before = (seg) => {
+      const nd = m.nodes.find((x) => x.at && !used.has(x) && lmAt(seg, x.at));
+      if (!nd) return '';
+      used.add(nd);
+      return lmMark(m, nd, tgt(nd).id, 'pf-map', 'lm-at');
+    };
+    const head = `<section class="lm lm-pf" id="pf-map">
+      <div class="lm-top"><span class="caps">${lmTx('Roadmap', '증명의 길잡이')}</span>${lmKo}</div>
+      <div class="lm-easy">${lmEasy(m)}</div>
+      ${m.rows ? lmGraph(m, tgt) + lmSteps(m, tgt, 'lm-under') : lmSteps(m, tgt)}
+    </section>`;
+    return { head, before };
+  }
   // English key boxes of a chapter paired with the Korean ones of the same section (formula sheet)
   function keyItems(c) {
     if (c._keyItems) return c._keyItems;
@@ -1265,12 +1414,15 @@
     const prev = CH[i - 1], next = CH[i + 1];
     let body = '';
     if (tab === 'learn') {
+      const map = MAPS.get(c.n) ? lmPrep(MAPS.get(c.n)) : null;
       body = `<div class="ch-body">
         <nav class="toc" aria-label="단원 목차"><span class="caps">Contents</span>
-          ${c.sections.map((sec, k) => `<a href="#${sec.k ? `${c.id}-k${sec.k}` : c.id}" data-act="scroll" data-target="sec-${sec.k || k + 1}"><span>${sec.label ? `${/^\d/.test(sec.label) ? '§' : ''}${sec.label.split("–")[0]}` : sec.k ? `§${sec.k}` : `${c.n}.${k + 1}`}</span>${esc(sec.title)}</a>`).join('')}
+          ${map ? `<a href="#${c.id}" data-act="scroll" data-target="sec-map"><span>◇</span>${BI ? 'The unit at a glance' : '이 단원 한눈에'}</a>` : ''}
+          ${c.sections.map((sec, k) => `<a href="#${sec.k ? `${c.id}-k${sec.k}` : c.id}" data-act="scroll" data-target="sec-${sec.k || k + 1}"><span>${sec.label ? `${/^\d/.test(sec.label) ? '§' : ''}${sec.label.split("–")[0]}` : sec.k ? `§${sec.k}` : `${c.n}.${k + 1}`}</span>${esc(sec.title)}${map ? lmTocNos(map, sec) : ''}</a>`).join('')}
           ${XLINKS.some((l) => (l.from === c.id) !== (l.to === c.id)) ? `<a href="#${c.id}" data-act="scroll" data-target="sec-links"><span>↔</span>다른 단원과의 연결</a>` : ''}
         </nav>
         <article class="prose">
+          ${map ? unitMap(c) : ''}
           ${c.sections.map((sec, k) => sectionHTML(c, sec, k + 1)).join('')}
           ${connectionMap(c)}
           <div class="sec"><div class="btn-row"><a class="btn" href="#${c.id}-practice" data-route="${c.id}-practice">연습문제 ${c.problems.length}개 풀기</a><a class="btn ghost" href="#${c.id}-formulas" data-route="${c.id}-formulas">핵심 공식만 보기</a></div></div>
@@ -1385,7 +1537,7 @@
     const c = chById.get(p.ch);
     return `<a class="pf-item" href="#pf-${p.pid}" data-route="pf-${p.pid}" data-pf-ch="${p.ch}" data-pf-hand="${p.src ? 1 : 0}" data-pf-text="${esc(proofSearchText(p))}">
       <span class="pf-ch"><b>${pad(c.n)}</b>${esc(c.title)}${p.src ? `<span class="chip hand">${esc(p.src)}</span>` : ''}</span>
-      <span class="pf-title">${inline(p.title)}${p.sketch ? ' <span class="chip">개요</span>' : ''}</span>
+      <span class="pf-title">${inline(p.title)}${p.sketch ? ' <span class="chip">개요</span>' : ''}${PLANS[p.pid] ? ` <span class="chip lm-chip">${BI ? 'Roadmap' : '길잡이'}</span>` : ''}</span>
       <span class="pf-stmt">${md(BI && p.enData && p.enData.stmt ? p.enData.stmt : p.stmt)}</span>
     </a>`;
   }
@@ -1428,6 +1580,7 @@
   }
   function viewProof(p) {
     const c = chById.get(p.ch);
+    const plan = proofPlan(p);
     const same = PROOFS.filter((x) => x.ch === p.ch);
     const i = same.indexOf(p);
     const prev = same[i - 1], next = same[i + 1];
@@ -1441,10 +1594,11 @@
           ${p.src ? `<p class="pf-src"><span class="chip hand">${esc(p.src)}</span>${p.srcNote ? `<span>${inline(p.srcNote)}</span>` : ''}</p>` : ''}
         </header>
         <div class="blk blk-key"><div class="blk-label">Statement<em>명제</em></div>${mdOf(p, 'stmt')}</div>
+        ${plan ? plan.head : ''}
         <div class="prose pf-body">
           <div class="blk-label pf-label">Proof<em>증명</em></div>
           ${p.sketch ? `<p class="pf-sketch">${inline(p.sketch === true ? '엄밀한 증명은 길어 핵심 아이디어만 보입니다.' : p.sketch)}</p>` : ''}
-          ${mdOf(p, 'body')}
+          ${plan ? mdMarked(p, 'body', plan.before) : mdOf(p, 'body')}
           <p class="qed" aria-label="증명 끝">∎</p>
         </div>
         ${p.note ? `<div class="blk blk-note"><div class="blk-label">Remark<em>덧붙임</em></div>${mdOf(p, 'note')}</div>` : ''}
@@ -2180,7 +2334,7 @@
         break;
       }
       case 'ko-card': { // a whole problem card
-        const card = t.closest('.prob');
+        const card = t.closest('.prob, .lm');
         if (card) t.setAttribute('aria-pressed', String(card.classList.toggle('ko-on')));
         break;
       }
@@ -2393,7 +2547,7 @@
   }))).observe(document.body, { childList: true, subtree: true });
 
   // read-only handle for tools/test.html
-  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd, mountSims, ATLAS, ATL, atlById, atlasWhere, ATL_RE };
+  window.__APP = { md, inline, keyBlocks, xrefTarget, CH, PROOFS, EXAMS, PBY, XLINKS, proofsByKey, chById, SISTERS, NET_IN, FIELD, QUIZ, QZP, BOOKS, SIMS, SIMREG, BI, EN, scanSegs, bimd, mountSims, ATLAS, ATL, atlById, atlasWhere, ATL_RE, MAPS, PLANS, lmPrep, lmAt };
 
   renderHeader();
   if (S.live && S.live.minutes * 60 - (Date.now() - S.live.start) / 1000 <= 0) { route = 'exams'; submitExam(true); }

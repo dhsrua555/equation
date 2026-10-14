@@ -257,6 +257,95 @@
       checkHTML(md(it.body), `atlas ${it.id}`);
     });
   }
+  // ---- logic maps (EM.maps) and proof roadmaps (EM.plans) ----
+  // once a field has maps, every unit needs one (and every proof of 600+ characters a roadmap), so new units get them too
+  const LM_ROLES = ['q', 'def', 'idea', 'tool', 'step', 'res', 'check', 'ex', 'app', 'alt', 'lim', 'fix', 'view'];
+  const HAN = /[가-힣]/;
+  const LM_TODO = (s) => log(`note: ${s}`); // while the maps are being written (switch back to fail when every unit has one)
+  const lmCheck = (m, where, place) => {
+    if (!Array.isArray(m.nodes) || m.nodes.length < 2 || m.nodes.length > 12) { fail(`${where}: needs 2–12 nodes`); return; }
+    A.lmPrep(m);
+    const txt = (ko, en, w, isMd) => {
+      if (!ko) { fail(`${where} ${w}: Korean text missing`); return; }
+      checkHTML(isMd ? md(ko) : il(ko), `${where} ${w}`);
+      if (!A.BI) return;
+      if (!en) { fail(`${where} ${w}: English missing`); return; }
+      if (HAN.test(en)) fail(`${where} ${w}: English contains Korean: ${String(en).match(/.{0,30}[가-힣].{0,30}/)[0]}`);
+      if (isMd) {
+        const a = A.scanSegs(en), b = A.scanSegs(ko);
+        if (a.length !== b.length || a.some((x, k) => x.kind !== b[k].kind)) fail(`${where} ${w}: English has ${a.length} pieces, Korean ${b.length}`);
+      }
+      checkHTML(isMd ? md(en) : il(en), `${where} ${w} (en)`);
+    };
+    txt(m.easy, m.easyEn, 'easy summary', true);
+    const ids = new Set();
+    m.nodes.forEach((nd) => {
+      const w = `node ${nd.id}`;
+      if (!nd.id || ids.has(nd.id)) fail(`${where}: node id missing or repeated (${nd.id})`);
+      ids.add(nd.id);
+      if (nd.role && !LM_ROLES.includes(nd.role)) fail(`${where} ${w}: unknown role ${nd.role}`);
+      txt(nd.t, nd.en, `${w} title`);
+      txt(nd.d, nd.dEn, `${w} text`);
+      if (nd.g) txt(nd.g, nd.gEn, `${w} group`);
+      place(nd, w);
+    });
+    if (m.rows) {
+      const seen = new Map();
+      m.rows.forEach((row, r) => {
+        if (!Array.isArray(row) || !row.length || row.length > 3) fail(`${where}: row ${r + 1} must have 1–3 places`);
+        (row || []).forEach((id) => {
+          if (id == null) return;
+          if (!m.byId.get(id)) fail(`${where}: row ${r + 1} names unknown node ${id}`);
+          else if (seen.has(id)) fail(`${where}: node ${id} sits in two rows`);
+          seen.set(id, r);
+        });
+      });
+      m.nodes.forEach((nd) => { if (!seen.has(nd.id)) fail(`${where}: node ${nd.id} sits in no row`); });
+      (m.edges || []).forEach(([a, b, ko, en]) => {
+        const na = m.byId.get(a), nb = m.byId.get(b);
+        if (!na || !nb) { fail(`${where}: edge ${a}→${b} names an unknown node`); return; }
+        if (nb.row !== na.row + 1) fail(`${where}: edge ${a}→${b} must run to the next row (rows ${na.row + 1}→${nb.row + 1})`);
+        if (ko) txt(ko, en, `edge ${a}→${b}`);
+      });
+    } else if (m.edges) fail(`${where}: edges without rows`);
+  };
+  if (A.MAPS && A.MAPS.size) {
+    A.CH.forEach((c) => { if (!A.MAPS.get(c.n)) LM_TODO(`${c.id} has no logic map: every unit needs a plain-words summary and a map (EM.maps)`); });
+    A.MAPS.forEach((m, n) => {
+      const c = A.CH.find((x) => x.n === n);
+      if (!c) { fail(`logic map for unknown unit ${n}`); return; }
+      let last = [-1, -1];
+      lmCheck(m, `${c.id} map`, (nd, w) => {
+        const si = c.sections.findIndex((x) => x.k === nd.k);
+        if (si < 0) { fail(`${c.id} map ${w}: section ${nd.k} is not in the unit`); return; }
+        let gi = -1;
+        if (nd.at) {
+          const hits = A.scanSegs(c.sections[si].body).map((g, i) => (A.lmAt(g, nd.at) ? i : -1)).filter((i) => i >= 0);
+          if (hits.length !== 1) fail(`${c.id} map ${w}: at "${nd.at}" opens ${hits.length} pieces of §${nd.k} (needs exactly 1)`);
+          gi = hits[0] ?? -1;
+        }
+        // the numbers follow the reading order, so the track can mark everything before the current step as passed
+        if (si < last[0] || (si === last[0] && gi <= last[1] && !(gi === -1 && last[1] === -1))) fail(`${c.id} map ${w}: out of reading order`);
+        last = [si, gi];
+      });
+      c.sections.forEach((s) => { if (!m.nodes.some((nd) => nd.k === s.k)) fail(`${c.id} map: section ${s.k} belongs to no node`); });
+    });
+  }
+  const PLANS = A.PLANS || {};
+  Object.keys(PLANS).forEach((pid) => {
+    const p = A.PROOFS.find((x) => x.pid === pid);
+    if (!p) { fail(`roadmap for unknown proof ${pid}`); return; }
+    const segs = A.scanSegs(p.body);
+    let last = -1;
+    lmCheck(PLANS[pid], `proof ${pid} roadmap`, (nd, w) => {
+      if (!nd.at) { fail(`proof ${pid} roadmap ${w}: at missing`); return; }
+      const hits = segs.map((g, i) => (A.lmAt(g, nd.at) ? i : -1)).filter((i) => i >= 0);
+      if (hits.length !== 1) { fail(`proof ${pid} roadmap ${w}: at "${nd.at}" opens ${hits.length} pieces of the body (needs exactly 1)`); return; }
+      if (hits[0] <= last) fail(`proof ${pid} roadmap ${w}: out of order`);
+      last = hits[0];
+    });
+  });
+  if (Object.keys(PLANS).length) A.PROOFS.forEach((p) => { if (String(p.body).length >= 600 && !PLANS[p.pid]) LM_TODO(`long proof ${p.pid} (${String(p.body).length} chars) has no roadmap (EM.plans)`); });
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);
@@ -269,6 +358,15 @@
       if (lm && !document.getElementById(`lb-${lm[1]}`)) fail(`route ${r} opened without its simulation`);
       const am = /^atlas-([\w-]+)$/.exec(r);
       if (am && !document.getElementById(`at-${am[1]}`)) fail(`route ${r} opened without its atlas entry`);
+      // every map node and roadmap step has its signpost on the page (an English body whose pieces differ from the Korean drops them)
+      const cu = /^ch\d{2}$/.test(r) && A.chById.get(r);
+      const um = cu && A.MAPS && A.MAPS.get(cu.n);
+      if (um) {
+        if (!document.getElementById('sec-map')) fail(`route ${r} has no map section`);
+        um.nodes.forEach((nd) => { if (!document.getElementById(`lm-${r}-${nd.id}`)) fail(`route ${r}: no signpost for map node ${nd.id}`); });
+      }
+      const pp = /^pf-(.+)$/.exec(r);
+      if (pp && PLANS[pp[1]]) PLANS[pp[1]].nodes.forEach((nd) => { if (!document.getElementById(`lm-pf-${nd.id}`)) fail(`route ${r}: no signpost for roadmap step ${nd.id}`); });
       if (A.mountSims) A.mountSims(m, true); // simulations start lazily on the page; here every one mounts so its errors surface
       m.querySelectorAll('.katex-error').forEach((e) => fail(`route ${r} katex: ${(e.getAttribute('title') || '').slice(0, 120)}`));
       const clone = m.cloneNode(true); clone.querySelectorAll('code, textarea, input, script, .katex-mathml').forEach((n) => n.remove());

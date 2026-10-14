@@ -43,8 +43,11 @@ The third equality puts $(x-a,y-b)$ in place of $(x,y)$ in the definition of $f(
     stmt: R`For an input $28\times28\times256$ (excluding biases), the naive inception module ($1\times1$ 128, $3\times3$ 192, $5\times5$ 96, $3\times3$ max pooling) has $1{,}089{,}536$ weights and output $28\times28\times672$. The bottleneck module, with $1\times1$ convolutions (64) before the $3\times3$ and $5\times5$ and after the pooling, has $346{,}112$ and output $28\times28\times480$.`,
     body: R`
 A convolution layer has $K^2C_{\text{in}}C_{\text{out}}$ weights and pooling 0. Every branch uses stride 1 and size-preserving padding to keep $28\times28$, so the output channels are the sum of the branch output channels.
+
 **Naive.** $1\cdot256\cdot128+9\cdot256\cdot192+25\cdot256\cdot96=32{,}768+442{,}368+614{,}400=1{,}089{,}536$. The pooling branch outputs the input's 256 channels as is, so the output has $128+192+96+256=672$ channels.
+
 **Bottleneck.** $3\times3$ branch: $1\cdot256\cdot64+9\cdot64\cdot192=16{,}384+110{,}592$. $5\times5$ branch: $16{,}384+25\cdot64\cdot96=16{,}384+153{,}600$. Pooling branch: $1\cdot256\cdot64=16{,}384$. $1\times1$ branch: $32{,}768$. Total $346{,}112$, output $128+192+96+64=480$ channels.
+
 The ratio is $346{,}112/1{,}089{,}536\approx0.318$, and most of the saving comes from the $5\times5$ branch ($614{,}400\to169{,}984$) and the $3\times3$ branch ($442{,}368\to126{,}976$), because the expensive spatial convolutions are computed on 64 channels instead of 256.`,
     note: R`Slide 40 writes the bottleneck module as “about 330k”, which is $329{,}728$, the sum with one $1\times1\times256\times64$ left out. Counting all six convolutions gives $346{,}112$.` },
   'ch16-resgrad': { title: 'Residual Connections and Gradient Flow',
@@ -60,6 +63,7 @@ Expanding the product gives the form $I+\sum_kA_k+\sum_{j>k}A_jA_k+\cdots$, so $
     stmt: R`For the class score $S_c(I)=[F^{(L)}\circ\cdots\circ F^{(1)}](I)_c$, $\frac{\partial S_c}{\partial I}=\big[\frac{\partial F^{(L)}}{\partial F^{(L-1)}}\cdots\frac{\partial F^{(1)}}{\partial I}\big]_c$ (the $c$-th row), and near $I_0$, $S_c(I)=S_c(I_0)+w^T(I-I_0)+o(\lVert I-I_0\rVert)$ with $w=\frac{\partial S_c}{\partial I}\big|_{I_0}$.`,
     body: R`
 **Chain rule.** The Jacobian of the composition $F^{(1)}=F^{(1)}(I)$, $F^{(k)}=F^{(k)}(F^{(k-1)})$ is the product of the Jacobians of the steps: $\frac{\partial F^{(L)}}{\partial I}=\frac{\partial F^{(L)}}{\partial F^{(L-1)}}\cdots\frac{\partial F^{(2)}}{\partial F^{(1)}}\frac{\partial F^{(1)}}{\partial I}$. $S_c$ is the $c$-th component of $F^{(L)}$, so the $c$-th row of this matrix is $\frac{\partial S_c}{\partial I}$. As in backpropagation, the computation multiplies the row vector $e_c^T$ by the Jacobians in turn from the left, so one forward pass and one backward pass suffice.
+
 **First-order approximation.** If $S_c$ is differentiable at $I_0$, the definition of the derivative gives $S_c(I)=S_c(I_0)+\nabla S_c(I_0)^T(I-I_0)+o(\lVert I-I_0\rVert)$[[ch13:13.1|First-order Taylor expansion.]]. Changing only pixel $p$ by $\delta$ changes the score by $w_p\delta+o(\delta)$, so $|w_p|$ is the sensitivity of the score to that pixel. Drawing this $|w|$ in the shape of the image is the saliency map.`,
     note: R`For color images, using for each pixel the largest $|w|$ among its three channels is the method of Simonyan et al. (2014). A ReLU network is piecewise linear, so $w$ is the weight of the linear piece the input lies in, and for a linear classifier $S_c=w_c^TI+b_c$, $w=w_c$.` },
   });

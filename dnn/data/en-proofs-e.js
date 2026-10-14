@@ -10,9 +10,13 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     stmt: R`(i) $\E[aX+bY+c]=a\E X+b\E Y+c$ (ii) $\Var X=\E X^2-(\E X)^2$, $\Var(aX+b)=a^2\Var X$ (iii) if $X,Y$ are independent, $\E[XY]=\E X\E Y$ and $\Var(X+Y)=\Var X+\Var Y$ (iv) if i.i.d. with variance $\sigma^2$, $\Var(\bar X)=\sigma^2/n$.`,
     body: R`
 We write it for discrete random variables (for continuous ones, replace sums by integrals).
+
 **(i)** $\E[aX+bY+c]=\sum_{x,y}(ax+by+c)p(x,y)=a\sum_xx\sum_yp(x,y)+b\sum_yy\sum_xp(x,y)+c=a\E X+b\E Y+c$ (marginal $\sum_yp(x,y)=p(x)$). Independence is not needed.
+
 **(ii)** $\mu=\E X$. $\Var X=\E[(X-\mu)^2]=\E[X^2-2\mu X+\mu^2]=\E X^2-2\mu^2+\mu^2=\E X^2-\mu^2$ (using (i)). $\Var(aX+b)=\E[(aX+b-a\mu-b)^2]=a^2\E[(X-\mu)^2]$.
+
 **(iii)** With independence $p(x,y)=p(x)p(y)$, so $\E[XY]=\sum_{x,y}xyp(x)p(y)=\big(\sum_xxp(x)\big)\big(\sum_yyp(y)\big)$. $\Var(X+Y)=\E[(X-\E X+Y-\E Y)^2]=\Var X+\Var Y+2\Cov(X,Y)$, and $\Cov(X,Y)=\E[XY]-\E X\E Y=0$.
+
 **(iv)** Repeating (iii) for $n$ variables, $\Var\sum X_i=\sum\Var X_i=n\sigma^2$, and by (ii) $\Var(\frac1n\sum X_i)=\frac{n\sigma^2}{n^2}=\frac{\sigma^2}n$.`,
     note: R`(iv) is used for why the variance of the minibatch gradient shrinks as $1/B$ (Section 10.2), for the variance computations of initialization (Section 11.2), and for the bias–variance decomposition (Section 2.8).` },
   'ch02-mapridge': { title: 'The MAP of a Gaussian Mean Is Ridge (Problem Set 1, Problem 2)',
@@ -21,7 +25,9 @@ We write it for discrete random variables (for continuous ones, replace sums by 
 **The form of the MAP.** By Bayes' theorem, $p(\theta\mid X)\propto p(X\mid\theta)p(\theta)=\prod_i\frac1{\sqrt{2\pi}}e^{-(X_i-\theta)^2/2}\cdot\frac1{\sqrt{2\pi\tau^2}}e^{-\theta^2/(2\tau^2)}$. Taking the log,
 $$\log p(\theta\mid X)=-\frac12\sum_i(X_i-\theta)^2-\frac{\theta^2}{2\tau^2}+C\qquad(C\text{ does not depend on }\theta).$$
 Since $\log$ is strictly increasing, the maximizer of the posterior density = the maximizer of its log. Multiplying by $-2$ turns maximization into minimization: $\argmin_\theta\sum(X_i-\theta)^2+\frac1{\tau^2}\theta^2$.
+
 **Solving.** $g(\theta)=\sum(X_i-\theta)^2+\lambda\theta^2$ is a quadratic with $g''=2(n+\lambda)>0$. $g'(\theta)=-2\sum X_i+2(n+\lambda)\theta=0$ gives $\theta=\frac{n\bar X}{n+\lambda}=\frac{n\tau^2}{n\tau^2+1}\bar X$.
+
 **The posterior.** Completing the square in the exponent $-\frac12\big[(n+\lambda)\theta^2-2n\bar X\theta\big]+C$ gives $-\frac{n+\lambda}2(\theta-a\bar X)^2+C'$. It is the Gaussian $\N\big(a\bar X,\frac1{n+\lambda}\big)$, and since it is symmetric, MAP = posterior mean = $a\bar X$.`,
     note: R`Generalized to the linear model $y=X\beta+\varepsilon$, $\varepsilon\sim\N(0,\sigma^2I)$, $\beta\sim\N(0,\tau^2I)$, it is ridge $(\lambda I+X^TX)^{-1}X^Ty$ with $\lambda=\sigma^2/\tau^2$ (Section 4.3). Problem 2 is the case where $X$ is a single column of ones and $\sigma^2=1$.` },
   'ch02-biasvar': { title: 'The Bias–Variance Decomposition and the MSE of a Shrinkage Estimator (Problem Set 1, Problem 2)',
@@ -30,6 +36,7 @@ Since $\log$ is strictly increasing, the maximizer of the posterior density = th
 $b=\E\hat\theta-\theta$ is not a random variable but a **constant** (the expectation is over the sampling distribution with the true $\theta$ fixed). Splitting $\hat\theta-\theta=(\hat\theta-\E\hat\theta)+b$,
 $$\E(\hat\theta-\theta)^2=\E(\hat\theta-\E\hat\theta)^2+2b\,\E(\hat\theta-\E\hat\theta)+b^2.$$
 The middle term: $\E(\hat\theta-\E\hat\theta)=\E\hat\theta-\E\hat\theta=0$. The first term is the definition of $\Var(\hat\theta)$. Hence $\mathrm{MSE}=b^2+\Var\hat\theta$.
+
 **The shrinkage estimator.** $\E\bar X=\theta$, $\Var\bar X=1/n$ (i.i.d.). $\E[a\bar X]=a\theta$ → bias $(a-1)\theta$; $\Var(a\bar X)=a^2/n$. MSE $=(1-a)^2\theta^2+\frac{a^2}n$. Substituting $a=\frac{n\tau^2}{n\tau^2+1}$ gives $1-a=\frac1{n\tau^2+1}$ and $\mathrm{MSE}=\frac{\theta^2+n\tau^4}{(n\tau^2+1)^2}$.`,
     note: R`It is smaller than the MSE $1/n$ of $\bar X$ (the MLE) if and only if $\theta^2<2\tau^2+\frac1n$. Accepting a little bias to reduce the variance is the core of regularization.` },
   // ───── 03
@@ -37,9 +44,13 @@ The middle term: $\E(\hat\theta-\E\hat\theta)=\E\hat\theta-\E\hat\theta=0$. The 
     stmt: R`For $m=\frac12(p+q)$ and $D_{JS}(p\Vert q)=\frac12\KL(p\Vert m)+\frac12\KL(q\Vert m)$: (i) non-negativity $D_{JS}\ge0$ (ii) identity of indiscernibles $D_{JS}=0\iff p=q$ (iii) symmetry $D_{JS}(p\Vert q)=D_{JS}(q\Vert p)$ (iv) $D_{JS}\le\log2$, with equality when the supports of $p,q$ are disjoint.`,
     body: R`
 **Preparation.** $m\ge0$ and $\sum_xm(x)=\frac12+\frac12=1$, so $m$ is a probability distribution. If $p(x)>0$ then $m(x)\ge\frac12p(x)>0$, so $\KL(p\Vert m)$ has no term with a zero denominator and is finite (likewise for $q$). Theorem 1: $\KL(a\Vert b)\ge0$, with equality $\iff a=b$.
+
 **(i)** Both KL divergences are $\ge0$, so their average is $\ge0$.
+
 **(ii)** ($\Leftarrow$) $p=q\Rightarrow m=p\Rightarrow\KL(p\Vert m)=\KL(q\Vert m)=0$. ($\Rightarrow$) If $D_{JS}=0$, the sum of two nonnegative numbers is 0, so both are 0: $\KL(p\Vert m)=0$ and $\KL(q\Vert m)=0$. By the equality condition of Theorem 1, $p=m=q$.
+
 **(iii)** $m$ is symmetric in $p,q$, so swapping them only swaps the order of the two terms.
+
 **(iv)** Where $p(x)>0$, $\frac{p(x)}{m(x)}=\frac{2p(x)}{p(x)+q(x)}\le2$, with equality when $q(x)=0$. Hence $\KL(p\Vert m)\le\sum_{p>0}p\log2=\log2$ (equality $\iff$ $q=0$ wherever $p>0$). By symmetry $\KL(q\Vert m)\le\log2$. The average is $\le\log2$, with equality when $p(x)q(x)=0$ for every $x$.`,
     note: R`In terms of entropy, $D_{JS}=H(m)-\frac{H(p)+H(q)}2$ (concavity of entropy = non-negativity). For $X$ drawn from $p$ or $q$ according to a fair coin $Z$, $D_{JS}(p\Vert q)=I(X;Z)\le H(Z)=\log2$. $\sqrt{D_{JS}}$ is a metric.` },
   // ───── 07
@@ -70,8 +81,11 @@ $$\E_tf(x_{t+1})\le f(x_t)-\eta_t\lVert\nabla f(x_t)\rVert^2+\frac{L\eta_t^2}2G.
     stmt: R`Applying GD $x_{t+1}=x_t-\alpha Hx_t$ to $f(x)=\frac12x^THx$ ($H\succ0$, eigenvalues $\lambda_{\min}\le\dots\le\lambda_{\max}$), the component along each eigendirection is multiplied by $(1-\alpha\lambda_i)^t$. It converges $\iff0<\alpha<2/\lambda_{\max}$, and with the optimal fixed $\alpha$ the shrink factor is $\frac{\kappa-1}{\kappa+1}$ ($\kappa=\lambda_{\max}/\lambda_{\min}$). For the class example $H=\diag(1,100)$, $x_{1,t+1}=(1-\alpha)x_{1,t}$ and $x_{2,t+1}=(1-100\alpha)x_{2,t}$.`,
     body: R`
 $H=Q\Lambda Q^T$ ($Q$ orthogonal). With $u_t=Q^Tx_t$, $u_{t+1}=Q^T(I-\alpha H)Qu_t=(I-\alpha\Lambda)u_t$, i.e., $u_{t+1,i}=(1-\alpha\lambda_i)u_{t,i}$. In the class example $H$ is already diagonal, so $Q=I$.
+
 **Convergence.** $u_t\to0$ from every initial value $\iff$ $\lvert1-\alpha\lambda_i\rvert<1$ for every $i$ $\iff$ $0<\alpha\lambda_i<2$ $\iff$ $\alpha<2/\lambda_{\max}$.
+
 **The optimal fixed learning rate.** $\phi(\alpha)=\max_i\lvert1-\alpha\lambda_i\rvert=\max(\lvert1-\alpha\lambda_{\min}\rvert,\lvert1-\alpha\lambda_{\max}\rvert)$. The first decreases on $\alpha\le1/\lambda_{\min}$ and the second increases on $\alpha\ge1/\lambda_{\max}$, so the minimum is where $1-\alpha\lambda_{\min}=\alpha\lambda_{\max}-1$, $\alpha=\frac2{\lambda_{\max}+\lambda_{\min}}$. The value is $\frac{\lambda_{\max}-\lambda_{\min}}{\lambda_{\max}+\lambda_{\min}}=\frac{\kappa-1}{\kappa+1}$.
+
 **The numbers from class.** $\alpha=0.019$: the shrink factor of $x_1$ is $0.981$, and $x_2$ is multiplied by $-0.9$ (an oscillation with alternating sign). $(-5,-1)\to(-4.905,0.9)\to(-4.812,-0.81)\to(-4.720,0.729)$.`,
     note: R`Reducing the error by a factor $1/e$ takes about $\frac{\kappa}{2}$ steps. Optimal momentum changes this to $\frac{\sqrt\kappa-1}{\sqrt\kappa+1}$ (about $\frac{\sqrt\kappa}2$ steps).` },
   'ch14-heavyball': { title: 'The Two Forms of Momentum and the Unrolled Formula',
@@ -106,8 +120,11 @@ The weights $(1-\beta)\beta^{t-k}$ shrink exponentially the further in the past 
     stmt: R`If $m_t=\beta_1m_{t-1}+(1-\beta_1)g_t$ and $m_0=0$, then $m_t=(1-\beta_1)\sum_{k=1}^t\beta_1^{t-k}g_k$, and if $\E g_k=\bar g$ (for all $k$), $\E m_t=(1-\beta_1^t)\bar g$. Hence $\hat m_t=m_t/(1-\beta_1^t)$ is unbiased. The first step of bias-corrected Adam is $\alpha\operatorname{sign}(g_1)$ (ignoring $\epsilon$), and without the correction it is $\frac{1-\beta_1}{\sqrt{1-\beta_2}}\alpha$ (about $3.16\alpha$ with the defaults).`,
     body: R`
 **Unrolling.** $m_1=(1-\beta_1)g_1$; substituting the induction hypothesis into $m_t=\beta_1m_{t-1}+(1-\beta_1)g_t$ gives $(1-\beta_1)\big(\sum_{k<t}\beta_1^{t-k}g_k+g_t\big)$.
+
 **Expectation.** $\E m_t=(1-\beta_1)\bar g\sum_{k=1}^t\beta_1^{t-k}=(1-\beta_1)\bar g\cdot\frac{1-\beta_1^t}{1-\beta_1}=(1-\beta_1^t)\bar g$. The same computation gives $\E m_{2,t}=(1-\beta_2^t)\overline{g^2}$.
+
 **The first step.** $t=1$: $\hat m_1=\frac{(1-\beta_1)g_1}{1-\beta_1}=g_1$ and $\hat m_2=\frac{(1-\beta_2)g_1^2}{1-\beta_2}=g_1^2$. The step is $\alpha\frac{g_1}{\sqrt{g_1^2}}=\alpha\operatorname{sign}(g_1)$ (elementwise).
+
 **Without the correction** it is $\alpha\frac{(1-\beta_1)g_1}{\sqrt{(1-\beta_2)g_1^2}}=\frac{1-\beta_1}{\sqrt{1-\beta_2}}\alpha\operatorname{sign}(g_1)$. With $\beta_1=0.9$, $\beta_2=0.999$ this is $\frac{0.1}{0.0316}\approx3.16$ times.`,
     note: R`$\hat m_1/\sqrt{\hat m_2}$ is “mean of the gradient ÷ RMS of the gradient”, roughly in $[-1,1]$ componentwise, so Adam's step is roughly bounded by $\alpha$. Defaults: $\beta_1=0.9$, $\beta_2=0.999$, $\alpha=10^{-3}$ or $5\times10^{-4}$.` },
   });

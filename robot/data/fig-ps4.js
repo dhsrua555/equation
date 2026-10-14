@@ -49,53 +49,65 @@
     },
     // PS4 · 3.19 — two satellites: satellite 2 on the equatorial orbit, satellite 1 on an orbit tilted 30° about x̂0
     fp4Sat() {
-      const Q = view(250, 146, 1, 0.42, 0.3), R1 = 92, R2 = 168, c = Math.sqrt(3) / 2, sn = 0.5;
+      // x̂0 drawn steeply down so that neither orbit plane is seen edge-on
+      const Q = view(250, 140, 1, 0.25, 0.55), R1 = 92, R2 = 168, c = Math.sqrt(3) / 2, sn = 0.5;
       const n1 = [0, -sn, c], u1 = [0, c, sn]; // orbit-1 normal and the in-plane direction to satellite 1 at t = 0
       let s = path(ring(Q, [0, 0, 0], Y, nX, R2, 180, 360), 'gd') + path(ring(Q, [0, 0, 0], Y, nX, R2, 0, 180), 'dm ds');
       s += path(ring(Q, [0, 0, 0], u1, nX, R1, 180, 360), 'gd') + path(ring(Q, [0, 0, 0], u1, nX, R1, 0, 180), 'dm ds');
-      s += C(...Q([0, 0, 0]), 26, 'sp');
-      s += L(...Q([0, 0, 0]), ...Q([0, 0, 95]), 'dm ds') + L(...Q([0, 0, 0]), ...Q(n1.map((v) => v * 95)), 'dm ds') + tx(add(Q([0, -0.13 * 95, 95 * 0.95]), [-2, -6]), '30°');
-      s += frame(Q, [0, 0, 0], [X, Y, Z], 36, ['x̂_0', 'ŷ_0', 'ẑ_0'], 'vl', [[-6, 6], [4, 10], [8, 0]]) + tx(add(Q([0, 0, 0]), [-34, -4]), '{0}', { a: 'end', c: 'em' });
+      s += C(...Q([0, 0, 0]), 24, 'sp');
+      s += L(...Q([0, 0, 0]), ...Q([0, 0, 100]), 'dm ds') + L(...Q([0, 0, 0]), ...Q(n1.map((v) => v * 100)), 'dm ds');
+      const z9 = Q([0, 0, 82]), n9 = Q(n1.map((v) => v * 82));
+      s += `<path class="dm" d="M${f1(z9[0])},${f1(z9[1])}A82,82 0 0 0 ${f1(n9[0])},${f1(n9[1])}"/>` + tx(add(mid2(z9, n9), [4, 18]), '30°');
+      s += frame(Q, [0, 0, 0], [X, Y, Z], 36, ['x̂_0', 'ŷ_0', 'ẑ_0'], 'vl', [[-10, 4], [4, 12], [-12, 6]]) + tx(add(Q([0, 0, 0]), [-30, -10]), '{0}', { a: 'end', c: 'em' });
       const s1 = u1.map((v) => v * R1), s2 = [0, R2, 0];
+      s += L(...Q([0, 0, 0]), ...Q(s1), 'dm') + L(...Q([0, 0, 0]), ...Q(s2), 'dm');
+      s += tx(add(Q(u1.map((v) => v * R1 * 0.55)), [-4, -6]), 'R₁', { c: 'it', a: 'end' }) + tx(add(Q([0, R2 * 0.62, 0]), [0, 16]), 'R₂', { c: 'it' });
       s += C(...Q(s1), 5, 'dotf') + C(...Q(s2), 6, 'dotf');
-      s += frame(Q, s1, [u1.map((v) => -v), n1, nX], 26, ['x̂_1', 'ŷ_1', 'ẑ_1 (v₁ 방향)'], 'rx', [[-6, 14], [-6, 0], [34, -4]]) + tx(add(Q(s1), [12, 22]), '위성 1 {1}', { a: 'start', c: 'em' });
-      s += frame(Q, s2, [nY, Z, nX], 26, ['x̂_2', 'ŷ_2', 'ẑ_2 (v₂ 방향)'], 'rx', [[-4, 14], [8, 0], [34, -4]]) + tx(add(Q(s2), [8, 30]), '위성 2 {2}', { a: 'start', c: 'em' });
-      s += L(...Q([0, 0, 0]), ...Q(s1), 'dm') + tx(add(Q(u1.map((v) => v * R1 * 0.6)), [-2, -8]), 'R₁', { c: 'it' }) + tx(add(Q([0, R2 * 0.6, 0]), [0, 14]), 'R₂', { c: 'it' }) + L(...Q([0, 0, 0]), ...Q(s2), 'dm');
-      return fig(560, 250, '지구 중심의 {0}과 두 위성: 위성 2는 x̂_0ŷ_0 평면의 궤도, 위성 1은 그 평면을 x̂_0 둘레로 30° 기울인 궤도. t = 0의 모습',
+      s += frame(Q, s1, [u1.map((v) => -v), n1, nX], 26, ['x̂_1', 'ŷ_1', 'ẑ_1'], 'rx', [[-8, 12], [-8, 0], [6, -2]]) + tx(add(Q(s1), [16, 12]), '위성 1 {1}', { a: 'start', c: 'em' });
+      s += frame(Q, s2, [nY, Z, nX], 26, ['x̂_2', 'ŷ_2', 'ẑ_2'], 'rx', [[-2, 14], [10, 2], [8, 0]]) + tx(add(Q(s2), [10, 30]), '위성 2 {2}', { a: 'start', c: 'em' });
+      return fig(560, 262, '지구 중심의 {0}과 두 위성: 위성 2는 x̂_0ŷ_0 평면의 궤도, 위성 1은 그 평면을 x̂_0 둘레로 30° 기울인 궤도. t = 0의 모습',
         s,
-        '두 위성의 $\\hat x$축은 늘 지구 중심을 향합니다. 이 풀이에서는 $\\hat y_1,\\hat y_2$를 각 궤도 평면의 법선(위쪽), $\\hat z=\\hat x\\times\\hat y$를 진행 방향으로 잡았습니다. $t=0$에 두 위성 모두 $-\\hat x_0$ 쪽(그림의 안쪽)으로 움직입니다. 위성 1 궤도의 법선은 $\\hat z_0$에서 30° 기울어 있습니다.');
+        '두 위성의 $\\hat x$축은 늘 지구 중심을 향합니다. 이 풀이에서는 $\\hat y_1,\\hat y_2$를 각 궤도 평면의 법선(위쪽), $\\hat z=\\hat x\\times\\hat y$를 진행 방향(속도 $v_1,v_2$의 방향)으로 잡았습니다. $t=0$에 두 위성 모두 $-\\hat x_0$ 쪽(그림의 안쪽)으로 움직입니다. 위성 1 궤도의 법선은 $\\hat z_0$에서 30° 기울어 있습니다.');
     },
     // PS4 · 3.21 — the orbit frame {a}, the space station {c} on the ŷ_a axis with its axis toward the North Star, the spacecraft {b}
     fp4Station() {
-      const Q = view(150, 170, 0.32, 0.45, 0.35), c = Math.sqrt(3) / 2, sn = 0.5;
+      // the whole orbit (radius 800) fits: {a} at its centre, the station on its rim
+      const Q = view(226, 176, 0.22, 0.3, 0.45), c = Math.sqrt(3) / 2, sn = 0.5;
       const zc = [0, -sn, c], yc = [0, c, sn], pC = [0, 800, 0], pB = [-100, 300, 500];
       let s = path(ring(Q, [0, 0, 0], Y, nX, 800), 'dm');
-      s += C(...Q([0, 0, 0]), 14, 'sp') + frame(Q, [0, 0, 0], [X, Y, Z], 170, ['x̂_a', 'ŷ_a', 'ẑ_a'], 'vl', [[-6, 4], [-4, 14], [0, -2]]) + tx(add(Q([0, 0, 0]), [-14, 20]), '{a}', { a: 'end', c: 'em' });
-      s += path(ring(Q, pC, yc, X, 120), 'gd') + path(ring(Q, pC, yc, X, 60), 'gd');
-      s += frame(Q, pC, [X, yc, zc], 170, ['x̂_c', 'ŷ_c', 'ẑ_c'], 'rx', [[-4, 6], [6, 0], [-6, 0]]) + tx(add(Q(pC), [16, 26]), '{c} 정거장', { a: 'start', c: 'em' });
-      s += L(...Q(pC), ...Q(add(pC, zc, 520)), 'dm ds') + L(...Q([0, 0, 0]), ...Q([0, 0, 520]), 'dm ds') + tx(add(Q(add(pC, zc, 520)), [0, -8]), '북극성 쪽', { s: 10.5 });
-      s += A(...Q([0, 0, 0]), ...Q(pC), 'ld', 9) + tx(add(Q([0, 400, 0]), [0, -8]), 'p', { c: 'it' });
-      s += frame(Q, pB, [Y, nX, Z], 150, ['x̂_b', 'ŷ_b', 'ẑ_b'], 'vl', [[4, 0], [-8, 6], [0, -2]]) + tx(add(Q(pB), [-12, -10]), '{b} 우주선', { a: 'end', c: 'em' });
-      s += A(...Q(pB), ...Q(pC), 'ld', 9) + tx(add(Q([-50, 550, 250]), [10, 0]), 'r', { a: 'start', c: 'it' });
-      const a0 = Q(add(pC, Z, 260)), a1 = Q(add(pC, zc, 260));
-      s += L(...Q(pC), ...a0, 'dm ds') + tx(add(mid2(a0, a1), [2, -6]), '30°', { s: 10.5 });
-      return fig(560, 260, '궤도 중심의 {a}, ŷ_a 위 800에 있는 우주 정거장 {c}(축 ẑ_c가 북극성 쪽), 우주선 {b}와 정거장까지의 벡터 r',
+      s += C(...Q([0, 0, 0]), 12, 'sp') + frame(Q, [0, 0, 0], [X, Y, Z], 190, ['x̂_a', 'ŷ_a', 'ẑ_a'], 'vl', [[-8, 4], [0, 14], [10, 4]]) + tx(add(Q([0, 0, 0]), [-14, -8]), '{a}', { a: 'end', c: 'em' });
+      s += A(...Q([0, 0, 0]), ...Q(pC), 'ld', 9) + tx(add(Q([0, 520, 0]), [0, 16]), 'p', { c: 'it' });
+      s += path(ring(Q, pC, yc, X, 130), 'gd') + path(ring(Q, pC, yc, X, 65), 'gd');
+      const ns = Q(add(pC, zc, 400));
+      s += L(...Q(pC), ...ns, 'dm ds') + tx(add(ns, [6, -4]), '북극성 쪽', { s: 10.5, a: 'start' });
+      const a0 = Q(add(pC, Z, 300)), a1 = Q(add(pC, zc, 300));
+      s += L(...Q(pC), ...a0, 'dm ds') + `<path class="dm" d="M${f1(a0[0])},${f1(a0[1])}A66,66 0 0 0 ${f1(a1[0])},${f1(a1[1])}"/>` + tx(add(a0, [8, 16]), '30°', { s: 10.5, a: 'start' });
+      s += frame(Q, pC, [X, yc, zc], 190, ['x̂_c', 'ŷ_c', 'ẑ_c'], 'rx', [[-6, 6], [6, 2], [10, 6]]) + tx(add(Q(pC), [22, 30]), '{c} 정거장', { a: 'start', c: 'em' });
+      s += frame(Q, pB, [Y, nX, Z], 160, ['x̂_b', 'ŷ_b', 'ẑ_b'], 'vl', [[6, 2], [8, 4], [10, 6]]) + tx(add(Q(pB), [-14, -8]), '{b} 우주선', { a: 'end', c: 'em' });
+      s += A(...Q(pB), ...Q(pC), 'ld', 9) + tx(add(mid2(Q(pB), Q(pC)), [-10, 4]), 'r', { a: 'end', c: 'it' });
+      return fig(560, 268, '궤도 중심의 {a}, ŷ_a 위 800에 있는 우주 정거장 {c}(축 ẑ_c가 북극성 쪽), 우주선 {b}와 정거장까지의 벡터 r',
         s,
         '$\\hat x_c=\\hat x_a$이고 $\\hat y_c,\\hat z_c$는 $\\hat y_a\\hat z_a$ 평면에 있으며, $\\hat z_c$는 $\\hat z_a$에서 $-\\hat y_a$ 쪽으로 30° 기울어 북극성을 향합니다. $r$은 우주선 {b}의 원점에서 정거장 {c}의 원점으로 가는 벡터로 보았습니다.');
     },
     // PS4 · 3.23 — round table seen from above: {0} on the floor, car 1 on the rim, car 2 on a radius
     fp4Cars() {
-      const k = 52, Cc = [300, 132], W = (x, y) => [Cc[0] + k * x, Cc[1] - k * y], s2 = Math.SQRT1_2;
-      const fr = (o, ex, ey, cls, nx, ny, lab, lo) => { const O = W(...o); return C(O[0], O[1], 3, 'jt') + A(...O, ...W(o[0] + 0.62 * ex[0], o[1] + 0.62 * ex[1]), cls, 8) + A(...O, ...W(o[0] + 0.62 * ey[0], o[1] + 0.62 * ey[1]), cls, 8) + tx(add(W(o[0] + 0.8 * ex[0], o[1] + 0.8 * ex[1]), [0, 4]), nx, { c: 'it' }) + tx(add(W(o[0] + 0.8 * ey[0], o[1] + 0.8 * ey[1]), [0, 4]), ny, { c: 'it' }) + tx(add(O, lo), lab, { c: 'em' }); };
+      const k = 52, Cc = [300, 146], W = (x, y) => [Cc[0] + k * x, Cc[1] - k * y], s2 = Math.SQRT1_2;
+      // a frame at o with axes ex, ey in the table plane; each axis name sits at the arrow tip plus its own offset (px)
+      const fr = (o, ex, ey, cls, nx, ny, ox, oy, len = 0.55) => {
+        const O = W(...o), tip = (e) => W(o[0] + len * e[0], o[1] + len * e[1]);
+        return C(O[0], O[1], 3, 'jt') + A(...O, ...tip(ex), cls, 8) + A(...O, ...tip(ey), cls, 8) + tx(add(tip(ex), ox), nx, { c: 'it' }) + tx(add(tip(ey), oy), ny, { c: 'it' });
+      };
       let s = C(...Cc, 2 * k, 'rg') + C(...Cc, 2 * k, 'gd') + C(...Cc, 3, 'dotf') + L(...W(-2, 0), ...W(0, 0), 'dm ds') + L(...W(0, -2), ...W(0, 2), 'dm ds');
-      s += fr([-1, -1], [1, 0], [0, 1], 'vl', 'x̂_0', 'ŷ_0', '{0} (바닥)', [-6, 22]);
-      s += A2(...W(-1, -2.25), ...W(0, -2.25), 'dm', 6) + tx(add(W(-0.5, -2.25), [0, 16]), 'L = 1') + A2(...W(0.2, -1), ...W(0.2, 0), 'dm', 6) + tx(add(W(0.2, -0.5), [8, 4]), 'L = 1', { a: 'start' });
-      s += fr([0, 2], [-1, 0], [0, -1], 'rx', 'x̂_1', 'ŷ_1', '{1} 차 1', [26, -16]) + A(...W(0.15, 2.18), ...W(-0.75, 2.12), 'ld', 8) + tx(add(W(-0.85, 2.15), [-4, -4]), 'v₁', { a: 'end', c: 'it' });
+      s += fr([-1, -1], [1, 0], [0, 1], 'vl', 'x̂_0', 'ŷ_0', [12, 5], [0, -6]) + tx(add(W(-1, -1), [-6, 20]), '{0} (바닥)', { c: 'em' });
+      s += A2(...W(-1, -2.22), ...W(0, -2.22), 'dm', 6) + tx(add(W(-0.5, -2.22), [0, 16]), 'L = 1') + A2(...W(0.2, -1), ...W(0.2, 0), 'dm', 6) + tx(add(W(0.2, -0.5), [8, 4]), 'L = 1', { a: 'start' });
+      // car 1 at the top of the rim moving counterclockwise (x̂1), car 2 on the radius at 45° moving to the centre (x̂2)
+      s += fr([0, 2], [-1, 0], [0, -1], 'rx', 'x̂_1', 'ŷ_1', [-2, -9], [11, 4]) + tx(add(W(0, 2), [12, -12]), '{1} 차 1 (속력 v₁)', { a: 'start', c: 'em' });
       const p2 = [-2 * s2, 2 * s2];
-      s += fr(p2, [s2, -s2], [s2, s2], 'rx', 'x̂_2', 'ŷ_2', '{2} 차 2', [-34, -6]) + L(...W(...p2), ...W(0, 0), 'dm ds') + A(...W(-1.15, 1.15), ...W(-0.75, 0.75), 'ld', 8) + tx(add(W(-0.95, 0.95), [14, 4]), 'v₂', { a: 'start', c: 'it' });
+      s += L(...W(...p2), ...W(0, 0), 'dm ds');
+      s += fr(p2, [s2, -s2], [s2, s2], 'rx', 'x̂_2', 'ŷ_2', [12, 6], [-9, -2]) + tx(add(W(...p2), [-12, 4]), '{2} 차 2 (속력 v₂)', { a: 'end', c: 'em' });
       s += `<path class="dm" d="M${f1(W(-0.7, 0)[0])},${f1(W(-0.7, 0)[1])}A${f1(0.7 * k)},${f1(0.7 * k)} 0 0 1 ${f1(W(-0.495, 0.495)[0])},${f1(W(-0.495, 0.495)[1])}"/>` + tx(add(W(-0.9, 0.3), [0, 4]), '45°');
-      s += tx(add(W(2, 0), [10, 4]), 'R = 2', { a: 'start' }) + tx([470, 228], '탁자 위는 바닥에서 H = 2', { s: 10.5 });
-      return fig(560, 250, '위에서 본 둥근 탁자(반지름 2): 바닥의 {0}, 테두리를 도는 차 1의 {1}, 반지름을 따라 중심으로 가는 차 2의 {2}. t = 0의 모습',
+      s += tx(add(W(2, 0), [10, 4]), 'R = 2', { a: 'start' }) + tx([476, 258], '탁자 위는 바닥에서 H = 2', { s: 10.5 });
+      return fig(560, 290, '위에서 본 둥근 탁자(반지름 2): 바닥의 {0}, 테두리를 도는 차 1의 {1}, 반지름을 따라 중심으로 가는 차 2의 {2}. t = 0의 모습',
         s,
         '{0}은 바닥(탁자 높이 $H=2$ 아래)에 있고 탁자 중심은 {0}에서 $(1,1,2)$입니다. 세 좌표계 모두 $\\hat z$가 위(화면 밖)입니다. 차 1은 $\\hat x_1$ 방향(반시계)으로 테두리를 따라, 차 2는 $\\hat x_2$ 방향으로 반지름을 따라 중심 쪽으로 움직입니다.');
     },

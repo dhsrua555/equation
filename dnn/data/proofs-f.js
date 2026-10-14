@@ -47,8 +47,11 @@ $$f(g_{a,b}\cdot F)[x,y]=\sum_{i,j}w[i,j]\,(g_{a,b}\cdot F)[x+i,\ y+j]=\sum_{i,j
     stmt: R`입력 $28\times28\times256$에 대해 (편향 제외) 단순 인셉션 모듈($1\times1$ 128, $3\times3$ 192, $5\times5$ 96, $3\times3$ 최대 풀링)의 가중치는 $1{,}089{,}536$개이고 출력은 $28\times28\times672$이다. $3\times3$·$5\times5$ 앞과 풀링 뒤에 $1\times1$ 합성곱(64)을 넣은 병목 모듈은 $346{,}112$개이고 출력은 $28\times28\times480$이다.`,
     body: R`
 합성곱층의 가중치는 $K^2C_{\text{in}}C_{\text{out}}$이고 풀링은 0입니다. 모든 갈래는 보폭 1과 크기 보존 패딩을 써서 $28\times28$을 유지하므로 출력 채널은 갈래 출력 채널의 합입니다.
+
 **단순.** $1\cdot256\cdot128+9\cdot256\cdot192+25\cdot256\cdot96=32{,}768+442{,}368+614{,}400=1{,}089{,}536$. 풀링 갈래는 입력 채널 256을 그대로 내므로 출력은 $128+192+96+256=672$채널.
+
 **병목.** $3\times3$ 갈래: $1\cdot256\cdot64+9\cdot64\cdot192=16{,}384+110{,}592$. $5\times5$ 갈래: $16{,}384+25\cdot64\cdot96=16{,}384+153{,}600$. 풀링 갈래: $1\cdot256\cdot64=16{,}384$. $1\times1$ 갈래: $32{,}768$. 합 $346{,}112$, 출력 $128+192+96+64=480$채널.
+
 비율은 $346{,}112/1{,}089{,}536\approx0.318$이고, 줄어든 대부분은 $5\times5$ 갈래($614{,}400\to169{,}984$)와 $3\times3$ 갈래($442{,}368\to126{,}976$)에서 옵니다. 비싼 공간 합성곱이 256채널 대신 64채널 위에서 계산되기 때문입니다.`,
     note: R`슬라이드 40은 병목 모듈을 “약 330k”로 적었는데, 이는 $1\times1\times256\times64$ 하나를 빼고 더한 $329{,}728$입니다. 여섯 합성곱을 모두 세면 $346{,}112$입니다.` },
   { ch: 'ch16', id: 'resgrad', title: '잔차 연결과 기울기 흐름', keys: ['잔차 연결'],
@@ -66,6 +69,7 @@ $$\frac{\partial J}{\partial\mathbf h^{(l)}}=\frac{\partial J}{\partial\mathbf h
     stmt: R`클래스 점수 $S_c(I)=[F^{(L)}\circ\cdots\circ F^{(1)}](I)_c$에 대해 $\frac{\partial S_c}{\partial I}=\big[\frac{\partial F^{(L)}}{\partial F^{(L-1)}}\cdots\frac{\partial F^{(1)}}{\partial I}\big]_c$ ($c$번째 행)이고, $I_0$ 근처에서 $S_c(I)=S_c(I_0)+w^T(I-I_0)+o(\lVert I-I_0\rVert)$, $w=\frac{\partial S_c}{\partial I}\big|_{I_0}$이다.`,
     body: R`
 **연쇄법칙.** $F^{(1)}=F^{(1)}(I)$, $F^{(k)}=F^{(k)}(F^{(k-1)})$로 합성된 함수의 야코비안은 각 단계 야코비안의 곱입니다: $\frac{\partial F^{(L)}}{\partial I}=\frac{\partial F^{(L)}}{\partial F^{(L-1)}}\cdots\frac{\partial F^{(2)}}{\partial F^{(1)}}\frac{\partial F^{(1)}}{\partial I}$. $S_c$는 $F^{(L)}$의 $c$번째 성분이므로 이 행렬의 $c$번째 행이 $\frac{\partial S_c}{\partial I}$입니다. 계산은 역전파처럼 왼쪽에서부터 행벡터 $e_c^T$에 야코비안을 차례로 곱하므로 순전파 한 번, 역전파 한 번이면 됩니다.
+
 **1차 근사.** $S_c$가 $I_0$에서 미분가능하면 미분의 정의에서 $S_c(I)=S_c(I_0)+\nabla S_c(I_0)^T(I-I_0)+o(\lVert I-I_0\rVert)$입니다[[ch13:13.1|1차 테일러 전개.]]. 화소 $p$만 $\delta$ 바꾸면 점수는 $w_p\delta+o(\delta)$ 바뀌므로 $|w_p|$가 그 화소에 대한 점수의 민감도입니다. 이 $|w|$를 이미지 모양으로 그린 것이 현저성 지도입니다.`,
     note: R`컬러 이미지에서는 화소마다 세 채널 중 $|w|$가 가장 큰 값을 쓰는 것이 Simonyan et al. (2014)의 방법입니다. ReLU망은 구간별 선형이라 $w$는 그 입력이 속한 선형 조각의 가중치이고, 선형 분류기 $S_c=w_c^TI+b_c$에서는 $w=w_c$입니다.` },
   );
