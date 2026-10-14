@@ -261,7 +261,6 @@
   // once a field has maps, every unit needs one (and every proof of 600+ characters a roadmap), so new units get them too
   const LM_ROLES = ['q', 'def', 'idea', 'tool', 'step', 'res', 'check', 'ex', 'app', 'alt', 'lim', 'fix', 'view'];
   const HAN = /[가-힣]/;
-  const LM_TODO = (s) => log(`note: ${s}`); // while the maps are being written (switch back to fail when every unit has one)
   const lmCheck = (m, where, place) => {
     if (!Array.isArray(m.nodes) || m.nodes.length < 2 || m.nodes.length > 12) { fail(`${where}: needs 2–12 nodes`); return; }
     A.lmPrep(m);
@@ -310,7 +309,7 @@
     } else if (m.edges) fail(`${where}: edges without rows`);
   };
   if (A.MAPS && A.MAPS.size) {
-    A.CH.forEach((c) => { if (!A.MAPS.get(c.n)) LM_TODO(`${c.id} has no logic map: every unit needs a plain-words summary and a map (EM.maps)`); });
+    A.CH.forEach((c) => { if (!A.MAPS.get(c.n)) fail(`${c.id} has no logic map: every unit needs a plain-words summary and a map (EM.maps)`); });
     A.MAPS.forEach((m, n) => {
       const c = A.CH.find((x) => x.n === n);
       if (!c) { fail(`logic map for unknown unit ${n}`); return; }
@@ -345,7 +344,7 @@
       last = hits[0];
     });
   });
-  if (Object.keys(PLANS).length) A.PROOFS.forEach((p) => { if (String(p.body).length >= 600 && !PLANS[p.pid]) LM_TODO(`long proof ${p.pid} (${String(p.body).length} chars) has no roadmap (EM.plans)`); });
+  if (Object.keys(PLANS).length) A.PROOFS.forEach((p) => { if (String(p.body).length >= 600 && !PLANS[p.pid]) fail(`long proof ${p.pid} (${String(p.body).length} chars) has no roadmap (EM.plans)`); });
   routes.forEach((r) => {
     try {
       history.replaceState(null, '', '#' + r);
