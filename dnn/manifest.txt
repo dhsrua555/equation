@@ -20,6 +20,10 @@ proofs-c.js
 proofs-d.js
 proofs-e.js
 proofs-f.js
+proofs-g.js
+proofs-h.js
+proofs-i.js
+proofs-j.js
 exams.js
 exams-2.js
 quiz-1.js
@@ -90,6 +94,10 @@ en-proofs-c.js
 en-proofs-d.js
 en-proofs-e.js
 en-proofs-f.js
+en-proofs-g.js
+en-proofs-h.js
+en-proofs-i.js
+en-proofs-j.js
 en-exams.js
 en-quiz.js
 map-01.js

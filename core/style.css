@@ -905,6 +905,10 @@ a.atl:hover { border-bottom-style: solid; }
 .pf-src { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 0.86rem; color: var(--ink-2); }
 .pf-chip.hand-chip { border-color: var(--hand); color: var(--hand); }
 .pf-chip.hand-chip[aria-pressed="true"] { background: var(--hand); border-color: var(--hand); color: var(--paper); }
+.chip.extra { border-color: var(--denim); color: var(--denim); background: color-mix(in srgb, var(--denim) 8%, transparent); }
+.pf-ch .chip.extra { margin-left: auto; font-size: 0.68rem; }
+.pf-chip.extra-chip { border-color: var(--denim); color: var(--denim); }
+.pf-chip.extra-chip[aria-pressed="true"] { background: var(--denim); border-color: var(--denim); color: var(--paper); }
 /* svg figures */
 .fig .nd { fill: var(--paper-3); stroke: var(--ink-2); stroke-width: 1.2; }
 .fig .fw { fill: var(--denim); font-weight: 600; font-family: var(--f-caps); }

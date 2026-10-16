@@ -723,6 +723,9 @@
   // (key: proof pid, `at` inside the proof body). Without `rows` a plan draws as a numbered roadmap instead of a diagram.
   const MAPS = new Map((EM.maps || []).map((m) => [m.n, m]));
   const PLANS = EM.plans || {};
+  // a field whose proofs mark the hand-written ones (src) can also label the rest, e.g. 판서에 없는 증명 (SITE.text.extraChip)
+  const EXTRA = T('extraChip', '');
+  const extraChip = (p) => (EXTRA && !p.src ? `<span class="chip extra">${esc(EXTRA)}</span>` : '');
   const LM_ROLE = {
     q: ['Question', '질문'], def: ['Definition', '정의'], idea: ['Picture', '직관'], tool: ['Tool', '도구'], step: ['Derivation', '유도'],
     res: ['Result', '결론'], check: ['Check', '확인'], ex: ['Example', '예제'], app: ['Application', '응용'], alt: ['Another route', '다른 길'],
@@ -1536,7 +1539,7 @@
   function proofCard(p) {
     const c = chById.get(p.ch);
     return `<a class="pf-item" href="#pf-${p.pid}" data-route="pf-${p.pid}" data-pf-ch="${p.ch}" data-pf-hand="${p.src ? 1 : 0}" data-pf-text="${esc(proofSearchText(p))}">
-      <span class="pf-ch"><b>${pad(c.n)}</b>${esc(c.title)}${p.src ? `<span class="chip hand">${esc(p.src)}</span>` : ''}</span>
+      <span class="pf-ch"><b>${pad(c.n)}</b>${esc(c.title)}${p.src ? `<span class="chip hand">${esc(p.src)}</span>` : extraChip(p)}</span>
       <span class="pf-title">${inline(p.title)}${p.sketch ? ' <span class="chip">개요</span>' : ''}${PLANS[p.pid] ? ` <span class="chip lm-chip">${BI ? 'Roadmap' : '길잡이'}</span>` : ''}</span>
       <span class="pf-stmt">${md(BI && p.enData && p.enData.stmt ? p.enData.stmt : p.stmt)}</span>
     </a>`;
@@ -1554,6 +1557,7 @@
         </div>
         <div class="jump" role="group" aria-label="단원으로 거르기">
           ${PROOFS.some((p) => p.src) ? `<button class="pf-chip hand-chip" data-act="pf-hand" aria-pressed="${!!pfFilter.hand}">${esc(T('handChip', '강의 필기'))} ${PROOFS.filter((p) => p.src).length}</button>` : ''}
+          ${EXTRA ? `<button class="pf-chip extra-chip" data-act="pf-extra" aria-pressed="${!!pfFilter.extra}">${esc(EXTRA)} ${PROOFS.filter((p) => !p.src).length}</button>` : ''}
           <button class="pf-chip" data-act="pf-ch" data-ch="all" aria-pressed="${pfFilter.ch === 'all'}">전체</button>
           ${CH.map((c) => `<button class="pf-chip" data-act="pf-ch" data-ch="${c.id}" aria-pressed="${pfFilter.ch === c.id}">${pad(c.n)} ${esc(c.title)}</button>`).join('')}
         </div>
@@ -1571,7 +1575,7 @@
     const terms = pfFilter.q.split(/\s+/).map(normText).filter(Boolean);
     let shown = 0;
     $$('.pf-item', list).forEach((el) => {
-      const ok = (pfFilter.ch === 'all' || el.dataset.pfCh === pfFilter.ch) && (!pfFilter.hand || el.dataset.pfHand === '1') && terms.every((t) => el.dataset.pfText.includes(t));
+      const ok = (pfFilter.ch === 'all' || el.dataset.pfCh === pfFilter.ch) && (!pfFilter.hand || el.dataset.pfHand === '1') && (!pfFilter.extra || el.dataset.pfHand === '0') && terms.every((t) => el.dataset.pfText.includes(t));
       el.hidden = !ok;
       if (ok) shown++;
     });
@@ -1591,7 +1595,7 @@
         <header class="pf-head">
           <span class="num-display pf-num">${pad(c.n)}.${i + 1}</span>
           <h1>${inline(p.title)}${koT(p.titleKo)}</h1>
-          ${p.src ? `<p class="pf-src"><span class="chip hand">${esc(p.src)}</span>${p.srcNote ? `<span>${inline(p.srcNote)}</span>` : ''}</p>` : ''}
+          ${p.src ? `<p class="pf-src"><span class="chip hand">${esc(p.src)}</span>${p.srcNote ? `<span>${inline(p.srcNote)}</span>` : ''}</p>` : extraChip(p) ? `<p class="pf-src">${extraChip(p)}</p>` : ''}
         </header>
         <div class="blk blk-key"><div class="blk-label">Statement<em>명제</em></div>${mdOf(p, 'stmt')}</div>
         ${plan ? plan.head : ''}
@@ -2278,10 +2282,14 @@
         filterProofs();
         break;
       case 'pf-hand':
-        pfFilter.hand = !pfFilter.hand;
-        t.setAttribute('aria-pressed', String(pfFilter.hand));
+      case 'pf-extra': {
+        const k = act === 'pf-hand' ? 'hand' : 'extra';
+        pfFilter[k] = !pfFilter[k];
+        pfFilter[k === 'hand' ? 'extra' : 'hand'] = false; // the two marks split the list, so only one filter at a time
+        $('[data-act="pf-hand"], [data-act="pf-extra"]').forEach((b) => b.setAttribute('aria-pressed', String(!!pfFilter[b.dataset.act.slice(3)])));
         filterProofs();
         break;
+      }
       case 'menu': openDrawer(); break;
       case 'menu-close': closeDrawer(); break;
       case 'hero-prev': setHero(heroIdx - 1); break;
