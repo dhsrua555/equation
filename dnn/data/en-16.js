@@ -4,6 +4,17 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '입력': 'input',
+    '클래스': 'classes',
+    '매개변수 62,378,344개의 자리': 'Where the 62,378,344 parameters are',
+    '← 합성곱 다섯 층 6.0%': '← five conv layers 6.0%',
+    'AlexNet의 단계별 크기와 매개변수': 'AlexNet sizes and parameters by stage',
+    '3층 위 한 칸이 보는 입력 7칸': 'one cell after 3 layers sees 7 input cells',
+    '3층: 입력 7칸 = 7×7 한 층': '3 layers: 7 input cells = one 7×7 layer',
+    '2층: 입력 5칸 = 5×5 한 층': '2 layers: 5 input cells = one 5×5 layer',
+    '1층: 입력 3칸': '1 layer: 3 input cells',
+    '가중치: 3×3 세 층 27C², 7×7 한 층 49C²': 'weights: three 3×3 layers 27C², one 7×7 layer 49C²',
+    '작은 필터를 쌓을 때의 수용 영역': 'Receptive field of stacked small filters',
     '8층': '8 layers', '19층': '19 layers', '22층': '22 layers', '152층': '152 layers',
     'ImageNet top-5 오류율': 'ImageNet top-5 error',
     '이전 층 28×28×256': 'previous layer 28×28×256',
@@ -22,6 +33,8 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '단순 층, 잔차 블록, 병목 잔차 블록': 'Plain layers, a residual block, and a bottleneck residual block',
   });
   Object.assign(EM.en.fig, {
+    alexnet: R`Top: the output size of each stage (numbers below; $55^2\times96$ means $55\times55\times96$) and the kernel (s is the stride, p the padding). Box height roughly shows width and height, box width the number of channels, and the filled boxes are the fully connected layers. Width and height shrink $227\to55\to27\to13\to6$ while the channels grow. Bottom: 94% of the parameters are in FC6–FC8 (slides 7–18).`,
+    receptive: R`Each layer of size-3 filters with stride 1 widens the range of inputs one cell sees (its receptive field) by one cell on each side, two in total: $3\to5\to7$. The bold lines are the three layer-1 cells seen by the middle cell of layer 2. In 2D, two $3\times3$ layers see the same range as one $5\times5$ layer and three see the same as one $7\times7$ layer, with fewer weights, $27C^2<49C^2$, and three ReLUs instead of one ($C$ channels, biases excluded).`,
     imagenet: R`Top-5 error (%) of the ImageNet classification challenge. CNNs were used from AlexNet in 2012 on (right of the dashed line), and the error fell as the networks grew deeper (number of layers above the bars). ResNet's 3.6% in 2015 is below the human error (about 5%).`,
     inception: R`(Left) The naive module computes four branches side by side and concatenates them, so the 256 channels of the pooling branch are added too, giving 672 channels. (Right) Putting $1\times1$ convolutions (64, filled boxes) before the $3\times3$ and $5\times5$ and after the pooling shrinks the output to 480 channels and the weights (excluding biases) to about 32%. The number below each box is the number of filters.`,
     resblock: R`(Left) Plain layers learn the desired mapping $H(x)$ directly. (Middle) In a residual block the layers learn only $F(x)$, and the input $x$ is added through the shortcut to give $F(x)+x$. With $F=0$ it is the identity, and the backpropagated gradient flows straight through the shortcut. (Right) The bottleneck block reduces the channels from 256 to 64 with $1\times1$ and expands them back to 256.`,
@@ -101,6 +114,9 @@ $$6\cdot6\cdot256=9216\to4096\to4096\to1000$$
 Of the roughly 60 million parameters, about 94% are in FC6–FC8.
 :::
 
+:::fig alexnet
+:::
+
 **Counting parameters.** A convolution layer has $K^2C_{\text{in}}C_{\text{out}}+C_{\text{out}}$, a fully connected layer $d_{\text{in}}d_{\text{out}}+d_{\text{out}}$[[ch15:15.3|Size and parameters of a convolution layer.]].
 
 | Layer | Output | Parameters |
@@ -171,6 +187,9 @@ Instead of looking through one $5\times5$ window, passing through a $3\times3$ w
 **VGGNet** (Simonyan & Zisserman 2014, slide 25). Built **a deeper network with smaller convolutional filters** (16–19 layers, 7.3%). It is a simple structure with every convolution $3\times3$, stride 1, padding 1, and $2\times2$ max pooling in between.
 
 **Why small filters** (the slides give only the conclusion, so we add the computation). The number of input cells one output cell sees is its **receptive field**. Stacking $n$ layers of $3\times3$ with stride 1 widens the receptive field by 2 per layer, to $1+2n$. Two layers give $5\times5$, three layers $7\times7$.
+
+:::fig receptive
+:::
 
 :::key Stacking small filters
 The receptive field of $n$ layers of stride-1 $3\times3$ convolutions is $(2n+1)\times(2n+1)$. If all layers have $C$ channels (excluding biases),

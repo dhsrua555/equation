@@ -3,7 +3,23 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '덧셈 게이트': 'add gate',
+    '기울기 분배기': 'gradient distributor',
+    '곱셈 게이트': 'mul gate',
+    '입력 교환기': 'input swapper',
+    '복사 게이트': 'copy gate',
+    '기울기 덧셈기': 'gradient adder',
+    '최댓값 게이트': 'max gate',
+    '기울기 라우터': 'gradient router',
+    '상류 2를 그대로 둘 다에': 'upstream 2 to both',
+    '이긴 쪽에만 9': '9 to the winner only',
+    '선 위: 순전파 값': 'above a line: forward value',
+    '선 아래: 역전파 기울기 ∂L/∂(·)': 'below a line: gradient ∂L/∂(·)',
+    '게이트별 기울기 흐름': 'Gradient flow through each gate',
+  });
   Object.assign(EM.en.fig, {
+    gates: R`The four kinds of nodes on slide 84. The number above a line is the forward value and the number below it is the gradient $\partial L/\partial(\cdot)$ coming back. Addition hands the upstream gradient to both inputs unchanged, multiplication multiplies it by the **other** input's value, a variable used in two places adds the gradients that come back, and max sends the gradient only to the winning input (5).`,
     graph1: R`The upper numbers are the forward-pass values, and the lower numbers are $\partial f/\partial(\cdot)$ obtained by backpropagation. A multiplication node sends the gradients across, swapping the inputs.`,
     graph2: R`$f(\mathbf w,\mathbf x)=1/(1+e^{-(w_0x_0+w_1x_1+w_2)})$. The upper numbers are forward-pass values, and the lower numbers are backpropagated gradients. Grouping the $+,\ \times(-1)$, $\exp$, $+1$, $1/x$ nodes gives a single sigmoid gate, whose local gradient is $\sigma(1-\sigma)=0.73\times0.27\approx0.20$.`,
     mlpback: R`$x=(1,2)$, $W_1=\begin{pmatrix}0.5&-0.5\\1&0\end{pmatrix}$, $b_1=(0,-0.5)$, ReLU, $W_2=(1\ \ {-1})$, $b_2=0$, loss $\tfrac12(y-1)^2$. The upper values are the forward pass and the lower values the backward pass. The first hidden neuron has $a_1<0$, so it is off ($h_1=0$), and no gradient passes through it in backpropagation either.`,
@@ -143,6 +159,9 @@ Memorize just the “gradient pass-through rules” of four common nodes, and yo
 - **mul gate = “swap multiplier”**: if $z=xy$, then $\frac{\partial L}{\partial x}=\frac{\partial L}{\partial z}\,y$, $\frac{\partial L}{\partial y}=\frac{\partial L}{\partial z}\,x$ (e.g., $2\times3=6$, upstream 5 → $15$ to $x$, $10$ to $y$)
 - **copy gate = gradient adder**: if $x$ is used in two places, $\frac{\partial L}{\partial x}=\frac{\partial L}{\partial z_1}+\frac{\partial L}{\partial z_2}$ (e.g., 4 and 2 → 6)
 - **max gate = gradient router**: if $z=\max(x,y)$, the larger input gets the whole upstream gradient and the smaller gets 0 (e.g., $\max(4,5)=5$, upstream 9 → 9 to the 5 side, 0 to the 4 side)
+:::
+
+:::fig gates
 :::
 
 The “adding” of the copy gate comes from the multivariable chain rule $\frac{\partial L}{\partial x}=\sum_k\frac{\partial L}{\partial z_k}\frac{\partial z_k}{\partial x}$. In a neural network, a hidden value spreads to every neuron of the next layer, so this rule is always in use.

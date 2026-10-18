@@ -138,6 +138,9 @@ $w\leftarrow w-0.5\nabla_wf=(2,-3,-3)-0.5(-0.2,-0.4,0.2)=(2.1,\ -2.8,\ -3.1)$. �
 - **최댓값 게이트 = 기울기 라우터**: $z=\max(x,y)$이면 큰 쪽에 상류 기울기 전부, 작은 쪽에 0 (예: $\max(4,5)=5$, 상류 9 → 5 쪽에 9, 4 쪽에 0)
 :::
 
+:::fig gates
+:::
+
 복사 게이트의 “더하기”는 다변수 연쇄법칙 $\frac{\partial L}{\partial x}=\sum_k\frac{\partial L}{\partial z_k}\frac{\partial z_k}{\partial x}$에서 나옵니다. 신경망에서 한 은닉값이 다음 층의 모든 뉴런으로 퍼지므로 이 규칙이 항상 쓰입니다.
 
 **각 규칙의 근거.** 덧셈: $\partial(x+y)/\partial x=1$. 곱셈: $\partial(xy)/\partial x=y$ — 그래서 **다른 입력의 값**이 곱해집니다. 최댓값: $x>y$이면 $\max(x,y)=x$ 근처에서 $x$와 똑같이 움직이고 $y$는 조금 변해도 결과에 영향이 없으므로 $\partial/\partial x=1$, $\partial/\partial y=0$ (동점에서는 미분 불가능이지만 관례로 한쪽을 고름). ReLU $\max(0,x)$는 최댓값 게이트의 특수한 경우입니다.

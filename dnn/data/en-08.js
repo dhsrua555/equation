@@ -3,7 +3,14 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '활성화 없음': 'no activation',
+    '매개변수 6,196,225개가 어느 행렬에 있는가': 'Which matrix holds the 6,196,225 parameters',
+    'A₃ 4.8% · A₄ 0.01% →': 'A₃ 4.8% · A₄ 0.01% →',
+    'CIFAR10용 다층 퍼셉트론의 구조': 'Structure of the MLP for CIFAR10',
+  });
   Object.assign(EM.en.fig, {
+    mlparch: R`The network $3072\to1536\to768\to384\to1$ of Example 5. Bar height shows the layer width, the size above each arrow is the weight matrix $A_\ell\in\mathbb R^{n_\ell\times n_{\ell-1}}$, and the number on the second line below the arrow is that layer's parameter count $(n_{\ell-1}+1)n_\ell$. ReLU follows every hidden layer and the last layer has no activation. As the band below shows, the first matrix alone holds 76% of all parameters.`,
     actfns: R`(a) The sigmoid confines values to $(0,1)$ and tanh to $(-1,1)$, and both flatten out at the ends (saturation: gradient ≈ 0). (b) ReLU has slope 1 for positive inputs, so it does not saturate there, and it is the cheapest to compute. On the negative side ReLU is 0 (gradient 0), Leaky ReLU has a small slope 0.1, and ELU approaches $-1$ smoothly.`,
     xorfig: R`(a) The filled points $(0,1),(1,0)$ have label 1 and the open points $(0,0),(1,1)$ label 0. No single line can separate them, but the network $f=\max(0,x_1+x_2)-2\max(0,x_1+x_2-1)$ has $f>\tfrac12$ in the band between two parallel lines (shaded), which gets XOR right. (b) $f$ is a function of $s=x_1+x_2$ alone; the “bent line” made by the two hidden units (dashed) peaks at $s=1$.`,
   });
@@ -203,6 +210,9 @@ $A_1:1536\times3072$, $A_2:768\times1536$, $A_3:384\times768$, $A_4:1\times384$.
 $$(3072+1)1536+(1536+1)768+(768+1)384+(384+1)\cdot1$$
 $$=4{,}720{,}128+1{,}180{,}416+295{,}296+385=6{,}196{,}225.$$
 The first layer accounts for 76% of the total. When the input is large, as with images, fully connected layers are inefficient, so convolutional layers (CNNs) are used.
+:::
+
+:::fig mlparch
 :::
 
 **A tip for checking matrix sizes.** In $y_\ell=W_\ell y_{\ell-1}$, $y_{\ell-1}$ is $n_{\ell-1}\times1$ and the result must be $n_\ell\times1$, so $W_\ell$ is $n_\ell\times n_{\ell-1}$ — “(number of outputs) × (number of inputs)”. To compute many samples at once, multiply $W_\ell$ by $Y_{\ell-1}\in\mathbb R^{n_{\ell-1}\times B}$ with the samples stacked as columns, and add the bias to every column (broadcasting).

@@ -4,6 +4,35 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '필터 5×5×3 (채운 상자)': 'filter 5×5×3 (filled box)',
+    '입력 32×32×3': 'input 32×32×3',
+    '깊이 3 = RGB': 'depth 3 = RGB',
+    '한 칸 = wᵀx + b': 'one cell = wᵀx + b',
+    '75개 곱의 합 + 편향': 'sum of 75 products + bias',
+    '활성화 맵 28×28×1': 'activation map 28×28×1',
+    '필터 6개': '6 filters',
+    '출력 28×28×6': 'output 28×28×6',
+    '필터 하나 = 맵 한 장': 'one filter = one map',
+    '합성곱층: 입력 부피, 필터, 활성화 맵': 'A convolution layer: input volume, filter, activation map',
+    '보폭 1': 'stride 1',
+    '보폭 2': 'stride 2',
+    '패딩 1, 보폭 1': 'padding 1, stride 1',
+    '출력 5×5': 'output 5×5',
+    '출력 3×3': 'output 3×3',
+    '출력 7×7 (크기 유지)': 'output 7×7 (size kept)',
+    '보폭과 패딩에 따른 필터의 자리': 'Filter positions under stride and padding',
+    '입력 4×4': 'input 4×4',
+    '최대 풀링': 'max pooling',
+    '평균 풀링': 'average pooling',
+    '2×2 창, 보폭 2': '2×2 window, stride 2',
+    '창마다 가장 큰 값': 'largest value per window',
+    '창마다 평균': 'average per window',
+    '채널마다 따로 적용 · 학습할 매개변수 없음': 'applied to each channel separately · no parameters to learn',
+    '최대 풀링과 평균 풀링': 'Max pooling and average pooling',
+    '펴기': 'stretch',
+    '한 칸 = W의 한 행 · x': 'one cell = a row of W · x',
+    '3072차원 내적': '3072-dimensional dot product',
+    '이미지에 쓰는 완전연결층': 'A fully connected layer on an image',
     '경계 칸은 계산하지 않음': 'border cells are not computed',
     '3×3 이동 평균': '3×3 moving average',
     '입력 5×5': 'input 5×5',
@@ -17,6 +46,10 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '완전연결층과 합성곱층의 연결': 'Connections of a fully connected layer and a convolution layer',
   });
   Object.assign(EM.en.fig, {
+    convvol: R`The filter is a $5\times5\times3$ box that extends through the **full depth** (3 channels) of the input. Sliding it only across width and height, each position gives a 75-dimensional dot product plus a bias (dashed lines), i.e. one cell of the activation map; filling every position gives one $28\times28\times1$ map. With 6 filters the 6 maps stack into a $28\times28\times6$ output (slides 15–20, 37).`,
+    stridepad: R`A $3\times3$ filter on a $7\times7$ input. The bold outlines in different colors are the filter's first, second and third positions, and the thick black frame on the right is the original $7\times7$ input. (Left) Moving one cell at a time gives five positions across; (middle) moving two cells gives three positions at cells 0, 2, 4; (right) padding the border with one ring of zeros gives seven positions on the $9\times9$ grid, so the size is kept. Every output size is $\frac{N-K+2P}{S}+1$.`,
+    pooling: R`Split the $4\times4$ input into four $2\times2$ windows of the same shade (stride 2, no overlap) and keep one number per window. Max pooling keeps the largest value of each window (the highlighted numbers), average pooling the mean of the four numbers. Width and height halve and the number of channels stays the same (slides 56–58).`,
+    fcstretch: R`Stretch the $32\times32\times3$ image into a $3072\times1$ vector $x$ and multiply by the $10\times3072$ weights $W$ to get 10 activations. One output cell (shaded) is the 3072-dimensional dot product of one row of $W$ (shaded) with $x$. Once stretched, which pixel neighbors which is lost (slides 60–61).`,
     movavg: R`Left $F$: a square of value 90 (one hole of value 0 in the middle) and an isolated dot. Right $G$: each cell holds the average of its $3\times3$ neighborhood (slide 13). The marked window contains only one 90, so $G=90/9=10$. The edge of the square spreads as $0\to30\to60\to90$, the hole is filled to 80, and the isolated dot becomes a smudge of 10. Filled cells are those with value 50 or more.`,
     convex: R`Multiplying the filled $3\times3$ patch by the filter element by element and adding gives 51, the top-left of the feature map. Repeating the same computation while sliding the window one cell at a time gives the $3\times3$ feature map (slides 43–45). The nine numbers of the filter are the weights to be learned.`,
     fcconv: R`(Left) In a fully connected layer every node of the upper layer is connected to every node of the lower layer, and every line has its own weight. (Right) In a 1D convolution layer (filter size 3) each node is connected only to its three neighbors (local connectivity), and lines of the same style carry the same weight at every position (weight sharing). The figure of slides 63–65 drawn in 1D.`,
@@ -120,6 +153,9 @@ A color image is a box with **depth** (3 RGB sheets) in addition to width and he
 - The output at one position is one number: the dot product of the filter with a $5\times5\times3$ chunk of the image, a 75-dimensional dot product + bias $w^Tx+b$.
 - Computing it for every position gives a $28\times28\times1$ **activation map** (feature map), because $32-5+1=28$ (Section 15.4).
 
+:::fig convvol
+:::
+
 :::key Size and parameters of a convolution layer
 With input $N\times N\times C_{\text{in}}$ and $C_{\text{out}}$ filters of size $K\times K\times C_{\text{in}}$, the output depth is $C_{\text{out}}$ (one activation map per filter) and
 $$\#\text{params}=C_{\text{out}}\big(K\cdot K\cdot C_{\text{in}}+1\big)=K^2C_{\text{in}}C_{\text{out}}+C_{\text{out}}$$
@@ -174,6 +210,9 @@ A ruler of length $K$ can be placed on a row of length $N$ in $N-K+1$ ways. Skip
 
 **Padding** (slides 32–34). In practice it is common to **zero pad** the border. A $3\times3$ filter with stride 1 on a $7\times7$ input padded by 1 cell gives $9-3+1=7$ on the $9\times9$ padded input, that is, a **$7\times7$ output**, keeping the size. In general, with stride 1 and an $F\times F$ filter, padding $\frac{F-1}2$ preserves the size: 1 for $F=3$, 2 for $F=5$, 3 for $F=7$.
 
+:::fig stridepad
+:::
+
 :::key Output size formula
 With input $N\times N\times C$, filter size $K$, stride $S$, padding $P$, and $D$ filters, the output is $N'\times N'\times C'$ with
 $$N'=\frac{N-K+2P}{S}+1$$
@@ -208,6 +247,9 @@ Pooling shrinks a picture. Keeping only one representative value (the largest, o
 $$\text{average pooling}:\ \begin{pmatrix}4.75&5\\3.5&3.5\end{pmatrix},\qquad \text{max pooling}:\ \begin{pmatrix}10&7\\8&6\end{pmatrix}$$
 For example, the top-left window $\{5,10,4,0\}$ has average $19/4=4.75$ and maximum 10.
 
+:::fig pooling
+:::
+
 :::key Pooling
 With an $F\times F$ window and stride $S$, the output size follows the same formula as convolution, $\frac{N-F}{S}+1$, and the number of channels is unchanged. There are **no** parameters to learn.
 $$\text{max pooling}:\ y=\max_{(i,j)\in\text{window}}x_{ij}$$
@@ -218,6 +260,9 @@ $$\text{global average pooling}:\ H\times W\times C\to1\times1\times C$$
 **Global average pooling (GAP)** (slide 59). Average the whole activation map of each channel into a single number. $H\times W\times C$ becomes a $C$-dimensional vector, so using it after the last convolution layer instead of a huge fully connected layer cuts the parameters greatly (how GoogLeNet of Unit 16 removed the fully connected layers).
 
 **Fully connected layer** (slides 60–61). Stretch a $32\times32\times3$ image to $3072\times1$ and multiply by $10\times3072$ weights $W$ to get 10 activations. One output is the dot product of one row of $W$ with the input (a 3072-dimensional dot product). A CNN usually classifies the features made by convolution and pooling with fully connected layers and a softmax at the end[[ch06:6.1|The multiclass model of softmax regression.]].
+
+:::fig fcstretch
+:::
 
 :::ex Example 1 — The gradient of pooling
 If the gradient of the loss with respect to the output $y=10$ of the max pooling window $\{5,10,4,0\}$ is $\frac{\partial L}{\partial y}=2$, what are the gradients of the four inputs? And for average pooling?

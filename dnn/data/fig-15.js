@@ -9,6 +9,12 @@
     return FK.R(x, y, cs, cs, on ? 'bm2' : 'bm') + (v === null ? '' : FK.T(x + cs / 2, y + cs / 2 + 3.5, String(v), { s: opt.s || 9 }));
   }).join('')).join('');
   const frame = (x, y, w, h) => FK.R(x, y, w, h, 'sv');
+  // a box seen at a slant: front face (x, y, w, h) and a top and side of depth k
+  const box3 = (x, y, w, h, k, c = 'bm') => {
+    const dx = k * 0.7, dy = -k * 0.5;
+    return FK.P(`M${x},${y}L${x + dx},${y + dy}L${x + w + dx},${y + dy}L${x + w},${y}Z`, c)
+      + FK.P(`M${x + w},${y}L${x + w + dx},${y + dy}L${x + w + dx},${y + h + dy}L${x + w},${y + h}Z`, c) + FK.R(x, y, w, h, c);
+  };
 
   window.SITE_FIGS = Object.assign(window.SITE_FIGS || {}, {
     // 15.2 3×3 moving average of the slide image (slides 8–13)
@@ -60,6 +66,83 @@
         + FK.T(132, 196, 'l번째 층 → (l+1)번째 층', { s: 11 }) + FK.T(ox + 132, 196, '선의 종류 = 같은 가중치 w₁, w₂, w₃', { s: 11 });
       return FK.fig(560, 210, '완전연결층과 합성곱층의 연결', body,
         R`(왼쪽) 완전연결층은 위층의 모든 노드가 아래층의 모든 노드에 연결되고 선마다 다른 가중치가 있습니다. (오른쪽) 1차원 합성곱층(필터 크기 3)은 각 노드가 이웃 세 노드에만 연결되고(국소 연결), 같은 종류의 선은 모든 위치에서 같은 가중치입니다(가중치 공유). 슬라이드 63–65의 그림을 1차원으로 그렸습니다.`);
+    },
+    // 15.3 a 5×5×3 filter slides over a 32×32×3 image and leaves one 28×28 activation map; six filters give 28×28×6 (slides 15–20, 37)
+    convvol() {
+      const img = box3(30, 74, 120, 120, 20), flt = box3(46, 90, 30, 30, 20, 'bm2');
+      const map = box3(236, 82, 105, 105, 4), cell = FK.R(251, 97, 8, 8, 'bm2');
+      let vol = '';
+      for (let s = 5; s >= 0; s--) vol += FK.R(412 + s * 6, 82 - s * 5, 105, 105, 'bm');
+      vol += FK.R(412, 82, 8, 8, 'bm2');
+      const body = img + flt + map + cell + vol
+        + FK.L(76, 90, 251, 97, 'dm ds') + FK.L(76, 120, 251, 105, 'dm ds')
+        + FK.T(30, 46, '필터 5×5×3 (채운 상자)', { a: 'start', s: 11, c: 'lb' })
+        + FK.T(90, 214, '입력 32×32×3', { c: 'em' }) + FK.T(90, 230, '깊이 3 = RGB', { s: 11 })
+        + FK.T(288, 40, '한 칸 = wᵀx + b', { s: 11, c: 'em' }) + FK.T(288, 54, '75개 곱의 합 + 편향', { s: 11 })
+        + FK.T(288, 214, '활성화 맵 28×28×1', { c: 'em' }) + FK.T(288, 230, '32 − 5 + 1 = 28', { s: 11 })
+        + FK.A(352, 134, 404, 134, 'ax', 7) + FK.T(378, 126, '필터 6개', { s: 11 })
+        + FK.T(480, 214, '출력 28×28×6', { c: 'em' }) + FK.T(480, 230, '필터 하나 = 맵 한 장', { s: 11 });
+      return FK.fig(560, 244, '합성곱층: 입력 부피, 필터, 활성화 맵', body,
+        R`필터는 입력의 **깊이 전체**(3채널)로 뻗은 $5\times5\times3$ 상자입니다. 필터를 가로·세로로만 미끄러뜨리며 각 위치에서 75차원 내적에 편향을 더하면(점선) 활성화 맵의 한 칸이 되고, 모든 위치를 채우면 $28\times28\times1$ 맵 한 장이 나옵니다. 필터를 6개 쓰면 맵이 6장 쌓여 출력은 $28\times28\times6$입니다(슬라이드 15–20, 37).`);
+    },
+    // 15.4 where a 3×3 filter can sit on a 7×7 input: stride 1, stride 2, and zero padding 1 (slides 21–34)
+    stridepad() {
+      const cells = (x0, y0, n, cs, zero) => {
+        let s = '';
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+          const z = zero && (i === 0 || j === 0 || i === n - 1 || j === n - 1);
+          s += FK.R(x0 + j * cs, y0 + i * cs, cs, cs, 'bm') + (z ? FK.T(x0 + j * cs + cs / 2, y0 + i * cs + cs / 2 + 3, '0', { s: 8 }) : '');
+        }
+        return s;
+      };
+      const win = (x0, y0, cs, c, r, cls, k) => FK.R(x0 + c * cs + k, y0 + r * cs + k, 3 * cs - 2 * k, 3 * cs - 2 * k, cls);
+      const y0 = 40, cs = 20, cp = 140 / 9;
+      const body = cells(20, y0, 7, cs) + win(20, y0, cs, 0, 0, 'ld', 1) + win(20, y0, cs, 1, 0, 'rx', 3)
+        + cells(205, y0, 7, cs) + win(205, y0, cs, 0, 0, 'ld', 1) + win(205, y0, cs, 2, 0, 'rx', 3) + win(205, y0, cs, 4, 0, 'vl', 1)
+        + cells(390, y0, 9, cp, true) + FK.R(390 + cp, y0 + cp, 7 * cp, 7 * cp, 'th') + win(390, y0, cp, 0, 0, 'ld', 1) + win(390, y0, cp, 1, 0, 'rx', 3)
+        + FK.T(90, 24, '보폭 1', { c: 'em' }) + FK.T(275, 24, '보폭 2', { c: 'em' }) + FK.T(460, 24, '패딩 1, 보폭 1', { c: 'em' })
+        + FK.T(90, 202, '(7 − 3)/1 + 1 = 5', { s: 11 }) + FK.T(275, 202, '(7 − 3)/2 + 1 = 3', { s: 11 }) + FK.T(460, 202, '(7 − 3 + 2)/1 + 1 = 7', { s: 11 })
+        + FK.T(90, 220, '출력 5×5', { c: 'lb' }) + FK.T(275, 220, '출력 3×3', { c: 'lb' }) + FK.T(460, 220, '출력 7×7 (크기 유지)', { c: 'lb' });
+      return FK.fig(560, 232, '보폭과 패딩에 따른 필터의 자리', body,
+        R`$7\times7$ 입력 위의 $3\times3$ 필터. 색이 다른 굵은 테두리가 필터의 첫 번째, 두 번째, 세 번째 자리이고, 오른쪽의 두꺼운 검은 테두리는 원래의 $7\times7$ 입력입니다. (왼쪽) 한 칸씩 옮기면 가로로 다섯 자리, (가운데) 두 칸씩 옮기면 0, 2, 4번 칸의 세 자리, (오른쪽) 테두리에 0을 한 칸 덧대면 $9\times9$에서 일곱 자리가 되어 크기가 그대로입니다. 출력 크기는 모두 $\frac{N-K+2P}{S}+1$입니다.`);
+    },
+    // 15.5 2×2 max and average pooling with stride 2 on the slide's 4×4 input (slides 56–58)
+    pooling() {
+      const I = [[5, 10, 6, 7], [4, 0, 4, 3], [2, 4, 3, 4], [0, 8, 1, 6]];
+      const MX = [[10, 7], [8, 6]], AV = [[4.75, 5], [3.5, 3.5]];
+      const q = (i, j) => (Math.floor(i / 2) + Math.floor(j / 2)) % 2 === 0;
+      const cs = 40, big = (v, i, j) => v === MX[Math.floor(i / 2)][Math.floor(j / 2)];
+      let body = '';
+      I.forEach((row, i) => row.forEach((v, j) => {
+        body += FK.R(30 + j * cs, 50 + i * cs, cs, cs, q(i, j) ? 'bm2' : 'bm') + FK.T(30 + j * cs + cs / 2, 50 + i * cs + cs / 2 + 4, String(v), { s: 13, c: big(v, i, j) ? 'lb' : '' });
+      }));
+      [[0, 0], [0, 2], [2, 0], [2, 2]].forEach(([i, j]) => { body += frame(30 + j * cs, 50 + i * cs, 2 * cs, 2 * cs); });
+      const out = (x0, y0, M) => M.map((row, i) => row.map((v, j) => FK.R(x0 + j * cs, y0 + i * cs, cs, cs, q(2 * i, 2 * j) ? 'bm2' : 'bm') + FK.T(x0 + j * cs + cs / 2, y0 + i * cs + cs / 2 + 4, String(v), { s: 13, c: 'em' })).join('')).join('');
+      body += out(310, 36, MX) + out(310, 152, AV)
+        + FK.T(110, 36, '입력 4×4', { c: 'em' }) + FK.T(350, 26, '최대 풀링', { c: 'em' }) + FK.T(350, 142, '평균 풀링', { c: 'em' })
+        + FK.A(200, 100, 300, 76, 'ax', 7) + FK.A(200, 160, 300, 192, 'ax', 7) + FK.T(250, 162, '2×2 창, 보폭 2', { s: 11 })
+        + FK.T(400, 70, '창마다 가장 큰 값', { a: 'start', s: 11 }) + FK.T(400, 86, '{5, 10, 4, 0} → 10', { a: 'start', s: 11, c: 'lb' })
+        + FK.T(400, 186, '창마다 평균', { a: 'start', s: 11 }) + FK.T(400, 202, '19/4 = 4.75', { a: 'start', s: 11, c: 'lb' })
+        + FK.T(280, 246, '채널마다 따로 적용 · 학습할 매개변수 없음', { s: 11 });
+      return FK.fig(560, 256, '최대 풀링과 평균 풀링', body,
+        R`$4\times4$ 입력을 같은 색의 $2\times2$ 창 네 개로 나누고(겹치지 않게 보폭 2), 창마다 수 하나만 남깁니다. 최대 풀링은 창에서 가장 큰 값(색을 넣은 수)을, 평균 풀링은 네 수의 평균을 남깁니다. 가로·세로가 절반이 되고 채널 수는 그대로입니다(슬라이드 56–58).`);
+    },
+    // 15.5 a fully connected layer on an image: stretch 32×32×3 to 3072×1, then W (10×3072) gives 10 numbers (slides 60–61)
+    fcstretch() {
+      const img = box3(20, 96, 72, 72, 14);
+      let rows = '';
+      for (let r = 1; r < 10; r++) rows += FK.L(250, 100 + r * 6, 470, 100 + r * 6, 'dm');
+      const body = img + FK.A(104, 132, 140, 132, 'ax', 7) + FK.T(122, 122, '펴기', { s: 11 })
+        + FK.R(150, 20, 18, 220, 'bm') + FK.R(150, 20, 18, 220, 'fl')
+        + FK.T(159, 14, 'x', { c: 'it' }) + FK.T(178, 236, '3072×1', { a: 'start', s: 11 })
+        + FK.R(250, 100, 220, 60, 'bm') + rows + FK.R(250, 118, 220, 6, 'bm2')
+        + FK.T(360, 92, 'W: 10×3072', { c: 'em' })
+        + FK.R(520, 100, 18, 60, 'bm') + FK.R(520, 118, 18, 6, 'bm2') + FK.T(529, 92, 'Wx', { c: 'it' }) + FK.T(529, 176, '10×1', { s: 11 })
+        + FK.L(470, 121, 520, 121, 'dm ds') + FK.L(168, 121, 250, 121, 'dm ds') + FK.T(495, 135, '=', { s: 14, c: 'em' })
+        + FK.T(56, 190, '32×32×3', { c: 'em' })
+        + FK.T(360, 186, '한 칸 = W의 한 행 · x', { c: 'lb' }) + FK.T(360, 202, '3072차원 내적', { s: 11 });
+      return FK.fig(560, 246, '이미지에 쓰는 완전연결층', body,
+        R`$32\times32\times3$ 이미지를 한 줄로 펴서 $3072\times1$ 벡터 $x$를 만들고, $10\times3072$ 가중치 $W$를 곱해 10개의 활성화를 얻습니다. 출력의 한 칸(칠한 칸)은 $W$의 한 행(칠한 행)과 $x$의 3072차원 내적입니다. 펴는 순간 어느 화소가 어느 화소의 이웃인지는 사라집니다(슬라이드 60–61).`);
     },
   });
 })();

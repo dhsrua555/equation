@@ -3,7 +3,17 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '학습률에 따른 학습 곡선': 'Learning curves for different learning rates',
+    '에폭': 'epoch',
+    '손실': 'loss',
+    '(a) 매우 높음': '(a) very high',
+    '(b) 낮음': '(b) low',
+    '(c) 높음': '(c) high',
+    '(d) 좋음': '(d) good',
+  });
   Object.assign(EM.en.fig, {
+    lrcurves: R`The four curves of slide 27 redrawn (the shapes are illustrative). (a) Too large: the loss explodes. (b) Too small: it goes down steadily but slowly. (c) Large: it falls fast at first and then stalls at a high value. (d) Just right: it goes down fast and low. The learning rates are in the order b < d < c < a.`,
     lrsched: R`(a) Step drops the rate to one tenth at fixed epochs (30, 60, 90); cosine decreases slowly at the start and end and quickly in the middle, reaching 0 at $T$; linear decreases at a constant speed. (b) Inverse square root drops quickly at first and then slowly. Warmup raises the rate linearly from 0 to $\alpha_0$ over the first few epochs and then decays it, preventing the loss from exploding under a large early learning rate.`,
     bnln: R`The shaded cells are the values used to compute one mean and variance. BN computes the statistics per feature (D of them), LN per sample (N of them).`,
   });
@@ -33,6 +43,9 @@ SGD, SGD+Momentum, Adagrad, RMSProp, and Adam all have the **learning rate** as 
 - (d) Good learning rate
 
 Sorted by learning rate in ascending order: **b < d < c < a**. Going down fast with a high learning rate at first and precisely with a low learning rate later takes the advantages of both → learning rate decay. Notes: on a bowl-shaped loss, a large learning rate oscillates between the walls, and reducing the learning rate lets it settle to the bottom.
+
+:::fig lrcurves
+:::
 
 **Why (c) stalls high.** Two reasons overlap. (1) A deterministic reason: in a direction with curvature $\beta$, if $\eta$ is close to $2/\beta$, every step jumps across the wall and barely decreases[[ch13:13.4|For $f=\frac\beta2x^2$, $x_{t+1}=(1-\eta\beta)x_t$.]]. (2) A stochastic reason: because of SGD's noise, the loss cannot go below a “noise floor” of about $\frac L2\eta G$[[ch13:13.6|SGD with a fixed learning rate stays at a noise floor.]]. In both cases, reducing $\eta$ solves it.
 
