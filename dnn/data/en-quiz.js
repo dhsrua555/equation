@@ -256,4 +256,137 @@ $\max_xg(x)=0$ and $\min_yh(y)=1$, so $0\lt1$ — equality does not hold. (Becau
 ` },
     },
   };
+  EM.en.qz.q1 = {
+    title: 'Quiz 1',
+    meta: 'M1407.0012 · Prof. Youngjoon Hong · given Sep. 30',
+    intro: R`
+Both problems are **derivations**. Problem 1 **generalizes Problem 2 of Problem Set 1** (MAP for a Gaussian mean) to vectors and matrices, and Problem 2 **generalizes the He-initialization derivation** from class to the Leaky ReLU.
+
+:::tip What decides the score on this quiz
+1. **Drop constants correctly.** Terms independent of $w$ ($\log p(y)$, normalizing constants) may be dropped, but say in one line **what is independent of $w$ and why**.
+2. Read off $\lambda$ by multiplying by $\sigma^2$, justified by **multiplying by a positive number does not move the minimizer**.
+3. State **why the inverse exists** ($X^TX+\lambda I\succ0$). $X^TX$ itself may be singular.
+4. When splitting expectations, say **which independence you use** ($w$ independent of $x$, the $w_i$ independent of each other). There is **no** assumption that the $x_i$ are independent.
+5. When using symmetry, handle **the case $z=0$**.
+:::
+`,
+    probs: {
+      p1: { label: 'Problem 1', title: 'MAP for the Gaussian Linear Model = Ridge Regression', where: 'Probabilistic regression and regularization',
+        body: R`
+:::def Problem
+Let $X\in\mathbb R^{N\times d}$ be a fixed design matrix, where $N,d\ge1$. For $y\in\mathbb R^N$ and $w\in\mathbb R^d$, consider the Gaussian model
+$$y\mid w\sim\N(Xw,\sigma^2I_N),\qquad w\sim\N(0,\tau^2I_d),$$
+where $\sigma,\tau\gt0$ are known constants. All densities are conditional on the fixed matrix $X$; this conditioning is omitted from the notation.
+
+**1.** Use Bayes' rule to obtain $-\log p(w\mid y)$ up to an additive constant independent of $w$. Show that maximum a posteriori (MAP) estimation is equivalent to minimizing
+$$J_\lambda(w)=\frac12\lVert y-Xw\rVert_2^2+\frac\lambda2\lVert w\rVert_2^2,$$
+and determine $\lambda$.
+
+**2.** Differentiate $J_\lambda$ to derive a closed-form expression for the MAP estimate.
+:::
+
+:::key Key points
+- **Posterior ∝ likelihood × prior.** $p(w\mid y)=\frac{p(y\mid w)p(w)}{p(y)}$, and the denominator $p(y)$ is a constant independent of $w$.
+- The density of $\N(\mu,\sigma^2I_N)$ is $(2\pi\sigma^2)^{-N/2}\exp\!\big(-\frac{\lVert y-\mu\rVert^2}{2\sigma^2}\big)$. Its negative log is **squared error / $2\sigma^2$ + constant**.
+- The answer is $\boxed{\lambda=\sigma^2/\tau^2}$: more noise or a narrower prior means stronger regularization. ($\lambda=1/\tau^2$ in Problem Set 1, where $\sigma^2=1$, is a special case.)
+- The closed form is $\boxed{\hat w_{\text{MAP}}=(X^TX+\lambda I_d)^{-1}X^Ty}$. Invertibility follows from $v^T(X^TX+\lambda I)v=\lVert Xv\rVert^2+\lambda\lVert v\rVert^2\gt0$ for $v\ne0$.
+- Check: as $\tau^2\to\infty$ ($\lambda\to0$) we recover least squares (the normal equations); as $\tau^2\to0$, $\hat w\to0$.
+:::
+
+:::ex Solution
+Write the negative logs of the likelihood and the prior and add them. Try it yourself before opening.
+---
+**1. Negative log posterior.** By Bayes' rule
+$$p(w\mid y)=\frac{p(y\mid w)\,p(w)}{p(y)},\qquad -\log p(w\mid y)=-\log p(y\mid w)-\log p(w)+\log p(y).$$
+$p(y)=\int p(y\mid w)p(w)\,dw$ is integrated over $w$, so it does not depend on $w$. Substituting the two densities,
+$$-\log p(y\mid w)=\frac1{2\sigma^2}\lVert y-Xw\rVert_2^2+\frac N2\log(2\pi\sigma^2),\qquad -\log p(w)=\frac1{2\tau^2}\lVert w\rVert_2^2+\frac d2\log(2\pi\tau^2).$$
+Collecting the constants independent of $w$ into $C$,
+$$-\log p(w\mid y)=\frac1{2\sigma^2}\lVert y-Xw\rVert_2^2+\frac1{2\tau^2}\lVert w\rVert_2^2+C.$$
+**MAP and $J_\lambda$.** Since $\log$ is increasing, $\argmax_wp(w\mid y)=\argmin_w\{-\log p(w\mid y)\}$. Removing the constant $C$ and multiplying by the positive number $\sigma^2$ does not change the minimizer, so
+$$\hat w_{\text{MAP}}=\argmin_w\ \sigma^2\big(-\log p(w\mid y)-C\big)=\argmin_w\ \frac12\lVert y-Xw\rVert_2^2+\frac{\sigma^2}{2\tau^2}\lVert w\rVert_2^2=\argmin_wJ_\lambda(w),\qquad\lambda=\frac{\sigma^2}{\tau^2}.$$
+
+**2. Closed form.** Expanding, $J_\lambda(w)=\frac12\big(y^Ty-2w^TX^Ty+w^TX^TXw\big)+\frac\lambda2w^Tw$. With $\nabla_w(w^Tm)=m$ and $\nabla_w(w^TAw)=(A+A^T)w=2Aw$ (symmetric $A=X^TX$),
+$$\nabla_wJ_\lambda(w)=-X^Ty+X^TXw+\lambda w=-X^T(y-Xw)+\lambda w.$$
+Setting it to 0 gives $(X^TX+\lambda I_d)w=X^Ty$.
+**Invertibility.** For $v\ne0$, $v^T(X^TX+\lambda I_d)v=\lVert Xv\rVert_2^2+\lambda\lVert v\rVert_2^2\ge\lambda\lVert v\rVert_2^2\gt0$, so $X^TX+\lambda I_d\succ0$ is invertible. (This holds even if the columns of $X$ are dependent or $N\lt d$.)
+**It is the minimizer.** The Hessian $\nabla^2J_\lambda=X^TX+\lambda I_d\succ0$, so $J_\lambda$ is strongly convex and its unique stationary point is the unique minimizer:
+$$\hat w_{\text{MAP}}=(X^TX+\lambda I_d)^{-1}X^Ty,\qquad\lambda=\frac{\sigma^2}{\tau^2}.\qquad\blacksquare$$
+
+**Numerical check.** With $d=1$, $X=(1,1)^T$, $y=(1,3)^T$, $\sigma^2=\tau^2=1$: $\lambda=1$, $X^TX=2$, $X^Ty=4$, so $\hat w_{\text{MAP}}=\frac4{2+1}=\frac43$, **shrunk** toward 0 from the least-squares value $\frac42=2$.
+
+**Remark.** The posterior itself is Gaussian, $\N\big(\hat w_{\text{MAP}},\,\sigma^2(X^TX+\lambda I)^{-1}\big)$, so the MAP equals the posterior mean. Also $(X^TX+\lambda I_d)^{-1}X^T=X^T(XX^T+\lambda I_N)^{-1}$, so $\hat w=X^T(XX^T+\lambda I_N)^{-1}y$, which needs only an $N\times N$ inverse when $N\lt d$ — exactly the form of [[ch04:4.5|kernel ridge regression]].
+:::
+
+:::warn Common mistakes
+- Writing $\lambda=1/\tau^2$ or $\tau^2/\sigma^2$. Multiplying by $\sigma^2$ so that the first term of $J_\lambda$ has coefficient $\frac12$ gives $\lambda=\sigma^2/\tau^2$.
+- Dropping $p(y)$ without a reason, or treating the normalizing constant $(2\pi\sigma^2)^{-N/2}$ as a function of $w$.
+- Assuming $(X^TX)^{-1}$ exists. Nothing is assumed about $N,d$, so invertibility must come from the positive definiteness of $X^TX+\lambda I$.
+- Getting the sign of the gradient ($-X^T(y-Xw)$) wrong, or forgetting the symmetry needed for $\nabla(w^TAw)=2Aw$.
+:::
+` },
+      p2: { label: 'Problem 2', title: 'Second-Moment Preservation for the Leaky ReLU and He Initialization', where: 'Activation functions and weight initialization',
+        body: R`
+:::def Problem
+For $0\le\alpha\le1$, define
+$$\phi_\alpha(z)=\begin{cases}z,&z\ge0,\\\alpha z,&z\lt0.\end{cases}$$
+Let $n\ge1$ and let $x\in\mathbb R^n$ be a random vector with $\E[x_i^2]=q$ for every $i$, where $0\lt q\lt\infty$. The weights $w_1,\dots,w_n$ are independent and identically distributed as $\N(0,s^2)$, with $s^2\gt0$. The entire weight vector is independent of $x$. Set
+$$z=\sum_{i=1}^nw_ix_i,\qquad h=\phi_\alpha(z).$$
+
+**1.** Prove that $\E[z]=0$ and $\E[z^2]=ns^2q$.
+
+**2.** You may use, without proof, that $z$ and $-z$ have the same distribution. Use this symmetry to prove
+$$\E[h^2]=\frac{1+\alpha^2}2\,\E[z^2].$$
+
+**3.** Determine $s^2$ so that the output second moment equals the common per-coordinate input second moment, namely $\E[h^2]=q$. Evaluate your answer at $\alpha=0$ and $\alpha=1$, and identify the corresponding activations.
+:::
+
+:::key Key points
+- In **part 1**, the single fact $\E[w_iw_j]=s^2\delta_{ij}$ kills the cross terms. Independence of the $x_i$ or $\E[x_i]=0$ is **not needed** — the independence and zero mean of the weights do all the work.
+- In **part 2**, split $h^2=z^2\mathbf 1\{z\ge0\}+\alpha^2z^2\mathbf 1\{z\lt0\}$ and use symmetry to show that each half has expectation **$\frac12\E[z^2]$**. Gaussianity is not used.
+- The answer to **part 3** is $\boxed{s^2=\dfrac2{(1+\alpha^2)\,n}}$. At $\alpha=0$ (ReLU) it is $2/n$ — **He (Kaiming) initialization**; at $\alpha=1$ (the identity, i.e., linear) it is $1/n$ — **LeCun initialization** (Xavier with equal fan-in and fan-out).
+- What is preserved is the **second moment, not the variance**. The ReLU output has nonzero mean, so $\E[h^2]\ne\Var(h)$.
+:::
+
+:::ex Solution
+The three parts build on each other. Try it yourself before opening.
+---
+**Preliminary: integrability.** Since $\E[x_i^2]=q\lt\infty$, Cauchy–Schwarz gives $\E|x_i|\le\sqrt q$ and $\E|x_ix_j|\le\sqrt{\E x_i^2\,\E x_j^2}=q$. The $w_i$ are Gaussian, so all their moments are finite. Hence every expectation below is finite, and the expectation of a product of independent random variables is the product of the expectations.
+
+**1.** By linearity and the independence of $w_i$ and $x_i$,
+$$\E[z]=\sum_{i=1}^n\E[w_ix_i]=\sum_{i=1}^n\E[w_i]\,\E[x_i]=\sum_{i=1}^n0\cdot\E[x_i]=0.$$
+Expanding the square, and since the weight vector $(w_1,\dots,w_n)$ is independent of $x$, $\E[w_iw_jx_ix_j]=\E[w_iw_j]\,\E[x_ix_j]$:
+$$\E[z^2]=\sum_{i=1}^n\sum_{j=1}^n\E[w_iw_j]\,\E[x_ix_j].$$
+For $i\ne j$, $w_i,w_j$ are independent, so $\E[w_iw_j]=\E[w_i]\E[w_j]=0$; for $i=j$, $\E[w_i^2]=\Var(w_i)+(\E w_i)^2=s^2$. Thus $\E[w_iw_j]=s^2\delta_{ij}$ and
+$$\E[z^2]=\sum_{i=1}^ns^2\,\E[x_i^2]=ns^2q.$$
+
+**2.** Split $h^2$ by sign. If $z\ge0$ then $h^2=z^2$, and if $z\lt0$ then $h^2=\alpha^2z^2$, so
+$$h^2=z^2\mathbf 1\{z\ge0\}+\alpha^2z^2\mathbf 1\{z\lt0\},\qquad \E[h^2]=A+\alpha^2B,$$
+$$A=\E\big[z^2\mathbf 1\{z\ge0\}\big],\qquad B=\E\big[z^2\mathbf 1\{z\lt0\}\big].$$
+**$A=B$.** Since $z$ and $-z$ have the same distribution, $\E[g(z)]=\E[g(-z)]$ for $g(t)=t^2\mathbf 1\{t\lt0\}$:
+$$B=\E\big[z^2\mathbf 1\{z\lt0\}\big]=\E\big[(-z)^2\mathbf 1\{-z\lt0\}\big]=\E\big[z^2\mathbf 1\{z\gt0\}\big].$$
+At $z=0$ we have $z^2=0$, so $z^2\mathbf 1\{z\gt0\}=z^2\mathbf 1\{z\ge0\}$ and $B=A$.
+**Sum.** The two indicators sum to 1, so $A+B=\E[z^2]$. Together with $A=B$, $A=B=\frac12\E[z^2]$ and
+$$\E[h^2]=\frac12\E[z^2]+\frac{\alpha^2}2\E[z^2]=\frac{1+\alpha^2}2\,\E[z^2].\qquad\blacksquare$$
+
+**3.** Combining 1 and 2, $\E[h^2]=\frac{1+\alpha^2}2\,ns^2q$. For this to equal $q$ (dividing by $q\gt0$),
+$$\frac{(1+\alpha^2)\,n\,s^2}2=1\iff s^2=\frac2{(1+\alpha^2)\,n}.$$
+
+| $\alpha$ | Activation | $s^2$ | Name |
+|---|---|---|---|
+| $0$ | $\phi_0(z)=\max(0,z)$ — **ReLU** | $\dfrac2n$ | He (Kaiming) initialization |
+| $1$ | $\phi_1(z)=z$ — **identity** (linear, no activation) | $\dfrac1n$ | LeCun initialization · Xavier $\frac2{n_{in}+n_{out}}$ with equal widths |
+| $0\lt\alpha\lt1$ | **Leaky ReLU** (e.g., $\alpha=0.01$) | $\dfrac2{(1+\alpha^2)n}\approx\dfrac2n$ | He initialization for the Leaky ReLU |
+
+**Interpretation.** The ReLU cuts off the negative half and so **halves** the second moment; doubling the weight variance ($2/n$) compensates. Keeping the negative side scaled by $\alpha$ reduces the loss to $\frac{1-\alpha^2}2$, so less compensation is needed. With this $s^2$ the second moment is kept layer after layer, so the signal neither explodes nor vanishes exponentially through a deep network.
+:::
+
+:::warn Common mistakes
+- Assuming the $x_i$ are independent when expanding $\E[z^2]$. The cross terms vanish because $\E[w_iw_j]=0$; $\E[x_ix_j]$ need not be 0.
+- Writing $\E[h^2]=\frac{1+\alpha^2}2\E[z^2]$ as “$\Var(h)$”. The ReLU output has positive mean, so variance and second moment differ.
+- Not mentioning the difference between $\mathbf 1\{z\gt0\}$ and $\mathbf 1\{z\ge0\}$ (at $z=0$). One line saying $z^2=0$ there suffices.
+- Calling $\alpha=1$ just “a Leaky ReLU”. $\phi_1$ is the identity, i.e., a **linear layer**.
+:::
+` },
+    },
+  };
 })();

@@ -25,8 +25,8 @@
       const s = sec.src.replace(/문제 (\d)/g, "Problem $1").replace(/월/g, "Mon").replace(/수/g, "Wed").replace(/슬라이드/g, "slides").replace(/필기/g, "notes").replace(/보충/g, "supplement").replace(/종합/g, "combined");
       return /^Problem Set/.test(s) ? s : `Lecture ${s}`;
     },
-    about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–6주차 강의 슬라이드와 수업 중 필기, 그리고 Problem Set 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
-    aboutEn: 'Exam-prep notes following the Week 1–6 lecture slides and in-class notes of Prof. Youngjoon Hong’s “Mathematical Foundations of Deep Neural Networks” (Fall 2026), together with Problem Set 1. Each section names its lecture (week, day, slide numbers), and the proofs worked out by hand in class appear with the “lecture notes” mark, with the missing steps filled in.',
+    about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–6주차 강의 슬라이드와 수업 중 필기, 그리고 Problem Set 1·Quiz 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
+    aboutEn: 'Exam-prep notes following the Week 1–6 lecture slides and in-class notes of Prof. Youngjoon Hong’s “Mathematical Foundations of Deep Neural Networks” (Fall 2026), together with Problem Set 1 and Quiz 1. Each section names its lecture (week, day, slide numbers), and the proofs worked out by hand in class appear with the “lecture notes” mark, with the missing steps filled in.',
     text: {
       refLabel: '강의',
       secChip: '§',
@@ -42,7 +42,7 @@
       proofLede: '강의에 나온 정리와 유도 {proofs}개의 증명을 모았습니다. ‘강의 필기’ 표시는 교수님이 수업 중에 손으로 풀어 주신 증명이고, ‘판서에 없는 증명’은 슬라이드에 결과만 나오거나 수업에서 증명하지 않은 공식을 시험 대비로 증명한 것입니다. 공식 이름이나 영어 용어로 검색할 수 있습니다. 예: KL, Jensen, descent lemma, Xavier, push-through.',
       proofPlaceholder: '찾을 정리나 유도 (예: 정규방정식, Hessian, dual)',
       quizNav: '퀴즈풀이',
-      quizLede: '수업에서 받은 Problem Set 1의 네 문제를 문제 → **핵심 포인트** → 풀이 → 자주 하는 실수 순서로 정리했습니다. 시험이 이 유형으로 나오므로, 핵심 포인트를 읽고 직접 답안을 써 본 뒤 풀이를 펼쳐 비교하세요. 문제마다 위에는 개념이 있는 단원으로, 아래에는 같은 유형의 연습문제로 가는 링크가 있고, 맨 아래에 단원별 퀴즈 대비 연습문제를 모았습니다.',
+      quizLede: '수업에서 받은 Problem Set 1의 네 문제와 Quiz 1(9월 30일)의 두 문제를 문제 → **핵심 포인트** → 풀이 → 자주 하는 실수 순서로 정리했습니다. 시험이 이 유형으로 나오므로, 핵심 포인트를 읽고 직접 답안을 써 본 뒤 풀이를 펼쳐 비교하세요. 문제마다 위에는 개념이 있는 단원으로, 아래에는 같은 유형의 연습문제로 가는 링크가 있고, 맨 아래에 단원별 퀴즈 대비 연습문제를 모았습니다.',
     },
     // English for the prose above (bilingual): the Korean stays behind the KO toggle
     textEn: {
@@ -55,7 +55,7 @@
       examLede: 'Timed exams covering Weeks 1–5, including a proof mock exam of the same type as Problem Set 1. Derivation and proof problems are self-graded with the rubric.',
       examsPageLede: 'There are {exams} mock exams matched to the exam range, plus custom mock exams. Once you start, the timer runs, and your answers are submitted automatically when time is up. Written problems are self-graded after submission, using the model solution and the rubric.',
       proofLede: 'The proofs of the {proofs} theorems and derivations from the lectures. The “lecture notes” mark indicates proofs the professor worked out by hand in class; “판서에 없는 증명” (not in the lecture notes) marks formulas the slides only state or the class did not prove, proved here for the exam. Search by formula name or English term, e.g., KL, Jensen, descent lemma, Xavier, push-through.',
-      quizLede: 'The four problems of Problem Set 1 from class, arranged as problem → **key points** → solution → common mistakes. The exam comes in this format, so read the key points, write your own answer, and then open the solution to compare. Each problem links above to the units with the concepts and below to practice problems of the same type, and the quiz-prep practice problems by unit are collected at the bottom.',
+      quizLede: 'The four problems of Problem Set 1 and the two problems of Quiz 1 (Sep. 30) from class, arranged as problem → **key points** → solution → common mistakes. The exam comes in this format, so read the key points, write your own answer, and then open the solution to compare. Each problem links above to the units with the concepts and below to practice problems of the same type, and the quiz-prep practice problems by unit are collected at the bottom.',
     },
     // 같은 네트워크의 분야(공학수학·의료 인공지능·기초 수학)로 가는 링크는 core/net.js와 net-index.js가 풀어 줍니다.
   };

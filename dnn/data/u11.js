@@ -119,7 +119,7 @@ $\E y^2=\sum_i\E[w_i^2x_i^2]+\sum_{i\ne k}\E[w_iw_kx_ix_k]$. 독립성으로 $\E
 - 평균 0 — 2점
 - 제곱의 전개와 독립성 — 5점
 - 보존 조건과 결론 — 3점` },
-      { sec: '11.3', type: 'open', lv: 3, proof: true, q: R`$z\sim\N(0,q)$, $h=\max(0,z)$일 때 $\E[h]=\sqrt{q/2\pi}$와 $\E[h^2]=q/2$를 적분으로 계산하고(수업의 D.I.Y.), 이를 써서 He 초기화 $\sigma^2=2/D_{in}$을 유도하세요.`,
+      { sec: '11.3', type: 'open', lv: 3, proof: true, quiz: 'q1-p2', q: R`$z\sim\N(0,q)$, $h=\max(0,z)$일 때 $\E[h]=\sqrt{q/2\pi}$와 $\E[h^2]=q/2$를 적분으로 계산하고(수업의 D.I.Y.), 이를 써서 He 초기화 $\sigma^2=2/D_{in}$을 유도하세요.`,
         sol: R`
 **$\E h$.** $\E h=\int_0^\infty\frac{z}{\sqrt{2\pi q}}e^{-z^2/2q}dz$. $u=z^2/2q$로 치환하면 $z\,dz=q\,du$: $=\frac{q}{\sqrt{2\pi q}}\int_0^\infty e^{-u}du=\sqrt{\frac q{2\pi}}$.
 **$\E h^2$.** 피적분함수 $z^2e^{-z^2/2q}$가 우함수이므로 $\int_0^\infty=\frac12\int_{-\infty}^\infty$, $\E h^2=\frac12\E z^2=\frac q2$.
