@@ -82,7 +82,7 @@ What is the distance between the point $(3,4)$ and the hyperplane $3x_1+4x_2-10=
 $\frac{\lvert9+16-10\rvert}{\sqrt{9+16}}=\frac{15}5=3$. The foot of the perpendicular is $x_p=x-\alpha w$ with $\alpha=15/25=0.6$, so $x_p=(3,4)-0.6(3,4)=(1.2,1.6)$. Check: $3(1.2)+4(1.6)=10$ ✓.
 :::
 
-:::def Margin
+:::key Margin
 The margin of a hyperplane $H$ with respect to data $D$ is the distance to the nearest point.
 $$r(w,b)=\min_{x\in D}\frac{\lvert w^Tx+b\rvert}{\lVert w\rVert_2}$$
 :::
@@ -185,6 +185,12 @@ $$x_i^Tw+b=y_i\ \Longrightarrow\ b=y_i-x_i^Tw.$$
 **Why complementary slackness holds.** Under strong duality, $\frac12\lVert w^*\rVert^2=L_p(w^*,b^*,\alpha^*)=\frac12\lVert w^*\rVert^2+\sum_i\alpha_i^*\big(1-y_i(\cdot)\big)$, so $\sum_i\alpha_i^*(1-y_i(\cdot))=0$. Each term is the product of $\alpha_i^*\ge0$ and $1-y_i(\cdot)\le0$, hence $\le0$, and if the sum is 0, **each term is 0**.
 
 **Prediction.** $\hat y=\sign\big(\sum_i\alpha_iy_ix_i^Tx+b\big)$ — again only inner products are used. For numerical stability, in practice the values of $b$ obtained from all the support vectors are averaged.
+
+:::key KKT complementary slackness and prediction
+$$\alpha_i^*\big(1-y_i(x_i^Tw^*+b^*)\big)=0\qquad(i=1,\dots,K)$$
+Only points with $\alpha_i^*>0$ are support vectors ($y_i(x_i^Tw^*+b^*)=1$); points beyond the margin have $\alpha_i^*=0$.
+$$\hat y=\sign\Big(\sum_i\alpha_i^*y_i\,x_i^Tx+b^*\Big)$$
+:::
 
 :::ex Example 3 — Two points in one dimension
 What is the hard-margin SVM for $x_1=1$ ($y=+1$) and $x_2=-1$ ($y=-1$)?

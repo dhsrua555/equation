@@ -32,7 +32,7 @@ If an event occurs $n$ times in $N$ trials, the probability is $p=n/N$ and the *
 $$o=\frac p{1-p},\qquad p=\frac o{1+o}$$
 (The second is the first solved for $p$: $o(1-p)=p\Rightarrow o=p(1+o)$.) A probability lies in $[0,1]$ and the odds in $[0,\infty)$, so applying a logarithm once more gives the whole real line.
 
-:::def Logit and the logistic (sigmoid) function
+:::key Logit and the logistic (sigmoid) function
 $$\operatorname{logit}(p)=\log\frac p{1-p}:\ (0,1)\to(-\infty,\infty),$$
 $$\sigma(z)=\frac1{1+e^{-z}}:\ (-\infty,\infty)\to(0,1)$$
 The two are inverses of each other.

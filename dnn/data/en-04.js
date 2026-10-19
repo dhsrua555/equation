@@ -115,7 +115,7 @@ An overfitted model has very large coefficients. The slide's table of coefficien
 
 As $\lambda\to0$ ($\ln\lambda\to-\infty$) the model overfits; at $\ln\lambda=0$ it is pressed down too much and underfits. With regularization the test (validation) and training errors show a similar trend.
 
-:::def Regularized objective
+:::key Regularized objective
 $$J=\frac12f(\beta)+\frac\lambda2\sum_{j=0}^M\lvert\beta_j\rvert^q$$
 $q=2$: **ridge** (weight decay, shrinking the coefficients); $q=1$: **lasso** (sparse, making some coefficients exactly 0).
 :::
@@ -128,6 +128,8 @@ $J(\beta)=\frac12(y-X\beta)^T(y-X\beta)+\frac\lambda2\beta^T\beta$. From the com
 $$J(\beta)=\frac12(y-X\beta)^T(y-X\beta)+\frac\lambda2\beta^T\beta,\qquad \nabla J=X^TX\beta-X^Ty+\lambda\beta=0$$
 $$\hat\beta_{\text{ridge}}=(\lambda I+X^TX)^{-1}X^Ty$$
 If $\lambda>0$, $\lambda I+X^TX$ is positive definite and hence **always** invertible.
+It is the MAP estimate under noise $\N(0,\sigma^2)$ and prior $\beta\sim\N(0,\tau^2I)$ (Quiz 1, Problem 1), with
+$$\lambda=\frac{\sigma^2}{\tau^2}.$$
 :::
 
 Invertibility: $v^T(\lambda I+X^TX)v=\lambda\lVert v\rVert^2+\lVert Xv\rVert^2>0$ ($v\ne0$). Even in the cases of Unit 1 where $X^TX$ was singular and the solution was not unique ($n<k+1$ and so on), ridge gives a unique solution. The Hessian $\lambda I+X^TX\succ0$ makes $J$ strongly convex, and the point with zero gradient is the unique minimizer.

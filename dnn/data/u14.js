@@ -34,6 +34,9 @@ window.EM = window.EM || { chapters: [], exams: [] };
 $f(x_1,x_2)=\frac12x_1^2+\frac{100}2x_2^2$이면 $\nabla f=(x_1,\ 100x_2)$, 헤시안 $H=\diag(1,100)$, 조건수 $100$. GD $x\leftarrow x-\alpha\nabla f$는 좌표별로
 $$x_{1,t+1}=(1-\alpha)\,x_{1,t},\qquad x_{2,t+1}=(1-100\alpha)\,x_{2,t}$$
 이고, 수렴하려면 $\lvert1-100\alpha\rvert<1$, 즉 $\alpha<0.02$. 이때 완만한 방향은 매 걸음 $1-\alpha>0.98$배밖에 줄지 않는다.
+일반적으로 조건수는 헤시안 고윳값의 비
+$$\kappa=\frac{\lambda_{\max}}{\lambda_{\min}}$$
+이고, 고윳값 $\lambda_i$ 방향의 오차는 매 걸음 $\lvert1-\alpha\lambda_i\rvert$배가 된다. $\kappa$가 클수록 느리다.
 :::
 
 필기의 표 ($\alpha=0.019$, 출발점 $(-5,-1)$):

@@ -108,7 +108,7 @@ $M=n-1$이면 방데르몽드 행렬이 가역이라 훈련오차가 0이 된다
 
 $\lambda\to0$($\ln\lambda\to-\infty$)이면 과적합, $\ln\lambda=0$이면 너무 눌려 과소적합입니다. 규제가 있으면 훈련·검증 오차가 비슷한 추세를 보입니다.
 
-:::def 규제된 목적함수
+:::key 규제된 목적함수
 $$J=\frac12f(\beta)+\frac\lambda2\sum_{j=0}^M\lvert\beta_j\rvert^q$$
 $q=2$: **릿지**(가중치 감쇠, 계수 축소), $q=1$: **라쏘**(일부 계수를 정확히 0으로 만들어 희소).
 :::
@@ -121,6 +121,8 @@ $J(\beta)=\frac12(y-X\beta)^T(y-X\beta)+\frac\lambda2\beta^T\beta$. 1단원 계�
 $$J(\beta)=\frac12(y-X\beta)^T(y-X\beta)+\frac\lambda2\beta^T\beta,\qquad \nabla J=X^TX\beta-X^Ty+\lambda\beta=0$$
 $$\hat\beta_{\text{ridge}}=(\lambda I+X^TX)^{-1}X^Ty$$
 $\lambda>0$이면 $\lambda I+X^TX$는 양의 정부호라 **항상** 가역이다.
+잡음 $\N(0,\sigma^2)$, 사전분포 $\beta\sim\N(0,\tau^2I)$의 MAP이 이 릿지 해이고, 규제 세기는 다음과 같다 (Quiz 1 문제 1).
+$$\lambda=\frac{\sigma^2}{\tau^2}.$$
 :::
 
 가역성: $v^T(\lambda I+X^TX)v=\lambda\lVert v\rVert^2+\lVert Xv\rVert^2>0$ ($v\ne0$). 1단원에서 $X^TX$가 특이해 해가 유일하지 않던 경우($n<k+1$ 등)도 릿지는 유일한 해를 줍니다. 헤시안 $\lambda I+X^TX\succ0$이라 $J$는 강볼록이고, 기울기 0인 점이 유일한 최솟점입니다.

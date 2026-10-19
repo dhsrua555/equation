@@ -75,7 +75,7 @@ $$\lVert d\rVert_2=\sqrt{d^Td}=\sqrt{\alpha^2w^Tw}=\lvert\alpha\rvert\sqrt{w^Tw}
 $\frac{\lvert9+16-10\rvert}{\sqrt{9+16}}=\frac{15}5=3$. 수선의 발은 $x_p=x-\alpha w$, $\alpha=15/25=0.6$, $x_p=(3,4)-0.6(3,4)=(1.2,1.6)$. 확인: $3(1.2)+4(1.6)=10$ ✓.
 :::
 
-:::def 마진
+:::key 마진
 자료 $D$에 대한 초평면 $H$의 마진은 가장 가까운 점까지의 거리입니다.
 $$r(w,b)=\min_{x\in D}\frac{\lvert w^Tx+b\rvert}{\lVert w\rVert_2}$$
 :::
@@ -178,6 +178,12 @@ $$x_i^Tw+b=y_i\ \Longrightarrow\ b=y_i-x_i^Tw.$$
 **상보성의 이유.** 강한 쌍대성에서 $\frac12\lVert w^*\rVert^2=L_p(w^*,b^*,\alpha^*)=\frac12\lVert w^*\rVert^2+\sum_i\alpha_i^*\big(1-y_i(\cdot)\big)$이므로 $\sum_i\alpha_i^*(1-y_i(\cdot))=0$. 각 항은 $\alpha_i^*\ge0$과 $1-y_i(\cdot)\le0$의 곱이라 $\le0$이고, 합이 0이면 **각 항이 0**입니다.
 
 **예측.** $\hat y=\sign\big(\sum_i\alpha_iy_ix_i^Tx+b\big)$ — 이것도 내적으로만 쓰입니다. 수치 안정성을 위해 실제로는 모든 서포트 벡터에서 구한 $b$를 평균합니다.
+
+:::key KKT 상보성과 예측
+$$\alpha_i^*\big(1-y_i(x_i^Tw^*+b^*)\big)=0\qquad(i=1,\dots,K)$$
+$\alpha_i^*>0$인 점만 서포트 벡터($y_i(x_i^Tw^*+b^*)=1$)이고, 마진 밖의 점은 $\alpha_i^*=0$이다.
+$$\hat y=\sign\Big(\sum_i\alpha_i^*y_i\,x_i^Tx+b^*\Big)$$
+:::
 
 :::ex 예제 3 — 1차원 두 점
 $x_1=1$ ($y=+1$), $x_2=-1$ ($y=-1$)의 하드 마진 SVM은?

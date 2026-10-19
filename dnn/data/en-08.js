@@ -129,6 +129,8 @@ $$\sigma(x)=\frac1{1+e^{-x}}$$
 $$\tanh x=2\sigma(2x)-1$$
 $$\ReLU(x)=\max(0,x)$$
 $$f(x)=\softmax\big(W_2\max(0,W_1x)\big)$$
+$$\text{Leaky ReLU}(x)=\max(\alpha x,\,x)\ \ (\alpha\text{ a small positive number, e.g. }0.01)$$
+$$\operatorname{ELU}(x)=\begin{cases}x&x\ge0\\\alpha(e^x-1)&x<0\end{cases},\qquad \operatorname{Maxout}(x)=\max(w_1^Tx+b_1,\ w_2^Tx+b_2)$$
 :::
 ` },
       '8.4': { title: 'The Perceptron and the Limits of Linear Separation', body: R`

@@ -62,6 +62,8 @@ A neuron multiplies its $D_{in}$ inputs by weights and adds them up. Adding $D_{
 $y=\sum_{i=1}^{D_{in}}w_ix_i$. Assume: the $w_i$ are i.i.d. and the $x_i$ are i.i.d., $w$ and $x$ are independent, $\E[w_i]=0$, $\Var(w_i)=\sigma^2$, $\E[x_i]=0$, $\Var(x_i)=v$. Then
 $$\Var(y)=D_{in}\,\sigma^2\,v.$$
 Requiring $\Var(y)=\Var(x_i)=v$ gives $\sigma^2=\dfrac1{D_{in}}$, i.e., $W=\text{randn}(D_{in},D_{out})/\sqrt{D_{in}}$.
+The compromise of Glorot & Bengio, which also preserves the backward variance, is
+$$\sigma^2=\frac2{D_{in}+D_{out}}.$$
 :::
 
 :::hand Class notes — computing the variance
@@ -98,6 +100,8 @@ Approximating $z=\sum_{i=1}^{D_{in}}w_ix_i$ with $\E[w_i]=0$, $\Var(w_i)=\sigma^
 $$\E[h]=\sqrt{\frac q{2\pi}},\qquad \E[h^2]=\frac q2,\qquad q=\Var(z)=D_{in}\sigma^2v.$$
 To preserve the second moment at every layer, $\E[h^2]=\E[x^2]=v$, i.e., $\tfrac12D_{in}\sigma^2v=v$:
 $$\sigma^2=\frac2{D_{in}},\qquad \sigma=\sqrt{\frac2{D_{in}}}.$$
+For the Leaky ReLU $\phi_\alpha(z)=\max(\alpha z,z)$ ($0\le\alpha\le1$), $\E[h^2]=\frac{1+\alpha^2}2\E[z^2]$, so (Quiz 1, Problem 2)
+$$\sigma^2=\frac2{(1+\alpha^2)D_{in}}\qquad(\alpha=0:\ \text{He},\ \ \alpha=1:\ \frac1{D_{in}}).$$
 :::
 
 :::hand Class notes — deriving He initialization

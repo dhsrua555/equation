@@ -25,7 +25,7 @@ $N$번 시행 중 사건이 $n$번 일어나면 확률은 $p=n/N$, **오즈**는
 $$o=\frac p{1-p},\qquad p=\frac o{1+o}$$
 (둘째 식은 첫 식을 $p$에 대해 푼 것: $o(1-p)=p\Rightarrow o=p(1+o)$.) 확률은 $[0,1]$, 오즈는 $[0,\infty)$에 있으므로 로그를 한 번 더 씌우면 실수 전체가 됩니다.
 
-:::def 로짓과 로지스틱(시그모이드) 함수
+:::key 로짓과 로지스틱(시그모이드) 함수
 $$\operatorname{logit}(p)=\log\frac p{1-p}:\ (0,1)\to(-\infty,\infty),$$
 $$\sigma(z)=\frac1{1+e^{-z}}:\ (-\infty,\infty)\to(0,1)$$
 둘은 서로의 역함수입니다.

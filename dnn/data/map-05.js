@@ -26,7 +26,7 @@ Is walking downhill safe? Differentiating the gradient once more gives a Hessian
       { id: 'odds', role: 'def', k: '5.1', t: R`확률 → 오즈 → 로그 오즈`, en: R`Probability → odds → log-odds`,
         d: R`확률 $p\in[0,1]$를 오즈 $p/(1-p)\in[0,\infty)$로, 다시 로그를 씌워 실수 전체로 펼칩니다. 실수 전체를 쓰는 선형식과 짝지을 준비입니다.`,
         dEn: R`Stretch the probability $p\in[0,1]$ into the odds $p/(1-p)\in[0,\infty)$, then take the log to cover the whole real line. This prepares a partner for a linear expression, which also ranges over all reals.` },
-      { id: 'sig', role: 'tool', k: '5.1', at: ':::def 로짓과 로지스틱', t: R`시그모이드 $\sigma(z)$`, en: R`The sigmoid $\sigma(z)$`,
+      { id: 'sig', role: 'tool', k: '5.1', at: ':::key 로짓과 로지스틱', t: R`시그모이드 $\sigma(z)$`, en: R`The sigmoid $\sigma(z)$`,
         d: R`로짓의 역함수로, 아무 실수나 $(0,1)$의 확률로 되돌립니다. 성질 $\sigma'=\sigma(1-\sigma)$는 뒤의 기울기·헤시안 계산에 그대로 쓰입니다.`,
         dEn: R`The inverse of the logit: it turns any real number back into a probability in $(0,1)$. Its property $\sigma'=\sigma(1-\sigma)$ is used directly in the gradient and the Hessian later on.` },
       { id: 'model', role: 'def', k: '5.2', t: R`모델 $p=\sigma(w^Tx)$`, en: R`Model $p=\sigma(w^Tx)$`,

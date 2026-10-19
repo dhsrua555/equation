@@ -116,6 +116,8 @@ $$\sigma(x)=\frac1{1+e^{-x}}$$
 $$\tanh x=2\sigma(2x)-1$$
 $$\ReLU(x)=\max(0,x)$$
 $$f(x)=\softmax\big(W_2\max(0,W_1x)\big)$$
+$$\text{Leaky ReLU}(x)=\max(\alpha x,\,x)\ \ (\alpha\text{는 작은 양수, 예: }0.01)$$
+$$\operatorname{ELU}(x)=\begin{cases}x&x\ge0\\\alpha(e^x-1)&x<0\end{cases},\qquad \operatorname{Maxout}(x)=\max(w_1^Tx+b_1,\ w_2^Tx+b_2)$$
 :::
 ` },
       { k: '8.4', src: 'W3 수 · 슬라이드 20–30', title: '퍼셉트론과 선형 분리의 한계', body: R`

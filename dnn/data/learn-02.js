@@ -139,6 +139,12 @@ $p(x\mid\theta)$처럼 세로줄 뒤에 모수를 쓰면 “모수가 $\theta$�
 | 정규 $\N(\mu,\sigma^2)$ | $\mathbb R$ | $\frac1{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/(2\sigma^2)}$ | $\mu$ | $\sigma^2$ |
 | 베타 $\operatorname{Beta}(a,b)$ | $[0,1]$ | $\frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}$ | $\frac a{a+b}$ | $\frac{ab}{(a+b)^2(a+b+1)}$ |
 
+:::key 정규분포의 밀도
+$$\N(x\mid\mu,\sigma^2)=\frac1{\sqrt{2\pi\sigma^2}}\exp\Big(-\frac{(x-\mu)^2}{2\sigma^2}\Big)$$
+$$\N(x\mid\mu,\sigma^2I_d)=(2\pi\sigma^2)^{-d/2}\exp\Big(-\frac{\lVert x-\mu\rVert^2}{2\sigma^2}\Big)$$
+음의 로그를 취하면 $\frac{\lVert x-\mu\rVert^2}{2\sigma^2}+\frac d2\log(2\pi\sigma^2)$ — 제곱오차와 상수입니다.
+:::
+
 ### 기댓값과 분산
 
 **기댓값**(평균) $\E[X]=\sum_xx\,p(x)$ 또는 $\int xf(x)\,dx$는 분포의 무게중심, **분산** $\Var(X)=\E[(X-\E X)^2]$은 평균에서 흩어진 정도의 제곱 평균입니다. 뒤 단원(초기화의 분산 계산, SGD의 분산, 편향-분산 분해)에서 계속 쓰는 성질을 모아 둡니다.
@@ -191,6 +197,11 @@ $$\ell(\mu,\sigma^2)=\sum_{i=1}^n\log\Big(\frac1{\sqrt{2\pi\sigma^2}}e^{-(x_i-\m
 $\mu$에 대해 미분: $\frac1{\sigma^2}\sum(x_i-\mu)=0$이므로 $\hat\mu=\bar x$ (표본평균). $\sigma^2$에 대해 미분: $-\frac n{2\sigma^2}+\frac1{2\sigma^4}\sum(x_i-\mu)^2=0$이므로 $\hat\sigma^2=\frac1n\sum(x_i-\bar x)^2$.
 $\mu$에 대한 부분은 **제곱오차합의 최소화**입니다. 1단원의 최소제곱이 “가우시안 잡음의 MLE”인 이유가 이것입니다[[ch04:4.1|선형회귀의 확률적 해석.]].
 
+:::key 가우시안 MLE
+$X_i\sim\N(\mu,\sigma^2)$ i.i.d.이면
+$$\hat\mu_{\text{MLE}}=\bar x,\qquad \hat\sigma^2_{\text{MLE}}=\frac1n\sum_{i=1}^n(x_i-\bar x)^2,\qquad \E\big[\hat\sigma^2_{\text{MLE}}\big]=\frac{n-1}n\sigma^2$$
+:::
+
 :::ex 예제 4 — 가우시안 MLE
 자료 $2,4,4,6$을 $\N(\mu,\sigma^2)$로 보고 MLE를 구하세요.
 ---
@@ -217,7 +228,7 @@ MLE는 “$\theta$는 하나의 정해진 값이고, 그 값을 맞힌다”는 
 $$p(\theta\mid x)=\frac{p(x,\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{\int p(x\mid\theta)p(\theta)\,d\theta}$$
 사후분포 $\propto$ 가능도 $\times$ 사전분포이고, 분모 $p(x)$(증거)는 $\theta$와 무관한 정규화 상수입니다. 2.2절의 베이즈 정리에서 분할 $\{E_i\}$를 연속적인 $\theta$로, 합을 적분으로 바꾼 것입니다.
 
-:::def 베타분포와 베타함수
+:::key 베타분포와 베타함수
 $$\operatorname{Beta}(\theta\mid a,b)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1},$$
 $$B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}dt=\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}$$
 $\operatorname{Beta}(1,1)$은 $[0,1]$ 위의 균등분포입니다. 평균은 $\frac{a}{a+b}$, 최빈값은 $\frac{a-1}{a+b-2}$ ($a,b>1$).

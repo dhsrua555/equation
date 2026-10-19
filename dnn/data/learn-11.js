@@ -57,6 +57,8 @@ $D=4096$에서 $\operatorname{std}(w)=0.01$이면 층마다 약 0.64배로 줄�
 $y=\sum_{i=1}^{D_{in}}w_ix_i$, 가정: $w_i$ i.i.d.·$x_i$ i.i.d., $w$와 $x$는 독립, $\E[w_i]=0$, $\Var(w_i)=\sigma^2$, $\E[x_i]=0$, $\Var(x_i)=v$. 그러면
 $$\Var(y)=D_{in}\,\sigma^2\,v.$$
 $\Var(y)=\Var(x_i)=v$를 요구하면 $\sigma^2=\dfrac1{D_{in}}$, 즉 $W=\text{randn}(D_{in},D_{out})/\sqrt{D_{in}}$.
+역방향의 분산까지 보존하는 Glorot & Bengio의 절충안은
+$$\sigma^2=\frac2{D_{in}+D_{out}}.$$
 :::
 
 :::hand 수업 필기 — 분산 계산
@@ -93,6 +95,8 @@ $z=\sum_{i=1}^{D_{in}}w_ix_i$, $\E[w_i]=0$, $\Var(w_i)=\sigma^2$, $h=\max(0,z)$,
 $$\E[h]=\sqrt{\frac q{2\pi}},\qquad \E[h^2]=\frac q2,\qquad q=\Var(z)=D_{in}\sigma^2v.$$
 2차 모멘트를 층마다 보존하려면 $\E[h^2]=\E[x^2]=v$, 즉 $\tfrac12D_{in}\sigma^2v=v$:
 $$\sigma^2=\frac2{D_{in}},\qquad \sigma=\sqrt{\frac2{D_{in}}}.$$
+Leaky ReLU $\phi_\alpha(z)=\max(\alpha z,z)$ ($0\le\alpha\le1$)로 넓히면 $\E[h^2]=\frac{1+\alpha^2}2\E[z^2]$이므로 (Quiz 1 문제 2)
+$$\sigma^2=\frac2{(1+\alpha^2)D_{in}}\qquad(\alpha=0:\ \text{He},\ \ \alpha=1:\ \frac1{D_{in}}).$$
 :::
 
 :::hand 수업 필기 — He 초기화 유도

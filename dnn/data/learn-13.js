@@ -172,6 +172,8 @@ $$\begin{aligned}f(x_{t+1})&\le f(x_t)+\langle\nabla f(x_t),x_{t+1}-x_t\rangle+\
 :::key 경사하강법의 감소 조건
 $$f(x_{t+1})\le f(x_t)-\Big(\eta-\frac{\beta\eta^2}2\Big)\lVert\nabla f(x_t)\rVert^2$$
 $\eta-\frac{\beta\eta^2}2>0\iff0<\eta<\frac2\beta$이면 $f(x_{t+1})\le f(x_t)$ (기울기가 0이 아니면 순감소). 감소량은 $\eta=\frac1\beta$에서 최대 $\frac1{2\beta}\lVert\nabla f(x_t)\rVert^2$.
+$\eta=\frac1\beta$로 $T$걸음을 더하면(망원급수, $f^*=\inf f$)
+$$\min_{0\le t<T}\lVert\nabla f(x_t)\rVert^2\le\frac{2\beta\big(f(x_0)-f^*\big)}T.$$
 :::
 
 즉 **보폭이 충분히 작으면 GD는 매끄러운 함수의 값을 반드시 줄입니다.**

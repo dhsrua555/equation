@@ -146,6 +146,12 @@ Writing the parameter after a vertical bar, as in $p(x\mid\theta)$, means “the
 | Normal $\N(\mu,\sigma^2)$ | $\mathbb R$ | $\frac1{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/(2\sigma^2)}$ | $\mu$ | $\sigma^2$ |
 | Beta $\operatorname{Beta}(a,b)$ | $[0,1]$ | $\frac{\theta^{a-1}(1-\theta)^{b-1}}{B(a,b)}$ | $\frac a{a+b}$ | $\frac{ab}{(a+b)^2(a+b+1)}$ |
 
+:::key Density of the normal distribution
+$$\N(x\mid\mu,\sigma^2)=\frac1{\sqrt{2\pi\sigma^2}}\exp\Big(-\frac{(x-\mu)^2}{2\sigma^2}\Big)$$
+$$\N(x\mid\mu,\sigma^2I_d)=(2\pi\sigma^2)^{-d/2}\exp\Big(-\frac{\lVert x-\mu\rVert^2}{2\sigma^2}\Big)$$
+Its negative log is $\frac{\lVert x-\mu\rVert^2}{2\sigma^2}+\frac d2\log(2\pi\sigma^2)$ — a squared error plus a constant.
+:::
+
 ### Expectation and variance
 
 The **expectation** (mean) $\E[X]=\sum_xx\,p(x)$ or $\int xf(x)\,dx$ is the center of mass of the distribution, and the **variance** $\Var(X)=\E[(X-\E X)^2]$ is the mean of the squared deviation from the mean. We collect the properties used again in later units (variance computations for initialization, the variance of SGD, the bias–variance decomposition).
@@ -198,6 +204,11 @@ $$\ell(\mu,\sigma^2)=\sum_{i=1}^n\log\Big(\frac1{\sqrt{2\pi\sigma^2}}e^{-(x_i-\m
 Differentiating in $\mu$: $\frac1{\sigma^2}\sum(x_i-\mu)=0$, so $\hat\mu=\bar x$ (the sample mean). Differentiating in $\sigma^2$: $-\frac n{2\sigma^2}+\frac1{2\sigma^4}\sum(x_i-\mu)^2=0$, so $\hat\sigma^2=\frac1n\sum(x_i-\bar x)^2$.
 The part involving $\mu$ is **minimizing the sum of squared errors**. This is why the least squares of Unit 1 is “the MLE under Gaussian noise”[[ch04:4.1|The probabilistic interpretation of linear regression.]].
 
+:::key Gaussian MLE
+If $X_i\sim\N(\mu,\sigma^2)$ i.i.d., then
+$$\hat\mu_{\text{MLE}}=\bar x,\qquad \hat\sigma^2_{\text{MLE}}=\frac1n\sum_{i=1}^n(x_i-\bar x)^2,\qquad \E\big[\hat\sigma^2_{\text{MLE}}\big]=\frac{n-1}n\sigma^2$$
+:::
+
 :::ex Example 4 — Gaussian MLE
 Treat the data $2,4,4,6$ as $\N(\mu,\sigma^2)$ and find the MLE.
 ---
@@ -224,7 +235,7 @@ In the Bayesian view, the parameter $\theta$ is also a random variable, and the 
 $$p(\theta\mid x)=\frac{p(x,\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{\int p(x\mid\theta)p(\theta)\,d\theta}$$
 The posterior $\propto$ likelihood $\times$ prior, and the denominator $p(x)$ (the evidence) is a normalizing constant independent of $\theta$. It is Bayes' theorem of §2.2 with the partition $\{E_i\}$ replaced by the continuous $\theta$ and the sum by an integral.
 
-:::def Beta distribution and Beta function
+:::key Beta distribution and Beta function
 $$\operatorname{Beta}(\theta\mid a,b)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1},$$
 $$B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}dt=\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}$$
 $\operatorname{Beta}(1,1)$ is the uniform distribution on $[0,1]$. The mean is $\frac{a}{a+b}$ and the mode is $\frac{a-1}{a+b-2}$ ($a,b>1$).

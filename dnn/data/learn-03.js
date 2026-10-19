@@ -63,7 +63,7 @@ $$0\le\KL(p\Vert u)=\sum_xp(x)\log\frac{p(x)}{1/K}=\log K-H(X).$$
 두 확률변수 $X,Y$를 함께 알아내려면 먼저 $X$를 알아내고(평균 $H(X)$개의 질문), 그 뒤 $X$를 아는 상태에서 $Y$를 알아내면 됩니다(평균 $H(Y\mid X)$개의 질문). 그래서 $H(X,Y)=H(X)+H(Y\mid X)$ — 질문 수를 더하는 것입니다.
 :::
 
-:::def 조건부 엔트로피와 결합 엔트로피
+:::key 조건부 엔트로피와 결합 엔트로피
 $$H(Y\mid X)=-\E_{X,Y}\big[\log p(Y\mid X)\big]=-\sum_{x,y}p(x,y)\log p(y\mid x)$$
 $$H(X,Y)=-\E\big[\log p(X,Y)\big]=-\sum_{x,y}p(x,y)\log p(x,y)$$
 :::
@@ -100,7 +100,7 @@ $H(Y\mid X=x)$는 특정 $x$에서 커질 수도 있습니다(오히려 $H(Y)$�
 진짜 분포가 $p$인데 우리가 $q$라고 믿고 압축 부호를 설계하면, 평균적으로 부호가 길어집니다. **얼마나 더 길어지는지**가 KL 발산입니다. $q=p$이면 손해가 0이고, 다르면 항상 손해(양수)입니다 — 이것이 이 절의 Theorem 1입니다.
 :::
 
-:::def KL 발산 (상대 엔트로피)
+:::key KL 발산 (상대 엔트로피)
 $$\KL(p\Vert q)=D_{\mathrm{KL}}(p\Vert q)=\E_p\Big[\log\frac{p(X)}{q(X)}\Big]=\sum_xp(x)\log\frac{p(x)}{q(x)}$$
 약속: $0\log\frac00=0$, $0\log\frac0a=0$, $b\log\frac b0=\infty$ ($b>0$). 연속분포는 합 대신 적분.
 :::
@@ -119,7 +119,7 @@ $r=\tfrac12,s=\tfrac14$: $\KL(p\Vert q)=\tfrac12\log2+\tfrac12\log\tfrac23\appro
 
 **볼록함수**는 그래프 위의 두 점을 이은 현(선분)이 그래프보다 위에 있는 함수입니다: $\varphi(\lambda a+(1-\lambda)b)\le\lambda\varphi(a)+(1-\lambda)\varphi(b)$ ($0\le\lambda\le1$). $\varphi''\ge0$이면 볼록입니다(예: $x^2$, $e^x$, $-\log x$). 확률 $\lambda,1-\lambda$로 $a,b$를 갖는 확률변수 $X$로 읽으면 이 부등식이 곧 $\varphi(\E X)\le\E\varphi(X)$입니다.
 
-:::thm 젠센 부등식
+:::key 젠센 부등식
 $\varphi$가 볼록함수이면 $\varphi(\E[X])\le\E[\varphi(X)]$.[[@base:ch05:5.2|젠센 부등식의 증명: 유한 가중합의 귀납법.]] $\varphi$가 오목이면(예: $\log$) 부등호가 반대입니다: $\E[\log X]\le\log\E[X]$.
 :::
 
@@ -154,7 +154,7 @@ $$\begin{aligned}\KL(p\Vert q)&=\sum_{x\in E}p(x)\log\frac{p(x)}{q(x)}=\sum_{x\i
 $X$를 알면 $Y$에 대한 불확실성이 얼마나 줄어드나? 그 **줄어든 양**이 상호정보량입니다. 날씨($X$)를 알면 우산을 챙길지($Y$)에 대한 불확실성이 크게 줄고, 주사위 결과는 우산과 무관하니 전혀 줄지 않습니다(상호정보량 0).
 :::
 
-:::def 상호정보량
+:::key 상호정보량의 정의
 $$I(X;Y)=\KL\big(p(x,y)\,\Vert\,p(x)p(y)\big)=\E_{p(x,y)}\Big[\log\frac{p(X,Y)}{p(X)p(Y)}\Big]$$
 :::
 
@@ -192,7 +192,7 @@ $I(X;Y)=\sum_xp(x)\,\KL\big(p(y\mid x)\,\Vert\,p(y)\big)$로도 쓸 수 있습�
 진짜 분포 $p$에서 나오는 결과를, 모델 $q$가 매긴 놀라움 $-\log q(x)$로 평균 낸 것이 교차 엔트로피입니다. 모델이 정답에 높은 확률을 줄수록 놀라움이 작아 교차 엔트로피가 작습니다. 분류 문제의 손실함수가 바로 이것입니다.
 :::
 
-:::def 교차 엔트로피
+:::key 교차 엔트로피의 정의
 $$H_p(q)=-\E_p\big[\log q(X)\big]=-\sum_xp(x)\log q(x)$$
 :::
 
@@ -222,7 +222,7 @@ $H_p(q)=-\log0.5\approx0.693$. 좋아진 모델은 $-\log0.9\approx0.105$. 정�
 KL은 대칭이 아니고, $q$가 0인 곳에서 무한대가 되는 불편함이 있습니다. 해결책: 두 분포를 **반반 섞은 평균 분포** $m$을 만들고, $p$와 $q$가 각각 $m$에서 얼마나 떨어졌는지를 KL로 재서 평균 냅니다. 이렇게 하면 순서를 바꿔도 같고(대칭), 언제나 유한하며, 두 분포가 같을 때만 0입니다.
 :::
 
-:::def 젠센-섀넌 발산
+:::key 젠센-섀넌 발산
 같은 확률공간 위의 두 확률분포 $p,q$에 대해
 $$D_{JS}(p\Vert q)=\frac12\KL(p\Vert m)+\frac12\KL(q\Vert m),\qquad m=\frac12(p+q).$$
 :::

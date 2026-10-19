@@ -40,6 +40,9 @@ The ratio of the largest to the smallest (positive) eigenvalue of the (symmetric
 For $f(x_1,x_2)=\frac12x_1^2+\frac{100}2x_2^2$, $\nabla f=(x_1,\ 100x_2)$, the Hessian is $H=\diag(1,100)$, and the condition number is $100$. GD $x\leftarrow x-\alpha\nabla f$ is, coordinate by coordinate,
 $$x_{1,t+1}=(1-\alpha)\,x_{1,t},\qquad x_{2,t+1}=(1-100\alpha)\,x_{2,t}$$
 and convergence requires $\lvert1-100\alpha\rvert<1$, i.e., $\alpha<0.02$. The shallow direction then shrinks by only a factor $1-\alpha>0.98$ per step.
+In general the condition number is the ratio of Hessian eigenvalues
+$$\kappa=\frac{\lambda_{\max}}{\lambda_{\min}},$$
+and the error along the eigenvalue-$\lambda_i$ direction is multiplied by $\lvert1-\alpha\lambda_i\rvert$ every step. The larger $\kappa$, the slower.
 :::
 
 The table in the notes ($\alpha=0.019$, starting point $(-5,-1)$):

@@ -71,7 +71,7 @@ By Shannon's source coding theorem, symbols from a distribution $p$ cannot be lo
 To find out two random variables $X,Y$ together, first find out $X$ (on average $H(X)$ questions), then find out $Y$ knowing $X$ (on average $H(Y\mid X)$ questions). Hence $H(X,Y)=H(X)+H(Y\mid X)$ — the numbers of questions add up.
 :::
 
-:::def Conditional entropy and joint entropy
+:::key Conditional entropy and joint entropy
 $$H(Y\mid X)=-\E_{X,Y}\big[\log p(Y\mid X)\big]=-\sum_{x,y}p(x,y)\log p(y\mid x)$$
 $$H(X,Y)=-\E\big[\log p(X,Y)\big]=-\sum_{x,y}p(x,y)\log p(x,y)$$
 :::
@@ -108,7 +108,7 @@ $H(Y\mid X=x)$ can grow at a particular $x$ (it can even exceed $H(Y)$). What al
 If the true distribution is $p$ but we design a compression code believing it is $q$, the code becomes longer on average. **How much longer** is the KL divergence. If $q=p$ the loss is 0, and otherwise there is always a loss (positive) — this is Theorem 1 of this section.
 :::
 
-:::def KL divergence (relative entropy)
+:::key KL divergence (relative entropy)
 $$\KL(p\Vert q)=D_{\mathrm{KL}}(p\Vert q)=\E_p\Big[\log\frac{p(X)}{q(X)}\Big]=\sum_xp(x)\log\frac{p(x)}{q(x)}$$
 Conventions: $0\log\frac00=0$, $0\log\frac0a=0$, $b\log\frac b0=\infty$ ($b>0$). For continuous distributions, an integral replaces the sum.
 :::
@@ -127,7 +127,7 @@ $r=\tfrac12,s=\tfrac14$: $\KL(p\Vert q)=\tfrac12\log2+\tfrac12\log\tfrac23\appro
 
 A **convex function** is one whose chord (the segment joining two points of its graph) lies above the graph: $\varphi(\lambda a+(1-\lambda)b)\le\lambda\varphi(a)+(1-\lambda)\varphi(b)$ ($0\le\lambda\le1$). If $\varphi''\ge0$, it is convex (e.g., $x^2$, $e^x$, $-\log x$). Read with a random variable $X$ taking $a,b$ with probabilities $\lambda,1-\lambda$, this inequality is exactly $\varphi(\E X)\le\E\varphi(X)$.
 
-:::thm Jensen's inequality
+:::key Jensen's inequality
 If $\varphi$ is convex, then $\varphi(\E[X])\le\E[\varphi(X)]$.[[@base:ch05:5.2|Proof of Jensen's inequality: induction on finite weighted sums.]] If $\varphi$ is concave (e.g., $\log$), the inequality reverses: $\E[\log X]\le\log\E[X]$.
 :::
 
@@ -162,7 +162,7 @@ In learning, minimizing $\KL(p\Vert q_\theta)$ (with respect to the data $p$, th
 How much does knowing $X$ reduce the uncertainty about $Y$? That **reduction** is the mutual information. Knowing the weather ($X$) greatly reduces the uncertainty about whether to take an umbrella ($Y$), while a die roll has nothing to do with umbrellas and reduces nothing (mutual information 0).
 :::
 
-:::def Mutual information
+:::key Definition of mutual information
 $$I(X;Y)=\KL\big(p(x,y)\,\Vert\,p(x)p(y)\big)=\E_{p(x,y)}\Big[\log\frac{p(X,Y)}{p(X)p(Y)}\Big]$$
 :::
 
@@ -200,7 +200,7 @@ It can also be written $I(X;Y)=\sum_xp(x)\,\KL\big(p(y\mid x)\,\Vert\,p(y)\big)$
 The cross-entropy is the average, over outcomes from the true distribution $p$, of the surprise $-\log q(x)$ assigned by the model $q$. The higher the probability the model gives the correct answer, the smaller the surprise and the smaller the cross-entropy. This is exactly the loss function of classification.
 :::
 
-:::def Cross-entropy
+:::key Definition of cross-entropy
 $$H_p(q)=-\E_p\big[\log q(X)\big]=-\sum_xp(x)\log q(x)$$
 :::
 
@@ -230,7 +230,7 @@ If $\hat p$ is the empirical distribution of the training data $\{(x_i,y_i)\}$, 
 KL is not symmetric and has the inconvenience of becoming infinite where $q$ is 0. The fix: build the **average distribution** $m$ by mixing the two distributions half and half, measure with KL how far $p$ and $q$ each are from $m$, and average. Then the order does not matter (symmetric), the value is always finite, and it is 0 only when the two distributions are equal.
 :::
 
-:::def Jensen–Shannon divergence
+:::key Jensen–Shannon divergence
 Let $p$ and $q$ be two probability distributions on a common probability space. The Jensen–Shannon divergence between $p$ and $q$ is defined by
 $$D_{JS}(p\Vert q)=\frac12\KL(p\Vert m)+\frac12\KL(q\Vert m),\qquad m=\frac12(p+q).$$
 :::

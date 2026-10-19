@@ -177,6 +177,8 @@ $$\begin{aligned}f(x_{t+1})&\le f(x_t)+\langle\nabla f(x_t),x_{t+1}-x_t\rangle+\
 :::key The decrease condition of gradient descent
 $$f(x_{t+1})\le f(x_t)-\Big(\eta-\frac{\beta\eta^2}2\Big)\lVert\nabla f(x_t)\rVert^2$$
 If $\eta-\frac{\beta\eta^2}2>0\iff0<\eta<\frac2\beta$, then $f(x_{t+1})\le f(x_t)$ (a strict decrease if the gradient is not 0). The guaranteed decrease is largest at $\eta=\frac1\beta$, namely $\frac1{2\beta}\lVert\nabla f(x_t)\rVert^2$.
+Summing $T$ steps with $\eta=\frac1\beta$ (a telescoping sum, $f^*=\inf f$) gives
+$$\min_{0\le t<T}\lVert\nabla f(x_t)\rVert^2\le\frac{2\beta\big(f(x_0)-f^*\big)}T.$$
 :::
 
 That is, **if the step size is small enough, GD always decreases the value of a smooth function.**
