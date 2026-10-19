@@ -63,7 +63,7 @@
   // a practice problem of the same kind carries quiz: '<set>-<problem>' (or true for quiz-style in general)
   const QZP = new Map();
   QUIZ.forEach((q) => q.problems.forEach((p) => QZP.set(`${q.id}-${p.id}`, { q, p })));
-  // worked-solution pages in the same layout: 퀴즈풀이 and, when a field has data/hard-*.js (EM.hard), 고난이도.
+  // worked-solution pages in the same layout: 퀴즈풀이, 고난이도 (data/hard-*.js, EM.hard) and 요약 노트 (data/notes.js, EM.notes).
   // each page has its own route (#quiz, #hard), problem routes (#hard-<set>-<problem>) and anchor prefix
   const TX = SITE.text || {};
   const BOOKS = [
@@ -71,6 +71,8 @@
       ledeDef: '수업에서 받은 문제를 풀이와 함께 정리했습니다. 문제마다 먼저 핵심 포인트를 읽고 직접 풀어 본 뒤 풀이를 펼쳐 비교하세요.', intro: '답안 작성 원칙', practice: true },
     { key: 'hard', pre: 'hd', sets: EM.hard || [], label: TX.hardNav || '고난이도', caps: TX.hardCaps || 'Challenge problems', h1: TX.hardH1 || 'Défis', lede: 'hardLede',
       ledeDef: '교재 연습문제 가운데 어려운 문제를 골라 풀이와 함께 정리했습니다.', intro: '이 장을 푸는 법', practice: false },
+    { key: 'notes', pre: 'nt', sets: EM.notes || [], label: TX.notesNav || '요약 노트', caps: TX.notesCaps || 'Summary notes', h1: TX.notesH1 || 'Résumé', lede: 'notesLede',
+      ledeDef: '시험 범위 전체를 단원마다 한 쪽으로 줄였습니다.', intro: '이 노트를 쓰는 법', practice: false },
   ].filter((b) => b.sets.length);
   const BOOK = new Map(BOOKS.map((b) => [b.key, b]));
   const bookOf = (r) => BOOK.get(String(r).split('-')[0]);

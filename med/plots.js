@@ -226,6 +226,16 @@
         }
       }
     },
+    // 15 — sinusoidal positional encoding: sines of geometrically growing wavelength
+    posenc(ctx, w, h, c) {
+      const T = frame(w, h, 0, 40, -0.9, 5.9);
+      for (let k = 0; k < 6; k++) {
+        ctx.strokeStyle = k === 2 ? c.b : c.a; ctx.lineWidth = k === 2 ? 1.8 : 1.05; ctx.globalAlpha = k === 2 ? 1 : 0.8;
+        curve(ctx, (x) => k + 0.42 * Math.sin(x * Math.pow(30, -k / 6)), 0, 40, 600, T);
+      }
+      ctx.globalAlpha = 1; ctx.setLineDash([3, 4]); ctx.strokeStyle = c.faint2;
+      [9, 27].forEach((x) => line(ctx, T, x, -0.9, x, 5.9)); ctx.setLineDash([]);
+    },
     // exam covers — a vital-sign line
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 6, -1.4, 2.2);

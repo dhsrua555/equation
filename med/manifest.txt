@@ -12,9 +12,12 @@ m11.js
 m12.js
 m13.js
 m14.js
+m15.js
 proofs-a.js
 proofs-b.js
 proofs-c.js
+proofs-d.js
+notes.js
 exams.js
 exams-2.js
 fig-00.js
@@ -32,3 +35,4 @@ fig-11.js
 fig-12.js
 fig-13.js
 fig-14.js
+fig-15.js
