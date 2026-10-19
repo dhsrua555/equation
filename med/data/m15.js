@@ -99,8 +99,13 @@ $$a_{nn}=\frac{e^{\lVert\mathbf x_n\rVert^2}}{e^{\lVert\mathbf x_n\rVert^2}+N-1}
 이고 $\mathbf y_n=a_{nn}\mathbf x_n+\sum_{m\ne n}a_{nm}\mathbf x_m$에 다른 토큰이 섞입니다. $\lVert\mathbf x_n\rVert^2$이 $\ln(N-1)$보다 훨씬 클 때에만 $a_{nn}\approx1$, $\mathbf y_n\approx\mathbf x_n$입니다. 예: $\mathbf x_1=(1,0)$, $\mathbf x_2=(0,1)$이면 $\mathbf y_1=(0.731,\ 0.269)\ne\mathbf x_1$.
 :::
 
-**학습 가능한 셀프 어텐션.** 기본형은 모수가 없고 모든 특징이 유사도에 똑같이 기여해 유연하지 않습니다. 그래서 입력을 학습 가능한 선형 투영 $\mathbf U\in\mathbb R^{D\times D}$로 먼저 바꿉니다:
-$$\widetilde{\mathbf X}=\mathbf X\mathbf U,\qquad \mathbf Y=\operatorname{Softmax}\big[\mathbf X\mathbf U\mathbf U^T\mathbf X^T\big]\mathbf X\mathbf U.$$
+**학습 가능한 셀프 어텐션.** 기본형은 모수가 없고 모든 특징이 유사도에 똑같이 기여해 유연하지 않습니다. 그래서 입력을 학습 가능한 선형 투영 $\mathbf U\in\mathbb R^{D\times D}$로 먼저 바꿉니다.
+
+:::key 공유 투영의 셀프 어텐션
+$$\widetilde{\mathbf X}=\mathbf X\mathbf U,\qquad \mathbf Y=\operatorname{Softmax}\big[\mathbf X\mathbf U\mathbf U^T\mathbf X^T\big]\mathbf X\mathbf U$$
+$\mathbf U\in\mathbb R^{D\times D}$: 학습하는 투영. Q·K·V에 같은 $\mathbf U$를 쓰므로 유사도 행렬 $\mathbf X\mathbf U\mathbf U^T\mathbf X^T$가 **대칭**이 되어 비대칭 관계를 나타내지 못한다. 그래서 Q·K·V를 따로 투영한다(다음 상자).
+:::
+
 그러나 Q·K·V에 **같은** 투영을 쓰면 두 가지 원치 않는 제약이 생깁니다.
 - 유사도 행렬 $\mathbf X\mathbf U\mathbf U^T\mathbf X^T$는 전치해도 자기 자신이라 **대칭**입니다. 그런데 의미 관계는 비대칭인 경우가 많습니다(“끌 → 도구”의 연관은 “도구 → 끌”보다 강하다).
 - 어텐션을 계산하는 일과 토큰 내용을 표현하는 일에 **같은 모수**를 써서 유연성이 떨어집니다.
@@ -160,9 +165,14 @@ $D=512$, $H=8$, $D_k=D_v=64$인 멀티헤드 어텐션의 모수(편향 제외)�
 머리 하나의 $\mathbf W_h^{(q)},\mathbf W_h^{(k)},\mathbf W_h^{(v)}$가 각각 $512\times64$이므로 $3\cdot512\cdot64=98{,}304$, 여덟 머리 $786{,}432$. $\mathbf W^{(o)}$가 $512\times512=262{,}144$. 합 $1{,}048{,}576=4\cdot512^2$. 머리를 1개($D_k=512$)로 해도 같은 수입니다. 머리를 나누는 것은 모수를 늘리지 않고 **관계의 종류**를 늘립니다.
 :::
 
-**머리별 기여의 합으로 다시 쓰기.** $\mathbf W^{(o)}$를 위에서부터 $D_v$행씩 잘라 머리마다의 블록 $\mathbf W_h^{(o)}\in\mathbb R^{D_v\times D}$로 나누면, 블록 행렬의 곱셈으로
+**머리별 기여의 합으로 다시 쓰기.** $\mathbf W^{(o)}$를 위에서부터 $D_v$행씩 잘라 머리마다의 블록 $\mathbf W_h^{(o)}\in\mathbb R^{D_v\times D}$로 나누면, 블록 행렬의 곱셈으로 다음 식을 얻습니다(교재 연습문제 12.5).
+
+:::key 멀티헤드 어텐션의 머리별 합
 $$\mathbf Y=\sum_{h=1}^H\mathbf H_h\mathbf W_h^{(o)}=\sum_{h=1}^H\mathbf A_h\mathbf X\,\mathbf W_h^{(v)}\mathbf W_h^{(o)},\qquad \mathbf A_h=\operatorname{Softmax}\Big[\frac{\mathbf Q_h\mathbf K_h^T}{\sqrt{D_k}}\Big]$$
-입니다(교재 연습문제 12.5). 멀티헤드 어텐션은 머리별 기여를 더한 것이고, $\mathbf W_h^{(v)}$와 $\mathbf W_h^{(o)}$의 연이은 곱에는 중복이 있습니다. 다만 $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$는 $D\times D$이지만 계수가 $D_v$ 이하이므로($D_v=D/H$이면 부족 계수), 이 자리를 아무 $D\times D$ 행렬로 바꾸면 원래 식과 같지 않습니다.
+$\mathbf W_h^{(o)}\in\mathbb R^{D_v\times D}$: $\mathbf W^{(o)}$를 위에서부터 $D_v$행씩 자른 머리 $h$의 블록. $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$는 $D\times D$이지만 계수가 $D_v$ 이하이다.
+:::
+
+멀티헤드 어텐션은 머리별 기여를 더한 것이고, $\mathbf W_h^{(v)}$와 $\mathbf W_h^{(o)}$의 연이은 곱에는 중복이 있습니다. 다만 $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$는 $D\times D$이지만 계수가 $D_v$ 이하이므로($D_v=D/H$이면 부족 계수), 이 자리를 아무 $D\times D$ 행렬로 바꾸면 원래 식과 같지 않습니다.
 
 **Algorithm 12.2 (멀티헤드 어텐션).** 입력: $\mathbf X\in\mathbb R^{N\times D}$, 머리별 $\mathbf W_h^{(q)},\mathbf W_h^{(k)},\mathbf W_h^{(v)}$, 출력 행렬 $\mathbf W^{(o)}\in\mathbb R^{HD_v\times D}$. 출력: $\mathbf Y\in\mathbb R^{N\times D}$.
 1. $h=1,\dots,H$마다: $\mathbf Q_h\leftarrow\mathbf X\mathbf W_h^{(q)}$, $\mathbf K_h\leftarrow\mathbf X\mathbf W_h^{(k)}$, $\mathbf V_h\leftarrow\mathbf X\mathbf W_h^{(v)}$, $\mathbf H_h\leftarrow\operatorname{Attention}(\mathbf Q_h,\mathbf K_h,\mathbf V_h)$ (Algorithm 12.1, $N\times D_v$)
@@ -173,7 +183,7 @@ $$\mathbf Y=\sum_{h=1}^H\mathbf H_h\mathbf W_h^{(o)}=\sum_{h=1}^H\mathbf A_h\mat
 
 :::key 트랜스포머 층
 $$\mathbf Z=\operatorname{LayerNorm}\big[\mathbf Y(\mathbf X)+\mathbf X\big],\qquad \widetilde{\mathbf X}=\operatorname{LayerNorm}\big[\operatorname{MLP}[\mathbf Z]+\mathbf Z\big]$$
-사전 정규화(Pre-Norm) 변형: $\mathbf Z=\mathbf Y(\mathbf X')+\mathbf X$, $\mathbf X'=\operatorname{LayerNorm}[\mathbf X]$ (최적화가 더 잘 됨). MLP는 토큰 위치마다 같은 가중치로 적용된다.
+사전 정규화(Pre-Norm) 변형: $\mathbf Z=\mathbf Y(\mathbf X')+\mathbf X$, $\mathbf X'=\operatorname{LayerNorm}[\mathbf X]$ (최적화가 더 잘 됨), MLP 쪽도 $\widetilde{\mathbf X}=\operatorname{MLP}[\mathbf Z']+\mathbf Z$, $\mathbf Z'=\operatorname{LayerNorm}[\mathbf Z]$. MLP는 토큰 위치마다 같은 가중치로 적용된다.
 :::
 
 **왜 MLP가 필요한가.** 어텐션의 출력은 값 벡터들의 일차결합이고, 값은 입력의 선형변환입니다. 열벡터로 쓰면 $\mathbf y_n=\mathbf W^{(v)T}\sum_ma_{nm}\mathbf x_m$이라 출력은 늘 (투영된) 입력 벡터들이 펼치는 부분공간 안에 머뭅니다. 비선형성은 소프트맥스 계수를 통해서만 들어오므로 어텐션만으로는 표현력이 제한됩니다. 그래서 층마다 $D$입력·$D$출력의 MLP(예: ReLU 은닉층 하나인 2층 완전연결망)를 붙이는데, 서열 길이가 달라도 처리할 수 있도록 **같은 망을 $\mathbf Z$의 행(토큰)마다 따로** 씁니다. MLP 부분도 사전 정규화로 쓸 수 있습니다: $\widetilde{\mathbf X}=\operatorname{MLP}[\mathbf Z']+\mathbf Z$, $\mathbf Z'=\operatorname{LayerNorm}[\mathbf Z]$. 실제 트랜스포머는 이런 층을 여러 개 쌓고, 층들의 구조는 같지만 층 사이에 가중치를 공유하지는 않습니다.
@@ -241,9 +251,14 @@ $n$: 토큰 위치, $i$: 차원 번호($0,\dots,D-1$), $D$: 임베딩 차원, $L
 :::fig posenc
 :::
 
-**상대 위치.** 위치 $n+k$의 부호화는 위치 $n$의 부호화에 **오프셋 $k$에만** 의존하는 선형변환을 걸어 얻을 수 있습니다. 각진동수 $\omega$인 한 쌍에 대해 덧셈정리로
+**상대 위치.** 위치 $n+k$의 부호화는 위치 $n$의 부호화에 **오프셋 $k$에만** 의존하는 선형변환을 걸어 얻을 수 있습니다. 각진동수 $\omega$인 한 쌍에 대해 덧셈정리로 다음이 성립합니다.
+
+:::key 상대 위치의 선형변환
 $$\begin{pmatrix}\sin\omega(n+k)\\\cos\omega(n+k)\end{pmatrix}=\begin{pmatrix}\cos\omega k&\sin\omega k\\-\sin\omega k&\cos\omega k\end{pmatrix}\begin{pmatrix}\sin\omega n\\\cos\omega n\end{pmatrix}$$
-이므로 $\mathbf r_{n+k}=\mathbf M_k\mathbf r_n$ ($\mathbf M_k$: 이런 $2\times2$ 회전 블록을 대각으로 늘어놓은 행렬)입니다. 그래서 트랜스포머는 “바로 앞 단어”, “두 토큰 뒤” 같은 **상대적** 위치 관계를 선형 연산으로 쉽게 배울 수 있습니다. 이 성질에는 사인과 코사인이 **모두** 필요합니다. 사인만 쓰면 위치 0의 부호화가 영벡터라 어떤 행렬을 곱해도 영벡터인데, 위치 $k$의 부호화는 영벡터가 아니므로 $\mathbf r_{k}=\mathbf M_k\mathbf r_0$이 성립할 수 없습니다(교재 연습문제 12.10). 슬라이드의 열지도는 $D=100$, $L=30$으로 처음 $N=200$개 위치를 그린 것입니다(원 논문은 $L=10{,}000$).
+이므로 $\mathbf r_{n+k}=\mathbf M_k\mathbf r_n$ ($\mathbf M_k$: 이런 $2\times2$ 회전 블록을 대각으로 늘어놓은 행렬)이다. $\mathbf M_k$는 $n$과 무관하고 오프셋 $k$에만 의존하며, 사인과 코사인이 **모두** 있어야 성립한다.
+:::
+
+그래서 트랜스포머는 “바로 앞 단어”, “두 토큰 뒤” 같은 **상대적** 위치 관계를 선형 연산으로 쉽게 배울 수 있습니다. 이 성질에는 사인과 코사인이 **모두** 필요합니다. 사인만 쓰면 위치 0의 부호화가 영벡터라 어떤 행렬을 곱해도 영벡터인데, 위치 $k$의 부호화는 영벡터가 아니므로 $\mathbf r_{k}=\mathbf M_k\mathbf r_0$이 성립할 수 없습니다(교재 연습문제 12.10). 슬라이드의 열지도는 $D=100$, $L=30$으로 처음 $N=200$개 위치를 그린 것입니다(원 논문은 $L=10{,}000$).
 
 :::ex 예제 6 — 작은 위치 부호화
 $D=4$, $L=100$일 때 $\mathbf r_0$과 $\mathbf r_1$을 구하세요.
@@ -326,6 +341,11 @@ $$p(\mathbf x_1,\dots,\mathbf x_N\mid\mathcal C_k)=\prod_{n=1}^Np(\mathbf x_n\mi
 - 단점: 고차원 희소 행렬, 의미 문맥을 놓침, 사전에 없는 단어를 잘 다루지 못함.
 - 훈련 자료에 없던 단어 하나의 추정 확률이 0이면 그 클래스의 곱 전체가 0이 됩니다(**영확률 문제**). 그래서 보이지 않았거나 드문 단어에도 작은 양의 확률을 주는 **평활화**를 씁니다. 흔한 방법 하나는 빈도에 1을 더하는 라플라스 평활화 $\frac{(\text{빈도})+1}{(\text{전체})+K}$입니다[[ch03:2.1b|베이즈 정리.]].
 
+:::key 단어 주머니의 최대가능도 해와 평활화
+$$\mu_k=\frac{n_k}N,\qquad \text{라플라스 평활화: }\ \mu_k=\frac{n_k+1}{N+K}$$
+$\mu_k=p(\mathbf x=k)$: 모든 위치가 함께 쓰는 표의 $k$번 단어 확률, $n_k$: 훈련 자료에서 $k$번 단어가 나온 횟수, $N=\sum_kn_k$: 전체 단어 수, $K$: 사전 크기. 최대가능도 해는 단어의 **비율**이다(교재 연습문제 12.11). 나이브 베이즈의 클래스별 단어 확률표도 각 클래스의 자료 안에서 같은 방식으로 센다. 평활화하지 않으면 안 나온 단어의 확률이 0이 된다(영확률 문제).
+:::
+
 :::ex 예제 8 — 나이브 베이즈 감성 분류
 사전확률 $p(+)=p(-)=0.5$, $p(\text{맛있다}\mid+)=0.3$, $p(\text{맛있다}\mid-)=0.05$, $p(\text{불친절}\mid+)=0.02$, $p(\text{불친절}\mid-)=0.2$. 리뷰 “맛있다 … 불친절”이 긍정일 사후확률은?
 ---
@@ -345,9 +365,12 @@ $$p(\mathbf x_1,\dots,\mathbf x_N)=p(\mathbf x_1)p(\mathbf x_2\mid\mathbf x_1)\p
 - $n$-그램은 한 단어씩 새 글을 생성할 수 있지만, 창 크기 $L$이 작아 **장거리 일관성**이 없습니다.
 
 :::note n-그램 표를 실제로 만드는 법
-정확한 분해의 $n$번째 조건부 분포 $p(\mathbf x_n\mid\mathbf x_1,\dots,\mathbf x_{n-1})$를 표로 두면 칸이 $K^n$개라 $n$에 대해 지수적으로 늘어납니다(교재 연습문제 12.12). $n$-그램은 조건부 표를 직접 저장하는 대신 토큰 $L$개짜리 묶음과 $L-1$개짜리 묶음의 결합 빈도 $p_L$, $p_{L-1}$을 함께 세어 두고 곱의 규칙으로 계산합니다:
-$$p(\mathbf x_n\mid\mathbf x_{n-L+1},\dots,\mathbf x_{n-1})=\frac{p_L(\mathbf x_{n-L+1},\dots,\mathbf x_n)}{p_{L-1}(\mathbf x_{n-L+1},\dots,\mathbf x_{n-1})}.$$
-결합 빈도는 세기만 하면 되고 하나의 표로 여러 조건부 확률을 얻습니다. 단, 분모의 $(L-1)$-묶음을 셀 때 각 서열의 **마지막 토큰으로 끝나는 것은 빼야** 합니다. 뒤에 아무 토큰도 오지 않는 묶음까지 세면 분모가 커져 조건부 확률의 합이 1이 되지 않습니다(교재 연습문제 12.13). 이 식의 $L$은 묶음의 토큰 수라서, 앞에서 쓴 “최근 $L$개 단어”의 $L$보다 1 큽니다.
+정확한 분해의 $n$번째 조건부 분포 $p(\mathbf x_n\mid\mathbf x_1,\dots,\mathbf x_{n-1})$를 표로 두면 칸이 $K^n$개라 $n$에 대해 지수적으로 늘어납니다(교재 연습문제 12.12). $n$-그램은 조건부 표를 직접 저장하는 대신 토큰 $L$개짜리 묶음과 $L-1$개짜리 묶음의 결합 빈도 $p_L$, $p_{L-1}$을 함께 세어 두고 곱의 규칙으로 계산합니다(아래 상자의 식). 결합 빈도는 세기만 하면 되고 하나의 표로 여러 조건부 확률을 얻습니다. 단, 분모의 $(L-1)$-묶음을 셀 때 각 서열의 **마지막 토큰으로 끝나는 것은 빼야** 합니다. 뒤에 아무 토큰도 오지 않는 묶음까지 세면 분모가 커져 조건부 확률의 합이 1이 되지 않습니다(교재 연습문제 12.13). 이 식의 $L$은 묶음의 토큰 수라서, 앞에서 쓴 “최근 $L$개 단어”의 $L$보다 1 큽니다.
+:::
+
+:::key n-그램 조건부 확률의 계산
+$$p(\mathbf x_n\mid\mathbf x_{n-L+1},\dots,\mathbf x_{n-1})=\frac{p_L(\mathbf x_{n-L+1},\dots,\mathbf x_n)}{p_{L-1}(\mathbf x_{n-L+1},\dots,\mathbf x_{n-1})}$$
+$p_L$, $p_{L-1}$: 토큰 $L$개짜리, $L-1$개짜리 묶음의 결합 빈도. 분모를 셀 때 서열의 마지막 토큰으로 끝나는 묶음은 뺀다(그래야 조건부 확률의 합이 1). 여기의 $L$은 묶음의 토큰 수로, “최근 $L$개 단어”의 $L$보다 1 크다.
 :::
 
 :::ex 예제 9 — 표의 크기
@@ -470,6 +493,16 @@ $$a_{nm}=0\quad(m>n)$$
 - **top-$K$ 표본 추출**: 확률 상위 $K$개 토큰만 남겨 재정규화해 뽑는다. 두 극단(최선만 고르기, 전부에서 뽑기) 사이의 절충이다.
 - **top-$p$(핵) 표본 추출**: 확률이 큰 토큰부터 누적확률이 문턱 $p$를 넘을 때까지 모은 집합에서(재정규화해) 뽑는다. 집합의 크기가 분포 모양에 따라 저절로 바뀐다.
 
+:::key 탐색과 표본 추출 전략
+가장 확률이 큰 서열은 결합분포
+$$p(\mathbf y_1,\dots,\mathbf y_N)=\prod_{n=1}^Np(\mathbf y_n\mid\mathbf y_1,\dots,\mathbf y_{n-1})$$
+를 최대로 하는 서열이지만 후보가 $K^N$개라 모두 비교할 수 없다($K$: 어휘 크기).
+- 탐욕 탐색: 매 단계 확률이 가장 큰 토큰, 비용 $O(KN)$. 단계마다의 최선 ≠ 가장 확률이 큰 서열.
+- 빔 탐색: 가설 $B$개 → 가설마다 상위 $B$개 토큰을 붙인 후보 $B^2$개 → 서열 확률 상위 $B$개. 비용 $O(BKN)$. 길수록 확률이 작아지므로 길이로 정규화해 비교한다.
+- top-$K$: 확률 상위 $K$개 토큰만 남겨 재정규화해 뽑는다(이 $K$는 남길 토큰 수).
+- top-$p$(핵): 확률 큰 순서로 누적확률이 $p$ 이상이 될 때까지 모은 집합에서 재정규화해 뽑는다.
+:::
+
 :::key 온도 표본 추출
 $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 $a_i$: 로짓. 온도 $T$가 낮으면 확률이 큰 토큰에 몰려 보수적·결정적($T\to0$이면 탐욕 탐색), 높으면 분포가 평평해져 다양하고 예측하기 어렵다($T\to\infty$이면 균등분포). $T=1$이면 원래 분포.
@@ -524,12 +557,24 @@ BERT 원 논문은 고른 15% 가운데 80%는 ⟨mask⟩로, 10%는 무작위 �
 - **토큰 분류**(토큰마다 사람·장소·색 같은 범주): 첫 출력은 버리고 나머지 출력에 공유된 선형 + 소프트맥스 층을 붙입니다.
 - 미세 조정 때는 새 출력 행렬을 포함한 **모든 모수**를 정답 레이블의 로그확률로 확률적 경사하강법 학습합니다. 사전 학습 모델의 출력을 텍스트 → 영상 합성 같은 복잡한 생성 모델의 입력으로 쓰기도 합니다.
 
+:::key BERT 미세 조정의 출력층
+문장 분류: ⟨class⟩ 위치의 $D$차원 출력 $\mathbf c$에 $D\times K$ 행렬과 $K$차원 소프트맥스를 붙인다(편향 생략).
+$$\mathbf y=\operatorname{Softmax}\big(\mathbf W^T\mathbf c\big),\quad \mathbf W\in\mathbb R^{D\times K};\qquad K=2\text{이면 }\ y=\sigma\big(\mathbf w^T\mathbf c\big),\quad \mathbf w\in\mathbb R^{D}$$
+토큰 분류는 첫 출력을 버리고 나머지 출력마다 공유된 선형 + 소프트맥스 층을 붙인다. 새 출력층을 포함한 **모든 모수**를 정답 레이블의 로그확률로 함께 학습한다.
+:::
+
 :::ex 예제 13 — BERT-Large의 모수 (교재 연습문제 12.16)
 BERT-Large는 최대 입력 512토큰, $D=1024$, 어휘 30,000, 트랜스포머 층 24개, 층마다 머리 16개($D_q=D_k=D_v=64$), 위치별 MLP는 은닉 4,096의 2층망입니다. 전체 모수가 약 3억 4천만임을 보이세요.
 ---
 층 하나: 멀티헤드 어텐션 $4D^2=4{,}194{,}304$ (편향 $4D=4{,}096$), MLP $2\cdot1024\cdot4096=8{,}388{,}608$ (편향 $4096+1024=5{,}120$), 층 정규화 두 개의 이득·편향 $4D=4{,}096$. 합 $12{,}596{,}224$, 24층이면 $302{,}309{,}376$.
 임베딩: 토큰 $30{,}000\times1024=30{,}720{,}000$, 학습된 위치 $512\times1024=524{,}288$.
 총합 $\approx333{,}553{,}664\approx3.3\times10^8$으로, 교재와 원 논문의 “약 3억 4천만(340M)”입니다. 대부분(약 90%)이 층의 $12D^2$에서 나옵니다.
+:::
+
+:::key 트랜스포머 층의 모수 수
+은닉 유닛 $4D$개인 2층 위치별 MLP를 쓰면 층 하나의 모수(편향, 층 정규화 제외)는
+$$\underbrace{4D^2}_{\text{멀티헤드 어텐션}}+\underbrace{2\cdot D\cdot4D}_{\text{MLP}}=12D^2$$
+$L$층이면 약 $12LD^2$에 토큰 임베딩(어휘 $\times\,D$)을 더한다. BERT-Large($D=1024$, 24층, 어휘 30,000): $12\cdot24\cdot1024^2+30{,}000\cdot1024\approx3.3\times10^8$ (약 3억 4천만).
 :::
 
 

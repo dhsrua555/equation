@@ -94,6 +94,7 @@ $\nabla E_n=(wx_n-t_n)x_n$. 첫 점: $(0-2)\cdot1=-2$ → $w=0.2$. 둘째 점: $
 | 대상 | 시그모이드, tanh | ReLU, Leaky ReLU, ELU |
 | 크기 | 더 작음 | 더 큼 |
 | 요즘 | 깊은 ReLU망에는 덜 씀 | 널리 씀 |
+가중치는 가우시안 $\N(0,\epsilon^2)$이면 $\epsilon^2$, 균등분포 $U[-\epsilon,\epsilon]$이면 $\epsilon^2/3$이 위 분산과 같도록 $\epsilon$을 정해 뽑는다(대칭 깨기).
 :::
 
 Xavier는 층을 지나도 활성화의 분산이 대략 일정하게 유지되도록 하고, He는 ReLU가 음수 절반을 0으로 만드는 것을 보정해 분산을 2배로 합니다. 유도는 심층 신경망 과목에 있습니다[[@dnn:ch11:11.3|$\E[\max(0,z)^2]=\frac12\E[z^2]$에서 $\sigma^2=2/D_{in}$.]].
@@ -150,7 +151,12 @@ $\nabla E=w$. $\Delta w^{(0)}=-0.5\cdot1+0=-0.5$, $w^{(1)}=0.5$. $\Delta w^{(1)}
 :::
 
 **네스테로프 모멘텀**: 이전 모멘텀으로 먼저 한 걸음 가 본 **그 위치에서** 기울기를 계산합니다(“앞을 보는” 기울기).
+
+:::key 네스테로프 모멘텀
 $$\Delta\mathbf w^{(\tau-1)}=-\eta\nabla E\big(\mathbf w^{(\tau-1)}+\mu\Delta\mathbf w^{(\tau-2)}\big)+\mu\Delta\mathbf w^{(\tau-2)}$$
+보통 모멘텀과 같되 기울기를 $\mathbf w^{(\tau-1)}$이 아니라 미리 이동한 점 $\mathbf w^{(\tau-1)}+\mu\Delta\mathbf w^{(\tau-2)}$에서 계산한다.
+:::
+
 배치 경사하강법에서 수렴 속도를 높이는 데 효과적입니다.
 ` },
       { k: '7.3c', label: '7.3.2', p: '222', src: '슬라이드 17', title: '학습률 스케줄', body: R`

@@ -31,7 +31,7 @@ $$z_j^{(1)}=h\big(a_j^{(1)}\big)\quad(\text{은닉 유닛})$$
 $$a_k^{(2)}=\sum_{j=1}^Mw_{kj}^{(2)}z_j^{(1)}+w_{k0}^{(2)},\qquad y_k=f\big(a_k^{(2)}\big),\qquad k=1,\dots,K$$
 $w_{ji}$: 가중치, $w_{j0}$: 편향, $h$: 미분 가능한 비선형 **활성화 함수**, $f$: 출력 활성화 함수. $x_0=1$, $z_0=1$로 두면 편향이 가중치에 흡수되어
 $$y_k(\mathbf x,\mathbf w)=f\Big(\sum_{j=0}^Mw_{kj}^{(2)}\,h\Big(\sum_{i=0}^Dw_{ji}^{(1)}x_i\Big)\Big),\qquad \mathbf y(\mathbf x,\mathbf w)=f\big(\mathbf W^{(2)}h(\mathbf W^{(1)}\mathbf x)\big)$$
-($f$, $h$는 벡터의 성분마다 적용).
+($f$, $h$는 벡터의 성분마다 적용). 모수 개수는 첫 층 $(D+1)M$, 둘째 층 $(M+1)K$, 합 $(D+1)M+(M+1)K$.
 :::
 
 :::fig mlp2
@@ -105,6 +105,7 @@ $$h(a)=\ln(1+\exp(a))\ (\text{softplus}),\qquad h(a)=\max(0,a)\ (\text{ReLU})$$
 $$h(a)=\max(0,a)+\alpha\min(0,a)\ (\text{leaky ReLU},\ 0\lt\alpha\lt1)$$
 $$h(a)=\lvert a\rvert\ (\alpha=-1)$$
 도함수: $\sigma'=\sigma(1-\sigma)$, $\tanh'=1-\tanh^2$, $\text{softplus}'=\sigma$, $\ReLU'(a)=1\ (a\gt0),\ 0\ (a\lt0)$.
+$\tanh a=2\sigma(2a)-1$. $\sigma'$의 최댓값은 $\sigma'(0)=\tfrac14$, $\tanh'$의 최댓값은 $1$.
 :::
 
 :::fig acts
@@ -263,9 +264,13 @@ $$\qquad-\frac12\ln\frac{\exp\{\mathbf f_{\mathbf w}(\mathbf x^+)^T\mathbf g_{\b
 첫 항은 캡션 $\mathbf y^+$ 기준으로 영상들을 비교(텍스트→영상 맞추기), 둘째 항은 영상 $\mathbf x^+$ 기준으로 캡션들을 비교(영상→텍스트 맞추기).
 :::
 
-**일반 망 구조.** 완전연결층을 순서대로 쌓는 것만이 신경망은 아닙니다. 망 그림과 수식이 일대일로 대응하므로 더 복잡한 연결(잔차망, DenseNet 등)도 만들 수 있습니다. 단, 출력이 입력의 결정적 함수가 되도록 **닫힌 방향 순환이 없는**(피드포워드) 구조여야 합니다. 각 은닉·출력 유닛은
+**일반 망 구조.** 완전연결층을 순서대로 쌓는 것만이 신경망은 아닙니다. 망 그림과 수식이 일대일로 대응하므로 더 복잡한 연결(잔차망, DenseNet 등)도 만들 수 있습니다. 단, 출력이 입력의 결정적 함수가 되도록 **닫힌 방향 순환이 없는**(피드포워드) 구조여야 합니다.
+
+:::key 일반 피드포워드 망
+각 은닉·출력 유닛은
 $$z_k=h\Big(\sum_{j\in\mathcal A(k)}w_{kj}z_j+b_k\Big)$$
-를 계산합니다. $\mathcal A(k)$는 유닛 $k$로 연결을 보내는 유닛들(**조상**)의 집합입니다. 입력부터 순서대로 계산하면 모든 유닛의 값이 정해집니다.
+를 계산한다. $\mathcal A(k)$는 유닛 $k$로 연결을 보내는 유닛들(**조상**)의 집합이다. 닫힌 방향 순환이 없으므로 입력부터 순서대로 계산하면 모든 유닛의 값이 정해진다.
+:::
 
 :::fig dag
 :::
@@ -327,6 +332,7 @@ $$E(\mathbf w)=-\sum_{n=1}^N\sum_{k=1}^K\{t_{nk}\ln y_{nk}+(1-t_{nk})\ln(1-y_{nk
 $$E(\mathbf w)=-\sum_{n=1}^N\sum_{k=1}^Kt_{kn}\ln y_k(\mathbf x_n,\mathbf w)$$
 $$y_k(\mathbf x,\mathbf w)=\frac{\exp(a_k(\mathbf x,\mathbf w))}{\sum_j\exp(a_j(\mathbf x,\mathbf w))}\ (\text{소프트맥스, 정준 연결})$$
 $0\le y_k\le1$, $\sum_ky_k=1$. 모든 $a_k$에 같은 상수를 더해도 $y_k$가 변하지 않는다(규제를 더하면 이 퇴화가 사라짐).
+소프트맥스의 도함수: $\dfrac{\partial y_j}{\partial a_k}=y_j(\delta_{jk}-y_k)$ ($\delta_{jk}$: 크로네커 델타).
 :::
 
 :::key 출력 활성화와 오차함수의 짝

@@ -42,6 +42,7 @@ $f(x,y,z)=(x+y)z$, 입력 $(x,y,z)=(-2,5,-4)$. 중간값 $q=x+y$를 둡니다.
 - 연쇄법칙: $\dfrac{\partial f}{\partial x}=\dfrac{\partial f}{\partial q}\dfrac{\partial q}{\partial x}=-4$, $\dfrac{\partial f}{\partial y}=-4$[[@base:ch04:4.2|다변수 연쇄법칙과 야코비 행렬의 곱.]]
 
 :::fig graph1
+:::
 
 :::key 연쇄법칙: 상류 × 국소 기울기
 노드 $z=f(x,y)$에 뒤쪽에서 $\dfrac{\partial L}{\partial z}$(상류 기울기)가 들어오면
@@ -75,6 +76,7 @@ $$f(w,x)=\frac1{1+e^{-(w_0x_0+w_1x_1+w_2)}},\qquad w_0=2,\ x_0=-1,\ w_1=-3,\ x_1
 - 곱셈 $w_1x_1$: $w_1$에 $0.20\times x_1=-0.40$, $x_1$에 $0.20\times w_1=-0.60$
 
 :::fig graph2
+:::
 
 :::key 시그모이드 게이트
 $$\sigma(x)=\frac1{1+e^{-x}},\qquad \frac{d\sigma}{dx}=\frac{e^{-x}}{(1+e^{-x})^2}=\Big(\frac{1+e^{-x}-1}{1+e^{-x}}\Big)\Big(\frac1{1+e^{-x}}\Big)=(1-\sigma(x))\sigma(x)$$

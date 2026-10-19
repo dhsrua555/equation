@@ -86,6 +86,11 @@ $\mathbf x$: 수용 영역의 화소 값 벡터, $\mathbf w$: 화소마다 하�
 
 **커널은 무엇을 검출하나.** $\mathbf w$, $w_0$을 고정하고 $\lVert\mathbf x\rVert^2$을 일정하게 두었을 때 반응 $\mathbf w^T\mathbf x$를 최대로 하는 입력은 $\mathbf x=\alpha\mathbf w$ ($\alpha\gt0$)입니다. 즉 유닛은 패치가 (전체 밝기 배율을 빼면) **커널과 닮았을 때** 가장 크게 반응합니다. ReLU는 $\mathbf w^T\mathbf x$가 문턱 $-w_0$을 넘을 때만 0이 아닌 값을 내므로, 유닛은 “커널과 충분히 닮은 패턴을 찾았다”는 신호를 보내는 **특징 검출기**입니다(모서리, 질감 등).
 
+:::key 커널과 닮은 패치에서 최대 반응
+$$\mathbf w^T\mathbf x\le\lVert\mathbf w\rVert\lVert\mathbf x\rVert\qquad(\text{등호: }\mathbf x=\alpha\mathbf w,\ \alpha\gt0)$$
+$\lVert\mathbf x\rVert$가 일정하면 패치가 커널과 같은 방향일 때 반응이 최대다(코시-슈바르츠). ReLU 때문에 $\mathbf w^T\mathbf x\gt-w_0$일 때만 0이 아닌 출력이 나온다.
+:::
+
 :::ex 예제 1 — 가장 크게 반응하는 패치
 커널 $\mathbf w=(1,0,-1)$ (1차원 모서리 검출기), $w_0=0$. 노름이 $\sqrt2$인 패치 중 반응이 가장 큰 것과 그 값은?
 ---
@@ -122,9 +127,13 @@ $$C=\begin{pmatrix}3&7&-1\\0&0&3\\1&5&0\end{pmatrix}.$$
 예: $C(1,2)$(둘째 행, 셋째 열)는 패치 $\begin{pmatrix}3&1\\0&0\end{pmatrix}$에서 $3+0-0+0=3$.
 :::
 
-**모서리 검출.** 세로 모서리는 가로로 움직일 때 세기가 크게 바뀌는 곳이므로
+**모서리 검출.**
+
+:::key 모서리 검출 커널
+세로 모서리는 가로로 움직일 때 세기가 크게 바뀌는 곳이므로
 $$K_{\text{세로}}=\begin{pmatrix}-1&0&1\\-1&0&1\\-1&0&1\end{pmatrix},\qquad K_{\text{가로}}=K_{\text{세로}}^T=\begin{pmatrix}-1&-1&-1\\0&0&0\\1&1&1\end{pmatrix}$$
 로 합성곱합니다. 밝기가 **증가**하는 세로 모서리에서는 양수, **감소**하는 곳에서는 음수가 나옵니다.
+:::
 
 :::fig edges
 :::
@@ -213,6 +222,12 @@ $$(M^2C+1)\,C_{\text{OUT}}$$
 - 보폭 합성곱·풀링이 **공간 해상도**를 줄인다면, 1×1 합성곱은 **깊이(채널 수)**를 줄여 서로 보완합니다.
 - 각 화소의 채널 벡터 $\mathbf a\in\mathbb R^C$에 같은 완전연결층 $\mathbf W\mathbf a+\mathbf b$ ($\mathbf W\in\mathbb R^{C_{\text{OUT}}\times C}$)를 적용하는 것과 같습니다.
 
+:::key 1×1 합성곱 (병목)
+화소마다 채널 벡터 $\mathbf a\in\mathbb R^C$에 같은 완전연결층을 적용한다.
+$$\mathbf a\mapsto\mathbf W\mathbf a+\mathbf b,\qquad\mathbf W\in\mathbb R^{C_{\text{OUT}}\times C},\qquad\text{모수 }(C+1)\,C_{\text{OUT}}$$
+공간 크기는 그대로 두고 채널 수만 바꾼다(보통 줄여서 계산을 줄이는 병목). 공간 패턴은 잡지 못한다.
+:::
+
 :::fig conv1x1
 :::
 
@@ -275,6 +290,12 @@ $$L(M-1)+1$$
 - 층 수, 채널 수, 필터 크기, 보폭 등 초매개변수가 많고, 후보 구조마다 학습 비용이 커서 체계적으로 비교하기 어렵습니다.
 
 **작은 필터를 쌓는 이유.** 한 층의 큰 수용 영역 대신 작은 필터 여러 층으로 같은 수용 영역을 얻으면 모수가 훨씬 적습니다. 채널 수가 모두 $C$일 때 $7\times7$ 한 층은 $49C^2$, $3\times3$ 세 층은 $27C^2$. 큰 필터가 “작은 필터들의 합성으로 표현된다”는 귀납적 편향을 주는 셈이고, 층 사이에 비선형성도 더해집니다. AlexNet의 $11\times11$(보폭 4) 대신 VGG가 $3\times3$만 쓰는 이유입니다.
+
+:::key 작은 필터 쌓기의 모수
+입력·출력 채널이 모두 $C$일 때(편향 제외) 같은 $7\times7$ 수용 영역을 얻는 데
+$$7\times7\text{ 한 층: }49C^2\qquad\text{대}\qquad3\times3\text{ 세 층: }3\cdot9C^2=27C^2$$
+일반적으로 $M\times M$ 층 $L$개는 가중치 $LM^2C^2$개로 한 변 $L(M-1)+1$의 수용 영역을 얻는다. 층 사이에 비선형성도 더해진다.
+:::
 
 :::fig cnnpipe
 :::

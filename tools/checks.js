@@ -238,7 +238,17 @@
   const figUse = (src, where) => String(src || '').replace(/^\s*:::fig\s+(\S+)/gm, (_, n) => { if (!FIGREG[n]) fail(`${where} names a missing figure ${n}`); return ''; });
   // the picture catalogue (atlas): each entry's figure, simulation and `where` places exist, and every [[atlas:id]] names an entry
   const atlUse = (src, where) => String(src || '').replace(/\[\[atlas:([\w-]+)/g, (_, id) => { if (!A.atlById || !A.atlById.get(id)) fail(`${where} links a missing atlas entry ${id}`); return ''; });
-  const scan = (src, where) => { figUse(src, where); atlUse(src, where); };
+  // a ":::fig" box draws only the figure, so anything before its closing ":::" would vanish from the page
+  const figClosed = (src, where) => {
+    const L = String(src || '').split('\n');
+    L.forEach((l, i) => {
+      if (!/^\s*:::fig\b/.test(l)) return;
+      let j = i + 1;
+      while (j < L.length && !L[j].trim()) j++;
+      if (j < L.length && L[j].trim() !== ':::') fail(`${where}: "${l.trim()}" is not closed by ":::" on the next line, so the text after it is hidden`);
+    });
+  };
+  const scan = (src, where) => { figUse(src, where); atlUse(src, where); figClosed(src, where); };
   A.CH.forEach((c) => { c.sections.forEach((s) => scan(s.body, `${c.id} §${s.k}`)); c.problems.forEach((p) => scan([p.q, p.sol].join('\n'), p.id)); });
   BOOKS.forEach((b) => b.sets.forEach((q) => { scan(q.intro, `${b.key} ${q.id}`); q.problems.forEach((p) => scan(p.body, `${b.key} ${q.id}-${p.id}`)); }));
   A.EXAMS.forEach((x) => x.problems.forEach((p) => scan([p.q, p.sol].join('\n'), p.id)));

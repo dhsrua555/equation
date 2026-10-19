@@ -71,6 +71,11 @@ $$h(x)=-\log_2p(x),\qquad \mathrm H[x]=-\sum_xp(x)\log_2p(x)\ (\text{섀넌 엔�
 이산 엔트로피는 $\ge0$이지만 미분 엔트로피는 아닙니다. $\sigma^2<\frac1{2\pi e}$이면 $\frac12\{1+\ln(2\pi\sigma^2)\}<0$.
 :::
 
+:::key 최대 엔트로피
+$$0\le\mathrm H[x]\le\log_2K\quad(\text{값이 }K\text{개, 최대는 균등분포})$$
+평균과 분산이 고정되면 미분 엔트로피를 최대로 하는 분포는 가우시안이고, 그 엔트로피 $\frac12\{1+\ln(2\pi\sigma^2)\}$는 분산과 함께 커진다. 미분 엔트로피는 음수일 수 있다($\sigma^2\lt\frac1{2\pi e}$).
+:::
+
 :::fig entcurves
 :::
 ` },
@@ -82,7 +87,7 @@ $$\begin{aligned}\KL(p\Vert q)&=-\int p(\mathbf x)\ln q(\mathbf x)\,d\mathbf x-\
 $\KL(p\Vert q)\ge0$, 등호는 $p(\mathbf x)=q(\mathbf x)$일 때만. 대칭이 아니다: $\KL(p\Vert q)\not\equiv\KL(q\Vert p)$.
 :::
 
-:::thm 옌센 부등식
+:::key 옌센 부등식
 볼록함수 $f$에 대해 $f(\lambda a+(1-\lambda)b)\le\lambda f(a)+(1-\lambda)f(b)$ (현이 그래프 위에 있음).[[@base:ch05:5.2|젠센(옌센) 부등식의 증명.]] 일반화하면 $f\big(\sum_i\lambda_ix_i\big)\le\sum_i\lambda_if(x_i)$ ($\lambda_i\ge0$, $\sum\lambda_i=1$), 즉 $f(\E[x])\le\E[f(x)]$, 연속형으로 $f\big(\int\mathbf xp(\mathbf x)d\mathbf x\big)\le\int f(\mathbf x)p(\mathbf x)d\mathbf x$.
 :::
 

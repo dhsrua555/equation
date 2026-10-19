@@ -30,17 +30,20 @@ $$P(z)=\int_{-\infty}^zp(x)\,dx\ (\text{CDF}),\qquad P'(x)=p(x)$$
 
 $p(x)$는 확률이 아니라 **밀도**이므로 1보다 클 수 있습니다(예: 폭이 0.5인 균등분포의 밀도는 2). 작은 구간의 확률이 $p(x)\delta x$입니다.
 
-**여러 변수.** 결합밀도 $p(\mathbf x)=p(x_1,\dots,x_D)$, $p(\mathbf x)\ge0$, $\int p(\mathbf x)d\mathbf x=1$.
+:::key 결합밀도의 합·곱·베이즈 규칙
+결합밀도 $p(\mathbf x)=p(x_1,\dots,x_D)$, $p(\mathbf x)\ge0$, $\int p(\mathbf x)d\mathbf x=1$.
 - 합의 규칙 $p(\mathbf x)=\int p(\mathbf x,\mathbf y)\,d\mathbf y$, 곱의 규칙 $p(\mathbf x,\mathbf y)=p(\mathbf y\mid\mathbf x)p(\mathbf x)$
 - 베이즈 규칙 $p(\mathbf y\mid\mathbf x)=\dfrac{p(\mathbf x\mid\mathbf y)p(\mathbf y)}{p(\mathbf x)}$, $p(\mathbf x)=\int p(\mathbf x\mid\mathbf y)p(\mathbf y)\,d\mathbf y$
+:::
 
-**대표 분포.**
+:::key 대표 분포
 | 분포 | 밀도 |
 |---|---|
 | 균등 $[c,d]$ | $1/(d-c)$ |
 | 지수 | $p(x\mid\lambda)=\lambda\exp(-\lambda x)$, $x\ge0$ |
 | 라플라스 | $p(x\mid\mu,\gamma)=\dfrac1{2\gamma}\exp\Big(-\dfrac{\lvert x-\mu\rvert}\gamma\Big)$ |
 | 경험분포 | $p(x\mid\mathcal D)=\dfrac1N\sum_{n=1}^N\delta(x-x_n)$ |
+:::
 
 :::fig commonpdfs
 :::
@@ -60,6 +63,12 @@ $$\Cov[x,y]=\E_{x,y}\big[\{x-\E[x]\}\{y-\E[y]\}\big]=\E_{x,y}[xy]-\E[x]\E[y]$$
 - **조건부 기댓값** $\E_x[f\mid y]=\sum_xp(x\mid y)f(x)$ (또는 적분).
 - **분산**은 평균 주변의 퍼짐, **공분산**은 두 변수가 함께 변하는 정도입니다. 독립이면 $\Cov=0$ (역은 일반적으로 성립하지 않음).
 - 벡터: $\Cov[\mathbf x,\mathbf y]=\E_{\mathbf x,\mathbf y}\big[\{\mathbf x-\E\mathbf x\}\{\mathbf y^T-\E\mathbf y^T\}\big]=\E[\mathbf x\mathbf y^T]-\E[\mathbf x]\E[\mathbf y^T]$, 그리고 $\Cov[\mathbf x]\equiv\Cov[\mathbf x,\mathbf x]$ (성분들 사이의 공분산 행렬).
+
+:::key 조건부 기댓값과 공분산 행렬
+$$\E_x[f\mid y]=\sum_xp(x\mid y)f(x)\ (\text{또는 적분}),\qquad \Cov[\mathbf x,\mathbf y]=\E[\mathbf x\mathbf y^T]-\E[\mathbf x]\E[\mathbf y^T],\qquad \Cov[\mathbf x]\equiv\Cov[\mathbf x,\mathbf x]$$
+$\E_x[f(x,y)]$는 $y$의 함수. 독립이면 $\Cov=0$ (역은 일반적으로 성립하지 않음).
+:::
+
 :::fig covfig
 :::
 
@@ -85,9 +94,12 @@ $$\Var[x]=\E[x^2]-\E[x]^2=\sigma^2,\qquad \beta=1/\sigma^2\ (\text{정밀도})$$
 :::fig gaussfig
 :::
 
-**가능도.** 관측 $\mathbf x=(x_1,\dots,x_N)$이 모수를 모르는 가우시안에서 i.i.d.로 나왔다면, 주어진 $(\mu,\sigma^2)$에서 자료가 나올 확률(밀도)은
+:::key 가능도 함수 (i.i.d. 가우시안)
+관측 $\mathbf x=(x_1,\dots,x_N)$이 모수를 모르는 가우시안에서 i.i.d.로 나왔다면, 주어진 $(\mu,\sigma^2)$에서 자료가 나올 확률(밀도)은
 $$p(\mathbf x\mid\mu,\sigma^2)=\prod_{n=1}^N\N(x_n\mid\mu,\sigma^2).$$
 이를 모수의 함수로 본 것이 **가능도 함수**이고, 모수가 자료를 얼마나 잘 설명하는지를 잽니다.
+:::
+
 :::fig likelihood
 :::
 
@@ -117,8 +129,10 @@ $$\tilde\sigma^2=\frac N{N-1}\sigma^2_{\text{ML}}=\frac1{N-1}\sum_{n=1}^N(x_n-\m
 - MLE의 편향은 **과적합과 밀접**합니다: 모델이 자료에 너무 잘 맞춰져 불확실성(분산)을 과소평가합니다.
 ` },
       { k: '2.3c', label: '2.3.4', p: '40', src: '슬라이드 26', title: '선형회귀의 확률적 해석', body: R`
+:::key 회귀의 확률모델 (가우시안 잡음)
 목표값이 입력에 조건부로 가우시안이라고 가정합니다: 평균은 모델의 예측 $y(x,\mathbf w)$, 분산은 관측 잡음 $\sigma^2$.
 $$p(t\mid x,\mathbf w,\sigma^2)=\N\big(t\mid y(x,\mathbf w),\sigma^2\big),\qquad \mathbf w:\ \text{다항식 계수}$$
+:::
 
 :::fig regprob
 :::

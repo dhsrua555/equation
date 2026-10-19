@@ -36,9 +36,11 @@ $$E(w)=\frac12\sum_{n=1}^N\{y(x_n,w)-t_n\}^2$$
 
 ### 더 깊이: 닫힌 해(정규방정식)
 
+:::key 정규방정식 (normal equation)
 계획행렬 $\Phi_{nj}=x_n^j$ ($N\times(M+1)$)로 쓰면 $E(\mathbf w)=\frac12\lVert\Phi\mathbf w-\mathbf t\rVert^2$이고, $\nabla E=\Phi^T(\Phi\mathbf w-\mathbf t)=\mathbf 0$에서
 $$\Phi^T\Phi\,\mathbf w^\star=\Phi^T\mathbf t.$$
 $E$가 $\mathbf w$의 이차식이라 기울기가 일차식이고, 해가 선형연립방정식 하나로 나옵니다. 이것이 “모수에 선형”인 모델의 장점입니다. 서로 다른 $x_n$이 $M+1$개 이상이면 $\Phi^T\Phi$가 가역이라 해가 유일합니다.
+:::
 ` },
       { k: '1.2b', label: '1.2.4', p: '9', src: '슬라이드 6–8', title: '모델 복잡도와 과적합', body: R`
 차수 $M$을 바꾸며 맞춰 보면:
@@ -109,9 +111,11 @@ $\lambda$: 규제 매개변수(벌점항의 상대적 중요도).
 
 (교재 표 1.2, 슬라이드 9의 값, $M=9$.) $\lambda$가 커질수록 전형적인 계수의 크기가 작아집니다.
 
-**규제된 해.** 벌점을 더해도 $\tilde E$는 $\mathbf w$의 이차식이라 $\nabla\tilde E=\Phi^T(\Phi\mathbf w-\mathbf t)+\lambda\mathbf w=\mathbf 0$에서
+:::key L2 규제된 해
+벌점을 더해도 $\tilde E$는 $\mathbf w$의 이차식이라 $\nabla\tilde E=\Phi^T(\Phi\mathbf w-\mathbf t)+\lambda\mathbf w=\mathbf 0$에서
 $$(\Phi^T\Phi+\lambda\mathbf I)\,\mathbf w^\star=\Phi^T\mathbf t.$$
 $\lambda\gt0$이면 $\Phi^T\Phi+\lambda\mathbf I$가 항상 가역이라, 자료가 모수보다 적어도 해가 유일합니다.
+:::
 
 :::fig ermslam
 :::
@@ -121,6 +125,12 @@ $\lambda\gt0$이면 $\Phi^T\Phi+\lambda\mathbf I$가 항상 가역이라, 자료
 - **검증 집합**으로 여러 값의 성능을 비교해 고릅니다.
 - 선택까지 끝난 모델의 성능은 따로 떼어 둔 **테스트 집합**으로 한 번 평가합니다(검증 집합에 맞춰 고른 탓에 생기는 낙관적 편향을 피함).
 - 자료가 적으면 **$S$겹 교차검증**: 자료를 $S$개로 나눠 $S-1$개로 학습하고 나머지 1개로 평가하기를 $S$번 반복해 평균냅니다. 모든 자료를 학습과 평가에 쓰지만 학습을 $S$번 해야 합니다($S=N$이면 leave-one-out).
+
+:::key S겹 교차검증 (cross-validation)
+자료 $N$개를 $S$묶음으로 나눠 $\frac{S-1}SN$개로 학습하고 나머지 $\frac NS$개로 평가하기를 $S$번 반복해 평균낸다. $S=N$이면 leave-one-out.
+초매개변수($\lambda$, $M$)는 훈련오차가 아니라 검증 오차로 고르고, 최종 성능은 테스트 집합으로 한 번 평가한다.
+:::
+
 :::fig cvfold
 :::
 ` },

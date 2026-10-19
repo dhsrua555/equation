@@ -77,9 +77,19 @@ $$\widetilde E(\mathbf w)=E(\mathbf w)+\frac\lambda2\mathbf w^T\mathbf w,\qquad 
 - 계산이 쉽습니다: 기울기에 $\lambda\mathbf w$만 더하면 됩니다(계수 $\frac12$은 미분에서 사라지게 하려는 관례).
 - 한계: 사전분포는 **파라미터**에 대한 것인데, 우리가 가진 지식은 보통 입력→출력 **함수**에 대한 것이라 넣을 수 있는 사전 지식이 제한적입니다.
 
-**둔감한 방향이 더 줄어든다 (교재 그림 9.3).** 오차가 이차 함수이고 축을 헤시안의 고유벡터에 맞추면, 최소점 $\mathbf w^\star$의 각 성분이
+:::key 가중치 감쇠의 확률적 해석 (MAP)
+$$p(\mathbf w)=\mathcal N(\mathbf 0,\lambda^{-1}\mathbf I)\ \Rightarrow\ -\ln p(\mathbf w)=\frac\lambda2\mathbf w^T\mathbf w+\text{상수}$$
+$E$를 음의 로그 가능도로 보면 $E+\frac\lambda2\mathbf w^T\mathbf w$의 최소화는 평균 0인 가우시안 사전분포 아래의 MAP 추정이다. 라쏘($L_1$)는 라플라스 사전분포에 대응한다.
+:::
+
+**둔감한 방향이 더 줄어든다 (교재 그림 9.3).**
+
+:::key 둔감한 방향의 축소 (유효 파라미터 수)
+오차가 이차 함수이고 축을 헤시안의 고유벡터에 맞추면, 최소점 $\mathbf w^\star$의 각 성분이
 $$\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}\,w_j^\star\qquad(\lambda_j:\ \text{헤시안의 고윳값, 그 방향의 곡률})$$
 로 줄어듭니다. 곡률이 큰($\lambda_j\gg\lambda$) 방향 $w_2$는 거의 그대로, 오차가 **둔감한**($\lambda_j\ll\lambda$) 방향 $w_1$은 $0$ 가까이로 밀립니다. 출력에 거의 영향이 없는 파라미터를 억제하는 셈이고, 규제 후에도 **활성**으로 남는 파라미터 수가 **유효 파라미터 수**입니다($\lambda\to\infty$이면 0, $\lambda=0$이면 전체).
+:::
+
 :::fig wdshrink
 :::
 

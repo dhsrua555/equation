@@ -28,14 +28,20 @@ window.EM = window.EM || { chapters: [], exams: [] };
 :::key 베이지안 모수 추정
 MLE는 가능도 $p(\mathcal D\mid\mathbf w)$를 최대화해 **하나의** 추정값 $\mathbf w_{\text{ML}}$을 낸다(다른 훈련 자료면 다른 추정값 → 추정에 내재한 불확실성). 베이지안 추론은 자료를 보기 전 모수에 사전분포 $p(\mathbf w)$를 두고 베이즈 정리로 갱신한다:
 $$p(\mathbf w\mid\mathcal D)=\frac{p(\mathcal D\mid\mathbf w)\,p(\mathbf w)}{p(\mathcal D)},\qquad \text{사후}\propto\text{가능도}\times\text{사전}$$
-:::
 
 $p(\mathcal D)=\int p(\mathcal D\mid\mathbf w)p(\mathbf w)\,d\mathbf w$는 사후분포를 정규화합니다. 가능도 $p(\mathcal D\mid\mathbf w)$는 $\mathbf w$의 함수로서는 확률분포가 아니며 적분이 1일 필요가 없습니다.
+:::
 
 :::ex 예제 1 — 세 번 연속 앞면
 균등 사전분포 $p(\mu)=1$ ($0\le\mu\le1$)에서 앞면 3번을 관측했을 때 사후분포와 사후평균은?
 ---
 $p(\mathcal D\mid\mu)=\mu^3$이므로 사후분포 $\propto\mu^3$, 정규화하면 $4\mu^3$ (베타분포 $\operatorname{Beta}(4,1)$). 사후평균 $\int_0^14\mu^4d\mu=\frac45=0.8$. MLE의 극단값 1보다 덜 극단적이고, 자료가 쌓이면 사후분포가 좁아지며 참값으로 모입니다[[@dnn:ch02:2.5|베르누이 가능도 + 베타 사전분포 → 베타 사후분포.]].
+:::
+
+:::key 균등 사전분포와 베르누이 사후분포
+$N$번 중 $m$번 앞면, 사전분포 $p(\mu)=1$ ($0\le\mu\le1$)이면
+$$p(\mu\mid\mathcal D)=\frac{(N+1)!}{m!\,(N-m)!}\,\mu^m(1-\mu)^{N-m},\qquad \E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
+MLE $m/N$보다 덜 극단적이다(앞면 3번이면 사후 $4\mu^3$, 사후평균 $0.8$, MLE는 1).
 :::
 
 :::fig coinpost
@@ -62,7 +68,19 @@ $$w_{\text{MAP}}=\frac{w_{\text{ML}}/v}{1/v+1/s^2}=\frac{s^2}{s^2+v}\,w_{\text{M
 정밀도(분산의 역수)로 가중한 평균이며, 사전분포의 평균 0 쪽으로 $\frac{s^2}{s^2+v}$배 줄어듭니다(위 그림의 값).
 :::
 
-양변에 $\sigma^2$을 곱하면 $\frac12\sum\{y-t\}^2+\frac\lambda2\mathbf w^T\mathbf w$, **$\lambda=\sigma^2/s^2$**. 즉 1장의 $L_2$ 규제는 “가중치가 0 근처에 있을 것”이라는 **사전분포의 MAP 추정**입니다. 사전분포가 좁을수록($s$ 작을수록), 잡음이 클수록($\sigma$ 클수록) 규제가 셉니다. 정규화 항 $\ln p(\mathcal D)$는 $\mathbf w$와 무관해 최적화에 영향이 없습니다.
+:::key 가중치 하나의 MAP (정밀도 가중 평균)
+가능도가 $w$에 대해 $\N(w\mid w_{\text{ML}},v)$ 모양이고 사전분포가 $\N(w\mid0,s^2)$이면
+$$w_{\text{MAP}}=\frac{w_{\text{ML}}/v}{1/v+1/s^2}=\frac{s^2}{s^2+v}\,w_{\text{ML}}$$
+사전분포의 평균 0 쪽으로 줄어든다(축소). $s^2\to\infty$이면 $w_{\text{MAP}}\to w_{\text{ML}}$.
+:::
+
+:::key 규제 계수와 사전분포의 분산
+위 MAP의 $E(\mathbf w)=\frac1{2\sigma^2}\sum\{y(x_n,\mathbf w)-t_n\}^2+\frac1{2s^2}\mathbf w^T\mathbf w$에 $\sigma^2$을 곱하면
+$$\frac12\sum_{n=1}^N\{y(x_n,\mathbf w)-t_n\}^2+\frac\lambda2\mathbf w^T\mathbf w,\qquad \lambda=\frac{\sigma^2}{s^2}.$$
+즉 1장의 $L_2$ 규제는 “가중치가 0 근처에 있을 것”이라는 **사전분포의 MAP 추정**입니다. 사전분포가 좁을수록($s$ 작을수록), 잡음이 클수록($\sigma$ 클수록) 규제가 셉니다.
+:::
+
+정규화 항 $\ln p(\mathcal D)$는 $\mathbf w$와 무관해 최적화에 영향이 없습니다.
 ` },
       { k: '2.6c', label: '2.6.3', p: '57', src: '슬라이드 44', title: '완전 베이지안 머신러닝', body: R`
 MAP은 가장 그럴듯한 모수 **하나**만 고르므로 **부분적으로만** 베이지안입니다. 완전한 베이지안 접근은 모수에 대한 사후분포 **전체**를 유지하고, 예측할 때 가능한 모든 모수 값을 사후확률로 가중 평균합니다.

@@ -40,6 +40,7 @@ $$\lVert d\rVert_2=\sqrt{d^Td}=\sqrt{\alpha^2w^Tw}=\lvert\alpha\rvert\sqrt{w^Tw}
 :::
 
 :::fig distance
+:::
 
 :::def 마진
 자료 $D$에 대한 초평면 $H$의 마진은 가장 가까운 점까지의 거리입니다.
@@ -61,6 +62,7 @@ $$\min_{w,b}\ \frac12w^Tw=\frac12\lVert w\rVert^2\qquad\text{s.t. }\ y_i(x_i^Tw+
 :::
 
 :::fig margin
+:::
 
 $P$의 점은 $x_i^Tw+b\ge1$, $N$의 점은 $x_i^Tw+b\le-1$을 만족하고, 등호가 성립하는(=$H_\pm$ 위의) 점들이 **서포트 벡터**입니다: $x_i^Tw+b=y_i$.
 

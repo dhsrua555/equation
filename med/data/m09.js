@@ -41,9 +41,12 @@ $$\mu_i=\frac1N\sum_{n=1}^Nx_{ni},\qquad \sigma_i^2=\frac1N\sum_{n=1}^N(x_{ni}-\
       { k: '7.4b', label: '7.4.2', p: '227', src: '슬라이드 25–27', title: '배치 정규화', body: R`
 입력을 정규화하는 논리를 **은닉층**에도 적용합니다. 어떤 은닉층의 활성화 범위가 크게 흩어져 있으면, 평균 0·분산 1로 맞춰 주는 것이 다음 층의 학습을 쉽게 합니다. 단, 입력과 달리 은닉 유닛의 값은 가중치가 갱신될 때마다 바뀌므로 **학습 중에 매 미니배치마다 반복**해야 합니다 — 이것이 **배치 정규화**(Ioffe & Szegedy, 2015)입니다.
 
-**기울기 소실·폭발.** 첫 층 파라미터에 대한 오차의 기울기는 연쇄법칙[[@base:ch04:4.2|다변수 연쇄법칙: 합성의 미분은 야코비 행렬의 곱.]]으로
+**기울기 소실·폭발.** 첫 층 파라미터에 대한 오차의 기울기는 연쇄법칙[[@base:ch04:4.2|다변수 연쇄법칙: 합성의 미분은 야코비 행렬의 곱.]]으로 층마다의 야코비안 원소의 **곱**이 됩니다.
+
+:::key 기울기 소실·폭발
 $$\frac{\partial E}{\partial w_i}=\sum_m\cdots\sum_l\sum_j\frac{\partial z_m^{(1)}}{\partial w_i}\cdots\frac{\partial z_j^{(K)}}{\partial z_l^{(K-1)}}\frac{\partial E}{\partial z_j^{(K)}}$$
-처럼 층마다의 야코비안 원소의 **곱**입니다. 대부분 크기가 $1$보다 작으면 곱이 $0$으로(**소실**), 크면 $\infty$로(**폭발**) 갑니다. 배치 정규화는 이 문제를 크게 줄입니다.
+층마다의 야코비안 원소의 **곱**입니다. 대부분 크기가 $1$보다 작으면 곱이 $0$으로(**소실**), 크면 $\infty$로(**폭발**) 갑니다. 배치 정규화는 이 문제를 크게 줄입니다.
+:::
 :::fig vanish
 :::
 
@@ -51,6 +54,7 @@ $$\frac{\partial E}{\partial w_i}=\sum_m\cdots\sum_l\sum_j\frac{\partial z_m^{(1
 크기 $K$인 미니배치에서 유닛 $i$의 사전활성 $a_{ni}$에 대해 ($\delta$: 수치 안정용 작은 상수)
 $$\mu_i=\frac1K\sum_{n=1}^Ka_{ni},\qquad \sigma_i^2=\frac1K\sum_{n=1}^K(a_{ni}-\mu_i)^2,\qquad \hat a_{ni}=\frac{a_{ni}-\mu_i}{\sqrt{\sigma_i^2+\delta}}$$
 $$\tilde a_{ni}=\gamma_i\hat a_{ni}+\beta_i\qquad(\gamma_i,\beta_i:\ \text{가중치, 편향과 함께 경사하강법으로 학습})$$
+그러면 $\tilde a_{ni}$의 미니배치 평균은 $\beta_i$, 표준편차는 $\lvert\gamma_i\rvert$입니다($\delta\approx0$).
 추론 시에는 학습 중 누적한 이동평균을 씁니다 ($0\le\alpha\le1$):
 $$\bar\mu_i^{(\tau)}=\alpha\bar\mu_i^{(\tau-1)}+(1-\alpha)\mu_i,\qquad \bar\sigma_i^{(\tau)}=\alpha\bar\sigma_i^{(\tau-1)}+(1-\alpha)\sigma_i$$
 :::

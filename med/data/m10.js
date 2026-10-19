@@ -37,9 +37,9 @@ $w_{ji}$는 $y_{nj}$에만 들어 있으므로 $\partial E_n/\partial w_{ji}=(y_
 ` },
       { k: '8.1b', label: '8.1.2', p: '235', src: '슬라이드 5–6', title: '일반 피드포워드망과 역전파 알고리즘', body: R`
 일반 피드포워드망에서 유닛 $j$는 입력의 가중합(사전활성)을 계산한 뒤 비선형 활성화를 적용합니다(편향은 $z_0=1$인 가중치로 흡수).
-$$a_j=\sum_iw_{ji}z_i,\qquad z_j=h(a_j)$$
 
 :::key 역전파 공식
+$$a_j=\sum_iw_{ji}z_i,\qquad z_j=h(a_j)\qquad(\text{사전활성, 활성})$$
 오차 신호(“errors”) $\delta_j\equiv\dfrac{\partial E_n}{\partial a_j}$로 두면
 $$\frac{\partial E_n}{\partial w_{ji}}=\delta_jz_i,\qquad \delta_k=y_k-t_k\ (\text{출력 유닛})$$
 $$\delta_j=h'(a_j)\sum_kw_{kj}\delta_k\ (\text{은닉 유닛})$$
@@ -81,10 +81,15 @@ $$\frac{\partial E_n}{\partial w_{ji}^{(1)}}=\delta_jx_i,\qquad \frac{\partial E
 기울기: $\partial E/\partial w^{(2)}=\delta_kz\approx0.3985$, $\partial E/\partial w^{(1)}=\delta_jx\approx0.8789$.
 :::
 
-**수치 미분(8.1.4).** 역전파의 장점은 **효율**입니다. 오차 한 번 평가가 $O(W)$($W$: 가중치·편향 수)이고, 역전파도 전체 기울기를 $O(W)$에 구합니다. 반면 유한 차분
+**수치 미분(8.1.4).** 역전파의 장점은 **효율**입니다. 오차 한 번 평가가 $O(W)$($W$: 가중치·편향 수)이고, 역전파도 전체 기울기를 $O(W)$에 구합니다. 반면 유한 차분은 가중치 $W$개를 하나씩 흔들어야 하므로 $O(W^2)$입니다.
+
+:::key 수치 미분 (유한 차분, 중앙 차분)
 $$\frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji})}{\epsilon}+O(\epsilon)$$
 $$\frac{\partial E_n}{\partial w_{ji}}=\frac{E_n(w_{ji}+\epsilon)-E_n(w_{ji}-\epsilon)}{2\epsilon}+O(\epsilon^2)$$
-은 가중치 $W$개를 하나씩 흔들어야 하므로 $O(W^2)$입니다. 중앙 차분은 $O(\epsilon)$ 항이 상쇄되어 더 정확하지만 계산은 약 두 배입니다. $\epsilon$을 너무 줄이면 반올림 오차가 커집니다. 실무에서는 역전파·자동미분 코드를 **중앙 차분으로 검증**(gradient check)하는 데 씁니다.
+가중치 $W$개를 하나씩 흔들므로 전체 기울기에 $O(W^2)$ (역전파는 $O(W)$). 중앙 차분은 더 정확하지만 계산이 약 두 배이며, 역전파 구현의 검증(gradient check)에 쓴다.
+:::
+
+중앙 차분은 $O(\epsilon)$ 항이 상쇄되어 더 정확하지만 계산은 약 두 배입니다. $\epsilon$을 너무 줄이면 반올림 오차가 커집니다. 실무에서는 역전파·자동미분 코드를 **중앙 차분으로 검증**(gradient check)하는 데 씁니다.
 :::fig numdiff
 :::
 ` },
@@ -101,6 +106,7 @@ $$\frac{\partial y_k}{\partial a_j}=\sum_l\frac{\partial y_k}{\partial a_l}\frac
 | 선형 | $\delta_{kl}$ |
 | 로지스틱 시그모이드 | $\delta_{kl}\,\sigma'(a_l)$ |
 | 소프트맥스 | $\delta_{kl}y_k-y_ky_l$ |
+입력의 작은 변화에 대해 $\Delta y_k\simeq\sum_iJ_{ki}\Delta x_i$.
 :::
 
 야코비안은 입력의 작은 변화가 출력에 주는 영향($\Delta y_k\simeq\sum_iJ_{ki}\Delta x_i$)을 나타냅니다. 오차 역전파와 똑같은 재귀지만 출력 $k$마다 한 번씩 거꾸로 전달합니다. 벡터 입출력의 야코비안 연쇄법칙은 심층 신경망 과목에 있습니다[[@dnn:ch09:9.5|야코비안의 곱으로 쓰는 연쇄법칙.]].
@@ -112,6 +118,7 @@ $$\frac{\partial y_k}{\partial a_j}=\sum_l\frac{\partial y_k}{\partial a_l}\frac
 $$\mathbf H=\nabla\nabla E=\sum_{n=1}^N\nabla y_n(\nabla y_n)^T+\sum_{n=1}^N(y_n-t_n)\nabla\nabla y_n$$
 잘 학습되어 잔차 $y_n-t_n$이 작으면 둘째 항을 무시해 **Levenberg–Marquardt(외적) 근사**
 $$\mathbf H\simeq\sum_{n=1}^N\nabla a_n\nabla a_n^T\qquad(\text{선형 출력이면 }y_n=a_n)$$
+로지스틱 시그모이드 출력과 교차 엔트로피이면 $\mathbf H\simeq\sum_ny_n(1-y_n)\nabla a_n\nabla a_n^T$.
 :::
 
 외적 근사는 1차 도함수만 필요하므로 역전파로 $O(W)$에 $\nabla a_n$을 구한 뒤 $O(W^2)$ 곱셈으로 행렬을 만듭니다. 항상 양의 준정부호라는 장점이 있지만, 잘 학습된 망에서만 타당합니다. 로지스틱 시그모이드 출력 + 교차엔트로피에서는 $\mathbf H\simeq\sum_ny_n(1-y_n)\nabla a_n\nabla a_n^T$입니다.

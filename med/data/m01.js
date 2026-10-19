@@ -73,6 +73,7 @@ $$\text{생체신호}:\ \mathbb R^{T},\qquad \text{영상}:\ \mathbb R^{H\times 
 :::key 연평균 성장률
 $$V_n=V_0(1+r)^n,\qquad 15.8\times1.418^7\approx182\ \ (\text{10억 달러})$$
 의료 AI 시장 2023년 약 158억 달러 → 2030년 약 1,817억 달러 (CAGR 약 42%).
+거꾸로 $r=(V_n/V_0)^{1/n}-1$.
 :::
 ` },
       { k: '0.4', label: '도입 4', src: '슬라이드 22–33', title: '의료 영상 AI의 응용', body: R`
