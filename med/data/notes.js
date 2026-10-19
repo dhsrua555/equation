@@ -362,20 +362,29 @@ $$\hat a_{ni}=\frac{a_{ni}-\mu}{\sqrt{\sigma^2+\delta}},\qquad \tilde a_{ni}=\ga
 | Q·K·V | $\mathbf Q=\mathbf X\mathbf W^{(q)}$, $\mathbf K=\mathbf X\mathbf W^{(k)}$, $\mathbf V=\mathbf X\mathbf W^{(v)}$ | 따로 투영해야 비대칭 관계 |
 | 스케일드 어텐션 | $\operatorname{Softmax}[\mathbf Q\mathbf K^T/\sqrt{D_k}]\mathbf V$ | $\operatorname{var}[\mathbf q^T\mathbf k]=D_k$ → 포화 방지 |
 | 멀티헤드 | $\operatorname{Concat}[\mathbf H_1,\dots,\mathbf H_H]\mathbf W^{(o)}$ | 모수 $4D^2$, $H$와 무관 |
+| 머리별 합 | $\mathbf Y=\sum_h\mathbf A_h\mathbf X\mathbf W_h^{(v)}\mathbf W_h^{(o)}$, $\mathbf A_h=\operatorname{Softmax}[\mathbf Q_h\mathbf K_h^T/\sqrt{D_k}]$ | $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$의 계수 $\le D_v$ |
 | 트랜스포머 층 | $\mathbf Z=\operatorname{LN}[\mathbf Y(\mathbf X)+\mathbf X]$, $\widetilde{\mathbf X}=\operatorname{LN}[\operatorname{MLP}[\mathbf Z]+\mathbf Z]$ | 잔차 + 층 정규화 + 위치별 MLP |
+| 층당 모수 | 어텐션 $4D^2$ + MLP($4D$ 은닉) $8D^2=12D^2$ | BERT-Large $\approx12\cdot24\cdot1024^2+$임베딩 $\approx3.4$억 |
 | 계산량 | 어텐션 $O(N^2D)$, MLP $O(ND^2)$, 모수 $O(D^2)$ | 비율 $N/D$ |
 | 위치 부호화 | $\widetilde{\mathbf x}_n=\mathbf x_n+\mathbf r_n$, $r_{ni}=\sin(n/L^{i/D})$ (짝수 $i$), $\cos(n/L^{(i-1)/D})$ (홀수 $i$) | 더한다, $\mathbf r_{n+k}=\mathbf M_k\mathbf r_n$ |
+| 학습된 위치 부호화 | 위치마다 벡터를 학습 | 긴 서열로 일반화 못 함 → 길이 고정(ViT)에 적합 |
 | 임베딩 | $\mathbf v_n=\mathbf E\mathbf x_n$, $\mathbf E\in\mathbb R^{D\times K}$ | 원-핫과의 곱 = 열 하나 |
 | 나이브 베이즈 | $p(\mathcal C_k\mid\mathbf x_{1:N})\propto p(\mathcal C_k)\prod_np(\mathbf x_n\mid\mathcal C_k)$ | 영확률 → 평활화 |
+| 단어 주머니 MLE | $\mu_k=n_k/N$ | 단어의 비율(KL ≥ 0으로 증명) |
 | 자기회귀 | $p(\mathbf x_{1:N})=\prod_np(\mathbf x_n\mid\mathbf x_{1:n-1})$ | 정확한 분해, $n$-그램은 근사($K^{L+1}$칸) |
+| $n$-그램 계산 | $p(\mathbf w\mid\mathbf u)=p_L(\mathbf u,\mathbf w)/p_{L-1}(\mathbf u)$ | 분모는 서열의 마지막 묶음을 빼고 센다 |
 | RNN·BPTT | $\mathbf z_n=f(\mathbf x_n,\mathbf z_{n-1};\mathbf w)$, $\frac{\partial\mathbf z_N}{\partial\mathbf z_0}=\prod_n\frac{\partial\mathbf z_n}{\partial\mathbf z_{n-1}}$ | 소실·폭발, 병목 |
 | GPT 출력 | $\mathbf Y=\operatorname{Softmax}(\widetilde{\mathbf X}\mathbf W^{(p)})$, $\mathbf W^{(p)}\in\mathbb R^{D\times K}$ | 다음 토큰 교차 엔트로피 |
 | 인과 마스크 | $a_{nm}=0$ ($m>n$), 점수에 $-\infty$ | 행의 합은 여전히 1 |
 | 온도 | $y_i=\exp(a_i/T)/\sum_j\exp(a_j/T)$ | $T\to0$ 탐욕, $T\to\infty$ 균등 |
+| 탐욕·빔 | 탐욕 $O(KN)$, 빔은 가설 $B$개 → 후보 $B^2$ → $B$개, $O(BKN)$ | 탐욕 ≠ 최적 서열($K^N$개), 빔은 길이로 정규화 |
+| top-$K$·top-$p$ | 상위 $K$개 / 누적확률 $p$까지 남겨 재정규화 | 그대로 뽑기는 긴 꼬리 때문에 엉뚱함 |
 | 교차 어텐션 | $\mathbf Q$는 디코더, $\mathbf K,\mathbf V$는 인코더 $\mathbf Z$ | 행렬 $N'\times N$ |
+| BERT 미세 조정 | ⟨class⟩ 출력에 $D\times K$ + 소프트맥스 ($K=2$면 $D\times1$ + 시그모이드) | 모든 모수를 함께 학습, 토큰 분류는 나머지 출력에 공유 LSM |
 | LoRA | $\widehat{\mathbf W}=\mathbf W_0+\mathbf A\mathbf B$, $\mathbf A\in\mathbb R^{D\times R}$, $\mathbf B\in\mathbb R^{R\times D}$ | 모수 $2DR$ (전체 $D^2$) |
 | ViT | $N=HW/P^2$, 패치 길이 $P^2C$ | $224^2$, $P=16$ → 196토큰 |
 | 벡터 양자화 | $\mathbf x_n\to\arg\min_{\mathbf c_k}\lVert\mathbf x_n-\mathbf c_k\rVert^2$ | 토큰당 $\log_2K$비트 |
+| 직통 기울기 | 순전파 $\mathbf q=\mathbf c_{k^*}$, 역전파 $\partial E/\partial\mathbf x\approx\partial E/\partial\mathbf q$ | VQ의 $\arg\min$은 미분 불가 |
 
 | 구조 | 대표 | 마스크 | 학습 |
 |---|---|---|---|
@@ -387,11 +396,19 @@ $$\hat a_{ni}=\frac{a_{ni}-\mu}{\sqrt{\sigma^2+\delta}},\qquad \tilde a_{ni}=\ga
 - ViT는 CNN보다 귀납적 편향이 약해 자료가 더 필요하지만, 자료가 아주 많으면 더 유연합니다.
 - 생성 전략: 탐욕(결정적), 빔(유망한 서열 유지), top-$p$(누적확률 $p$까지), 온도. 탐욕·빔은 다양성이 낮습니다.
 - LLM: 자기 지도 사전 학습 → 미세 조정(파운데이션 모델), LoRA, 프롬프트·문맥 내 학습, RLHF.
+- 어텐션 출력은 값 벡터들의 일차결합이라 (투영된) 입력이 펼치는 부분공간을 못 벗어납니다 → 층마다 위치별 MLP가 필요합니다.
+- GPT 생성 때는 인과 마스크 덕분에 앞 토큰의 표현이 바뀌지 않아 계산(키·값)을 재사용합니다. 학습은 사람이 쓴 서열, 생성은 자기 서열이라 길어질수록 분포가 어긋날 수 있습니다.
+- BERT는 가려진 위치만 오차에 들어가 디코더보다 학습 효율이 낮고 생성을 못 합니다(15% 중 80% ⟨mask⟩, 10% 무작위, 10% 그대로).
+- LoRA는 보통 어텐션 가중치에만 붙이고 MLP는 얼려 둡니다(내재 차원이 낮다는 관찰). 학습 모수를 많게는 약 1만분의 1로 줄입니다.
+- ViT의 2차원 편향은 패치 자르기뿐. CNN으로 토큰화하면(ResNet18) 화소보다 64배 적은 토큰. 음성은 멜 스펙트로그램을 패치로 잘라 같은 인코더에 넣습니다.
+- 텍스트 → 영상은 출력이 영상 토큰인 번역(인코더–디코더, Parti), 양방향 멀티모달은 언어 사전 + 영상 코드북을 이은 사전 하나(CM3Leon).
 
 :::warn 자주 틀리는 것
 - 나누는 값은 $D_k$가 아니라 $\sqrt{D_k}$. 마스크는 가중치에 0을 곱하는 것이 아니라 소프트맥스 **전** 점수에 $-\infty$를 더하는 것.
 - 위치 부호화는 이어 붙이지 않고 **더한다**. BERT에는 인과 마스크가 없다. 교차 어텐션의 쿼리는 디코더에서 온다.
 - 연속 회귀는 여러 답의 평균을 내서 흐려진다 → 영상·음성 생성은 VQ로 이산 토큰을 만든다.
+- 교재의 “직교 입력이면 $\mathbf y_n=\mathbf x_n$”은 근사다: $a_{nn}=\frac{e^{\lVert\mathbf x_n\rVert^2}}{e^{\lVert\mathbf x_n\rVert^2}+N-1}<1$. 교재 연습문제 12.15의 표도 합이 0.75인 인쇄 오류가 있다(단원 예제 12의 고친 표로 연습).
+- 사인만 쓰는 위치 부호화로는 상대 위치의 선형 관계가 안 된다($\mathbf r_0=\mathbf 0$). 코사인이 함께 있어야 회전 행렬이 나온다.
 :::
 ` },
       ] },
