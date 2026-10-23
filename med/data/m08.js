@@ -203,7 +203,7 @@ $$\hat s_i^{(\tau)}=\frac{s_i^{(\tau)}}{1-\beta_1^\tau},\qquad \hat r_i^{(\tau)}
 :::ex 예제 5 — Adam의 첫 단계
 $\beta_1=0.9$, $\beta_2=0.99$, $\eta=0.001$, $\delta\approx0$에서 첫 기울기가 $\partial E/\partial w_i=g$일 때 $w_i$의 변화량은?
 ---
-$s^{(1)}=0.1g$, $r^{(1)}=0.01g^2$. 보정: $\hat s^{(1)}=\frac{0.1g}{1-0.9}=g$, $\hat r^{(1)}=\frac{0.01g^2}{1-0.99}=g^2$. 갱신량 $-\eta\frac g{\sqrt{g^2}}=-\eta\operatorname{sign}(g)=\mp0.001$. 기울기의 크기와 무관하게 첫 걸음은 $\eta$입니다. 보정하지 않으면 $-\eta\frac{0.1g}{\sqrt{0.01g^2}}=-\eta\operatorname{sign}(g)$로 우연히 같지만, $\beta_1^2\ne\beta_2$이면 달라집니다(예: $\beta_2=0.999$이면 약 $3.16$배 큰 걸음).
+$s^{(1)}=0.1g$, $r^{(1)}=0.01g^2$. 보정: $\hat s^{(1)}=\frac{0.1g}{1-0.9}=g$, $\hat r^{(1)}=\frac{0.01g^2}{1-0.99}=g^2$. 갱신량 $-\eta\frac g{\sqrt{g^2}}=-\eta\operatorname{sign}(g)=\mp0.001$. 기울기의 크기와 무관하게 첫 걸음은 $\eta$입니다. 보정하지 않으면 $-\eta\frac{0.1g}{\sqrt{0.01g^2}}=-\eta\operatorname{sign}(g)$로 우연히 같지만, $(1-\beta_1)^2\ne1-\beta_2$이면 달라집니다(예: $\beta_2=0.999$이면 약 $3.16$배 큰 걸음).
 :::
 ` },
     ],

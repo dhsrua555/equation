@@ -20,6 +20,12 @@ proofs-d.js
 notes.js
 exams.js
 exams-2.js
+exams-3.js
+exams-4.js
+exams-5.js
+exams-6.js
+exams-7.js
+exams-8.js
 fig-00.js
 fig-01.js
 fig-02.js

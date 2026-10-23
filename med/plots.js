@@ -236,6 +236,22 @@
       ctx.globalAlpha = 1; ctx.setLineDash([3, 4]); ctx.strokeStyle = c.faint2;
       [9, 27].forEach((x) => line(ctx, T, x, -0.9, x, 5.9)); ctx.setLineDash([]);
     },
+    // exam cover — causal attention: each query row spreads its weights over itself and the earlier tokens only
+    attn(ctx, w, h, c) {
+      const n = 9, s = Math.min(w * 0.8, h * 0.84) / n, x0 = (w - n * s) / 2, y0 = (h - n * s) / 2;
+      for (let i = 0; i < n; i++) {
+        const row = [];
+        for (let j = 0; j <= i; j++) row.push(Math.exp(1.4 * Math.cos(0.8 * (i - j)) + 0.5 * noise(i * n + j)));
+        const z = row.reduce((a, b) => a + b, 0);
+        for (let j = 0; j < n; j++) {
+          if (j > i) { ctx.globalAlpha = 1; ctx.strokeStyle = c.faint; ctx.lineWidth = 0.8; ctx.strokeRect(x0 + j * s + 1.5, y0 + i * s + 1.5, s - 3, s - 3); continue; }
+          ctx.globalAlpha = Math.min(1, 0.12 + 2.4 * row[j] / z);
+          ctx.fillStyle = i === 6 ? c.b : c.a;
+          ctx.fillRect(x0 + j * s + 1, y0 + i * s + 1, s - 2, s - 2);
+        }
+      }
+      ctx.globalAlpha = 1;
+    },
     // exam covers — a vital-sign line
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 6, -1.4, 2.2);
