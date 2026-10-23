@@ -8,7 +8,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '네스테로프·Adam 여러 단계 손계산, 이차 오차의 최적 학습률과 곡률 비, ReLU 망 초기화, 배치 정규화의 순전파와 역전파, 층 정규화, 2-2-1 신경망의 순전파·역전파 전체, 야코비안·수치 미분·자동 미분, 일관된 규제·라쏘·조기 종료, 소프트 가중치 공유, 잔차 경로, 앙상블과 드롭아웃의 기댓값. II회보다 계산이 길고 유도가 많습니다.',
     minutes: 100, plot: 'lasso',
     problems: [
-      { ch: 'ch08', type: 'num', lv: 1, pts: 3, q: R`훈련 영상 $N=32{,}000$장을 배치 크기 $B=64$의 미니배치 SGD로 학습하며, 거듭제곱 스케줄 $\eta^{(\tau)}=\eta^{(0)}(1+\tau/s)^c$ ($s=500$, $c=-0.5$, $\tau$는 갱신 횟수)를 쓴다. 학습률이 처음의 절반이 되는 것은 몇 번째 에폭이 끝날 때인가? (정수)`, ans: '3', ansTex: R`\tau=1500\ \Rightarrow\ 3\text{번째 에폭}`,
+      { ch: 'ch08', type: 'num', lv: 1, pts: 3, q: R`A network is trained on $N=32{,}000$ training images by minibatch SGD with batch size $B=64$, using the power-law schedule $\eta^{(\tau)}=\eta^{(0)}(1+\tau/s)^c$ ($s=500$, $c=-0.5$, where $\tau$ is the number of updates). At the end of which epoch does the learning rate reach half its initial value? (integer)`, ans: '3', ansTex: R`\tau=1500\ \Rightarrow\ 3\text{번째 에폭}`,
         sol: R`
 **핵심.** 한 에폭은 훈련 자료 전체를 한 번 훑는 것이므로 한 에폭의 갱신 횟수는 $N/B$입니다. 스케줄 식의 $\tau$는 에폭 수가 아니라 **갱신 횟수**라는 점이 이 문제의 함정입니다.
 
@@ -24,8 +24,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch08:7.3c|학습률 스케줄]], [[ch08:7.2|배치, 확률적, 미니배치 경사하강법]]
 ` },
-      { ch: 'ch08', type: 'mc', lv: 2, pts: 4, q: R`모든 층이 $n_{\text{in}}=n_{\text{out}}=256$인 깊은 ReLU 망을 Xavier 초기화(분산 $2/(n_{\text{in}}+n_{\text{out}})$)로 시작했다. 사전활성이 평균 0인 대칭 분포라고 할 때, 층을 하나 지날 때마다 사전활성 분산이 어떻게 변하는가?`,
-        choices: [R`층마다 대략 일정하게 유지된다`, R`층마다 약 $\tfrac12$배가 되어, 10층을 지나면 약 $10^{-3}$배가 된다`, R`층마다 약 2배가 되어 폭발한다`, R`층마다 약 $\tfrac14$배가 되어, 5층을 지나면 약 $10^{-3}$배가 된다`], ans: 1,
+      { ch: 'ch08', type: 'mc', lv: 2, pts: 4, q: R`A deep ReLU network in which every layer has $n_{\text{in}}=n_{\text{out}}=256$ is initialized with Xavier initialization (variance $2/(n_{\text{in}}+n_{\text{out}})$). Assuming the pre-activations have a symmetric distribution with zero mean, how does the variance of the pre-activations change each time a layer is passed?`,
+        choices: [R`It stays roughly constant from layer to layer`, R`It is multiplied by about $\tfrac12$ per layer, so after 10 layers it is about $10^{-3}$ times its initial value`, R`It roughly doubles per layer and explodes`, R`It is multiplied by about $\tfrac14$ per layer, so after 5 layers it is about $10^{-3}$ times its initial value`], ans: 1,
         sol: R`
 **핵심.** 가중치가 평균 0이고 서로 독립이며 입력과도 독립이면, 사전활성 $a_j=\sum_iw_{ji}z_i$의 분산은 $n_{\text{in}}\Var[w]\,\E[z_i^2]$입니다. ReLU는 대칭 분포의 음수 절반을 0으로 만들므로 $\E[z^2]=\frac12\Var[a_{\text{앞층}}]$입니다.
 
@@ -40,7 +40,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch08:7.2b|파라미터 초기화]]
 ` },
-      { ch: 'ch08', type: 'num', lv: 2, pts: 4, q: R`오차 $E(w)=2w^2$을 네스테로프 방식으로 줄인다: 매 단계 앞을 보는 점 $\tilde w=w^{(\tau-1)}+\mu\Delta w^{(\tau-2)}$에서 도함수를 구해 속도를 $\Delta w^{(\tau-1)}=-\eta E'(\tilde w)+\mu\Delta w^{(\tau-2)}$로 바꾸고, $w^{(\tau)}=w^{(\tau-1)}+\Delta w^{(\tau-1)}$로 옮긴다. 학습률 0.05, 모멘텀 계수 0.6, 시작점 $w^{(0)}=1$, 처음 속도 0일 때 세 번 옮긴 뒤의 위치 $w^{(3)}$은? (소수 넷째 자리)`, ans: '0.31232', ansTex: R`w^{(3)}=0.31232`,
+      { ch: 'ch08', type: 'num', lv: 2, pts: 4, q: R`The error $E(w)=2w^2$ is minimized with Nesterov momentum: at each step the derivative is evaluated at the look-ahead point $\tilde w=w^{(\tau-1)}+\mu\Delta w^{(\tau-2)}$, the velocity is updated to $\Delta w^{(\tau-1)}=-\eta E'(\tilde w)+\mu\Delta w^{(\tau-2)}$, and the weight moves to $w^{(\tau)}=w^{(\tau-1)}+\Delta w^{(\tau-1)}$. With learning rate 0.05, momentum coefficient 0.6, starting point $w^{(0)}=1$ and initial velocity 0, find the position $w^{(3)}$ after three moves. (4 decimal places)`, ans: '0.31232', ansTex: R`w^{(3)}=0.31232`,
         sol: R`
 **핵심.** 네스테로프 모멘텀은 이전 속도 $\mu\Delta w$만큼 먼저 가 본 점(앞을 보는 점)에서 기울기를 계산합니다. $E'(w)=4w$이므로 매 단계 ① 앞을 보는 점 $\tilde w=w+\mu\Delta w$ ② 기울기 $4\tilde w$ ③ 새 속도 $\Delta w=-\eta\cdot4\tilde w+\mu\Delta w$ ④ $w\leftarrow w+\Delta w$ 순서로 계산합니다($\eta=0.05$, $\mu=0.6$).
 
@@ -58,7 +58,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch08:7.3b|모멘텀]]
 ` },
-      { ch: 'ch08', type: 'num', lv: 3, pts: 5, q: R`한 가중치에 대한 기울기가 첫 단계에 $+1$, 둘째 단계에 $-0.5$로 나왔다. 1차 모멘트 감쇠율 0.9, 2차 모멘트 감쇠율 0.999, 학습률 0.01, $\delta\approx0$, 두 모멘트의 초깃값 0인 Adam(편향 보정 포함)에서 둘째 단계의 가중치 변화 $w^{(2)}-w^{(1)}$은? (유효숫자 4자리)`, ans: '-0.01*(0.04/0.19)/sqrt(0.001249/0.001999)', ansTex: R`-0.01\cdot\tfrac{0.04/0.19}{\sqrt{0.001249/0.001999}}\approx-0.002663`,
+      { ch: 'ch08', type: 'num', lv: 3, pts: 5, q: R`The gradient with respect to one weight is $+1$ at the first step and $-0.5$ at the second step. For Adam (with bias correction) with first-moment decay rate 0.9, second-moment decay rate 0.999, learning rate 0.01, $\delta\approx0$, and both moments initialized to 0, find the weight change $w^{(2)}-w^{(1)}$ at the second step. (4 significant figures)`, ans: '-0.01*(0.04/0.19)/sqrt(0.001249/0.001999)', ansTex: R`-0.01\cdot\tfrac{0.04/0.19}{\sqrt{0.001249/0.001999}}\approx-0.002663`,
         sol: R`
 **핵심.** Adam은 기울기의 이동평균 $s$(1차 모멘트)와 기울기 제곱의 이동평균 $r$(2차 모멘트)을 0에서 시작해 갱신하고, $1-\beta^\tau$로 나눠 편향을 보정한 뒤 $\Delta w=-\eta\,\hat s/(\sqrt{\hat r}+\delta)$만큼 움직입니다. 여기서 $\beta_1=0.9$, $\beta_2=0.999$(Adam 원 논문의 값)입니다.
 
@@ -78,7 +78,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch08:7.3d|AdaGrad, RMSProp, Adam]]
 ` },
-      { ch: 'ch09', type: 'num', lv: 2, pts: 4, q: R`배치 정규화층에서 한 유닛의 미니배치($K=4$) 사전활성이 $a_n=2,4,4,10$이고 $\gamma=2$, $\beta=0.5$, $\delta=0$이다. 역전파로 출력 쪽에서 들어온 기울기가 $\partial L/\partial\tilde a_n=0.2,\,-0.1,\,0.4,\,0.3$일 때 $\partial L/\partial\gamma$는?`, ans: '0.2', ansTex: R`\sum_n\tfrac{\partial L}{\partial\tilde a_n}\hat a_n=0.2`,
+      { ch: 'ch09', type: 'num', lv: 2, pts: 4, q: R`In a batch normalization layer, the pre-activations of one unit over a minibatch ($K=4$) are $a_n=2,4,4,10$, with $\gamma=2$, $\beta=0.5$, $\delta=0$. If the gradients arriving from the output side during backpropagation are $\partial L/\partial\tilde a_n=0.2,\,-0.1,\,0.4,\,0.3$, find $\partial L/\partial\gamma$.`, ans: '0.2', ansTex: R`\sum_n\tfrac{\partial L}{\partial\tilde a_n}\hat a_n=0.2`,
         sol: R`
 **핵심.** 순전파로 $\hat a_n=(a_n-\mu)/\sigma$를 구한 뒤, $\tilde a_n=\gamma\hat a_n+\beta$에서 $\partial\tilde a_n/\partial\gamma=\hat a_n$입니다. $\gamma$는 미니배치의 모든 예제가 공유하므로 기울기를 예제에 대해 더합니다: $\frac{\partial L}{\partial\gamma}=\sum_n\frac{\partial L}{\partial\tilde a_n}\hat a_n$.
 
@@ -97,8 +97,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch09:7.4b|배치 정규화]]
 ` },
-      { ch: 'ch09', type: 'mc', lv: 3, pts: 4, q: R`한 유닛의 미니배치 사전활성 $a_1,\dots,a_K$가 배치 정규화층($\delta=0$)을 지나 $\tilde a_n=\gamma\hat a_n+\beta$가 된다. 역전파되는 기울기에 관한 다음 진술 가운데 손실 $L$이 무엇이든 성립하는 것을 고르세요.`,
-        choices: [R`$\dfrac{\partial L}{\partial a_n}=\dfrac{\gamma}{\sigma}\dfrac{\partial L}{\partial\tilde a_n}$`, R`$\dfrac{\partial L}{\partial\beta}=0$`, R`배치 정규화 바로 앞 선형층의 편향 $b$에 대한 기울기는 $\sum_n\dfrac{\partial L}{\partial\tilde a_n}$이다`, R`$\displaystyle\sum_{n=1}^K\frac{\partial L}{\partial a_n}=0$`], ans: 3,
+      { ch: 'ch09', type: 'mc', lv: 3, pts: 4, q: R`The minibatch pre-activations $a_1,\dots,a_K$ of one unit pass through a batch normalization layer ($\delta=0$) and become $\tilde a_n=\gamma\hat a_n+\beta$. Of the following statements about the backpropagated gradients, choose the one that holds whatever the loss $L$ is.`,
+        choices: [R`$\dfrac{\partial L}{\partial a_n}=\dfrac{\gamma}{\sigma}\dfrac{\partial L}{\partial\tilde a_n}$`, R`$\dfrac{\partial L}{\partial\beta}=0$`, R`The gradient with respect to the bias $b$ of the linear layer immediately before batch normalization is $\sum_n\dfrac{\partial L}{\partial\tilde a_n}$`, R`$\displaystyle\sum_{n=1}^K\frac{\partial L}{\partial a_n}=0$`], ans: 3,
         sol: R`
 **핵심.** 미니배치의 모든 $a_n$에 같은 상수 $c$를 더하면 평균도 $c$만큼 움직이고 편차 $a_n-\mu$와 분산은 그대로이므로, 출력 $\tilde a_n$이 하나도 바뀌지 않습니다. 즉 $L(a_1+c,\dots,a_K+c)=L(a_1,\dots,a_K)$입니다.
 
@@ -112,7 +112,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch09:7.4b|배치 정규화]]
 ` },
-      { ch: 'ch09', type: 'num', lv: 1, pts: 3, q: R`판독문을 생성하는 트랜스포머의 한 토큰에서 은닉 유닛 4개의 사전활성이 $\mathbf a=(1,2,3,6)$이다. 층 정규화($\delta=0$)의 넷째 유닛 파라미터가 $\gamma_4=2$, $\beta_4=-1$일 때 출력 $\tilde a_4$는? (소수 넷째 자리)`, ans: '2*3/sqrt(3.5)-1', ansTex: R`2\cdot\tfrac{3}{\sqrt{3.5}}-1\approx2.2071`,
+      { ch: 'ch09', type: 'num', lv: 1, pts: 3, q: R`In a transformer that generates radiology reports, the pre-activations of 4 hidden units for one token are $\mathbf a=(1,2,3,6)$. If the layer normalization ($\delta=0$) parameters of the fourth unit are $\gamma_4=2$ and $\beta_4=-1$, find the output $\tilde a_4$. (4 decimal places)`, ans: '2*3/sqrt(3.5)-1', ansTex: R`2\cdot\tfrac{3}{\sqrt{3.5}}-1\approx2.2071`,
         sol: R`
 **핵심.** 층 정규화는 **한 예제(토큰) 안의 유닛들**에 걸쳐 평균과 분산을 구합니다: $\mu_n=\frac1M\sum_ia_{ni}$, $\sigma_n^2=\frac1M\sum_i(a_{ni}-\mu_n)^2$ (교재 (7.59)의 오타를 바로잡은 식). 그다음 유닛별 $\gamma_i,\beta_i$로 다시 척도화합니다.
 
@@ -129,7 +129,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch09:7.4c|층 정규화]]
 ` },
-      { ch: 'ch10', type: 'num', lv: 2, pts: 4, q: R`역전파 코드를 검증하려고 $E(w)=e^w$의 $w=0$에서의 도함수(참값 1)를 $\epsilon=0.1$의 전방 차분 $\frac{E(w+\epsilon)-E(w)}{\epsilon}$과 중앙 차분 $\frac{E(w+\epsilon)-E(w-\epsilon)}{2\epsilon}$으로 근사했다. 전방 차분의 오차는 중앙 차분 오차의 몇 배인가? (소수 첫째 자리)`, ans: '((exp(0.1)-1)/0.1-1)/((exp(0.1)-exp(-0.1))/0.2-1)', ansTex: R`\tfrac{0.051709}{0.0016675}\approx31.0`,
+      { ch: 'ch10', type: 'num', lv: 2, pts: 4, q: R`To check backpropagation code, the derivative of $E(w)=e^w$ at $w=0$ (true value 1) is approximated with $\epsilon=0.1$ by the forward difference $\frac{E(w+\epsilon)-E(w)}{\epsilon}$ and by the central difference $\frac{E(w+\epsilon)-E(w-\epsilon)}{2\epsilon}$. How many times larger is the error of the forward difference than the error of the central difference? (1 decimal place)`, ans: '((exp(0.1)-1)/0.1-1)/((exp(0.1)-exp(-0.1))/0.2-1)', ansTex: R`\tfrac{0.051709}{0.0016675}\approx31.0`,
         sol: R`
 **핵심.** 테일러 전개 $E(w\pm\epsilon)=E\pm\epsilon E'+\frac{\epsilon^2}2E''\pm\frac{\epsilon^3}6E'''+\cdots$에서 전방 차분은 $E'+\frac\epsilon2E''+\cdots$로 오차가 $O(\epsilon)$이고, 중앙 차분은 짝수 차 항이 상쇄되어 $E'+\frac{\epsilon^2}6E'''+\cdots$로 오차가 $O(\epsilon^2)$입니다.
 
@@ -146,7 +146,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch10:8.1c|2층 신경망 예제와 수치 미분]]
 ` },
-      { ch: 'ch10', type: 'num', lv: 2, pts: 4, q: R`CT 영상에서 뽑은 특징 두 개 $\mathbf x=(x_1,x_2)$를 tanh 은닉 유닛 2개와 선형 출력 2개를 가진 망에 넣는다. 첫 층 가중치는 $\mathbf W^{(1)}=\begin{pmatrix}1&-2\\0.5&1\end{pmatrix}$ (($j,i$) 원소 $w^{(1)}_{ji}$: 입력 $i$ → 은닉 $j$), 둘째 층은 $\mathbf W^{(2)}=\begin{pmatrix}2&1\\-1&3\end{pmatrix}$ (($k,j$) 원소 $w^{(2)}_{kj}$: 은닉 $j$ → 출력 $k$)이고, 현재 입력에서 은닉 활성은 $\mathbf z=(0,\,0.6)$이다. 입력이 $\Delta\mathbf x=(0.01,\,-0.02)$만큼 바뀔 때 야코비안으로 근사한 $\Delta y_1$은?`, ans: '0.0904', ansTex: R`J_{11}(0.01)+J_{12}(-0.02)=0.0904`,
+      { ch: 'ch10', type: 'num', lv: 2, pts: 4, q: R`Two features $\mathbf x=(x_1,x_2)$ extracted from a CT image are fed into a network with 2 tanh hidden units and 2 linear outputs. The first-layer weights are $\mathbf W^{(1)}=\begin{pmatrix}1&-2\\0.5&1\end{pmatrix}$ (($j,i$) element $w^{(1)}_{ji}$: input $i$ → hidden $j$), the second-layer weights are $\mathbf W^{(2)}=\begin{pmatrix}2&1\\-1&3\end{pmatrix}$ (($k,j$) element $w^{(2)}_{kj}$: hidden $j$ → output $k$), and at the current input the hidden activations are $\mathbf z=(0,\,0.6)$. When the input changes by $\Delta\mathbf x=(0.01,\,-0.02)$, find $\Delta y_1$ as approximated using the Jacobian.`, ans: '0.0904', ansTex: R`J_{11}(0.01)+J_{12}(-0.02)=0.0904`,
         sol: R`
 **핵심.** 야코비안 $J_{ki}=\partial y_k/\partial x_i$는 역전파와 같은 재귀로 구합니다. 출력이 선형이라 $\partial y_k/\partial a_l=\delta_{kl}$에서 시작하고, 은닉 유닛 $j$에서 $\frac{\partial y_k}{\partial a_j}=h'(a_j)\,w^{(2)}_{kj}$, 입력까지 $J_{ki}=\sum_jw^{(1)}_{ji}\frac{\partial y_k}{\partial a_j}$입니다. 그리고 $\Delta y_k\simeq\sum_iJ_{ki}\Delta x_i$.
 
@@ -163,8 +163,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch10:8.1d|야코비안과 헤시안]]
 ` },
-      { ch: 'ch10', type: 'mc', lv: 2, pts: 4, q: R`잠재변수 3개를 받아 $32\times32=1024$화소 영상을 만드는 디코더 망 $\mathbf f:\mathbb R^3\to\mathbb R^{1024}$의 **전체** 야코비안을 자동 미분으로 구하려 한다. 가장 적은 패스로 끝나는 방법은?`,
-        choices: [R`전진 모드 3번 — 패스마다 입력 하나에 대한 모든 출력의 미분(야코비안의 한 열)`, R`후진 모드 3번 — 패스마다 야코비안의 한 열`, R`후진 모드 1번 — 후진 모드는 한 번에 모든 미분을 준다`, R`전진 모드 1024번 — 패스마다 출력 화소 하나`], ans: 0,
+      { ch: 'ch10', type: 'mc', lv: 2, pts: 4, q: R`We want to compute, by automatic differentiation, the **entire** Jacobian of a decoder network $\mathbf f:\mathbb R^3\to\mathbb R^{1024}$ that takes 3 latent variables and produces a $32\times32=1024$-pixel image. Which method finishes in the fewest passes?`,
+        choices: [R`Forward mode, 3 passes — each pass gives the derivatives of all outputs with respect to one input (one column of the Jacobian)`, R`Reverse mode, 3 passes — each pass gives one column of the Jacobian`, R`Reverse mode, 1 pass — reverse mode gives all the derivatives at once`, R`Forward mode, 1024 passes — one output pixel per pass`], ans: 0,
         sol: R`
 **핵심.** 전진 모드는 입력 방향 하나를 정해 접선 $\dot v_i=\partial v_i/\partial z_d$를 순전파와 함께 밀고 나가므로, 한 패스에 **입력 하나에 대한 모든 출력의 미분**(야코비안의 한 열)을 줍니다. 후진 모드는 출력 하나에서 수반 변수 $\bar v_i=\partial f_k/\partial v_i$를 거꾸로 전달해, 한 패스에 **출력 하나의 모든 입력에 대한 미분**(한 행)을 줍니다.
 
@@ -178,8 +178,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch10:8.2|자동 미분]]
 ` },
-      { ch: 'ch11', type: 'mc', lv: 1, pts: 3, q: R`병리 슬라이드 패치는 정해진 방향이 없어 $90^\circ$ 배수 회전 $T$에 대한 대칭을 귀납적 편향으로 쓰려 한다. 종양 영역 분할망 $S$와 악성 여부 분류망 $C$에 대해 옳은 것은?`,
-        choices: [R`분할망은 $S(T(I))=S(I)$를 만족해야 한다`, R`회전된 복제본으로 자료 증강을 하면 망 구조에 회전 불변성이 정확히 내장된다`, R`$C(T(I))=C(I)$는 출력 쪽 변환이 항등인 등변성의 특수한 경우이다`, R`$90^\circ$ 배수 회전들은 역원이 없어 군을 이루지 않는다`], ans: 2,
+      { ch: 'ch11', type: 'mc', lv: 1, pts: 3, q: R`Pathology slide patches have no fixed orientation, so we want to use symmetry under rotations $T$ by multiples of $90^\circ$ as an inductive bias. For a tumor-region segmentation network $S$ and a malignancy classification network $C$, which of the following is correct?`,
+        choices: [R`The segmentation network should satisfy $S(T(I))=S(I)$`, R`Data augmentation with rotated copies builds rotation invariance exactly into the network architecture`, R`$C(T(I))=C(I)$ is the special case of equivariance in which the transformation on the output side is the identity`, R`Rotations by multiples of $90^\circ$ do not form a group, because they have no inverses`], ans: 2,
         sol: R`
 **핵심.** 등변성은 $S(T(I))=\tilde T(S(I))$ — 입력을 변환하면 출력도 대응하는 방식으로 변환됩니다(분할에서는 같은 회전). 불변성 $C(T(I))=C(I)$는 출력 쪽 변환이 항등인 특수한 경우입니다.
 
@@ -193,7 +193,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch11:9.1b|대칭, 불변성, 등변성]]
 ` },
-      { ch: 'ch11', type: 'num', lv: 2, pts: 4, q: R`종양 지름 $x$(mm)로 위험 점수 $y$를 예측하는 2층망에 일관된 규제 $\frac{\lambda_1}2\sum_{w\in\mathcal W_1}w^2+\frac{\lambda_2}2\sum_{w\in\mathcal W_2}w^2$ ($\lambda_1=0.4$, $\lambda_2=0.3$, 편향 제외)를 썼다. 입력을 cm로 바꾸고 평균을 빼서 $\tilde x=0.1x-5$로, 출력을 $\tilde y=2y+1$로 바꾼 자료에서 **같은 함수**를 같은 정도로 규제하려면 새 계수의 비 $\tilde\lambda_1/\tilde\lambda_2$는? (소수 넷째 자리)`, ans: '0.01*0.4/(0.3/4)', ansTex: R`\tfrac{a^2\lambda_1}{\lambda_2/c^2}=\tfrac{0.004}{0.075}\approx0.0533`,
+      { ch: 'ch11', type: 'num', lv: 2, pts: 4, q: R`A two-layer network that predicts a risk score $y$ from tumor diameter $x$ (mm) uses the consistent regularizer $\frac{\lambda_1}2\sum_{w\in\mathcal W_1}w^2+\frac{\lambda_2}2\sum_{w\in\mathcal W_2}w^2$ ($\lambda_1=0.4$, $\lambda_2=0.3$, biases excluded). The data are transformed by converting the input to cm and subtracting the mean, $\tilde x=0.1x-5$, and by changing the output to $\tilde y=2y+1$. To regularize **the same function** to the same degree on the transformed data, what must the ratio $\tilde\lambda_1/\tilde\lambda_2$ of the new coefficients be? (4 decimal places)`, ans: '0.01*0.4/(0.3/4)', ansTex: R`\tfrac{a^2\lambda_1}{\lambda_2/c^2}=\tfrac{0.004}{0.075}\approx0.0533`,
         sol: R`
 **핵심.** 입력을 $x\to ax+b$로 바꾸면 첫 층 가중치를 $w\to w/a$로(편향은 따로 보정), 출력을 $y\to cy+d$로 바꾸면 둘째 층 가중치를 $w\to cw$로 바꿔 같은 함수를 얻습니다. 규제항이 변하지 않으려면 단원에서 바로잡은 식대로 $\tilde\lambda_1=a^2\lambda_1$, $\tilde\lambda_2=\lambda_2/c^2$입니다.
 
@@ -210,7 +210,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch11:9.2b|일관된 규제와 일반화된 가중치 감쇠]]
 ` },
-      { ch: 'ch11', type: 'num', lv: 3, pts: 5, q: R`헤시안이 대각인(축이 고유벡터와 일치하는) 이차 오차에 라쏘 규제를 더한 $\widetilde E(\mathbf w)=\frac{h_1}2(w_1-w_1^\star)^2+\frac{h_2}2(w_2-w_2^\star)^2+\frac\lambda2\big(\lvert w_1\rvert+\lvert w_2\rvert\big)$에서 $h_1=4$, $h_2=0.5$, $\mathbf w^\star=(0.6,\,0.4)$, $\lambda=1$이다. 최소점 $\hat{\mathbf w}$의 $\lVert\hat{\mathbf w}\rVert_1=\lvert\hat w_1\rvert+\lvert\hat w_2\rvert$은?`, ans: '0.475', ansTex: R`\hat{\mathbf w}=(0.475,\,0)\ \Rightarrow\ 0.475`,
+      { ch: 'ch11', type: 'num', lv: 3, pts: 5, q: R`A quadratic error with diagonal Hessian (axes aligned with the eigenvectors) plus lasso regularization is $\widetilde E(\mathbf w)=\frac{h_1}2(w_1-w_1^\star)^2+\frac{h_2}2(w_2-w_2^\star)^2+\frac\lambda2\big(\lvert w_1\rvert+\lvert w_2\rvert\big)$, with $h_1=4$, $h_2=0.5$, $\mathbf w^\star=(0.6,\,0.4)$, $\lambda=1$. Find $\lVert\hat{\mathbf w}\rVert_1=\lvert\hat w_1\rvert+\lvert\hat w_2\rvert$ at the minimizer $\hat{\mathbf w}$.`, ans: '0.475', ansTex: R`\hat{\mathbf w}=(0.475,\,0)\ \Rightarrow\ 0.475`,
         sol: R`
 **핵심.** 항들이 좌표별로 분리되므로 성분마다 1차원 문제 $\frac h2(w-w^\star)^2+\frac\lambda2\lvert w\rvert$를 풉니다. $w>0$ 쪽에서 미분하면 $h(w-w^\star)+\frac\lambda2=0$, $w=w^\star-\frac\lambda{2h}$이고, 이 값이 양수가 아니면 해는 0입니다(소프트 문턱): $\hat w=\operatorname{sign}(w^\star)\max\big(0,\ \lvert w^\star\rvert-\frac\lambda{2h}\big)$.
 
@@ -228,7 +228,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch11:9.2b|일관된 규제와 일반화된 가중치 감쇠]]
 ` },
-      { ch: 'ch11', type: 'num', lv: 2, pts: 3, q: R`원점에서 시작해 학습률 $\rho=0.1$의 경사하강법으로 이차 오차를 줄이다가 조기 종료한다. 곡률이 $\eta_j=0.5$인 고유방향의 성분이 최소점 성분 $w_j^\star$의 90% 이상에 도달하려면 최소 몇 번 갱신해야 하는가? (정수)`, ans: '45', ansTex: R`\tau\ge\tfrac{\ln0.1}{\ln0.95}\approx44.89\ \Rightarrow\ 45`,
+      { ch: 'ch11', type: 'num', lv: 2, pts: 3, q: R`A quadratic error is minimized by gradient descent with learning rate $\rho=0.1$ starting from the origin, and training is stopped early. What is the minimum number of updates needed for the component along the eigendirection with curvature $\eta_j=0.5$ to reach at least 90% of the corresponding component $w_j^\star$ of the minimum? (integer)`, ans: '45', ansTex: R`\tau\ge\tfrac{\ln0.1}{\ln0.95}\approx44.89\ \Rightarrow\ 45`,
         sol: R`
 **핵심.** 이차 오차를 원점에서 경사하강하면 고유방향 성분이 $w_j^{(\tau)}=\{1-(1-\rho\eta_j)^\tau\}w_j^\star$로 자랍니다. 조건 $1-(1-\rho\eta_j)^\tau\ge0.9$를 $\tau$에 대해 풉니다.
 
@@ -244,7 +244,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch11:9.3|학습 곡선, 조기 종료, 이중 하강]]
 ` },
-      { ch: 'ch12', type: 'num', lv: 3, pts: 5, q: R`소프트 가중치 공유에서 가중치들의 사전분포가 두 가우시안 군집의 혼합이다. 군집 A는 중심 0, 표준편차 0.5, 혼합 계수 0.7이고 군집 B는 중심 1, 표준편차 0.5, 혼합 계수 0.3이다. 규제 세기 $\lambda=1$일 때, 가중치 하나가 $w=0.6$인 지점에서 규제항 $\lambda\Omega(\mathbf w)$를 그 가중치로 편미분한 값은? (소수 넷째 자리)`, ans: '(2.4*0.7-1.6*0.3*exp(0.4))/(0.7+0.3*exp(0.4))', ansTex: R`2.4\gamma_1-1.6\gamma_2\approx0.8400`,
+      { ch: 'ch12', type: 'num', lv: 3, pts: 5, q: R`In soft weight sharing, the prior over the weights is a mixture of two Gaussian clusters. Cluster A has center 0, standard deviation 0.5 and mixing coefficient 0.7; cluster B has center 1, standard deviation 0.5 and mixing coefficient 0.3. With regularization strength $\lambda=1$, find the partial derivative of the regularization term $\lambda\Omega(\mathbf w)$ with respect to one weight, at the point where that weight is $w=0.6$. (4 decimal places)`, ans: '(2.4*0.7-1.6*0.3*exp(0.4))/(0.7+0.3*exp(0.4))', ansTex: R`2.4\gamma_1-1.6\gamma_2\approx0.8400`,
         sol: R`
 **핵심.** 책임도 $\gamma_j(w)=\frac{\pi_j\N(w\mid\mu_j,\sigma_j^2)}{\sum_k\pi_k\N(w\mid\mu_k,\sigma_k^2)}$는 가중치 $w$가 군집 $j$에 속할 사후확률이고, $\Omega=-\sum_i\ln\sum_j\pi_j\N(w_i\mid\mu_j,\sigma_j^2)$를 미분한 규제항의 기울기 $\lambda\sum_j\gamma_j(w)\frac{w-\mu_j}{\sigma_j^2}$는 각 군집 중심 쪽으로 책임도에 비례하는 힘으로 $w$를 끌어당깁니다. 군집 A를 $j=1$ ($\pi_1=0.7$, $\mu_1=0$), B를 $j=2$ ($\pi_2=0.3$, $\mu_2=1$)로 두고 $\sigma_1=\sigma_2=0.5$입니다.
 
@@ -261,7 +261,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch12:9.4|파라미터 공유와 소프트 가중치 공유]]
 ` },
-      { ch: 'ch12', type: 'num', lv: 2, pts: 3, q: R`1차원으로 단순화한 잔차망 $z_l=F_l(z_{l-1})+z_{l-1}$ ($l=1,\dots,5$, $z_0=x$, $y=z_5$)에서 각 블록이 선형 $F_l(z)=0.1z$라 하자. 입력에 대한 미분 $dy/dx$는? 같은 블록을 잔차 연결 없이 $z_l=F_l(z_{l-1})$로 쌓은 망과 비교하세요. (답: 잔차망의 값, 소수 넷째 자리)`, ans: '1.1^5', ansTex: R`(1+0.1)^5\approx1.6105`,
+      { ch: 'ch12', type: 'num', lv: 2, pts: 3, q: R`In a residual network simplified to one dimension, $z_l=F_l(z_{l-1})+z_{l-1}$ ($l=1,\dots,5$, $z_0=x$, $y=z_5$), let each block be linear, $F_l(z)=0.1z$. Find the derivative $dy/dx$ with respect to the input, and compare it with a network that stacks the same blocks without residual connections, $z_l=F_l(z_{l-1})$. (answer: the value for the residual network, 4 decimal places)`, ans: '1.1^5', ansTex: R`(1+0.1)^5\approx1.6105`,
         sol: R`
 **핵심.** 잔차 블록 하나의 미분은 $\frac{dz_l}{dz_{l-1}}=F_l'+1$ — 항등 경로의 1이 더해집니다. 연쇄법칙으로 블록들의 미분을 곱합니다.
 
@@ -277,8 +277,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch12:9.5|잔차 연결]]
 ` },
-      { ch: 'ch12', type: 'mc', lv: 1, pts: 3, q: R`여러 모델을 결합하는 방법에 관한 진술 가운데 맞는 것을 고르세요. 모든 모델의 오차는 평균이 0이고 분산이 같다.`,
-        choices: [R`오차의 쌍별 상관계수가 0.5인 모델을 아무리 많이 평균해도 $E_{\text{COM}}$은 $E_{\text{AV}}$의 절반 아래로 내려가지 않는다`, R`부스팅은 부트스트랩 자료마다 모델을 병렬로 학습해 단순 평균한다`, R`자료 4개에서 복원 추출로 4개를 뽑을 때 특정 자료가 빠질 확률은 $\tfrac14$이다`, R`모델들의 오차가 서로 강하게 상관되어 있으면 위원회 오차가 $E_{\text{AV}}$보다 커질 수 있다`], ans: 0,
+      { ch: 'ch12', type: 'mc', lv: 1, pts: 3, q: R`Choose the correct statement about methods for combining several models. The errors of all models have zero mean and equal variance.`,
+        choices: [R`No matter how many models with pairwise error correlation coefficient 0.5 are averaged, $E_{\text{COM}}$ does not fall below half of $E_{\text{AV}}$`, R`Boosting trains models in parallel, one on each bootstrap data set, and takes their simple average`, R`When 4 points are drawn with replacement from 4 data points, the probability that a particular data point is left out is $\tfrac14$`, R`If the models' errors are strongly correlated with each other, the committee error can be larger than $E_{\text{AV}}$`], ans: 0,
         sol: R`
 **핵심.** 분산이 같고 쌍별 상관계수가 $\rho$이면 $E_{\text{COM}}=\big(\rho+\frac{1-\rho}M\big)E_{\text{AV}}$이고, 어떤 경우든 $E_{\text{COM}}\le E_{\text{AV}}$입니다.
 
@@ -291,7 +291,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch12:9.6|모델 평균: 앙상블, 배깅, 부스팅]]
 ` },
-      { ch: 'ch08', type: 'open', lv: 3, pts: 12, q: R`최소점 근처의 오차가 $E(\mathbf w)=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$이고 헤시안의 고윳값이 $\lambda_1=1$, $\lambda_2=9$이다(두 입력의 척도가 달라 생긴 좁은 골짜기). 고정 학습률 $\eta$의 배치 경사하강법 $\mathbf w^{(\tau)}=\mathbf w^{(\tau-1)}-\eta\nabla E$에 대해 (1) 헤시안 고유벡터 좌표에서 $w_i^{(\tau)}-w_i^\star=(1-\eta\lambda_i)^\tau\big(w_i^{(0)}-w_i^\star\big)$임을 보이세요. (2) 발산하지 않을 $\eta$의 범위를 구하세요. (3) 가장 느린 성분의 수렴 인수 $\max_i\lvert1-\eta\lambda_i\rvert$를 최소로 하는 $\eta^\star$와 그때의 인수를 구하고, $\eta=1/\lambda_{\max}$와 비교하세요. (4) 오차 벡터의 길이를 처음의 $10^{-3}$ 이하로 줄이는 데 $\eta^\star$와 $\eta=1/9$가 각각 몇 번의 갱신을 필요로 하는지 구하고, 입력 정규화로 $\lambda_1=\lambda_2$가 되면 어떻게 되는지 설명하세요.`,
+      { ch: 'ch08', type: 'open', lv: 3, pts: 12, q: R`Near a minimum the error is $E(\mathbf w)=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$, and the eigenvalues of the Hessian are $\lambda_1=1$, $\lambda_2=9$ (a narrow valley caused by the two inputs having different scales). For batch gradient descent with fixed learning rate $\eta$, $\mathbf w^{(\tau)}=\mathbf w^{(\tau-1)}-\eta\nabla E$: (1) Show that, in the coordinates of the Hessian eigenvectors, $w_i^{(\tau)}-w_i^\star=(1-\eta\lambda_i)^\tau\big(w_i^{(0)}-w_i^\star\big)$. (2) Find the range of $\eta$ for which the iteration does not diverge. (3) Find the $\eta^\star$ that minimizes the convergence factor of the slowest component, $\max_i\lvert1-\eta\lambda_i\rvert$, and the factor at that value, and compare with $\eta=1/\lambda_{\max}$. (4) Find how many updates $\eta^\star$ and $\eta=1/9$ each need to reduce the length of the error vector to at most $10^{-3}$ of its initial value, and explain what happens if input normalization makes $\lambda_1=\lambda_2$.`,
         rubric: R`
 - (1) $\nabla E=\mathbf H(\mathbf w-\mathbf w^\star)$로 오차 점화식 $\mathbf e^{(\tau)}=(\mathbf I-\eta\mathbf H)\mathbf e^{(\tau-1)}$을 세우고 고유벡터로 분해 — 3점
 - (2) 모든 $i$에서 $\lvert1-\eta\lambda_i\rvert<1$이므로 $0<\eta<2/9$ — 2점
@@ -317,7 +317,7 @@ $$\mathbf e^{(\tau)}=\mathbf e^{(\tau-1)}-\eta\mathbf H\mathbf e^{(\tau-1)}=(\ma
 
 관련: [[ch08:7.3|학습률과 수렴]], [[ch09:7.4|왜 정규화하는가, 입력 정규화]]
 ` },
-      { ch: 'ch10', type: 'open', lv: 3, pts: 12, q: R`표준화한 혈액 검사 수치 두 개 $\mathbf x=(x_1,x_2)=(1,2)$로 위험 점수를 회귀하는 2층망이 있다. 은닉 유닛 2개는 tanh, 출력은 선형이며, 오차는 $E=\frac12(y-t)^2$, 목표는 $t=0.5$이다. 첫 층은 $a_j=w^{(1)}_{j0}+w^{(1)}_{j1}x_1+w^{(1)}_{j2}x_2$로 $(w^{(1)}_{10},w^{(1)}_{11},w^{(1)}_{12})=(0.1,\,0.2,\,0.1)$, $(w^{(1)}_{20},w^{(1)}_{21},w^{(1)}_{22})=(0,\,-0.6,\,-0.2)$, 둘째 층은 $y=w^{(2)}_0+w^{(2)}_1z_1+w^{(2)}_2z_2$로 $(w^{(2)}_0,w^{(2)}_1,w^{(2)}_2)=(0.2,\,1,\,-0.5)$이다. 소수 넷째 자리까지 계산하세요. (1) 순전파로 $a_j$, $z_j$, $y$, $E$를 구하세요. (2) 오차 신호 $\delta_k$(출력), $\delta_1$, $\delta_2$(은닉)를 구하세요. (3) 9개 파라미터 모두의 기울기를 구하세요. (4) 학습률 $\eta=0.05$로 9개 파라미터를 한꺼번에 한 번 갱신할 때 오차의 변화량을 기울기에 대한 선형(1차 테일러) 근사로 예측하고, 실제로 갱신 후 다시 계산한 오차가 $0.0730$인 것과 비교하세요. 또 두 은닉 유닛의 첫 층 기울기 크기가 크게 다른 이유를 설명하세요.`,
+      { ch: 'ch10', type: 'open', lv: 3, pts: 12, q: R`A two-layer network regresses a risk score on two standardized blood-test values $\mathbf x=(x_1,x_2)=(1,2)$. The 2 hidden units are tanh and the output is linear; the error is $E=\frac12(y-t)^2$ and the target is $t=0.5$. The first layer is $a_j=w^{(1)}_{j0}+w^{(1)}_{j1}x_1+w^{(1)}_{j2}x_2$ with $(w^{(1)}_{10},w^{(1)}_{11},w^{(1)}_{12})=(0.1,\,0.2,\,0.1)$, $(w^{(1)}_{20},w^{(1)}_{21},w^{(1)}_{22})=(0,\,-0.6,\,-0.2)$, and the second layer is $y=w^{(2)}_0+w^{(2)}_1z_1+w^{(2)}_2z_2$ with $(w^{(2)}_0,w^{(2)}_1,w^{(2)}_2)=(0.2,\,1,\,-0.5)$. Compute to 4 decimal places. (1) Using forward propagation, find $a_j$, $z_j$, $y$ and $E$. (2) Find the error signals $\delta_k$ (output) and $\delta_1$, $\delta_2$ (hidden). (3) Find the gradients with respect to all 9 parameters. (4) When all 9 parameters are updated together once with learning rate $\eta=0.05$, predict the change in the error using the linear (first-order Taylor) approximation in the gradient, and compare it with the actual error of $0.0730$ recomputed after the update. Also explain why the magnitudes of the first-layer gradients of the two hidden units differ so much.`,
         rubric: R`
 - (1) $a=(0.5,-1)$, $z\approx(0.4621,-0.7616)$, $y\approx1.0429$, $E\approx0.1474$ — 3점
 - (2) $\delta_k=y-t$, $\delta_j=(1-z_j^2)\,w^{(2)}_j\,\delta_k$ 계산 — 3점
@@ -351,7 +351,7 @@ $$\lVert\nabla E\rVert^2\approx0.2947+0.0629+0.1710+6(0.1823)+6(0.0130)\approx1.
 
 관련: [[ch10:8.1c|2층 신경망 예제와 수치 미분]], [[ch10:8.1b|일반 피드포워드망과 역전파 알고리즘]]
 ` },
-      { ch: 'ch12', type: 'open', lv: 3, pts: 11, q: R`드롭아웃에서 노드 $i$의 마스크 $R_i\in\{0,1\}$는 서로 독립이고 확률 $\rho$로 1이다. (1) 다음 층 유닛의 사전활성 $a=\sum_iw_iR_iz_i$의 기댓값과 분산을 구하고, 추론 때 나가는 가중치에 $\rho$를 곱하는(또는 학습 때 $1/\rho$를 곱하는) 이유를 설명하세요. (2) 입력에 드롭아웃을 적용한 선형회귀 $y=\sum_iw_iR_ix_i$에서 $\E_R\big[(t-y)^2\big]=\big(t-\rho\,\mathbf w^T\mathbf x\big)^2+\rho(1-\rho)\sum_iw_i^2x_i^2$임을 보이고, 자료 전체에 대해 더하면 어떤 규제가 되는지 해석하세요. (3) $\mathbf x=(1,2)$, $\mathbf w=(0.5,\,0.25)$, $t=1$, $\rho=0.8$에서 (2)의 값을 구하고, 마스크 네 가지를 모두 나열한 직접 계산과 맞는지 확인하세요.`,
+      { ch: 'ch12', type: 'open', lv: 3, pts: 11, q: R`In dropout, the masks $R_i\in\{0,1\}$ of the nodes $i$ are mutually independent and equal 1 with probability $\rho$. (1) Find the expectation and variance of the pre-activation $a=\sum_iw_iR_iz_i$ of a unit in the next layer, and explain why the outgoing weights are multiplied by $\rho$ at inference (or $1/\rho$ is applied during training). (2) For linear regression with dropout applied to the inputs, $y=\sum_iw_iR_ix_i$, show that $\E_R\big[(t-y)^2\big]=\big(t-\rho\,\mathbf w^T\mathbf x\big)^2+\rho(1-\rho)\sum_iw_i^2x_i^2$, and interpret what kind of regularization results when this is summed over the whole data set. (3) For $\mathbf x=(1,2)$, $\mathbf w=(0.5,\,0.25)$, $t=1$, $\rho=0.8$, compute the value in (2) and check that it agrees with a direct calculation listing all four masks.`,
         rubric: R`
 - (1) $\E[a]=\rho\sum_iw_iz_i$와 가중치 척도 조정의 이유 — 2점
 - (1) 독립성으로 $\Var[a]=\rho(1-\rho)\sum_iw_i^2z_i^2$ — 2점

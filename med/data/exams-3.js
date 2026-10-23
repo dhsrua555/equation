@@ -8,7 +8,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '어텐션 계수의 두 조건과 소프트 어텐션의 기울기, 쿼리·키·값과 √Dₖ 스케일링, 멀티헤드 어텐션과 트랜스포머 층의 모수·계산량·층 정규화, 순열 등변성과 사인파 위치 부호화를 다룹니다. 작은 행렬로 어텐션을 끝까지 손으로 계산하는 문제와 증명 세 개를 넣었습니다.',
     minutes: 100, plot: 'posenc',
     problems: [
-      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`세 입력 토큰이 $\mathbf x_1=(0,0)$, $\mathbf x_2=(4,0)$, $\mathbf x_3=(0,4)$이다. 어텐션 출력 $\mathbf y_n=\sum_ma_{nm}\mathbf x_m$의 계수가 두 조건 $a_{nm}\ge0$, $\sum_ma_{nm}=1$을 만족할 때 나올 수 **있는** 출력은?`,
+      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`The three input tokens are $\mathbf x_1=(0,0)$, $\mathbf x_2=(4,0)$, $\mathbf x_3=(0,4)$. If the coefficients of the attention output $\mathbf y_n=\sum_ma_{nm}\mathbf x_m$ satisfy the two conditions $a_{nm}\ge0$ and $\sum_ma_{nm}=1$, which of the following outputs **can** occur?`,
         choices: [R`$(3,\ 3)$`, R`$(-1,\ 2)$`, R`$(1,\ 2)$`, R`$(4,\ 4)$`], ans: 2,
         sol: R`
 **핵심.** 두 조건을 만족하는 계수로 만든 가중합은 볼록 결합(convex combination)이므로, 출력은 세 입력을 꼭짓점으로 하는 삼각형 안(경계 포함)에만 놓입니다. 이 예에서는 계수를 직접 풀 수 있습니다.
@@ -24,7 +24,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **자주 하는 실수.** 합이 1인지만 확인하는 것(①은 $-0.5+0.75+0.75=1$). 두 조건을 함께 쓰면 $0\le a_{nm}\le1$이 따라 나오고, 출력의 각 성분은 입력 성분의 최솟값과 최댓값 사이에 있습니다.
 
 관련: [[ch15:12.1|어텐션 계수]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`판독 보조 시스템이 과거 증례 세 개를 소프트 어텐션으로 참고한다. 쿼리와 세 키의 유사도 점수가 $\mathbf s=(1,0,0)$, 증례의 값(위험도)이 $\mathbf v=(0.9,\ 0.2,\ 0.4)$이고 출력은 $o=\sum_mp_mv_m$, $\mathbf p=\operatorname{softmax}(\mathbf s)$이다. 기울기 $\partial o/\partial s_1$은? (소수 넷째 자리)`, ans: '1.2*e/(e+2)^2', ansTex: R`\tfrac{1.2e}{(e+2)^2}\approx0.1465`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`A radiology reading-assistance system consults three past cases using soft attention. The similarity scores between the query and the three keys are $\mathbf s=(1,0,0)$, the values of the cases (risk scores) are $\mathbf v=(0.9,\ 0.2,\ 0.4)$, and the output is $o=\sum_mp_mv_m$ with $\mathbf p=\operatorname{softmax}(\mathbf s)$. Find the gradient $\partial o/\partial s_1$. (4 decimal places)`, ans: '1.2*e/(e+2)^2', ansTex: R`\tfrac{1.2e}{(e+2)^2}\approx0.1465`,
         sol: R`
 **핵심.** 소프트맥스의 도함수 $\partial p_m/\partial s_j=p_m(\delta_{mj}-p_j)$를 쓰면 소프트 어텐션 출력의 기울기는
 $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum_mp_mv_m=p_j(v_j-o)$$
@@ -41,8 +41,8 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **해석.** 점수가 가장 큰 하나만 고르는 하드 어텐션이라면 출력은 1등이 바뀌기 전까지 $0.9$로 일정해 기울기가 0입니다. 소프트 어텐션은 0이 아닌 기울기를 주므로 점수를 만드는 모수를 경사하강법으로 학습할 수 있습니다.
 
 관련: [[ch15:12.1|하드 어텐션과 소프트 어텐션]]` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`쿼리·키·값 모두에 하나의 투영 행렬 $\mathbf U$를 공유하면 점수 행렬 $\mathbf S=\mathbf X\mathbf U\mathbf U^T\mathbf X^T$는 대칭이다. 행마다 소프트맥스를 취한 $\mathbf A=\operatorname{Softmax}[\mathbf S]$에 대해 옳은 것은? ($Z_n=\sum_{m'}\exp(s_{nm'})$)`,
-        choices: [R`$\mathbf S$가 대칭이므로 $\mathbf A$도 항상 대칭이다`, R`$a_{nm}Z_n=a_{mn}Z_m$이므로 $\mathbf A$는 모든 행의 $Z_n$이 같을 때에만 대칭이고, 일반적으로는 대칭이 아니다`, R`$\mathbf A$는 열의 합도 모두 1이다`, R`$\mathbf A$의 대각 원소 $a_{nn}$은 모두 같다`], ans: 1,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`If the queries, keys and values all share a single projection matrix $\mathbf U$, the score matrix $\mathbf S=\mathbf X\mathbf U\mathbf U^T\mathbf X^T$ is symmetric. Which statement about $\mathbf A=\operatorname{Softmax}[\mathbf S]$, obtained by applying the softmax to each row, is correct? ($Z_n=\sum_{m'}\exp(s_{nm'})$)`,
+        choices: [R`Since $\mathbf S$ is symmetric, $\mathbf A$ is always symmetric too`, R`Since $a_{nm}Z_n=a_{mn}Z_m$, $\mathbf A$ is symmetric only when $Z_n$ is the same for every row, and in general it is not symmetric`, R`The columns of $\mathbf A$ also all sum to 1`, R`The diagonal elements $a_{nn}$ of $\mathbf A$ are all equal`], ans: 1,
         sol: R`
 **핵심.** 소프트맥스는 **행마다** 정규화하므로 $a_{nm}=e^{s_{nm}}/Z_n$입니다. 분자는 $s_{nm}=s_{mn}$이라 같아도 분모가 행마다 다릅니다.
 
@@ -57,7 +57,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **자주 하는 실수.** "계수가 비대칭이니 공유 투영도 괜찮다"고 결론 내리는 것. 비대칭은 정규화 상수에서만 오고, 관계의 방향("끌 → 도구"가 "도구 → 끌"보다 강함)을 담아야 할 **점수** 자체는 대칭으로 묶여 있습니다. 그래서 $\mathbf W^{(q)}$와 $\mathbf W^{(k)}$를 따로 둡니다.
 
 관련: [[ch15:12.1b|쿼리·키·값 어텐션]]` },
-      { ch: 'ch15', type: 'num', lv: 1, pts: 5, q: R`쿼리 $\mathbf q=(1,2,0,1)$과 키 $\mathbf k_1=(2,1,0,0)$, $\mathbf k_2=(0,0,3,1)$, $\mathbf k_3=(1,0,1,1)$ ($D_k=4$)로 스케일드 점곱 어텐션의 계수를 구할 때, $\mathbf k_1$에 대한 계수 $a_1$은? (소수 넷째 자리)`, ans: 'exp(2)/(exp(2)+exp(0.5)+exp(1))', ansTex: R`\tfrac{e^2}{e^2+e^{0.5}+e}\approx0.6285`,
+      { ch: 'ch15', type: 'num', lv: 1, pts: 5, q: R`The coefficients of scaled dot-product attention are computed from the query $\mathbf q=(1,2,0,1)$ and the keys $\mathbf k_1=(2,1,0,0)$, $\mathbf k_2=(0,0,3,1)$, $\mathbf k_3=(1,0,1,1)$ ($D_k=4$). Find the coefficient $a_1$ for $\mathbf k_1$. (4 decimal places)`, ans: 'exp(2)/(exp(2)+exp(0.5)+exp(1))', ansTex: R`\tfrac{e^2}{e^2+e^{0.5}+e}\approx0.6285`,
         sol: R`
 **핵심.** 점수는 $\mathbf q^T\mathbf k_m/\sqrt{D_k}$이고, 계수는 그 점수들의 소프트맥스입니다.
 
@@ -73,7 +73,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **검산.** 세 계수의 합이 $0.6285+0.1402+0.2312=1.000$이고, 계수의 순서($a_1>a_3>a_2$)가 내적의 순서와 같습니다.
 
 관련: [[ch15:12.1b|스케일드 점곱 어텐션]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`쿼리 성분은 서로 독립이고 평균 0, 분산 4이며, 키 성분은 서로 독립이고 평균 0, 분산 1이고, 쿼리와 키도 서로 독립이다. $D_k=16$일 때 스케일드 점수 $\mathbf q^T\mathbf k/\sqrt{D_k}$의 표준편차는? (정수)`, ans: '2', ansTex: R`\sqrt{16\cdot4\cdot1/16}=2`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`The components of the query are independent with mean 0 and variance 4, the components of the key are independent with mean 0 and variance 1, and the query and the key are independent of each other. For $D_k=16$, find the standard deviation of the scaled score $\mathbf q^T\mathbf k/\sqrt{D_k}$. (integer)`, ans: '2', ansTex: R`\sqrt{16\cdot4\cdot1/16}=2`,
         sol: R`
 **핵심.** 평균이 0이고 서로 상관없는 항들의 합의 분산은 각 항 분산의 합이고, 독립인 두 변수의 곱은 $\E[q_i^2k_i^2]=\E[q_i^2]\E[k_i^2]$입니다.
 
@@ -90,7 +90,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **검산.** $\sigma_q^2=\sigma_k^2=1$이면 $\operatorname{var}[\mathbf q^T\mathbf k]=D_k$, 나눈 점수의 분산 1로 단원의 결과와 같습니다.
 
 관련: [[ch15:12.1b|스케일드 점곱 어텐션]]` },
-      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`키가 두 개뿐이면 첫 키의 어텐션 계수는 $p_1=\sigma(\Delta)$ ($\Delta=z_1-z_2$: 두 점수의 차, $\sigma$: 로지스틱 시그모이드)이고 소프트맥스 야코비안의 대각 원소는 $p_1(1-p_1)$이다. $p_1(1-p_1)\le0.01$이 되는 가장 작은 $\Delta>0$은? (소수 셋째 자리)`, ans: 'ln((1+sqrt(0.96))/(1-sqrt(0.96)))', ansTex: R`\ln\tfrac{1+\sqrt{0.96}}{1-\sqrt{0.96}}\approx4.585`,
+      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`With only two keys, the attention coefficient of the first key is $p_1=\sigma(\Delta)$ ($\Delta=z_1-z_2$: the difference of the two scores; $\sigma$: the logistic sigmoid), and the diagonal element of the softmax Jacobian is $p_1(1-p_1)$. Find the smallest $\Delta>0$ for which $p_1(1-p_1)\le0.01$. (3 decimal places)`, ans: 'ln((1+sqrt(0.96))/(1-sqrt(0.96)))', ansTex: R`\ln\tfrac{1+\sqrt{0.96}}{1-\sqrt{0.96}}\approx4.585`,
         sol: R`
 **핵심.** 두 항목의 소프트맥스는 $p_1=\frac{e^{z_1}}{e^{z_1}+e^{z_2}}=\frac1{1+e^{-\Delta}}=\sigma(\Delta)$이고, $p_1(1-p_1)$은 $\Delta=0$에서 최대 $0.25$이며 $\lvert\Delta\rvert$가 커질수록 줄어듭니다. 경계 $p(1-p)=0.01$을 풀어 $\Delta$로 바꿉니다.
 
@@ -105,7 +105,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **검산.** $\sigma(4.585)=1/(1+e^{-4.585})=1/1.0102=0.9899$이고 $0.9899\cdot0.0101=0.0100$입니다.
 
 관련: [[ch15:12.1b|스케일링과 소프트맥스 포화]]` },
-      { ch: 'ch15', type: 'num', lv: 1, pts: 5, q: R`$D=512$, 머리 $H=8$이고 머리마다 쿼리·키 차원 $D_k=32$, 값 차원 $D_v=64$인 멀티헤드 어텐션의 모수(편향 제외)는? (정수)`, ans: '8*(2*512*32+512*64)+8*64*512', ansTex: R`786{,}432`,
+      { ch: 'ch15', type: 'num', lv: 1, pts: 5, q: R`How many parameters (excluding biases) does multi-head attention with $D=512$, $H=8$ heads, and per-head query/key dimension $D_k=32$ and value dimension $D_v=64$ have? (integer)`, ans: '8*(2*512*32+512*64)+8*64*512', ansTex: R`786{,}432`,
         sol: R`
 **핵심.** 머리마다 $\mathbf W_h^{(q)},\mathbf W_h^{(k)}\in\mathbb R^{D\times D_k}$, $\mathbf W_h^{(v)}\in\mathbb R^{D\times D_v}$이고, 출력 투영은 $\mathbf W^{(o)}\in\mathbb R^{HD_v\times D}$ 하나입니다. $4D^2$는 $D_k=D_v=D/H$일 때만의 결과입니다.
 
@@ -121,8 +121,8 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **검산.** $D_k$를 64로 올리면 $8\cdot512\cdot192+512^2=1{,}048{,}576=4\cdot512^2$로 단원의 결과가 됩니다. 쿼리·키 차원을 절반으로 줄여 Q·K 모수 $262{,}144$개를 아낀 셈입니다.
 
 관련: [[ch15:12.1c|멀티헤드 어텐션]]` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`$D=512$로 두고 $D_k=D_v=D/H$를 유지한 채 머리 수를 $H=1$에서 $H=8$로 늘릴 때 옳은 것은?`,
-        choices: [R`멀티헤드 어텐션의 모수가 8배가 된다`, R`머리마다의 어텐션 행렬 $\mathbf A_h$가 $N\times(N/8)$로 작아진다`, R`각 머리의 출력이 64열이므로 층의 출력 $\mathbf Y$도 $N\times64$가 되어 잔차 연결을 붙일 수 없다`, R`모수 수는 그대로이고, 머리 하나가 유사도를 재는 행렬 $\mathbf W_h^{(q)}\mathbf W_h^{(k)T}$의 계수 상한이 512에서 64로 줄어드는 대신 서로 다른 유사도를 8가지 잰다`], ans: 3,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`With $D=512$, the number of heads is increased from $H=1$ to $H=8$ while keeping $D_k=D_v=D/H$. Which statement is correct?`,
+        choices: [R`The number of parameters of the multi-head attention increases eightfold`, R`The attention matrix $\mathbf A_h$ of each head shrinks to $N\times(N/8)$`, R`Since each head's output has 64 columns, the layer output $\mathbf Y$ is also $N\times64$, so a residual connection cannot be added`, R`The number of parameters is unchanged; the upper bound on the rank of the matrix $\mathbf W_h^{(q)}\mathbf W_h^{(k)T}$ with which a single head measures similarity drops from 512 to 64, but in exchange 8 different similarities are measured`], ans: 3,
         sol: R`
 **핵심.** 모수는 $H\cdot3D\cdot\frac DH+D^2=4D^2$로 $H$가 약분됩니다. 바뀌는 것은 머리마다 쿼리·키가 사는 부분공간의 차원 $D_k=D/H$입니다.
 
@@ -135,7 +135,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **보기 검토.** ① $H$가 약분되므로 모수는 같습니다(단원 예제 4). ② 어텐션 행렬은 쿼리 $N$개와 키 $N$개의 쌍이라 늘 $N\times N$이고, 줄어드는 것은 투영의 열 수 $D_k$입니다. ③ 머리 8개를 이어 붙이면 $8\cdot64=512$열이고 $\mathbf W^{(o)}$가 $D$차원으로 돌려보내므로 $\mathbf Y(\mathbf X)+\mathbf X$를 그대로 쓸 수 있습니다. ④ 정답. 점수 계산량도 $H\cdot N^2D_k=N^2D$로 같습니다.
 
 관련: [[ch15:12.1c|멀티헤드 어텐션]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`$D=256$인 트랜스포머 층 하나의 학습 모수를 **모두** 세면? 멀티헤드 어텐션은 $D_k=D_v=D/H$이고 Q·K·V·출력 투영에 모두 편향이 있으며, 위치별 MLP는 은닉 폭 $4D$인 2층(층마다 편향), 층 정규화 두 개는 각각 $\gamma_i,\beta_i$ ($i=1,\dots,D$)를 가진다. (정수)`, ans: '12*256^2+13*256', ansTex: R`12D^2+13D=789{,}760`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`Count **all** learnable parameters of one transformer layer with $D=256$. The multi-head attention has $D_k=D_v=D/H$, and the Q, K, V and output projections all have biases; the position-wise MLP has two layers with hidden width $4D$ (a bias in each layer); and each of the two layer normalizations has $\gamma_i,\beta_i$ ($i=1,\dots,D$). (integer)`, ans: '12*256^2+13*256', ansTex: R`12D^2+13D=789{,}760`,
         sol: R`
 **핵심.** 가중치 $12D^2$(어텐션 $4D^2$ + MLP $8D^2$)에 편향과 층 정규화 모수를 더합니다. 층 정규화의 평균 $\mu_n$과 분산 $\sigma_n^2$는 입력에서 계산하는 값이라 모수가 아닙니다.
 
@@ -151,8 +151,8 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **자주 하는 실수.** 층 정규화의 $\mu_n,\sigma_n^2$까지 모수로 세는 것, 출력 편향을 머리마다 따로 세는 것($\mathbf W^{(o)}$는 하나), MLP를 $D\to D$ 한 층으로 보아 $D^2$로 세는 것.
 
 관련: [[ch15:12.1c|트랜스포머 층]] [[ch09:7.4c|층 정규화]]` },
-      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`트랜스포머 층의 층 정규화(layer normalization)가 평균과 분산을 계산하는 범위는?`,
-        choices: [R`토큰 하나의 $D$개 특징 — 토큰(행)마다 따로`, R`미니배치에 든 여러 서열의 같은 특징 — 특징마다 따로`, R`한 서열의 $N$개 토큰의 같은 특징 — 특징(열)마다 따로`, R`행렬 $\mathbf X$의 $N\times D$개 원소 전체 — 평균과 분산 하나`], ans: 0,
+      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`Over which quantities does layer normalization in a transformer layer compute the mean and variance?`,
+        choices: [R`The $D$ features of a single token — separately for each token (row)`, R`The same feature across the sequences in a minibatch — separately for each feature`, R`The same feature across the $N$ tokens of one sequence — separately for each feature (column)`, R`All $N\times D$ elements of the matrix $\mathbf X$ — a single mean and variance`], ans: 0,
         sol: R`
 **핵심.** 층 정규화는 한 예제의 유닛들, 트랜스포머에서는 토큰 벡터 하나의 $D$개 성분으로 $\mu_n=\frac1D\sum_iz_{ni}$, $\sigma_n^2=\frac1D\sum_i(z_{ni}-\mu_n)^2$을 내고 $\hat z_{ni}=(z_{ni}-\mu_n)/\sqrt{\sigma_n^2+\delta}$를 $\gamma_i\hat z_{ni}+\beta_i$로 바꿉니다.
 
@@ -164,7 +164,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **보기 검토.** ① 정답. ② 배치 정규화입니다. 배치가 작거나 여러 GPU에 나눌 때 불안정해 트랜스포머에서는 층 정규화를 씁니다. ③ 한 서열의 토큰들에 걸쳐 정규화하면 각 토큰의 출력이 같은 서열의 다른 토큰들과 서열 길이에 따라 달라집니다. 토큰끼리 정보를 섞는 일은 어텐션이 맡습니다. ④ 행렬 전체의 통계 하나로는 토큰마다의 크기 차이를 정규화하지 못하고, 이것도 서열 전체에 의존합니다.
 
 관련: [[ch09:7.4c|층 정규화]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`사후 정규화 트랜스포머 층에서 한 토큰의 입력이 $\mathbf x_n=(1,2,0,3)$이고 멀티헤드 어텐션의 출력이 $\mathbf y_n=(1,0,2,5)$이다. $\mathbf z_n=\operatorname{LayerNorm}[\mathbf y_n+\mathbf x_n]$의 넷째 성분은? 층 정규화는 $\delta=0$이고 넷째 성분의 $\gamma_4=2$, $\beta_4=-1$이다. (소수 넷째 자리)`, ans: '2*sqrt(3)-1', ansTex: R`2\sqrt3-1\approx2.4641`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`In a post-norm transformer layer, the input of one token is $\mathbf x_n=(1,2,0,3)$ and the output of the multi-head attention is $\mathbf y_n=(1,0,2,5)$. Find the fourth component of $\mathbf z_n=\operatorname{LayerNorm}[\mathbf y_n+\mathbf x_n]$. The layer normalization has $\delta=0$, and for the fourth component $\gamma_4=2$, $\beta_4=-1$. (4 decimal places)`, ans: '2*sqrt(3)-1', ansTex: R`2\sqrt3-1\approx2.4641`,
         sol: R`
 **핵심.** 사후 정규화(Post-Norm)는 잔차 합 $\mathbf y_n+\mathbf x_n$을 먼저 만들고, 그 토큰의 $D=4$개 성분으로 평균과 분산을 내어 정규화한 뒤 성분별 $\gamma_i,\beta_i$를 적용합니다.
 
@@ -181,7 +181,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **자주 하는 실수.** 분산을 $1/(D-1)$로 나누면 $\sigma^2=9$, $\hat z_4=1.5$, 답이 $2$가 됩니다. 층 정규화의 정의는 $1/D$입니다. 또 사전 정규화와 섞지 않아야 합니다. 사전 정규화라면 정규화가 어텐션의 **입력** $\mathbf x_n$에 걸리고 잔차 합 $\mathbf Y(\mathbf X')+\mathbf X$는 정규화하지 않습니다.
 
 관련: [[ch15:12.1c|트랜스포머 층]] [[ch09:7.4c|층 정규화]]` },
-      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`$D=768$, $D_k=D_v=D/H$이고 위치별 MLP의 은닉 폭이 $4D$인 트랜스포머 층에서 곱셈 수만 센다(소프트맥스·층 정규화·편향은 무시). 모든 머리의 점수 $\mathbf Q_h\mathbf K_h^T$와 가중합 $\mathbf A_h\mathbf V_h$에 드는 곱셈이, Q·K·V·출력 투영과 MLP에 드는 곱셈과 같아지는 서열 길이 $N$은? (정수)`, ans: '6*768', ansTex: R`N=6D=4608`,
+      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`In a transformer layer with $D=768$, $D_k=D_v=D/H$ and a position-wise MLP of hidden width $4D$, count only multiplications (ignore the softmax, layer normalization and biases). For what sequence length $N$ do the multiplications for the scores $\mathbf Q_h\mathbf K_h^T$ and the weighted sums $\mathbf A_h\mathbf V_h$ of all heads equal the multiplications for the Q, K, V and output projections and the MLP? (integer)`, ans: '6*768', ansTex: R`N=6D=4608`,
         sol: R`
 **핵심.** $N\times a$ 행렬과 $a\times b$ 행렬의 곱은 곱셈 $Nab$번입니다. 토큰 쌍마다 하는 계산은 $N^2$에, 토큰마다 하는 계산은 $N$에 비례합니다.
 
@@ -198,7 +198,7 @@ $$\frac{\partial o}{\partial s_j}=\sum_mv_m\,p_m(\delta_{mj}-p_j)=p_jv_j-p_j\sum
 **자주 하는 실수.** 머리 수 $H$를 한 번 더 곱해 점수를 $HN^2D$로 세는 것($D_k=D/H$라 $H$가 약분됩니다), 가중합 $\mathbf A_h\mathbf V_h$를 빠뜨려 $N=12D$를 얻는 것.
 
 관련: [[ch15:12.1c|트랜스포머 층의 계산량]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`사인파 위치 부호화의 첫 쌍 $(r_{n0},r_{n1})=(\sin n,\cos n)$ (각진동수 $L^0=1$)이 어떤 토큰에서 $(0.6570,\ 0.7539)$였다. 위치 $n$을 구하지 않고, 두 칸 뒤 토큰의 $r_{n+2,0}$을 구하면? (소수 넷째 자리)`, ans: '0.6570*cos(2)+0.7539*sin(2)', ansTex: R`0.6570\cos2+0.7539\sin2\approx0.4121`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`For some token, the first pair of the sinusoidal positional encoding, $(r_{n0},r_{n1})=(\sin n,\cos n)$ (angular frequency $L^0=1$), is $(0.6570,\ 0.7539)$. Without finding the position $n$, find $r_{n+2,0}$ for the token two positions later. (4 decimal places)`, ans: '0.6570*cos(2)+0.7539*sin(2)', ansTex: R`0.6570\cos2+0.7539\sin2\approx0.4121`,
         sol: R`
 **핵심.** 상대 위치의 선형변환: 각진동수 $\omega$인 쌍은
 $$\begin{pmatrix}\sin\omega(n+k)\\\cos\omega(n+k)\end{pmatrix}=\begin{pmatrix}\cos\omega k&\sin\omega k\\-\sin\omega k&\cos\omega k\end{pmatrix}\begin{pmatrix}\sin\omega n\\\cos\omega n\end{pmatrix}$$
@@ -217,8 +217,8 @@ $$\begin{pmatrix}\sin\omega(n+k)\\\cos\omega(n+k)\end{pmatrix}=\begin{pmatrix}\c
 **해석.** 이 계산에는 $n$이 필요 없었습니다. "두 칸 뒤"라는 관계가 절대 위치와 무관한 고정 행렬 $\mathbf M_2$이므로, 선형 투영을 쓰는 어텐션이 상대 위치 관계를 쉽게 배울 수 있습니다.
 
 관련: [[ch15:12.1d|상대 위치의 선형변환]]` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`최대 512토큰의 판독문으로 학습한 트랜스포머를 1,500토큰이 넘는 입원 경과 기록에도 쓰려 한다. 다음 위치 부호화 가운데 이 목적에 가장 알맞은 것은?`,
-        choices: [R`위치 $1,\dots,512$마다 벡터를 하나씩 학습한 학습된 위치 부호화`, R`위치 번호 $n$을 모든 성분에 그대로 더하기`, R`사인파 위치 부호화 $r_{ni}=\sin(n/L^{i/D})$ ($i$ 짝수), $\cos(n/L^{(i-1)/D})$ ($i$ 홀수)`, R`위치를 그 기록의 길이 $N$으로 나눈 $n/N\in(0,1]$을 더하기`], ans: 2,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`A transformer trained on radiology reports of at most 512 tokens is also to be used on inpatient progress notes longer than 1,500 tokens. Which of the following positional encodings is most suitable for this purpose?`,
+        choices: [R`A learned positional encoding with one learned vector for each position $1,\dots,512$`, R`Adding the position index $n$ directly to every component`, R`The sinusoidal positional encoding $r_{ni}=\sin(n/L^{i/D})$ ($i$ even), $\cos(n/L^{(i-1)/D})$ ($i$ odd)`, R`Adding the position divided by the length $N$ of the record, $n/N\in(0,1]$`], ans: 2,
         sol: R`
 **핵심.** 좋은 위치 부호화는 위치마다 **유일**하고, 값이 **유계**이며, 학습 때보다 긴 서열로 **일반화**되고, **상대 위치**를 보존해야 합니다. 학습보다 긴 기록을 다루려면 셋째 조건이 결정적입니다.
 
@@ -231,9 +231,9 @@ $$\begin{pmatrix}\sin\omega(n+k)\\\cos\omega(n+k)\end{pmatrix}=\begin{pmatrix}\c
 **자주 하는 실수.** ④를 "유계이니 괜찮다"고 고르는 것. 유계는 네 조건 가운데 하나일 뿐입니다.
 
 관련: [[ch15:12.1d|위치 부호화]]` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`세 토큰 $\mathbf x_1=(1,0)$, $\mathbf x_2=(0,1)$, $\mathbf x_3=(1,1)$을 행으로 쌓은 $\mathbf X$ ($N=3$, $D=2$)와
+      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`Stack the three tokens $\mathbf x_1=(1,0)$, $\mathbf x_2=(0,1)$, $\mathbf x_3=(1,1)$ as the rows of $\mathbf X$ ($N=3$, $D=2$), and let
 $$\mathbf W^{(q)}=\begin{pmatrix}1&1\\0&1\end{pmatrix},\quad \mathbf W^{(k)}=\begin{pmatrix}1&0\\1&1\end{pmatrix},\quad \mathbf W^{(v)}=\begin{pmatrix}1&0\\0&2\end{pmatrix}$$
-으로 스케일드 점곱 셀프 어텐션($D_k=2$)을 계산하세요. (1) $\mathbf Q,\mathbf K,\mathbf V$를 구하세요. (2) 점수 행렬 $\mathbf S=\mathbf Q\mathbf K^T/\sqrt{D_k}$를 구하고 $s_{12}$와 $s_{21}$을 비교해, 그 차이가 어디서 오는지 설명하세요. (3) 어텐션 행렬의 첫 행 $(a_{11},a_{12},a_{13})$과 출력 $\mathbf y_1$을 소수 넷째 자리까지 구하세요. (4) $\sqrt{D_k}$로 나누지 않으면 첫 행이 어떻게 되는지 구하고 그 차이를 해석하세요.`,
+Compute the scaled dot-product self-attention ($D_k=2$). (1) Find $\mathbf Q,\mathbf K,\mathbf V$. (2) Find the score matrix $\mathbf S=\mathbf Q\mathbf K^T/\sqrt{D_k}$, compare $s_{12}$ with $s_{21}$, and explain where the difference comes from. (3) Find the first row $(a_{11},a_{12},a_{13})$ of the attention matrix and the output $\mathbf y_1$ to 4 decimal places. (4) Find what the first row becomes without dividing by $\sqrt{D_k}$, and interpret the difference.`,
         rubric: R`
 - (1) $\mathbf Q,\mathbf K,\mathbf V$를 행마다 바르게 계산 — 2점
 - (2) $\mathbf S$ 전체, $s_{12}=\sqrt2\ne s_{21}=0$, 원인이 $\mathbf W^{(q)}\mathbf W^{(k)T}$의 비대칭임 — 3점
@@ -257,7 +257,7 @@ $$\mathbf A=\begin{pmatrix}0.1400&0.2840&0.5760\\0.1978&0.4011&0.4011\\0.0743&0.
 로 행의 합이 모두 1이고, 열의 합 $(0.4121,\ 0.9908,\ 1.5971)$은 1이 아닙니다. 소프트맥스를 행마다 했기 때문입니다.
 
 관련: [[ch15:12.1b|쿼리·키·값 어텐션]]` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 8, q: R`멀티헤드 어텐션 $\mathbf Y=\operatorname{Concat}[\mathbf H_1,\dots,\mathbf H_H]\mathbf W^{(o)}$, $\mathbf H_h=\mathbf A_h\mathbf X\mathbf W_h^{(v)}$ ($\mathbf A_h=\operatorname{Softmax}[\mathbf Q_h\mathbf K_h^T/\sqrt{D_k}]$)에 대해 (1) $\mathbf W^{(o)}$를 위에서부터 $D_v$행씩 나눈 블록 $\mathbf W_h^{(o)}$로 $\mathbf Y=\sum_h\mathbf A_h\mathbf X\mathbf W_h^{(v)}\mathbf W_h^{(o)}$임을 보이고, (2) $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$의 계수가 $D_v$ 이하임을 보이세요. (3) $D=512$, $H=8$, $D_k=D_v=64$일 때 원래 모델의 모수와, 각 $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$를 자유로운 $D\times D$ 행렬로 바꾼 모델의 모수(Q·K 투영은 그대로, 편향 제외)를 비교하고, 두 모델이 같은지 판단하세요.`,
+      { ch: 'ch15', type: 'open', lv: 3, pts: 8, q: R`For multi-head attention $\mathbf Y=\operatorname{Concat}[\mathbf H_1,\dots,\mathbf H_H]\mathbf W^{(o)}$, $\mathbf H_h=\mathbf A_h\mathbf X\mathbf W_h^{(v)}$ ($\mathbf A_h=\operatorname{Softmax}[\mathbf Q_h\mathbf K_h^T/\sqrt{D_k}]$): (1) using the blocks $\mathbf W_h^{(o)}$ obtained by splitting $\mathbf W^{(o)}$ from the top into groups of $D_v$ rows, show that $\mathbf Y=\sum_h\mathbf A_h\mathbf X\mathbf W_h^{(v)}\mathbf W_h^{(o)}$; (2) show that the rank of $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$ is at most $D_v$. (3) For $D=512$, $H=8$, $D_k=D_v=64$, compare the number of parameters of the original model with that of a model in which each $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$ is replaced by a free $D\times D$ matrix (Q and K projections unchanged, biases excluded), and decide whether the two models are the same.`,
         rubric: R`
 - (1) 열·행을 같은 자리에서 나눈 블록 곱셈으로 $\sum_h\mathbf H_h\mathbf W_h^{(o)}$를 얻고 $\mathbf H_h$를 대입 — 3점
 - (2) 곱의 열이 $\mathbf W_h^{(v)}$의 열들의 일차결합이라 계수 $\le D_v$ — 2점
@@ -274,7 +274,7 @@ $$\mathbf Y=\sum_{h=1}^H\mathbf H_h\mathbf W_h^{(o)}=\sum_{h=1}^H\mathbf A_h\mat
 **검산.** $H=1$, $D_v=D$이면 $\mathbf W^{(v)}\mathbf W^{(o)}$는 아무 $D\times D$ 행렬이나 될 수 있어(예: $\mathbf W^{(o)}=\mathbf I$) 두 모델이 같은 함수를 나타내고, 그때는 행렬 하나로 합쳐도 됩니다. 계수 제약은 $D_v<D$일 때만 생깁니다.
 
 관련: [[ch15:12.1c|멀티헤드 어텐션의 머리별 합]]` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 9, q: R`셀프 어텐션 $\operatorname{Attention}(\mathbf X)=\operatorname{Softmax}\big[\mathbf X\mathbf W^{(q)}\mathbf W^{(k)T}\mathbf X^T/\sqrt{D_k}\big]\mathbf X\mathbf W^{(v)}$와 $N\times N$ 순열 행렬 $\mathbf P$에 대해 (1) 행마다의 소프트맥스가 $\operatorname{Softmax}[\mathbf P\mathbf S\mathbf P^T]=\mathbf P\operatorname{Softmax}[\mathbf S]\mathbf P^T$를 만족함을 보이고, (2) $\operatorname{Attention}(\mathbf P\mathbf X)=\mathbf P\operatorname{Attention}(\mathbf X)$를 증명하세요. (3) 잔차 연결·층 정규화·위치별 MLP를 붙인 트랜스포머 층 전체도 순열 등변임을 보이고, 위치 부호화 없이 출력 토큰들의 평균을 문장 표현으로 쓰면 “The food was bad, not good at all.”과 “The food was good, not bad at all.”을 구별할 수 없음을 설명하세요. (4) 위치 부호화를 더한 입력 $\mathbf X+\mathbf R$에서는 이 등변성이 왜 깨지는지 쓰세요.`,
+      { ch: 'ch15', type: 'open', lv: 3, pts: 9, q: R`For self-attention $\operatorname{Attention}(\mathbf X)=\operatorname{Softmax}\big[\mathbf X\mathbf W^{(q)}\mathbf W^{(k)T}\mathbf X^T/\sqrt{D_k}\big]\mathbf X\mathbf W^{(v)}$ and an $N\times N$ permutation matrix $\mathbf P$: (1) show that the row-wise softmax satisfies $\operatorname{Softmax}[\mathbf P\mathbf S\mathbf P^T]=\mathbf P\operatorname{Softmax}[\mathbf S]\mathbf P^T$; (2) prove that $\operatorname{Attention}(\mathbf P\mathbf X)=\mathbf P\operatorname{Attention}(\mathbf X)$. (3) Show that the whole transformer layer, with residual connections, layer normalization and the position-wise MLP, is also permutation equivariant, and explain why, without positional encoding, using the mean of the output tokens as the sentence representation cannot distinguish “The food was bad, not good at all.” from “The food was good, not bad at all.” (4) Explain why this equivariance breaks for the input $\mathbf X+\mathbf R$ with positional encodings added.`,
         rubric: R`
 - (1) 순열 $\pi$로 $(\mathbf P\mathbf S\mathbf P^T)_{nm}=s_{\pi(n)\pi(m)}$, 한 행 안의 재배열이 분모를 바꾸지 않음 — 3점
 - (2) $\mathbf Q,\mathbf K,\mathbf V$가 모두 $\mathbf P$배가 되고 $\mathbf P^T\mathbf P=\mathbf I$로 결론 — 2점
@@ -292,7 +292,7 @@ $$\operatorname{Attention}(\mathbf P\mathbf X)=\mathbf P\operatorname{Softmax}[\
 4. **위치 부호화.** 위치 벡터 $\mathbf r_n$은 토큰이 아니라 **자리**에 붙어 있습니다. 토큰 순서를 바꾼 입력은 $\mathbf P\mathbf X+\mathbf R$이고, 원래 입력 전체를 섞은 것은 $\mathbf P(\mathbf X+\mathbf R)=\mathbf P\mathbf X+\mathbf P\mathbf R$입니다. 위치마다 $\mathbf r_n$이 다르면 $\mathbf P\mathbf R\ne\mathbf R$이라 두 입력이 다르고, $f(\mathbf P\mathbf X+\mathbf R)$를 $\mathbf Pf(\mathbf X+\mathbf R)$로 쓸 근거가 없습니다. "bad"가 앞자리에 있을 때와 뒷자리에 있을 때 서로 다른 입력 벡터가 되므로 순서가 표현에 들어갑니다.
 
 관련: [[ch15:12.1d|순열 등변성]] [[ch11:9.1b|대칭, 불변성, 등변성]]` },
-      { ch: 'ch15', type: 'open', lv: 2, pts: 8, q: R`차원 $D$ (짝수)의 사인파 위치 부호화에서 쌍 $j=0,\dots,D/2-1$은 각진동수 $\omega_j=L^{-2j/D}$로 $(r_{n,2j},r_{n,2j+1})=(\sin\omega_jn,\cos\omega_jn)$이다. (1) $\lVert\mathbf r_n\rVert^2$이 모든 위치에서 $D/2$임을 보이세요. (2) $\mathbf r_n^T\mathbf r_{n+k}=\sum_j\cos(\omega_jk)$임을 보이고, 이 값이 $n$과 무관하며 $k$와 $-k$에서 같음을 설명하세요. (3) $D=4$, $L=100$에서 $k=1,3,6$의 $\mathbf r_n^T\mathbf r_{n+k}$를 소수 넷째 자리까지 구하고, 결과가 거리에 대해 단조가 아닌 이유를 설명하세요.`,
+      { ch: 'ch15', type: 'open', lv: 2, pts: 8, q: R`In the sinusoidal positional encoding of dimension $D$ (even), pair $j=0,\dots,D/2-1$ has angular frequency $\omega_j=L^{-2j/D}$ and $(r_{n,2j},r_{n,2j+1})=(\sin\omega_jn,\cos\omega_jn)$. (1) Show that $\lVert\mathbf r_n\rVert^2$ equals $D/2$ at every position. (2) Show that $\mathbf r_n^T\mathbf r_{n+k}=\sum_j\cos(\omega_jk)$, and explain why this value does not depend on $n$ and is the same for $k$ and $-k$. (3) For $D=4$, $L=100$, compute $\mathbf r_n^T\mathbf r_{n+k}$ for $k=1,3,6$ to 4 decimal places, and explain why the result is not monotonic in the distance.`,
         rubric: R`
 - (1) 쌍마다 $\sin^2+\cos^2=1$, 쌍이 $D/2$개 — 2점
 - (2) 덧셈정리로 쌍의 기여가 $\cos\omega_jk$, $n$과 무관, 코사인이 짝함수 — 3점

@@ -8,8 +8,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '전 범위를 두 단원 이상이 함께 필요한 문제로 엮었습니다. 가우시안 가능도에서 제곱오차와 역전파로, 사전분포에서 가중치 감쇠와 유효 파라미터 수로, 교차 엔트로피와 KL·온도, 유병률이 바뀐 분류기 출력의 베이즈 보정, Adam과 입력 정규화의 수렴, 드롭아웃의 규제 효과, 합성곱과 어텐션의 계산량, U-net, GPT 출력층의 기울기까지 다룹니다.',
     minutes: 120, plot: 'ecg',
     problems: [
-      { ch: 'ch01', type: 'mc', lv: 1, pts: 3, q: R`의료 영상 AI 과제와 그에 맞는 출력층·오차함수의 짝으로 옳지 **않은** 것은?`,
-        choices: [R`골연령 판독(손 X선 → 뼈 나이): 선형 출력 하나 + 제곱오차합`, R`신장 자동 분할: 화소마다 (신장, 배경) 두 클래스 소프트맥스 + 화소별 교차 엔트로피의 합`, R`저선량 PET 잡음 제거: 출력 영상의 모든 화소에 소프트맥스 하나를 씌워 화소값을 확률로 만들고 교차 엔트로피로 표준선량 영상과 비교`, R`흉부 X선의 결절·기흉·심비대 판정: 소견마다 시그모이드 + 이진 교차 엔트로피의 합`], ans: 2,
+      { ch: 'ch01', type: 'mc', lv: 1, pts: 3, q: R`Which pairing of a medical-imaging AI task with its output layer and error function is **incorrect**?`,
+        choices: [R`Bone-age assessment (hand X-ray → bone age): a single linear output + sum-of-squares error`, R`Automatic kidney segmentation: a two-class (kidney, background) softmax at each pixel + the sum of the per-pixel cross-entropies`, R`Low-dose PET denoising: a single softmax over all pixels of the output image, turning the pixel values into probabilities, compared with the standard-dose image by cross-entropy`, R`Detection of nodule, pneumothorax and cardiomegaly on chest X-rays: a sigmoid for each finding + the sum of the binary cross-entropies`], ans: 2,
         sol: R`
 **핵심.** 오차함수는 “목표값이 어떤 분포를 따르는가”에서 나옵니다. 실수 목표는 가우시안 → 선형 출력 + 제곱오차, 서로 배타적인 클래스는 범주 분포 → 소프트맥스 + 교차 엔트로피(cross-entropy), 동시에 있을 수 있는 여러 소견은 독립 베르누이 → 시그모이드 + 이진 교차 엔트로피입니다.
 
@@ -24,7 +24,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch01:0.4|의료 영상 AI의 응용]], [[ch07:6.4|오차함수와 출력 활성화]]
 ` },
-      { ch: 'ch02', type: 'num', lv: 1, pts: 3, q: R`다항식 모델을 훈련 자료 $N=40$개에 맞췄더니 제곱오차합의 최솟값이 $E(\mathbf w^\star)=\frac12\sum_n\{y(x_n,\mathbf w^\star)-t_n\}^2=0.45$였다. 목표가 $\N(t\mid y(x,\mathbf w),\sigma^2)$를 따른다고 보고 같은 자료로 잡음의 표준편차를 최대가능도로 추정하면 $\sigma_{\text{ML}}$은? (소수 넷째 자리)`, ans: 'sqrt(2*0.45/40)', ansTex: R`\sigma_{\text{ML}}=\sqrt{2(0.45)/40}=0.15`,
+      { ch: 'ch02', type: 'num', lv: 1, pts: 3, q: R`A polynomial model is fitted to $N=40$ training data points, and the minimum of the sum-of-squares error is $E(\mathbf w^\star)=\frac12\sum_n\{y(x_n,\mathbf w^\star)-t_n\}^2=0.45$. Assuming the targets follow $\N(t\mid y(x,\mathbf w),\sigma^2)$, find the maximum likelihood estimate $\sigma_{\text{ML}}$ of the noise standard deviation from the same data. (4 decimal places)`, ans: 'sqrt(2*0.45/40)', ansTex: R`\sigma_{\text{ML}}=\sqrt{2(0.45)/40}=0.15`,
         sol: R`
 **핵심.** 가우시안 잡음 모델에서 $\mathbf w$의 최대가능도 해는 제곱오차합의 최소점 $\mathbf w^\star$이고, 그 위에서 잡음 분산의 최대가능도 해는 평균제곱잔차입니다.
 $$\sigma^2_{\text{ML}}=\frac1N\sum_{n=1}^N\{y(x_n,\mathbf w^\star)-t_n\}^2=\frac{2E(\mathbf w^\star)}N$$
@@ -41,7 +41,7 @@ $$\sigma^2_{\text{ML}}=\frac1N\sum_{n=1}^N\{y(x_n,\mathbf w^\star)-t_n\}^2=\frac
 
 관련: [[ch02:1.2b|RMS 오차]], [[ch04:2.3c|선형회귀의 확률적 해석]]
 ` },
-      { ch: 'ch03', type: 'open', lv: 3, pts: 10, q: R`결핵 선별용 흉부 X선 분류기를 결핵 영상과 정상 영상을 같은 수로 모은 자료(훈련 유병률 $\pi_0=0.5$)로 학습했다. 출력 $y(\mathbf x)$는 이 훈련 분포에서의 사후확률 $p_0(C=1\mid\mathbf x)$를 정확히 근사한다(보정됨). 실제 선별 현장의 유병률은 $\pi=0.02$이고, 클래스별 영상 분포 $p(\mathbf x\mid C)$는 훈련 자료와 현장에서 같다고 가정한다. (1) 베이즈 정리로 현장의 사후확률 $p(C=1\mid\mathbf x)$를 $y,\pi_0,\pi$로 나타내세요. (2) 어떤 영상에서 $y=0.9$일 때 현장의 사후확률을 구하세요. (3) 현장 사후확률이 $0.5$ 이상일 때만 양성으로 판정하려면 $y$의 문턱을 얼마로 해야 하는지 구하고, 문턱을 $0.5$로 그대로 두면 어떤 일이 생기는지 선별검사의 양성 예측도와 연결해 설명하세요.`,
+      { ch: 'ch03', type: 'open', lv: 3, pts: 10, q: R`A chest X-ray classifier for tuberculosis screening was trained on a dataset with equal numbers of tuberculosis and normal images (training prevalence $\pi_0=0.5$). Its output $y(\mathbf x)$ exactly approximates the posterior probability $p_0(C=1\mid\mathbf x)$ under this training distribution (it is calibrated). The prevalence in the actual screening setting is $\pi=0.02$, and the class-conditional image distributions $p(\mathbf x\mid C)$ are assumed to be the same in the training data and in the field. (1) Using Bayes' theorem, express the posterior probability in the field $p(C=1\mid\mathbf x)$ in terms of $y,\pi_0,\pi$. (2) Find the posterior probability in the field for an image with $y=0.9$. (3) Find the threshold on $y$ required to declare a positive only when the posterior probability in the field is at least $0.5$, and explain what happens if the threshold is left at $0.5$, relating it to the positive predictive value of a screening test.`,
         rubric: R`
 - (1) 훈련 분포에 베이즈 정리를 써서 가능도비 $\frac{p(\mathbf x\mid C=1)}{p(\mathbf x\mid C=0)}=\frac y{1-y}\cdot\frac{1-\pi_0}{\pi_0}$ — 3점
 - (1) 현장 사전확률로 베이즈 정리를 다시 써서 $p(C=1\mid\mathbf x)$의 식 — 2점
@@ -63,7 +63,7 @@ $$p(C=1\mid\mathbf x)=\frac{\pi\Lambda}{\pi\Lambda+(1-\pi)}=\frac{y\,\pi/\pi_0}{
 
 관련: [[ch03:2.1b|베이즈 정리와 의료 선별검사]]
 ` },
-      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`선형회귀를 최대가능도로 맞춘 뒤 네 훈련 자료의 잔차 $y(x_n,\mathbf w_{\text{ML}})-t_n$이 $0.2,\ -0.1,\ 0.3,\ -0.2$였다. 잡음 분산에도 최대가능도 추정값 $\hat\sigma^2$을 넣을 때 자료 하나당 음의 로그가능도 $-\frac1N\ln p(\mathbf t\mid\mathbf x,\mathbf w_{\text{ML}},\hat\sigma^2)$ (내트)는? (소수 넷째 자리, 부호 포함)`, ans: '0.5*(1+ln(2*pi*0.045))', ansTex: R`\tfrac12\{1+\ln(2\pi\cdot0.045)\}\approx-0.1316`,
+      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`After a linear regression is fitted by maximum likelihood, the residuals $y(x_n,\mathbf w_{\text{ML}})-t_n$ of four training data points are $0.2,\ -0.1,\ 0.3,\ -0.2$. Using the maximum likelihood estimate $\hat\sigma^2$ for the noise variance as well, find the negative log likelihood per data point $-\frac1N\ln p(\mathbf t\mid\mathbf x,\mathbf w_{\text{ML}},\hat\sigma^2)$ (in nats). (4 decimal places, include the sign)`, ans: '0.5*(1+ln(2*pi*0.045))', ansTex: R`\tfrac12\{1+\ln(2\pi\cdot0.045)\}\approx-0.1316`,
         sol: R`
 **핵심.** 가우시안 잡음의 로그가능도
 $$\ln p=-\frac1{2\sigma^2}\sum_n\{y(x_n,\mathbf w)-t_n\}^2-\frac N2\ln\sigma^2-\frac N2\ln(2\pi)$$
@@ -82,8 +82,8 @@ $$\ln p=-\frac1{2\sigma^2}\sum_n\{y(x_n,\mathbf w)-t_n\}^2-\frac N2\ln\sigma^2-\
 
 관련: [[ch04:2.3c|선형회귀의 확률적 해석]], [[ch05:2.5|미분 엔트로피]]
 ` },
-      { ch: 'ch05', type: 'mc', lv: 2, pts: 3, q: R`분류망의 목표 분포 $\mathbf t$와 소프트맥스 출력 $\mathbf y$의 교차 엔트로피 $-\sum_kt_k\ln y_k$에 관해 맞는 진술은?`,
-        choices: [R`$-\sum_kt_k\ln y_k=\KL(\mathbf t\Vert\mathbf y)-\mathrm H[\mathbf t]$`, R`$\mathbf t$가 원-핫이면 $\mathrm H[\mathbf t]=0$이므로 교차 엔트로피는 $\KL(\mathbf t\Vert\mathbf y)$와 같다`, R`$-\sum_kt_k\ln y_k=-\sum_ky_k\ln t_k$이므로 $\mathbf t$와 $\mathbf y$의 자리를 바꿔 써도 된다`, R`부드러운 목표 $\mathbf t=(0.9,\ 0.05,\ 0.05)$에서도 교차 엔트로피의 최솟값은 0이다`], ans: 1,
+      { ch: 'ch05', type: 'mc', lv: 2, pts: 3, q: R`Which statement about the cross-entropy $-\sum_kt_k\ln y_k$ between the target distribution $\mathbf t$ of a classification network and its softmax output $\mathbf y$ is correct?`,
+        choices: [R`$-\sum_kt_k\ln y_k=\KL(\mathbf t\Vert\mathbf y)-\mathrm H[\mathbf t]$`, R`If $\mathbf t$ is one-hot, then $\mathrm H[\mathbf t]=0$, so the cross-entropy equals $\KL(\mathbf t\Vert\mathbf y)$`, R`Since $-\sum_kt_k\ln y_k=-\sum_ky_k\ln t_k$, the roles of $\mathbf t$ and $\mathbf y$ may be interchanged`, R`Even for the soft target $\mathbf t=(0.9,\ 0.05,\ 0.05)$, the minimum value of the cross-entropy is 0`], ans: 1,
         sol: R`
 **핵심.** KL 발산의 정의를 두 항으로 나누면
 $$\KL(\mathbf t\Vert\mathbf y)=-\sum_kt_k\ln y_k-\Big(-\sum_kt_k\ln t_k\Big)\ \Rightarrow\ -\sum_kt_k\ln y_k=\mathrm H[\mathbf t]+\KL(\mathbf t\Vert\mathbf y).$$
@@ -98,7 +98,7 @@ $\mathrm H[\mathbf t]$는 모델과 무관하므로 교차 엔트로피 최소�
 
 관련: [[ch05:2.5b|KL 발산]], [[ch07:6.4|오차함수와 출력 활성화]]
 ` },
-      { ch: 'ch05', type: 'num', lv: 2, pts: 4, q: R`판독 보조 모델의 세 클래스 로짓이 $\mathbf a=(\ln4,\ 0,\ 0)$이다. 온도 $T=1$의 소프트맥스 분포를 $p$, 온도 $T=2$의 분포 $q_i=\exp(a_i/2)/\sum_j\exp(a_j/2)$를 $q$라 할 때 $\KL(p\Vert q)$ (내트)는? (소수 넷째 자리)`, ans: '(2/3)*ln(4/3)+(1/3)*ln(2/3)', ansTex: R`\tfrac23\ln\tfrac43+\tfrac13\ln\tfrac23\approx0.0566`,
+      { ch: 'ch05', type: 'num', lv: 2, pts: 4, q: R`The three class logits of a reading-assistant model are $\mathbf a=(\ln4,\ 0,\ 0)$. Let $p$ be the softmax distribution at temperature $T=1$, and let $q$ be the distribution at temperature $T=2$, $q_i=\exp(a_i/2)/\sum_j\exp(a_j/2)$. Find $\KL(p\Vert q)$ (in nats). (4 decimal places)`, ans: '(2/3)*ln(4/3)+(1/3)*ln(2/3)', ansTex: R`\tfrac23\ln\tfrac43+\tfrac13\ln\tfrac23\approx0.0566`,
         sol: R`
 **핵심.** 온도를 올리면 로짓이 $1/T$배로 줄어 분포가 평평해집니다. 두 분포를 구한 뒤 이산 KL $\sum_ip_i\ln(p_i/q_i)$를 계산합니다.
 
@@ -115,7 +115,7 @@ $\mathrm H[\mathbf t]$는 모델과 무관하므로 교차 엔트로피 최소�
 
 관련: [[ch05:2.5b|KL 발산]], [[ch15:12.3|온도 표본 추출]]
 ` },
-      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`원점을 지나는 직선 $y=wx$로 세 측정 $(x,t)=(1,\ 0.9)$, $(2,\ 2.3)$, $(-1,\ -1.2)$를 맞춘다. 잡음은 분산 $\sigma^2=0.5$인 가우시안이고 사전분포는 $w\sim\N(0,s^2)$, $s^2=0.25$이다. $w_{\text{MAP}}$은? (소수 넷째 자리)`, ans: '6.7/(6+0.5/0.25)', ansTex: R`\tfrac{6.7}{6+2}=0.8375`,
+      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`A line through the origin $y=wx$ is fitted to three measurements $(x,t)=(1,\ 0.9)$, $(2,\ 2.3)$, $(-1,\ -1.2)$. The noise is Gaussian with variance $\sigma^2=0.5$, and the prior distribution is $w\sim\N(0,s^2)$, $s^2=0.25$. Find $w_{\text{MAP}}$. (4 decimal places)`, ans: '6.7/(6+0.5/0.25)', ansTex: R`\tfrac{6.7}{6+2}=0.8375`,
         sol: R`
 **핵심.** 음의 로그 사후분포
 $$-\ln p(w\mid\mathcal D)=\frac1{2\sigma^2}\sum_n(wx_n-t_n)^2+\frac{w^2}{2s^2}+\text{const}$$
@@ -133,8 +133,8 @@ $$-\ln p(w\mid\mathcal D)=\frac1{2\sigma^2}\sum_n(wx_n-t_n)^2+\frac{w^2}{2s^2}+\
 
 관련: [[ch06:2.6b|MAP 추정과 규제]], [[ch02:1.2c|규제와 모델 선택]]
 ` },
-      { ch: 'ch07', type: 'mc', lv: 1, pts: 3, q: R`출력 유닛의 사전활성 $a_k$에 대한 한 표본 오차의 기울기 $\partial E_n/\partial a_k$가 $y_k-t_k$가 **아닌** 조합은?`,
-        choices: [R`선형 출력 $y_k=a_k$ + 제곱오차합 $\frac12\sum_k(y_k-t_k)^2$`, R`로지스틱 시그모이드 출력 + 이진 교차 엔트로피`, R`소프트맥스 출력 + 다중 클래스 교차 엔트로피 (1-of-$K$ 목표)`, R`로지스틱 시그모이드 출력 + 제곱오차 $\frac12(y-t)^2$`], ans: 3,
+      { ch: 'ch07', type: 'mc', lv: 1, pts: 3, q: R`For which combination is the gradient $\partial E_n/\partial a_k$ of the single-sample error with respect to the output-unit pre-activation $a_k$ **not** equal to $y_k-t_k$?`,
+        choices: [R`Linear output $y_k=a_k$ + sum-of-squares error $\frac12\sum_k(y_k-t_k)^2$`, R`Logistic sigmoid output + binary cross-entropy`, R`Softmax output + multiclass cross-entropy (1-of-$K$ targets)`, R`Logistic sigmoid output + squared error $\frac12(y-t)^2$`], ans: 3,
         sol: R`
 **핵심.** 목표의 분포(가우시안, 베르누이, 범주 분포)의 음의 로그가능도를 오차로 쓰고 출력 활성화를 그 분포의 정준 연결로 고르면 언제나 $\partial E_n/\partial a_k=y_k-t_k$입니다. 짝이 맞지 않으면 활성화의 도함수가 남습니다.
 
@@ -149,7 +149,7 @@ $$-\ln p(w\mid\mathcal D)=\frac1{2\sigma^2}\sum_n(wx_n-t_n)^2+\frac{w^2}{2s^2}+\
 
 관련: [[ch07:6.4|오차함수와 출력 활성화]]
 ` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 3, q: R`흉부 X선 대조 학습에서 기준 영상과 양성 예(같은 영상의 다른 증강)의 코사인 유사도가 $s^+=0.7$, 음성 예 세 개와의 유사도가 $0.5,\ 0,\ -0.5$이다. InfoNCE 손실 $E$의 $\partial E/\partial s^+$는? (소수 넷째 자리)`, ans: 'exp(0.7)/(exp(0.7)+exp(0.5)+1+exp(-0.5))-1', ansTex: R`p^+-1\approx-0.6178`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 3, q: R`In contrastive learning on chest X-rays, the cosine similarity between the anchor image and the positive example (a different augmentation of the same image) is $s^+=0.7$, and the similarities to three negative examples are $0.5,\ 0,\ -0.5$. Find $\partial E/\partial s^+$ for the InfoNCE loss $E$. (4 decimal places)`, ans: 'exp(0.7)/(exp(0.7)+exp(0.5)+1+exp(-0.5))-1', ansTex: R`p^+-1\approx-0.6178`,
         sol: R`
 **핵심.** InfoNCE는 양성 유사도를 정답 클래스의 로짓, 음성 유사도들을 오답 로짓으로 둔 소프트맥스 교차 엔트로피입니다. 따라서 소프트맥스 + 교차 엔트로피의 기울기 $y_k-t_k$를 그대로 씁니다.
 $$E=-\ln\frac{e^{s^+}}{e^{s^+}+\sum_ne^{s_n^-}},\qquad \frac{\partial E}{\partial s^+}=p^+-1,\qquad \frac{\partial E}{\partial s_n^-}=p_n^-$$
@@ -167,7 +167,7 @@ $$E=-\ln\frac{e^{s^+}}{e^{s^+}+\sum_ne^{s_n^-}},\qquad \frac{\partial E}{\partia
 
 관련: [[ch07:6.3c|대조 학습과 InfoNCE]], [[ch10:8.1|단층 신경망의 기울기]]
 ` },
-      { ch: 'ch08', type: 'num', lv: 3, pts: 4, q: R`같은 소견의 영상 두 장(입력 $x=1$)에 판독의가 서로 다른 레이블 $t=1$, $t=0$을 달았다. 모델 $y=\sigma(wx)$를 교차 엔트로피 $E(w)=-\sum_n\{t_n\ln y_n+(1-t_n)\ln(1-y_n)\}$로 학습한다. $w^{(0)}=0.05$에서 Adam($\eta=0.1$, $\beta_1=0.9$, $\beta_2=0.99$, $\delta\approx0$, $s^{(0)}=r^{(0)}=0$)으로 두 번 갱신한 $w^{(2)}$는? (소수 넷째 자리)`, ans: '-0.05+0.1/19', ansTex: R`w^{(2)}=-0.05+\tfrac{0.1}{19}\approx-0.0447`,
+      { ch: 'ch08', type: 'num', lv: 3, pts: 4, q: R`Radiologists assigned different labels $t=1$ and $t=0$ to two images with the same finding (input $x=1$). The model $y=\sigma(wx)$ is trained with the cross-entropy $E(w)=-\sum_n\{t_n\ln y_n+(1-t_n)\ln(1-y_n)\}$. Starting from $w^{(0)}=0.05$, find $w^{(2)}$ after two Adam updates ($\eta=0.1$, $\beta_1=0.9$, $\beta_2=0.99$, $\delta\approx0$, $s^{(0)}=r^{(0)}=0$). (4 decimal places)`, ans: '-0.05+0.1/19', ansTex: R`w^{(2)}=-0.05+\tfrac{0.1}{19}\approx-0.0447`,
         sol: R`
 **핵심.** 먼저 오차의 기울기를 구합니다. 시그모이드 + 교차 엔트로피이므로 표본마다 $\partial E_n/\partial a=y_n-t_n$이고, $a=wx$에서 $\partial a/\partial w=x=1$입니다.
 $$\frac{dE}{dw}=\sum_n(y_n-t_n)x_n=(\sigma(w)-1)+(\sigma(w)-0)=2\sigma(w)-1=\tanh(w/2)$$
@@ -186,7 +186,7 @@ $$\frac{dE}{dw}=\sum_n(y_n-t_n)x_n=(\sigma(w)-1)+(\sigma(w)-0)=2\sigma(w)-1=\tan
 
 관련: [[ch08:7.3d|AdaGrad, RMSProp, Adam]], [[ch07:6.4|오차함수와 출력 활성화]]
 ` },
-      { ch: 'ch09', type: 'num', lv: 2, pts: 4, q: R`두 입력의 선형 회귀 $y=w_1x_1+w_2x_2$를 $E(\mathbf w)=\frac12\sum_{n=1}^N(y_n-t_n)^2$의 배치 경사하강법으로 학습한다. $N=100$이고 두 입력은 훈련 자료에서 평균 0, 서로 무상관이며 표준편차가 $x_1$(나이, 세) 10, $x_2$(혈청 크레아티닌, mg/dL) 0.2이다. 학습률을 $\eta=1/\lambda_{\max}$ ($\lambda_{\max}$: 헤시안의 최대 고윳값)로 둘 때, $\lvert w_2-w_2^\star\rvert$가 처음 값의 1% 이하가 되는 최소 반복 횟수는? (정수)`, ans: '11511', ansTex: R`\lceil\ln0.01/\ln0.9996\rceil=11511`,
+      { ch: 'ch09', type: 'num', lv: 2, pts: 4, q: R`A linear regression with two inputs, $y=w_1x_1+w_2x_2$, is trained by batch gradient descent on $E(\mathbf w)=\frac12\sum_{n=1}^N(y_n-t_n)^2$. $N=100$, and over the training data the two inputs have zero mean, are uncorrelated, and have standard deviations 10 for $x_1$ (age, years) and 0.2 for $x_2$ (serum creatinine, mg/dL). With the learning rate set to $\eta=1/\lambda_{\max}$ ($\lambda_{\max}$: the largest eigenvalue of the Hessian), find the minimum number of iterations after which $\lvert w_2-w_2^\star\rvert$ is at most 1% of its initial value. (integer)`, ans: '11511', ansTex: R`\lceil\ln0.01/\ln0.9996\rceil=11511`,
         sol: R`
 **핵심.** 선형 모델의 제곱오차는 정확히 이차식이고 헤시안은 $\mathbf H=\sum_n\mathbf x_n\mathbf x_n^T$입니다. 고유방향 성분 $w_i-w_i^\star$는 매 걸음 $(1-\eta\lambda_i)$배가 되므로, 입력의 척도가 곧 곡률이 되어 수렴 속도를 정합니다.
 
@@ -202,7 +202,7 @@ $$\frac{dE}{dw}=\sum_n(y_n-t_n)x_n=(\sigma(w)-1)+(\sigma(w)-0)=2\sigma(w)-1=\tan
 
 관련: [[ch09:7.4|입력 정규화]], [[ch08:7.3|학습률과 수렴]]
 ` },
-      { ch: 'ch10', type: 'open', lv: 3, pts: 10, q: R`실수 목표를 예측하는 작은 망: 입력 $x$ 하나, ReLU 은닉 유닛 두 개 $z_j=\ReLU(a_j)$, $a_j=w_j^{(1)}x+b_j^{(1)}$, 선형 출력 $y=\sum_jw_j^{(2)}z_j+b^{(2)}$. 현재 모수는 $\mathbf w^{(1)}=(1,\ -1)$, $\mathbf b^{(1)}=(0,\ 1)$, $\mathbf w^{(2)}=(2,\ 1)$, $b^{(2)}=0.5$이고 훈련 자료는 $(x,t)=(2,\ 4)$, $(-1,\ 3)$이다. (1) 목표가 $\N(t\mid y(x,\mathbf w),\sigma^2)$를 따르고 자료가 i.i.d.일 때 음의 로그가능도를 쓰고, 그 $\mathbf w$-기울기가 $E(\mathbf w)=\frac12\sum_n(y_n-t_n)^2$의 기울기의 $1/\sigma^2$배이며 출력 유닛의 $\delta$가 $(y_n-t_n)/\sigma^2$임을 보이세요. (2) 역전파로 $\partial E/\partial w_1^{(1)}$과 $\partial E/\partial w_2^{(1)}$을 구하세요. (3) 현재 모수에서 잡음 분산의 최대가능도 추정값 $\hat\sigma^2$을 구하고, $\sigma^2=\hat\sigma^2$일 때 음의 로그가능도의 $\partial/\partial w_1^{(1)}$을 구하세요. $\sigma^2$이 $\mathbf w$의 최적점을 바꾸지 않는 이유도 쓰세요.`,
+      { ch: 'ch10', type: 'open', lv: 3, pts: 10, q: R`A small network that predicts a real-valued target: one input $x$, two ReLU hidden units $z_j=\ReLU(a_j)$, $a_j=w_j^{(1)}x+b_j^{(1)}$, and a linear output $y=\sum_jw_j^{(2)}z_j+b^{(2)}$. The current parameters are $\mathbf w^{(1)}=(1,\ -1)$, $\mathbf b^{(1)}=(0,\ 1)$, $\mathbf w^{(2)}=(2,\ 1)$, $b^{(2)}=0.5$, and the training data are $(x,t)=(2,\ 4)$, $(-1,\ 3)$. (1) Assuming the targets follow $\N(t\mid y(x,\mathbf w),\sigma^2)$ and the data are i.i.d., write down the negative log likelihood, and show that its $\mathbf w$-gradient is $1/\sigma^2$ times the gradient of $E(\mathbf w)=\frac12\sum_n(y_n-t_n)^2$ and that the $\delta$ of the output unit is $(y_n-t_n)/\sigma^2$. (2) Use backpropagation to find $\partial E/\partial w_1^{(1)}$ and $\partial E/\partial w_2^{(1)}$. (3) Find the maximum likelihood estimate $\hat\sigma^2$ of the noise variance at the current parameters, and find $\partial/\partial w_1^{(1)}$ of the negative log likelihood when $\sigma^2=\hat\sigma^2$. Also explain why $\sigma^2$ does not change the optimum for $\mathbf w$.`,
         rubric: R`
 - (1) 음의 로그가능도와 $\mathbf w$가 들어간 항 — 2점
 - (1) 기울기의 $1/\sigma^2$배, $\delta=(y_n-t_n)/\sigma^2$ — 1점
@@ -232,7 +232,7 @@ $\sigma^2$은 $E(\mathbf w)$ 앞의 양수 배율이라 $\nabla E=\mathbf 0$인 
 
 관련: [[ch10:8.1b|일반 피드포워드망과 역전파]], [[ch07:6.4|오차함수와 출력 활성화]]
 ` },
-      { ch: 'ch11', type: 'num', lv: 2, pts: 3, q: R`가우시안 잡음 회귀($\sigma^2=0.2$)에서 가중치마다 사전분포 $\N(w_i\mid0,\ s^2)$, $s^2=0.1$을 두고 MAP 추정한다. 제곱오차합 $E(\mathbf w)=\frac12\sum_n\{y(\mathbf x_n,\mathbf w)-t_n\}^2$의 최소점 근처 헤시안 고윳값이 $8,\ 2,\ 0.5$인 이차 근사를 쓰고, 고유방향별 축소 비율의 합 $\gamma=\sum_j\frac{\lambda_j}{\lambda_j+\lambda}$로 유효 파라미터 수를 잰다. $\gamma$는? (소수 첫째 자리)`, ans: '8/10+2/4+0.5/2.5', ansTex: R`0.8+0.5+0.2=1.5`,
+      { ch: 'ch11', type: 'num', lv: 2, pts: 3, q: R`In regression with Gaussian noise ($\sigma^2=0.2$), MAP estimation is performed with a prior distribution $\N(w_i\mid0,\ s^2)$, $s^2=0.1$, on each weight. Use the quadratic approximation near the minimum of the sum-of-squares error $E(\mathbf w)=\frac12\sum_n\{y(\mathbf x_n,\mathbf w)-t_n\}^2$, whose Hessian eigenvalues are $8,\ 2,\ 0.5$, and measure the effective number of parameters by the sum of the shrinkage factors along the eigendirections, $\gamma=\sum_j\frac{\lambda_j}{\lambda_j+\lambda}$. Find $\gamma$. (1 decimal place)`, ans: '8/10+2/4+0.5/2.5', ansTex: R`0.8+0.5+0.2=1.5`,
         sol: R`
 **핵심.** 가우시안 사전분포의 MAP은 $\frac12\sum_n\{\cdot\}^2+\frac\lambda2\mathbf w^T\mathbf w$ ($\lambda=\sigma^2/s^2$)의 최소화이고, 이차 오차에서 가중치 감쇠는 헤시안 고유방향마다 $\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$로 줄입니다.
 
@@ -249,8 +249,8 @@ $\sigma^2$은 $E(\mathbf w)$ 앞의 양수 배율이라 $\nabla E=\mathbf 0$인 
 
 관련: [[ch11:9.2|가중치 감쇠]], [[ch06:2.6b|MAP 추정과 규제]]
 ` },
-      { ch: 'ch11', type: 'mc', lv: 2, pts: 3, q: R`변환 $T$, 분할망 $S$, 분류망 $C$에 대해 등변성과 불변성을 설명한 것으로 옳지 **않은** 것은?`,
-        choices: [R`신장 분할망은 $S(T(I))=T(S(I))$ (평행이동 등변)이어야 하고, 합성곱층은 구조적으로 이 성질을 가진다`, R`기흉 유무 분류망은 $C(T(I))=C(I)$ (불변)이어야 하며, 등변인 합성곱층 뒤에 풀링을 두어 이를 얻는다`, R`위치 부호화가 없는 셀프 어텐션은 입력 토큰의 순서를 바꾸면 출력도 같은 순서로 바뀐다(순열 등변)`, R`판독문 문장 분류는 단어 순서와 무관해야 하므로, 위치 부호화를 빼서 순열 대칭을 지키는 것이 알맞은 귀납적 편향이다`], ans: 3,
+      { ch: 'ch11', type: 'mc', lv: 2, pts: 3, q: R`For a transformation $T$, a segmentation network $S$ and a classification network $C$, which description of equivariance and invariance is **incorrect**?`,
+        choices: [R`A kidney segmentation network should satisfy $S(T(I))=T(S(I))$ (translation equivariance), and convolutional layers have this property by construction`, R`A network classifying the presence or absence of pneumothorax should satisfy $C(T(I))=C(I)$ (invariance), which is obtained by placing pooling after the equivariant convolutional layers`, R`For self-attention without positional encoding, permuting the order of the input tokens permutes the outputs in the same way (permutation equivariance)`, R`Since classification of radiology-report sentences should not depend on word order, removing positional encoding to preserve permutation symmetry is the appropriate inductive bias`], ans: 3,
         sol: R`
 **핵심.** 등변성은 입력을 바꾸면 출력이 대응하게 바뀌는 성질 $S(T(I))=\tilde T(S(I))$이고, 불변성은 출력 쪽 변환이 항등인 특수한 경우 $C(T(I))=C(I)$입니다. 과제가 실제로 가진 대칭만 구조에 넣어야 귀납적 편향이 도움이 됩니다.
 
@@ -265,7 +265,7 @@ $\sigma^2$은 $E(\mathbf w)$ 앞의 양수 배율이라 $\nabla E=\mathbf 0$인 
 
 관련: [[ch11:9.1b|대칭, 불변성, 등변성]], [[ch15:12.1d|위치 부호화]]
 ` },
-      { ch: 'ch12', type: 'open', lv: 3, pts: 10, q: R`선형 회귀 출력에 입력 드롭아웃을 쓴다: $y=\sum_{i=1}^Dw_iR_ix_i$, 마스크 $R_i$는 서로 독립이고 확률 $\rho$로 1, $1-\rho$로 0이다. 목표는 $t$이다. (1) $\E_R[y]$와 $\Var_R[y]$를 구하세요. (2) $\E_R[(y-t)^2]=(\rho\,\mathbf w^T\mathbf x-t)^2+\rho(1-\rho)\sum_iw_i^2x_i^2$을 보이고, 자료 $\{(\mathbf x_n,t_n)\}$ 전체의 기대 오차 $\E_R\big[\frac12\sum_n(y_n-t_n)^2\big]$ (표본마다 마스크를 새로 뽑음)를 추론용 가중치 $\tilde{\mathbf w}=\rho\mathbf w$로 다시 쓰면 어떤 규제가 붙은 최소제곱이 되는지 쓰세요. (3) $\mathbf w=(2,\ -1)$, $\mathbf x=(1,\ 3)$, $\rho=0.5$, $t=1$에서 부분망 네 개를 모두 나열해 (1)(2)를 확인하고, 출력에 로지스틱 시그모이드를 씌운 $\sigma(y)$에서는 “가중치에 $\rho$를 곱한 전체 망”이 부분망 평균과 같지 않음을 수치로 보이세요.`,
+      { ch: 'ch12', type: 'open', lv: 3, pts: 10, q: R`Input dropout is applied to a linear regression output: $y=\sum_{i=1}^Dw_iR_ix_i$, where the masks $R_i$ are mutually independent and equal 1 with probability $\rho$ and 0 with probability $1-\rho$. The target is $t$. (1) Find $\E_R[y]$ and $\Var_R[y]$. (2) Show that $\E_R[(y-t)^2]=(\rho\,\mathbf w^T\mathbf x-t)^2+\rho(1-\rho)\sum_iw_i^2x_i^2$, and state what kind of regularized least squares the expected error over the whole data set $\{(\mathbf x_n,t_n)\}$, $\E_R\big[\frac12\sum_n(y_n-t_n)^2\big]$ (with a new mask drawn for each sample), becomes when rewritten in terms of the inference weights $\tilde{\mathbf w}=\rho\mathbf w$. (3) For $\mathbf w=(2,\ -1)$, $\mathbf x=(1,\ 3)$, $\rho=0.5$, $t=1$, list all four subnetworks to verify (1) and (2), and show numerically that for $\sigma(y)$, with a logistic sigmoid applied to the output, “the full network with its weights multiplied by $\rho$” is not equal to the average over the subnetworks.`,
         rubric: R`
 - (1) $\E[R_i]=\rho$, $\E[R_iR_j]=\rho^2+\rho(1-\rho)\delta_{ij}$로 평균과 분산 — 3점
 - (2) $\E[(y-t)^2]=(\E[y]-t)^2+\Var[y]$ 분해 — 2점
@@ -297,8 +297,8 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch12:9.6b|드롭아웃]], [[ch11:9.2|가중치 감쇠]]
 ` },
-      { ch: 'ch13', type: 'mc', lv: 1, pts: 3, q: R`미니배치 $K$장, 크기 $H\times W$, 채널 $C$인 합성곱층 출력에 배치 정규화를 쓸 때 알맞은 방식과 그 이유는?`,
-        choices: [R`채널마다 미니배치의 모든 영상과 모든 공간 위치의 값 $KHW$개로 평균·분산 하나를 구하고 $\gamma_c,\beta_c$도 채널마다 하나 둔다 — 정규화가 위치와 무관해 평행이동 등변성이 유지된다`, R`위치 $(i,j)$와 채널마다 $K$개 값으로 따로 평균·분산을 구한다 — 위치마다 다르게 정규화해야 가장자리 효과까지 보정되어 등변성이 강해진다`, R`영상마다 그 영상의 모든 채널과 위치의 값으로 평균·분산을 구한다 — 다른 영상에 의존하지 않는 것이 배치 정규화의 정의다`, R`합성곱층은 모수를 공유하므로 정규화가 필요 없고, 배치 정규화는 완전연결층에만 쓴다`], ans: 0,
+      { ch: 'ch13', type: 'mc', lv: 1, pts: 3, q: R`When batch normalization is applied to the output of a convolutional layer for a minibatch of $K$ images of size $H\times W$ with $C$ channels, which method is appropriate, and for what reason?`,
+        choices: [R`For each channel, compute a single mean and variance from the $KHW$ values over all images in the minibatch and all spatial positions, and also use one $\gamma_c,\beta_c$ per channel — the normalization does not depend on position, so translation equivariance is preserved`, R`For each position $(i,j)$ and channel, compute a separate mean and variance from $K$ values — normalizing each position differently also corrects edge effects and strengthens equivariance`, R`For each image, compute the mean and variance from the values over all channels and positions of that image — not depending on other images is the definition of batch normalization`, R`Convolutional layers share parameters, so they need no normalization; batch normalization is used only in fully connected layers`], ans: 0,
         sol: R`
 **핵심.** 배치 정규화는 유닛마다 미니배치의 예제들에 걸쳐 평균·분산을 구합니다. 합성곱층에서는 한 채널의 모든 위치가 같은 커널을 공유하는 “같은 특징”이므로, 통계도 위치를 가리지 않고 함께 구해야 특징 맵이 위치와 무관하게 처리됩니다.
 
@@ -311,12 +311,12 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch13:10.2b|합성곱 연산과 평행이동 등변성]], [[ch09:7.4b|배치 정규화]]
 ` },
-      { ch: 'ch13', type: 'num', lv: 3, pts: 4, q: R`흉부 CT의 한 특징 맵이 $32\times32$ 위치, 채널 $D=256$이다. (가) 같은 패딩의 $3\times3$ 합성곱층($256\to256$)과 (나) 위치 $N=1024$개를 $D$차원 토큰으로 보는 멀티헤드 셀프 어텐션($H=8$, $D_k=D_v=32$, $\mathbf W^{(o)}$ 포함)을 비교한다. 행렬곱 $(a\times b)(b\times c)$ 하나의 곱셈을 $abc$번으로 세고 편향·소프트맥스·나눗셈은 무시할 때, (나)의 곱셈 수는 (가)의 몇 배인가? (분수 또는 소수)`, ans: '4/3', ansTex: R`\tfrac{4D+2N}{9D}=\tfrac43\approx1.3333`,
+      { ch: 'ch13', type: 'num', lv: 3, pts: 4, q: R`A feature map of a chest CT has $32\times32$ positions and $D=256$ channels. Compare (A) a $3\times3$ convolutional layer with same padding ($256\to256$) and (B) multi-head self-attention that treats the $N=1024$ positions as $D$-dimensional tokens ($H=8$, $D_k=D_v=32$, including $\mathbf W^{(o)}$). Counting one matrix product $(a\times b)(b\times c)$ as $abc$ multiplications and ignoring biases, softmax and divisions, find the ratio of the number of multiplications in (B) to that in (A). (fraction or decimal)`, ans: '4/3', ansTex: R`\tfrac{4D+2N}{9D}=\tfrac43\approx1.3333`,
         sol: R`
 **핵심.** 합성곱은 위치마다 같은 $3\times3\times D\to D$ 연산을 하므로 위치 수 $N$에 선형이고, 셀프 어텐션은 투영($ND^2$ 꼴)에 더해 모든 토큰 쌍의 점수와 가중합($N^2D$ 꼴)이 있습니다.
 
-1. (가) 출력 위치 $N$개 × 출력 채널 $D$개 × 입력 $3\cdot3\cdot D$개: $9ND^2=9\cdot1024\cdot256^2=6.040\times10^8$.
-2. (나) 머리마다 $\mathbf Q_h,\mathbf K_h,\mathbf V_h$가 $(N\times D)(D\times32)$ 세 번이고 8머리 합이 $3ND^2$. 점수 $\mathbf Q_h\mathbf K_h^T$는 $N\cdot32\cdot N$, 8머리 합 $N^2D$. 가중합 $\mathbf A_h\mathbf V_h$도 $N^2D$. 출력 투영 $ND^2$. 합 $4ND^2+2N^2D=2.684\times10^8+5.369\times10^8=8.053\times10^8$.
+1. (A) 출력 위치 $N$개 × 출력 채널 $D$개 × 입력 $3\cdot3\cdot D$개: $9ND^2=9\cdot1024\cdot256^2=6.040\times10^8$.
+2. (B) 머리마다 $\mathbf Q_h,\mathbf K_h,\mathbf V_h$가 $(N\times D)(D\times32)$ 세 번이고 8머리 합이 $3ND^2$. 점수 $\mathbf Q_h\mathbf K_h^T$는 $N\cdot32\cdot N$, 8머리 합 $N^2D$. 가중합 $\mathbf A_h\mathbf V_h$도 $N^2D$. 출력 투영 $ND^2$. 합 $4ND^2+2N^2D=2.684\times10^8+5.369\times10^8=8.053\times10^8$.
 3. 비: $\frac{4ND^2+2N^2D}{9ND^2}=\frac{4D+2N}{9D}=\frac{1024+2048}{2304}=\frac43$.
 
 **답.** $\frac43\approx1.3333$배
@@ -325,7 +325,7 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch13:10.2d|다채널 합성곱]], [[ch15:12.1c|멀티헤드 어텐션과 트랜스포머 층]]
 ` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 3, q: R`간 CT 분할용 U-net 디코더의 마지막 단계: 전치 합성곱으로 올린 $256\times256\times64$ 특징 맵을 인코더의 같은 해상도 특징 맵($256\times256\times64$)과 건너뛰는 연결로 이어 붙인 뒤, $3\times3$ 합성곱($\to64$채널, 같은 패딩)과 $1\times1$ 합성곱($\to3$채널: 간, 종양, 배경)을 차례로 쓴다. 두 합성곱층의 모수(편향 포함) 합은? (정수)`, ans: '(9*128+1)*64+(64+1)*3', ansTex: R`1153\cdot64+65\cdot3=73{,}987`,
+      { ch: 'ch14', type: 'num', lv: 2, pts: 3, q: R`The last stage of a U-net decoder for liver CT segmentation: a $256\times256\times64$ feature map upsampled by transpose convolution is concatenated through a skip connection with the encoder feature map of the same resolution ($256\times256\times64$), and then a $3\times3$ convolution ($\to64$ channels, same padding) and a $1\times1$ convolution ($\to3$ channels: liver, tumor, background) are applied in turn. Find the total number of parameters (including biases) of the two convolutional layers. (integer)`, ans: '(9*128+1)*64+(64+1)*3', ansTex: R`1153\cdot64+65\cdot3=73{,}987`,
         sol: R`
 **핵심.** 합성곱층의 모수는 $(M^2C_{\text{IN}}+1)C_{\text{OUT}}$입니다. U-net의 건너뛰는 연결은 잔차 연결처럼 더하지 않고 채널을 **이어 붙이므로**, 다음 층의 입력 채널 수가 두 맵의 채널 수의 합이 됩니다.
 
@@ -342,7 +342,7 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch14:10.5b|전치 합성곱, 완전 합성곱망, U-net]], [[ch13:10.2d|다채널 합성곱과 1×1 합성곱]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 1, pts: 3, q: R`판독문 생성 디코더가 문장 “좌측 폐 결절 없음”(토큰 4개)을 만들 때, 앞 토큰들이 주어졌을 때 각 토큰의 확률이 차례로 $0.2,\ 0.5,\ 0.8,\ 0.9$였다. 이 문장 전체의 정보량 $-\log_2p(\mathbf x_1,\dots,\mathbf x_4)$는 몇 비트인가? (소수 넷째 자리)`, ans: '-ln(0.2*0.5*0.8*0.9)/ln(2)', ansTex: R`-\log_20.072\approx3.7959`,
+      { ch: 'ch15', type: 'num', lv: 1, pts: 3, q: R`When a radiology-report generation decoder produces the sentence “No left lung nodule” (4 tokens), the probabilities of the tokens, each given the preceding tokens, are $0.2,\ 0.5,\ 0.8,\ 0.9$ in order. How many bits is the information content $-\log_2p(\mathbf x_1,\dots,\mathbf x_4)$ of the whole sentence? (4 decimal places)`, ans: '-ln(0.2*0.5*0.8*0.9)/ln(2)', ansTex: R`-\log_20.072\approx3.7959`,
         sol: R`
 **핵심.** 자기회귀 분해(곱의 규칙을 거듭 쓴 것) $p(\mathbf x_1,\dots,\mathbf x_N)=\prod_np(\mathbf x_n\mid\mathbf x_1,\dots,\mathbf x_{n-1})$와 정보량 $h=-\log_2p$를 씁니다. 곱의 로그는 합이므로 문장의 정보량은 토큰별 정보량의 합입니다.
 
@@ -358,7 +358,7 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch15:12.2b|단어 주머니와 자기회귀 모델]], [[ch05:2.5|정보량과 엔트로피]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 3, q: R`어휘 $K=30{,}000$, 임베딩 차원 $D=512$인 판독문 트랜스포머에서 토큰 임베딩 $\mathbf v_n=\mathbf E\mathbf x_n$ ($\mathbf E\in\mathbb R^{D\times K}$, $\mathbf x_n$은 원-핫)을 망과 함께 학습한다. 한 미니배치에 토큰이 2,000개 있고 그중 서로 다른 토큰 종류는 350개이다. 이 미니배치의 오차(규제 항 없음)에서 $\partial E/\partial\mathbf E$의 원소 가운데 0이 아닐 수 있는 것은 최대 몇 개인가? (정수)`, ans: '350*512', ansTex: R`350\times512=179{,}200`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 3, q: R`In a radiology-report transformer with vocabulary size $K=30{,}000$ and embedding dimension $D=512$, the token embeddings $\mathbf v_n=\mathbf E\mathbf x_n$ ($\mathbf E\in\mathbb R^{D\times K}$, $\mathbf x_n$ one-hot) are learned together with the network. A minibatch contains 2,000 tokens, of which 350 are distinct token types. For the error of this minibatch (no regularization term), at most how many elements of $\partial E/\partial\mathbf E$ can be nonzero? (integer)`, ans: '350*512', ansTex: R`350\times512=179{,}200`,
         sol: R`
 **핵심.** 원-핫과의 곱은 $\mathbf E$의 한 열을 뽑는 것이므로, 연쇄법칙으로 $\frac{\partial E}{\partial\mathbf E}=\sum_n\frac{\partial E}{\partial\mathbf v_n}\mathbf x_n^T$이고, 이 행렬은 미니배치에 나온 토큰의 열에만 값이 있습니다.
 
@@ -374,8 +374,8 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch15:12.2|단어 임베딩과 토큰화]], [[ch10:8.1b|일반 피드포워드망과 역전파]]
 ` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 3, q: R`500토큰짜리 입원 경과 기록에서 첫 토큰의 정보가 마지막 위치의 출력에 전달되는 경로와 그 기울기에 관해 맞는 진술은?`,
-        choices: [R`RNN은 모든 시점에서 같은 가중치를 쓰므로 $\partial\mathbf z_N/\partial\mathbf z_0$의 크기가 서열 길이와 무관하다`, R`인과 마스크를 쓰는 디코더에서는 첫 토큰이 마지막 위치의 출력에 영향을 줄 수 없다`, R`트랜스포머에서는 어텐션 한 번으로 두 위치가 바로 이어지고, 층마다 잔차 연결의 항등 경로가 있어 기울기가 같은 야코비안의 거듭곱으로만 전달되지 않는다`, R`셀프 어텐션의 계산량은 서열 길이에 선형이므로 긴 서열에서도 RNN보다 계산이 늘 적다`], ans: 2,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 3, q: R`For a 500-token inpatient progress note, which statement about the path by which information from the first token reaches the output at the last position, and about its gradient, is correct?`,
+        choices: [R`Because an RNN uses the same weights at every time step, the magnitude of $\partial\mathbf z_N/\partial\mathbf z_0$ is independent of the sequence length`, R`In a decoder with a causal mask, the first token cannot influence the output at the last position`, R`In a transformer, a single attention operation connects two positions directly, and every layer has the identity path of a residual connection, so the gradient is not propagated solely through repeated products of the same Jacobian`, R`The computational cost of self-attention is linear in the sequence length, so it always requires less computation than an RNN, even for long sequences`], ans: 2,
         sol: R`
 **핵심.** RNN에서는 정보가 은닉 상태를 $N$번 차례로 거치므로 기울기가 야코비안 $N$개의 곱이 됩니다. 트랜스포머는 어떤 두 위치든 어텐션 한 번(경로 길이 1)으로 잇고, 잔차 연결이 블록마다 항등 경로($\mathbf I+J_l$)를 줍니다.
 
@@ -389,7 +389,7 @@ $$\E_R\Big[\frac12\sum_n(y_n-t_n)^2\Big]=\frac12\sum_n(\tilde{\mathbf w}^T\mathb
 
 관련: [[ch15:12.2c|순환 신경망과 그 한계]], [[ch12:9.5|잔차 연결]]
 ` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`판독문 디코더의 출력층(LSM)은 위치 $n$의 표현 $\tilde{\mathbf x}_n\in\mathbb R^D$에 모든 위치가 공유하는 $\mathbf W^{(p)}\in\mathbb R^{D\times K}$를 곱하고 소프트맥스를 씌운다: $\mathbf y_n=\operatorname{Softmax}(\mathbf W^{(p)T}\tilde{\mathbf x}_n)$, $E=-\sum_n\sum_kt_{nk}\ln y_{nk}$ ($\mathbf t_n$: 다음 토큰의 원-핫). (1) $\partial E/\partial\mathbf W^{(p)}=\sum_n\tilde{\mathbf x}_n(\mathbf y_n-\mathbf t_n)^T$을 유도하세요. (2) $D=2$, $K=3$, $\tilde{\mathbf x}_1=(1,0)$, $\tilde{\mathbf x}_2=(1,1)$, $\mathbf W^{(p)}=\begin{pmatrix}1&0&0\\0&1&0\end{pmatrix}$이고 다음 토큰이 위치 1에서 2번, 위치 2에서 3번일 때 $\mathbf y_1$, $\mathbf y_2$, $E$, $\partial E/\partial\mathbf W^{(p)}$를 구하세요. (3) 모든 위치가 같은 $\mathbf W^{(p)}$를 쓰는 이유와, 학습 때 모든 위치의 오차를 한 번의 순전파로 구해도 되는 이유를 쓰세요.`,
+      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`The output layer (LSM) of a radiology-report decoder multiplies the representation $\tilde{\mathbf x}_n\in\mathbb R^D$ at position $n$ by $\mathbf W^{(p)}\in\mathbb R^{D\times K}$, which is shared by all positions, and applies a softmax: $\mathbf y_n=\operatorname{Softmax}(\mathbf W^{(p)T}\tilde{\mathbf x}_n)$, $E=-\sum_n\sum_kt_{nk}\ln y_{nk}$ ($\mathbf t_n$: one-hot vector of the next token). (1) Derive $\partial E/\partial\mathbf W^{(p)}=\sum_n\tilde{\mathbf x}_n(\mathbf y_n-\mathbf t_n)^T$. (2) For $D=2$, $K=3$, $\tilde{\mathbf x}_1=(1,0)$, $\tilde{\mathbf x}_2=(1,1)$, $\mathbf W^{(p)}=\begin{pmatrix}1&0&0\\0&1&0\end{pmatrix}$, with the next token being token 2 at position 1 and token 3 at position 2, find $\mathbf y_1$, $\mathbf y_2$, $E$ and $\partial E/\partial\mathbf W^{(p)}$. (3) Explain why all positions use the same $\mathbf W^{(p)}$, and why during training the errors at all positions may be obtained from a single forward pass.`,
         rubric: R`
 - (1) 로짓 $a_{nk}=\sum_dW_{dk}\tilde x_{nd}$와 $\partial E/\partial a_{nk}=y_{nk}-t_{nk}$ — 2점
 - (1) 연쇄법칙으로 $\partial E/\partial W_{dk}=\sum_n\tilde x_{nd}(y_{nk}-t_{nk})$, 위치별 기여의 합 — 2점

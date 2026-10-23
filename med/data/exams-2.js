@@ -8,7 +8,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '다층 신경망의 모수·활성화·오차함수와 대조 학습, 합성곱의 계산·크기·모수, 수용 영역, IoU·FGSM·전치 합성곱·스타일 행렬. 계산과 유도를 섞었습니다.',
     minutes: 90, plot: 'gabor',
     problems: [
-      { ch: 'ch07', type: 'num', lv: 1, pts: 6, q: R`입력 20개, 은닉 유닛 50개, 출력 5개인 2층 신경망(편향 포함)의 모수 개수는?`, ans: '1305', ansTex: R`21\cdot50+51\cdot5=1305`,
+      { ch: 'ch07', type: 'num', lv: 1, pts: 6, q: R`How many parameters (including biases) does a two-layer network with 20 inputs, 50 hidden units and 5 outputs have?`, ans: '1305', ansTex: R`21\cdot50+51\cdot5=1305`,
         sol: R`
 **핵심.** 2층 신경망의 모수는 층마다 (들어오는 유닛 수 + 편향 1) × (그 층의 유닛 수)입니다.
 $$(D+1)M+(M+1)K$$
@@ -24,7 +24,7 @@ $$(D+1)M+(M+1)K$$
 **검산.** 행렬 크기로 다시 세면 $50\cdot21+5\cdot51=1050+255=1305$로 같습니다. 모수의 약 $80\%$($1050/1305\approx0.8046$)가 첫 층에 있어, 입력이 커질수록 첫 층이 모수를 지배합니다.
 
 관련: [[ch07:6.2|2층 신경망과 파라미터 행렬]]` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 5, q: R`은닉 활성화가 항등함수인 2층망($D=10$, $M=3$, $K=10$)이 나타내는 선형사상 $\mathbf W^{(2)}\mathbf W^{(1)}$의 계수(rank)의 최댓값은?`, ans: '3', ansTex: R`3`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 5, q: R`A two-layer network ($D=10$, $M=3$, $K=10$) uses the identity as its hidden-unit activation function. What is the maximum possible rank of the linear map $\mathbf W^{(2)}\mathbf W^{(1)}$ that it represents?`, ans: '3', ansTex: R`3`,
         sol: R`
 **핵심.** $h$가 항등함수이면 망 전체가 선형사상 $\mathbf y=\mathbf W^{(2)}\mathbf W^{(1)}\mathbf x$입니다(편향은 상수항만 더할 뿐 선형 부분의 계수와 무관). 행렬곱의 계수는 각 인자의 계수를 넘지 못합니다.
 $$\operatorname{rank}(\mathbf A\mathbf B)\le\min\{\operatorname{rank}\mathbf A,\ \operatorname{rank}\mathbf B\}$$
@@ -41,7 +41,7 @@ $$\operatorname{rank}(\mathbf A\mathbf B)\le\min\{\operatorname{rank}\mathbf A,\
 **검산.** 단원의 설명대로 선형 병목망은 주성분분석처럼 10차원 입력을 3개 방향으로 압축했다가 되살리므로 계수 3과 맞습니다.
 
 관련: [[ch07:6.2|선형 은닉 유닛과 병목]]` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 6, q: R`기준과 양성 예의 유사도가 $0.9$, 음성 예 네 개와의 유사도가 모두 $0.1$일 때 InfoNCE 손실은? (소수 넷째 자리)`, ans: '-ln(exp(0.9)/(exp(0.9)+4*exp(0.1)))', ansTex: R`\approx1.0287`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 6, q: R`The similarity between the anchor and the positive example is $0.9$, and its similarity to each of four negative examples is $0.1$. Find the InfoNCE loss. (4 decimal places)`, ans: '-ln(exp(0.9)/(exp(0.9)+4*exp(0.1)))', ansTex: R`\approx1.0287`,
         sol: R`
 **핵심.** InfoNCE 손실은 기준–양성 유사도를 정답 클래스의 로짓, 기준–음성 유사도를 오답 클래스의 로짓으로 둔 소프트맥스 교차 엔트로피입니다.
 $$E=-\ln\frac{e^{s^+}}{e^{s^+}+\sum_{n=1}^Ne^{s_n^-}}$$
@@ -59,7 +59,7 @@ $$E=-\ln\frac{e^{s^+}}{e^{s^+}+\sum_{n=1}^Ne^{s_n^-}}$$
 **검산.** 분자·분모를 $e^{0.9}$로 나누면 $E=\ln(1+4e^{-0.8})=\ln(1+1.7973)=\ln2.7973\approx1.0287$로 같습니다. 양성·음성 유사도가 모두 같다면 $E=\ln5\approx1.609$이므로, 양성 쌍이 더 가까운 지금은 그보다 작아야 맞습니다.
 
 관련: [[ch07:6.3c|대조 학습과 InfoNCE 손실]]` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 6, q: R`로짓 $\mathbf a=(1,0,-1)$에 소프트맥스를 쓰고 정답이 첫째 클래스일 때 $\partial E/\partial a_1$ ($E=-\sum_kt_k\ln y_k$)은? (소수 넷째 자리)`, ans: 'exp(1)/(exp(1)+1+exp(-1))-1', ansTex: R`y_1-1\approx-0.3348`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 6, q: R`A softmax is applied to the logits $\mathbf a=(1,0,-1)$, and the correct class is the first one. Find $\partial E/\partial a_1$ ($E=-\sum_kt_k\ln y_k$). (4 decimal places)`, ans: 'exp(1)/(exp(1)+1+exp(-1))-1', ansTex: R`y_1-1\approx-0.3348`,
         sol: R`
 **핵심.** 소프트맥스 출력과 다중 클래스 교차 엔트로피의 짝(정준 연결)에서는 한 표본의 오차에 대해 $\dfrac{\partial E}{\partial a_k}=y_k-t_k$입니다.
 
@@ -75,8 +75,8 @@ $$E=-\ln\frac{e^{s^+}}{e^{s^+}+\sum_{n=1}^Ne^{s_n^-}}$$
 **검산.** 직접 미분해도 같습니다: $E=-\ln y_1=-a_1+\ln\sum_je^{a_j}$이므로 $\partial E/\partial a_1=-1+\frac{e^{a_1}}{\sum_je^{a_j}}=y_1-1$. 세 성분 $\mathbf y-\mathbf t=(-0.3348,\,0.2447,\,0.0900)$의 합이 0인 것도 $\sum_ky_k=\sum_kt_k=1$과 맞습니다.
 
 관련: [[ch07:6.4|다중 클래스 교차 엔트로피]]` },
-      { ch: 'ch07', type: 'mc', lv: 1, pts: 5, q: R`흉부 X선 한 장에서 “결절”, “기흉”, “심비대”를 **각각 있는지** 판단하는 망의 출력층과 오차함수로 알맞은 것은?`,
-        choices: [R`소프트맥스 3개 + 다중 클래스 교차 엔트로피`, R`선형 출력 3개 + 제곱오차`, R`시그모이드 3개 + 이진 교차 엔트로피의 합`, R`tanh 출력 3개 + 제곱오차`], ans: 2,
+      { ch: 'ch07', type: 'mc', lv: 1, pts: 5, q: R`A network must decide, for a single chest X-ray, whether a “nodule”, a “pneumothorax” and “cardiomegaly” are **each** present. Which output layer and error function are appropriate?`,
+        choices: [R`3 softmax outputs + multiclass cross-entropy`, R`3 linear outputs + sum-of-squares error`, R`3 sigmoid outputs + sum of binary cross-entropies`, R`3 tanh outputs + sum-of-squares error`], ans: 2,
         sol: R`
 **핵심.** 목표값의 분포가 출력 활성화와 오차함수를 정합니다. 세 소견은 한 영상에 **동시에** 있을 수 있어 서로 배타적이지 않으므로, 소견마다 따로인 베르누이 분포, 곧 $K=3$개의 독립 이진 분류로 봅니다.
 $$E=-\sum_{k=1}^3\{t_k\ln y_k+(1-t_k)\ln(1-y_k)\},\qquad y_k=\sigma(a_k)$$
@@ -90,7 +90,7 @@ $$E=-\sum_{k=1}^3\{t_k\ln y_k+(1-t_k)\ln(1-y_k)\},\qquad y_k=\sigma(a_k)$$
 **보기 검토.** ① 소프트맥스는 $\sum_ky_k=1$이라 “셋 중 정확히 하나”인 배타적 클래스에 씁니다. 결절과 기흉이 함께 있는 영상을 나타낼 수 없습니다. ② 선형 출력 + 제곱오차는 실수 목표(가우시안)의 회귀 짝이라 출력이 확률로 해석되지 않습니다. ③ 정답. ④ tanh 출력은 $(-1,1)$ 범위라 확률이 아니고, 제곱오차는 크게 틀린 예측에서 기울기가 작아 학습이 느립니다.
 
 관련: [[ch07:6.4|출력 활성화와 오차함수의 짝]]` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 5, q: R`목표가 2개($K=2$)인 회귀에서 세 표본의 잔차 벡터가 $(0.2,-0.1)$, $(0.3,0)$, $(-0.2,0.4)$이다. 잡음 분산의 최대가능도 추정값은? (소수 넷째 자리)`, ans: '0.34/6', ansTex: R`\tfrac{0.34}{6}\approx0.0567`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 5, q: R`In a regression with two targets ($K=2$), the residual vectors of three samples are $(0.2,-0.1)$, $(0.3,0)$, $(-0.2,0.4)$. Find the maximum likelihood estimate of the noise variance. (4 decimal places)`, ans: '0.34/6', ansTex: R`\tfrac{0.34}{6}\approx0.0567`,
         sol: R`
 **핵심.** 목표가 $K$개이고 공통 잡음 분산 $\sigma^2\mathbf I$인 가우시안 모델 $\N(\mathbf t\mid\mathbf y(\mathbf x,\mathbf w),\sigma^2\mathbf I)$에서, 잡음 분산의 최대가능도 해는 모든 표본·모든 성분에 걸친 잔차 제곱의 평균입니다.
 $$\sigma^{2\star}=\frac1{NK}\sum_{n=1}^N\lVert\mathbf y(\mathbf x_n,\mathbf w^\star)-\mathbf t_n\rVert^2$$
@@ -107,7 +107,7 @@ $$\sigma^{2\star}=\frac1{NK}\sum_{n=1}^N\lVert\mathbf y(\mathbf x_n,\mathbf w^\s
 **검산.** 음의 로그가능도 중 $\sigma^2$에 의존하는 부분 $\frac{S}{2\sigma^2}+\frac{NK}2\ln\sigma^2$ ($S=0.34$)를 $\sigma^2$로 미분해 0으로 두면 $-\frac{S}{2\sigma^4}+\frac{NK}{2\sigma^2}=0$, 곧 $\sigma^2=S/(NK)$로 같은 식입니다. $K=1$이면 단원의 $\sigma^{2\star}=\frac1N\sum_n(y_n-t_n)^2$로 돌아갑니다.
 
 관련: [[ch07:6.4|회귀의 오차함수와 잡음 분산]]` },
-      { ch: 'ch13', type: 'num', lv: 1, pts: 6, q: R`$128\times128$ 영상에 $7\times7$ 필터를 패딩 3, 보폭 2로 적용한 출력의 한 변은?`, ans: '64', ansTex: R`\lfloor127/2\rfloor+1=64`,
+      { ch: 'ch13', type: 'num', lv: 1, pts: 6, q: R`A $7\times7$ filter is applied to a $128\times128$ image with padding 3 and stride 2. What is the side length of the output?`, ans: '64', ansTex: R`\lfloor127/2\rfloor+1=64`,
         sol: R`
 **핵심.** 한 변 $J$, 필터 $M$, 패딩 $P$, 보폭 $S$일 때 특징 맵의 한 변은
 $$\Big\lfloor\frac{J+2P-M}S\Big\rfloor+1$$
@@ -125,7 +125,7 @@ $$\Big\lfloor\frac{J+2P-M}S\Big\rfloor+1$$
 **검산.** $P=3=(7-1)/2$는 $7\times7$ 필터의 같은(same) 패딩이라 보폭 1이면 출력이 $128$이고, 보폭 2는 이를 대략 절반으로 줄이므로 $64$와 맞습니다. 창의 시작 위치로 세어도 $t$번째 창은 $2t$에서 시작해 $2t+6$에서 끝나고 $2t+6\le133$이어야 하므로 $t=0,1,\dots,63$의 64개입니다.
 
 관련: [[ch13:10.2c|패딩과 보폭]]` },
-      { ch: 'ch13', type: 'num', lv: 1, pts: 6, q: R`256채널 입력에 $3\times3$ 필터 512개를 쓰는 합성곱층의 모수(편향 포함)는?`, ans: '(9*256+1)*512', ansTex: R`1{,}180{,}160`,
+      { ch: 'ch13', type: 'num', lv: 1, pts: 6, q: R`How many parameters (including biases) does a convolutional layer with 512 filters of size $3\times3$ applied to a 256-channel input have?`, ans: '(9*256+1)*512', ansTex: R`1{,}180{,}160`,
         sol: R`
 **핵심.** 다채널 합성곱층의 필터 하나는 $M\times M\times C_{\text{IN}}$ 크기로 모든 입력 채널에 걸치고, 필터(출력 채널)마다 편향이 하나라 모수는
 $$(M^2C_{\text{IN}}+1)\,C_{\text{OUT}}$$
@@ -142,7 +142,7 @@ $$(M^2C_{\text{IN}}+1)\,C_{\text{OUT}}$$
 **검산.** 필터 텐서 $3\times3\times256\times512$의 원소 $1{,}179{,}648$개에 편향 $512$개를 더하면 $1{,}180{,}160$으로 같습니다. 입력 채널을 두 배(512)로 늘리면 $(9\cdot512+1)\cdot512=2{,}359{,}808$로 거의 정확히 두 배가 되는 것도 공식과 맞습니다.
 
 관련: [[ch13:10.2d|다채널 합성곱층의 모수]]` },
-      { ch: 'ch13', type: 'num', lv: 2, pts: 6, q: R`$I=\begin{pmatrix}1&2&0\\0&1&3\\2&1&1\end{pmatrix}$, $K=\begin{pmatrix}1&-1\\0&2\end{pmatrix}$일 때 $C=I*K$ (딥러닝의 정의)의 $C(0,1)$ (첫 행 둘째 열)은?`, ans: '8', ansTex: R`2-0+0+6=8`,
+      { ch: 'ch13', type: 'num', lv: 2, pts: 6, q: R`For $I=\begin{pmatrix}1&2&0\\0&1&3\\2&1&1\end{pmatrix}$, $K=\begin{pmatrix}1&-1\\0&2\end{pmatrix}$, find $C(0,1)$ (first row, second column) of $C=I*K$ (deep-learning definition).`, ans: '8', ansTex: R`2-0+0+6=8`,
         sol: R`
 **핵심.** 딥러닝의 합성곱(엄밀히는 교차상관)은 커널을 뒤집지 않고 패치에 겹쳐 원소별 곱을 더합니다. 첨자는 0부터 셉니다.
 $$C(j,k)=\sum_l\sum_mI(j+l,\,k+m)\,K(l,m)$$
@@ -160,7 +160,7 @@ $$C=\begin{pmatrix}1&8\\1&0\end{pmatrix}.$$
 첫 행 둘째 열이 8로 맞습니다.
 
 관련: [[ch13:10.2b|합성곱 연산]]` },
-      { ch: 'ch13', type: 'num', lv: 1, pts: 5, q: R`보폭 1인 $3\times3$ 합성곱층 5개를 쌓으면 맨 위 유닛의 수용 영역 한 변은?`, ans: '11', ansTex: R`5\cdot2+1=11`,
+      { ch: 'ch13', type: 'num', lv: 1, pts: 5, q: R`Five $3\times3$ convolutional layers with stride 1 are stacked. What is the side length of the receptive field of a unit in the top layer?`, ans: '11', ansTex: R`5\cdot2+1=11`,
         sol: R`
 **핵심.** 보폭 1, 크기 $M$인 합성곱층을 $L$개 쌓으면 맨 위 유닛의 입력 쪽 유효 수용 영역은 한 변이
 $$L(M-1)+1$$
@@ -177,8 +177,8 @@ $$L(M-1)+1$$
 **검산.** $L=1$이면 $3$으로 필터 자신, $L=2$이면 $5$로 단원의 “$3\times3$ 두 층 → $5\times5$”와 같습니다. 같은 $11\times11$ 수용 영역을 한 층으로 얻으면 가중치가 $121C^2$이지만 다섯 층은 $5\cdot9C^2=45C^2$이라 작은 필터를 쌓는 편이 모수가 적습니다.
 
 관련: [[ch13:10.2f|다층 합성곱과 유효 수용 영역]]` },
-      { ch: 'ch13', type: 'mc', lv: 1, pts: 5, q: R`1×1 합성곱의 주된 용도는?`,
-        choices: [R`공간 해상도를 절반으로 줄이기`, R`모서리 검출`, R`평행이동 불변성 만들기`, R`공간 크기는 유지한 채 채널 수를 바꾸기(줄이기)`], ans: 3,
+      { ch: 'ch13', type: 'mc', lv: 1, pts: 5, q: R`What is the main use of a 1×1 convolution?`,
+        choices: [R`Halving the spatial resolution`, R`Edge detection`, R`Creating translation invariance`, R`Changing (reducing) the number of channels while keeping the spatial size`], ans: 3,
         sol: R`
 **핵심.** 1×1 합성곱은 공간적으로 한 화소만 덮고 모든 입력 채널에 걸치는 필터입니다. 화소마다 채널 벡터 $\mathbf a\in\mathbb R^C$에 같은 완전연결층을 적용하는 것과 같습니다.
 $$\mathbf a\mapsto\mathbf W\mathbf a+\mathbf b,\qquad\mathbf W\in\mathbb R^{C_{\text{OUT}}\times C}$$
@@ -191,7 +191,7 @@ $$\mathbf a\mapsto\mathbf W\mathbf a+\mathbf b,\qquad\mathbf W\in\mathbb R^{C_{\
 **보기 검토.** ① 공간 해상도를 줄이는 것은 보폭 합성곱과 풀링의 역할입니다. 보폭 1인 1×1은 크기를 그대로 둡니다. ② 모서리는 이웃 화소 사이의 세기 변화라 $K_{\text{세로}}$ 같은 넓은 커널이 필요합니다. 한 화소만 보는 1×1은 공간 패턴을 잡지 못합니다. ③ 작은 이동에 대한 불변성은 풀링이 줍니다. 1×1 합성곱도 다른 합성곱처럼 평행이동 등변일 뿐입니다. ④ 정답 — 공간은 그대로 두고 깊이(채널 수)만 바꿉니다.
 
 관련: [[ch13:10.2d|1×1 합성곱]]` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 6, q: R`정답 상자 $[0,3]\times[0,3]$, 예측 상자 $[1,4]\times[1,4]$의 IoU는? (소수 넷째 자리)`, ans: '4/14', ansTex: R`\tfrac4{14}\approx0.2857`,
+      { ch: 'ch14', type: 'num', lv: 2, pts: 6, q: R`Find the IoU of the ground-truth bounding box $[0,3]\times[0,3]$ and the predicted box $[1,4]\times[1,4]$. (4 decimal places)`, ans: '4/14', ansTex: R`\tfrac4{14}\approx0.2857`,
         sol: R`
 **핵심.** IoU는 두 상자의 교집합 넓이를 합집합 넓이로 나눈 값입니다.
 $$\text{IoU}=\frac{\lvert A\cap B\rvert}{\lvert A\rvert+\lvert B\rvert-\lvert A\cap B\rvert}$$
@@ -208,7 +208,7 @@ $$\text{IoU}=\frac{\lvert A\cap B\rvert}{\lvert A\rvert+\lvert B\rvert-\lvert A\
 **검산.** 값이 $[0,1]$ 안이고, 보통 쓰는 문턱 0.5보다 작으므로 이 예측은 맞은 검출로 치지 않습니다. 한 변 3인 상자가 대각선으로 1씩만 비켜도 IoU가 0.29로 떨어진다는 뜻입니다. 겹친 정사각형의 한 변을 $s$라 하면 $\text{IoU}=\frac{s^2}{18-s^2}$이고, $s=2$를 넣어도 $4/14$입니다.
 
 관련: [[ch14:10.4|경계 상자와 IoU]]` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 5, q: R`로지스틱 회귀 $\sigma(\mathbf w^T\mathbf x)$, $\mathbf w=(3,-2,1,0.5)$에 $\epsilon=0.05$의 FGSM을 적용하면(참 레이블 1) 사전활성 $\mathbf w^T\mathbf x$는 얼마나 줄어드는가? (줄어든 양을 양수로)`, ans: '0.325', ansTex: R`\epsilon\lVert\mathbf w\rVert_1=0.325`,
+      { ch: 'ch14', type: 'num', lv: 2, pts: 5, q: R`FGSM with $\epsilon=0.05$ is applied to the logistic regression model $\sigma(\mathbf w^T\mathbf x)$, $\mathbf w=(3,-2,1,0.5)$ (true label 1). By how much does the pre-activation $\mathbf w^T\mathbf x$ decrease? (give the decrease as a positive number)`, ans: '0.325', ansTex: R`\epsilon\lVert\mathbf w\rVert_1=0.325`,
         sol: R`
 **핵심.** FGSM은 $\mathbf x'=\mathbf x+\epsilon\operatorname{sign}\big(\nabla_{\mathbf x}E(\mathbf x,t)\big)$로 영상을 바꿔 오차를 키웁니다. 선형 모델에서는 기울기 방향이 $\mathbf w$로 정해져 사전활성의 변화가 $\epsilon\lVert\mathbf w\rVert_1$이 됩니다.
 
@@ -224,7 +224,7 @@ $$\text{IoU}=\frac{\lvert A\cap B\rvert}{\lvert A\rvert+\lvert B\rvert-\lvert A\
 **검산.** 성분별로 $-0.15-0.10-0.05-0.025=-0.325$. 부호만 쓰므로 결과는 $\mathbf x$와 $\sigma(a)$의 값에 무관합니다.
 
 관련: [[ch14:10.3b|FGSM 적대적 공격]]` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 6, q: R`필터 $(2,1,-1)$, 입력 $(z_1,z_2)=(1,3)$, 출력 보폭 2(겹치면 더함)인 1차원 전치 합성곱 결과 $\mathbf A^T\mathbf z$의 셋째 원소는?`, ans: '5', ansTex: R`w_3z_1+w_1z_2=-1+6=5`,
+      { ch: 'ch14', type: 'num', lv: 2, pts: 6, q: R`Find the third element of the result $\mathbf A^T\mathbf z$ of a one-dimensional transpose convolution with filter $(2,1,-1)$, input $(z_1,z_2)=(1,3)$ and output stride 2 (overlapping contributions are added).`, ans: '5', ansTex: R`w_3z_1+w_1z_2=-1+6=5`,
         sol: R`
 **핵심.** 전치 합성곱(출력 보폭 2)은 입력 한 칸 $z_i$를 출력의 패치에 $z_i(w_1,w_2,w_3)$ 모양으로 뿌리고 겹치는 칸은 더합니다. 행렬로는 보폭 2 합성곱 행렬 $\mathbf A$의 전치입니다.
 $$\mathbf A=\begin{pmatrix}w_1&w_2&w_3&0&0&0\\0&0&w_1&w_2&w_3&0\end{pmatrix},\qquad\mathbf A^T\mathbf z=(w_1z_1,\ w_2z_1,\ w_3z_1+w_1z_2,\ w_2z_2,\ w_3z_2,\ 0)^T$$
@@ -241,7 +241,7 @@ $$\mathbf A=\begin{pmatrix}w_1&w_2&w_3&0&0&0\\0&0&w_1&w_2&w_3&0\end{pmatrix},\qq
 **검산.** $\mathbf A^T$의 셋째 행은 $\mathbf A$의 셋째 열 $(w_3,\,w_1)=(-1,\,2)$이므로 $(-1)\cdot1+2\cdot3=5$. 각 $z_i$가 필터 전체를 한 번씩 뿌리므로 출력의 합 $2+1+5+3-3+0=8$은 $(w_1+w_2+w_3)(z_1+z_2)=2\cdot4=8$과 같습니다.
 
 관련: [[ch14:10.5b|전치 합성곱]]` },
-      { ch: 'ch14', type: 'num', lv: 1, pts: 5, q: R`한 층의 위치가 3곳이고 채널 1의 값이 $(1,2,0)$, 채널 2의 값이 $(0,1,1)$일 때 스타일 행렬의 $F_{12}$는?`, ans: '2', ansTex: R`0+2+0=2`,
+      { ch: 'ch14', type: 'num', lv: 1, pts: 5, q: R`A layer has 3 positions; the values of channel 1 are $(1,2,0)$ and those of channel 2 are $(0,1,1)$. Find the element $F_{12}$ of the style matrix.`, ans: '2', ansTex: R`0+2+0=2`,
         sol: R`
 **핵심.** 스타일 행렬의 원소는 두 채널의 활성을 **같은 위치끼리** 곱해 모든 위치에 걸쳐 더한 값입니다.
 $$F_{kk'}=\sum_{i=1}^I\sum_{j=1}^Ja_{ijk}\,a_{ijk'}$$
@@ -257,7 +257,7 @@ $$F_{kk'}=\sum_{i=1}^I\sum_{j=1}^Ja_{ijk}\,a_{ijk'}$$
 **검산.** 행렬 전체는 $F_{11}=1+4+0=5$, $F_{22}=0+1+1=2$, $F_{12}=F_{21}=2$로 대칭이고, 코시-슈바르츠 부등식 $F_{12}^2=4\le F_{11}F_{22}=10$도 만족합니다. 세 위치의 순서를 바꿔도 값이 그대로이므로, 특징이 **어디서** 나타나는지가 아니라 **함께** 나타나는지를 잰다는 성질과 맞습니다.
 
 관련: [[ch14:10.6|스타일 행렬과 스타일 오차]]` },
-      { ch: 'ch07', type: 'open', lv: 3, pts: 9, q: R`소프트맥스 $y_k=e^{a_k}/\sum_je^{a_j}$와 1-of-$K$ 목표 $\mathbf t$에 대해 (1) 범주 분포의 음의 로그가능도가 $E=-\sum_kt_k\ln y_k$임을 쓰고, (2) $\partial E/\partial a_k=y_k-t_k$를 유도하고, (3) 모든 $a_k$에 같은 상수를 더해도 $E$가 변하지 않음을 보이세요.`,
+      { ch: 'ch07', type: 'open', lv: 3, pts: 9, q: R`For the softmax $y_k=e^{a_k}/\sum_je^{a_j}$ and a 1-of-$K$ target $\mathbf t$: (1) show that the negative log-likelihood of the categorical distribution is $E=-\sum_kt_k\ln y_k$; (2) derive $\partial E/\partial a_k=y_k-t_k$; (3) show that adding the same constant to every $a_k$ leaves $E$ unchanged.`,
         rubric: R`
 - (1) 범주 분포 $p(\mathbf t\mid\mathbf x)=\prod_ky_k^{t_k}$의 음의 로그로 $E=-\sum_kt_k\ln y_k$ — 2점
 - (2) $\ln y_j=a_j-\ln\sum_le^{a_l}$에서 $\partial\ln y_j/\partial a_k=\delta_{jk}-y_k$ — 3점
@@ -287,7 +287,7 @@ $$\frac{e^{a_k+c}}{\sum_je^{a_j+c}}=\frac{e^c\,e^{a_k}}{e^c\sum_je^{a_j}}=\frac{
 **자주 하는 실수.** $\partial y_j/\partial a_k$에서 $j\ne k$인 항 $-y_jy_k$를 빼먹고 $\partial E/\partial a_k=-t_k(1-y_k)$로 끝내는 것. 그러면 정답이 아닌 클래스의 로짓에 대한 기울기가 0이 되어 버립니다.
 
 관련: [[ch07:6.4|다중 클래스 교차 엔트로피]]` },
-      { ch: 'ch14', type: 'open', lv: 3, pts: 8, q: R`마지막 합성곱층(채널 $k$, 유닛 수 $M$) 뒤에 전역 평균 풀링과 선형층만 있어 $a^{(c)}=\sum_kw_k^c\frac1M\sum_{i,j}a_{ij}^{(k)}+b^c$일 때, Grad-CAM의 $\alpha_k$와 $\mathbf L$을 구하고 $\sum_{i,j}L_{ij}$가 무엇과 같은지 설명하세요.`,
+      { ch: 'ch14', type: 'open', lv: 3, pts: 8, q: R`The last convolutional layer (channels $k$, $M$ units per channel) is followed only by global average pooling and a linear layer, so that $a^{(c)}=\sum_kw_k^c\frac1M\sum_{i,j}a_{ij}^{(k)}+b^c$. Find the Grad-CAM quantities $\alpha_k$ and $\mathbf L$, and explain what $\sum_{i,j}L_{ij}$ equals.`,
         rubric: R`
 - 점수가 $a_{ij}^{(k)}$에 대해 선형이라 $\partial a^{(c)}/\partial a_{ij}^{(k)}=w_k^c/M$ (위치와 무관) — 3점
 - $\alpha_k=w_k^c/M$, $\mathbf L=\frac1M\sum_kw_k^c\mathbf A^{(k)}$ — 3점

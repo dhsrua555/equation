@@ -8,8 +8,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '토큰화와 단어 주머니·n-그램, RNN의 시간 역전파, GPT의 마스크·온도·top-p·KV 캐시·빔 탐색, BERT와 인코더–디코더·LoRA의 모수, ViT 패치와 벡터 양자화·직통 기울기. 최대가능도 증명 하나와 여러 단계 계산 서술형 셋이 들어 있습니다.',
     minutes: 100, plot: 'attn',
     problems: [
-      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`단어 임베딩과 토큰화를 바르게 말한 진술을 고르세요. (사전 크기 $K$, 임베딩 행렬 $\mathbf E\in\mathbb R^{D\times K}$, $\mathbf x_n$은 원-핫 벡터)`,
-        choices: [R`서로 다른 두 단어의 원-핫 벡터 사이의 유클리드 거리는 어떤 단어 쌍이냐에 따라 달라진다`, R`$\mathbf E\mathbf x_n$은 $\mathbf x_n$의 1이 있는 자리에 해당하는 $\mathbf E$의 열 하나를 꺼낸 것이므로, 구현에서는 곱셈 대신 표에서 찾아 읽는다`, R`바이트 쌍 부호화(BPE)는 가장 잦은 인접 쌍을 합칠 때 단어 경계를 넘는 쌍도 합친다`, R`BPE에서 병합을 거듭할수록 사전의 토큰 수가 줄어들어, 끝까지 계속하면 낱글자 집합이 된다`], ans: 1,
+      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`Which statement about word embeddings and tokenization is correct? (vocabulary size $K$, embedding matrix $\mathbf E\in\mathbb R^{D\times K}$, $\mathbf x_n$ a one-hot vector)`,
+        choices: [R`The Euclidean distance between the one-hot vectors of two different words depends on which pair of words is chosen`, R`$\mathbf E\mathbf x_n$ picks out the single column of $\mathbf E$ corresponding to the position of the 1 in $\mathbf x_n$, so implementations use a table lookup instead of a multiplication`, R`When byte pair encoding (BPE) merges the most frequent adjacent pair, it also merges pairs that cross word boundaries`, R`In BPE, each successive merge reduces the number of tokens in the vocabulary, so if merging is continued to the end the vocabulary becomes the set of single characters`], ans: 1,
         sol: R`
 **핵심.** 원-핫 부호화, 임베딩 $\mathbf v_n=\mathbf E\mathbf x_n$, 바이트 쌍 부호화의 규칙을 정확히 아는지 묻습니다.
 
@@ -23,7 +23,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch15:12.2|단어 임베딩과 토큰화]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 1, pts: 4, q: R`단어별 빈도가 cat 3번, cats 2번, at 4번인 말뭉치에 바이트 쌍 부호화(BPE)를 적용한다. 낱글자 사전에서 시작해, 단어 안의 인접한 두 토큰 쌍 가운데 (단어 빈도를 반영해) 가장 잦은 쌍을 하나로 합치는 병합을 **두 번** 한다. 그 뒤 말뭉치 전체(빈도 포함)를 나타내는 데 쓰이는 토큰은 모두 몇 개인가? (정수)`, ans: '11', ansTex: R`3\cdot1+2\cdot2+4\cdot1=11`,
+      { ch: 'ch15', type: 'num', lv: 1, pts: 4, q: R`Byte pair encoding (BPE) is applied to a corpus with word frequencies cat 3, cats 2, at 4. Starting from a vocabulary of single characters, perform **two** merges, each of which combines into one token the most frequent pair of adjacent tokens within a word (counted with the word frequencies). After that, how many tokens in total are used to represent the whole corpus (including frequencies)? (integer)`, ans: '11', ansTex: R`3\cdot1+2\cdot2+4\cdot1=11`,
         sol: R`
 **핵심.** BPE는 매 단계 단어 **안**의 인접 쌍 빈도를 단어 빈도로 가중해 세고, 가장 잦은 쌍을 새 토큰으로 합칩니다. 쌍 하나를 합치면 그 쌍이 나온 횟수만큼 전체 토큰 수가 줄어듭니다.
 
@@ -40,7 +40,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch15:12.2|단어 임베딩과 토큰화]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`흉부 CT 판독문을 “이상”과 “정상” 두 클래스로 나누는 나이브 베이즈 분류기를 단어 주머니로 만든다. 사전은 {결절, 음영, 소견, 깨끗}($K=4$)이다. 훈련 자료는 이상 판독문 2건(단어 10개: 결절 4, 음영 3, 소견 3, 깨끗 0)과 정상 판독문 3건(단어 10개: 결절 0, 음영 1, 소견 4, 깨끗 5)이다. 사전확률은 판독문 건수의 비율로, 단어 확률은 클래스마다 라플라스 평활화 $\frac{n+1}{N+K}$로 추정할 때, 새 판독문 “결절 깨끗 소견”이 이상 클래스일 사후확률은? (소수 넷째 자리)`, ans: '0.4*20/(0.4*20+0.6*30)', ansTex: R`\tfrac{0.4\cdot20}{0.4\cdot20+0.6\cdot30}=\tfrac4{13}\approx0.3077`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`A naive Bayes classifier that assigns chest CT radiology reports to two classes, “abnormal” and “normal”, is built on a bag-of-words model. The vocabulary is {nodule, opacity, finding, clear} ($K=4$). The training data are 2 abnormal reports (10 words: nodule 4, opacity 3, finding 3, clear 0) and 3 normal reports (10 words: nodule 0, opacity 1, finding 4, clear 5). The prior probabilities are estimated as the fractions of reports, and the word probabilities for each class by Laplace smoothing $\frac{n+1}{N+K}$. Find the posterior probability that the new report “nodule clear finding” belongs to the abnormal class. (4 decimal places)`, ans: '0.4*20/(0.4*20+0.6*30)', ansTex: R`\tfrac{0.4\cdot20}{0.4\cdot20+0.6\cdot30}=\tfrac4{13}\approx0.3077`,
         sol: R`
 **핵심.** 클래스가 주어졌을 때 단어들이 조건부 독립이라 가정하면 $p(\mathcal C_k\mid\mathbf x_{1:N})\propto p(\mathcal C_k)\prod_np(\mathbf x_n\mid\mathcal C_k)$이고, 단어 확률은 클래스 안의 빈도를 평활화해 셉니다.
 $$p(w\mid\mathcal C_k)=\frac{n_{kw}+1}{N_k+K}$$
@@ -58,7 +58,7 @@ $$p(w\mid\mathcal C_k)=\frac{n_{kw}+1}{N_k+K}$$
 
 관련: [[ch15:12.2b|단어 주머니와 자기회귀 모델]] · [[ch03:2.1b|베이즈 정리]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`두 서열 “a b c a b d”와 “a b c”로 이루어진 말뭉치에서 토큰 3개짜리 묶음의 결합 빈도 $p_3$와 2개짜리 묶음의 결합 빈도 $p_2$를 세어(각 묶음의 수를 그 크기 묶음의 전체 수로 나눈 상대 빈도), 트라이그램 조건부 확률 $p(\text{c}\mid\text{a},\text{b})=p_3(\text{a},\text{b},\text{c})/p_2(\text{a},\text{b})$를 구하라. 조건부 확률들의 합이 1이 되도록 세어야 한다. (분수 또는 소수)`, ans: '2/3', ansTex: R`\tfrac{2/5}{3/5}=\tfrac23`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`For a corpus consisting of the two sequences “a b c a b d” and “a b c”, count the joint frequencies $p_3$ of 3-token tuples and $p_2$ of 2-token tuples (relative frequencies: the count of each tuple divided by the total number of tuples of that size), and find the trigram conditional probability $p(\text{c}\mid\text{a},\text{b})=p_3(\text{a},\text{b},\text{c})/p_2(\text{a},\text{b})$. The counting must be done so that the conditional probabilities sum to 1. (fraction or decimal)`, ans: '2/3', ansTex: R`\tfrac{2/5}{3/5}=\tfrac23`,
         sol: R`
 **핵심.** $n$-그램 조건부 확률은 결합 빈도의 비 $p_L/p_{L-1}$로 계산하고, 분모의 $(L-1)$-묶음을 셀 때 각 서열의 **마지막 토큰으로 끝나는 묶음은 뺍니다**. 그래야 $L$-묶음과 $(L-1)$-묶음의 전체 수가 같아져 조건부 확률의 합이 1이 됩니다.
 
@@ -74,11 +74,11 @@ $$p(w\mid\mathcal C_k)=\frac{n_{kw}+1}{N_k+K}$$
 
 관련: [[ch15:12.2b|단어 주머니와 자기회귀 모델]]
 ` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`판독문 말뭉치를 단어 주머니 모델로 나타낸다. 사전은 $\{1,\dots,K\}$이고 모든 위치가 같은 표 $p(\mathbf x=k)=\mu_k$ ($\mu_k\ge0$, $\sum_k\mu_k=1$)를 쓴다. 훈련 자료의 단어 $N$개 가운데 $k$번 단어가 $n_k$번 나왔다.
-(1) 로그가능도가 $\ell(\boldsymbol\mu)=\sum_kn_k\ln\mu_k$임을 보이세요.
-(2) 라그랑주 승수로 제약 아래의 정류점이 $\hat\mu_k=n_k/N$임을 유도하세요.
-(3) 모든 $\boldsymbol\mu$에 대해 $\ell(\boldsymbol\mu)\le\ell(\hat{\boldsymbol\mu})$이고 등호는 $\boldsymbol\mu=\hat{\boldsymbol\mu}$일 때뿐임을 KL 발산으로 보이세요(편의상 모든 $n_k>0$이라 해도 됩니다).
-(4) 라플라스 평활화 $\tilde\mu_k=\frac{n_k+1}{N+K}$가 $\hat\mu_k$와 균등분포 $\frac1K$의 볼록 결합임을 보이고, $K=4$, $(n_1,\dots,n_4)=(6,3,1,0)$에서 $\hat{\boldsymbol\mu}$와 $\tilde{\boldsymbol\mu}$를 구한 뒤, 이 차이가 나이브 베이즈 분류에서 왜 중요한지 쓰세요.`,
+      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`A corpus of radiology reports is modelled with a bag-of-words model. The vocabulary is $\{1,\dots,K\}$ and every position uses the same table $p(\mathbf x=k)=\mu_k$ ($\mu_k\ge0$, $\sum_k\mu_k=1$). Among the $N$ words of the training data, word $k$ occurs $n_k$ times.
+(1) Show that the log likelihood is $\ell(\boldsymbol\mu)=\sum_kn_k\ln\mu_k$.
+(2) Using a Lagrange multiplier, derive that the stationary point under the constraint is $\hat\mu_k=n_k/N$.
+(3) Using the Kullback–Leibler divergence, show that $\ell(\boldsymbol\mu)\le\ell(\hat{\boldsymbol\mu})$ for every $\boldsymbol\mu$, with equality only when $\boldsymbol\mu=\hat{\boldsymbol\mu}$ (for convenience you may assume that all $n_k>0$).
+(4) Show that Laplace smoothing $\tilde\mu_k=\frac{n_k+1}{N+K}$ is a convex combination of $\hat\mu_k$ and the uniform distribution $\frac1K$. For $K=4$, $(n_1,\dots,n_4)=(6,3,1,0)$, compute $\hat{\boldsymbol\mu}$ and $\tilde{\boldsymbol\mu}$, then explain why this difference matters in naive Bayes classification.`,
         rubric: R`
 - (1) 독립 가정으로 $p(\mathcal D)=\prod_k\mu_k^{n_k}$, 로그 — 2점
 - (2) 라그랑지안 미분 $n_k/\mu_k=\lambda$, 합 조건으로 $\lambda=N$ — 3점
@@ -98,8 +98,8 @@ $0<\lambda<1$이므로 볼록 결합이고, 합은 $\lambda\cdot1+(1-\lambda)\cd
 
 관련: [[ch15:12.2b|단어 주머니와 자기회귀 모델]] · [[ch05:2.5b|KL 발산]]
 ` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`은닉 상태 $\mathbf z_n$으로 앞 서열을 요약해 실어 나르는 순환 신경망(RNN)에 관해 맞는 진술을 고르세요.`,
-        choices: [R`시점마다 다른 모수 $\mathbf w_n$을 써서 서열의 위치마다 다른 패턴을 배운다`, R`시간 역전파(BPTT)의 오차함수는 마지막 시점 출력의 오차 하나뿐이라, 기울기는 마지막 은닉 상태에서만 출발한다`, R`LSTM과 GRU는 게이트와 추가 정보 경로로 기울기 전달을 개선하지만, 장거리 의존성 문제를 완전히 풀지는 못하고 셀 계산이 더 비싸다`, R`은닉 상태가 앞 서열을 요약하므로 한 서열 안의 모든 시점을 GPU에서 동시에 계산할 수 있다`], ans: 2,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`Which statement about a recurrent neural network (RNN), which carries a summary of the preceding sequence forward in its hidden state $\mathbf z_n$, is correct?`,
+        choices: [R`It uses different parameters $\mathbf w_n$ at each time step, so it learns a different pattern at each position of the sequence`, R`The error function of backpropagation through time (BPTT) is only the error of the output at the last time step, so the gradient starts only from the last hidden state`, R`LSTM and GRU improve gradient flow through gates and additional information pathways, but they do not fully solve the long-range dependency problem, and their cell computations are more expensive`, R`Because the hidden state summarizes the preceding sequence, all time steps within a sequence can be computed simultaneously on a GPU`], ans: 2,
         sol: R`
 **핵심.** RNN은 모든 시점에서 **같은 모수** $\mathbf w$를 쓰고, $\mathbf z_n$이 $\mathbf z_{n-1}$에 의존하므로 계산이 순차적입니다. 학습은 모든 출력의 오차 합을 시간 역전파로 미분합니다.
 
@@ -113,11 +113,11 @@ $0<\lambda<1$이므로 볼록 결합이고, 합은 $\lambda\cdot1+(1-\lambda)\cd
 
 관련: [[ch15:12.2c|순환 신경망과 그 한계]]
 ` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`스칼라 RNN $z_n=\tanh(wz_{n-1}+x_n)$에서 $w=1.5$, $z_0=0$이다.
-(1) 입력이 $x_1=x_2=x_3=1$일 때 $z_1,z_2,z_3$을 구하세요(소수 넷째 자리).
-(2) $\frac{\partial z_n}{\partial z_{n-1}}=w(1-z_n^2)$임을 보이고, (1)의 경우 $\frac{\partial z_3}{\partial z_0}$을 구하세요.
-(3) 입력이 모두 $0$일 때($x_n=0$) $\frac{\partial z_N}{\partial z_0}$을 구해 (2)와 비교하고, 상계 $\big\lvert\frac{\partial z_N}{\partial z_0}\big\rvert\le\lvert w\rvert^N$이 무엇을 말해 주고 무엇을 말해 주지 않는지 설명하세요.
-(4) 트랜스포머가 이 기울기 문제와 인코더–디코더 RNN의 병목을 어떻게 피하는지 쓰세요.`,
+      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`In the scalar RNN $z_n=\tanh(wz_{n-1}+x_n)$, let $w=1.5$ and $z_0=0$.
+(1) For the inputs $x_1=x_2=x_3=1$, compute $z_1,z_2,z_3$ (4 decimal places).
+(2) Show that $\frac{\partial z_n}{\partial z_{n-1}}=w(1-z_n^2)$, and compute $\frac{\partial z_3}{\partial z_0}$ for the case in (1).
+(3) When all inputs are $0$ ($x_n=0$), find $\frac{\partial z_N}{\partial z_0}$ and compare it with (2). Explain what the upper bound $\big\lvert\frac{\partial z_N}{\partial z_0}\big\rvert\le\lvert w\rvert^N$ tells us and what it does not.
+(4) Explain how the transformer avoids this gradient problem and the bottleneck of the encoder–decoder RNN.`,
         rubric: R`
 - (1) $z_1=0.7616$, $z_2=0.9728$, $z_3=0.9855$ — 2점
 - (2) 연쇄법칙과 $\tanh'=1-\tanh^2$, 세 인수의 곱 $\approx0.00219$ — 3점
@@ -133,7 +133,7 @@ $0<\lambda<1$이므로 볼록 결합이고, 합은 $\lambda\cdot1+(1-\lambda)\cd
 
 관련: [[ch15:12.2c|순환 신경망과 그 한계]] · [[ch15:12.3b|인코더–디코더와 교차 어텐션]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`다음 토큰의 로짓이 $\mathbf a=(2,\ 1,\ 0.5,\ 0,\ -1)$이다. 온도 $T=0.5$를 먼저 적용한 분포에 문턱 $p=0.9$의 top-$p$(핵) 표본 추출을 하면, 둘째 토큰(로짓 1)이 뽑힐 확률은? (소수 넷째 자리)`, ans: '1/(1+exp(2))', ansTex: R`\tfrac{e^2}{e^4+e^2}=\tfrac1{1+e^2}\approx0.1192`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 5, q: R`The logits for the next token are $\mathbf a=(2,\ 1,\ 0.5,\ 0,\ -1)$. Temperature $T=0.5$ is applied first, and top-$p$ (nucleus) sampling with threshold $p=0.9$ is then performed on the resulting distribution. Find the probability that the second token (logit 1) is sampled. (4 decimal places)`, ans: '1/(1+exp(2))', ansTex: R`\tfrac{e^2}{e^4+e^2}=\tfrac1{1+e^2}\approx0.1192`,
         sol: R`
 **핵심.** 온도 표본 추출은 로짓을 $T$로 나눈 뒤 소프트맥스를 취하고, top-$p$는 확률이 큰 토큰부터 누적확률이 $p$ 이상이 될 때까지 모은 집합 안에서 재정규화해 뽑습니다.
 $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
@@ -150,8 +150,8 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3|디코더 트랜스포머(GPT)와 표본 추출]]
 ` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`GPT를 미니배치로 학습하는 방식을 바르게 말한 진술을 고르세요.`,
-        choices: [R`목표 서열을 입력보다 한 칸 앞서게 두고 입력 맨 앞에 ⟨start⟩를 넣은 뒤, 인과 마스크로 각 위치가 자기와 앞 위치만 보게 하면 모든 위치의 다음 토큰 예측을 한 번의 순전파로 함께 학습할 수 있다`, R`학습할 때에도 생성할 때처럼 모델이 직접 만든 토큰을 다음 위치의 입력으로 넣는다`, R`인과 마스크는 소프트맥스에 넣기 전에 미래 쪽 점수를 0으로 바꾸어 구현하며, 그러면 그 가중치가 0이 된다`, R`패딩 마스크는 인과 마스크처럼 모든 서열에서 모양이 같아, 미니배치 전체에 하나만 만들면 된다`], ans: 0,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`Which statement correctly describes how GPT is trained with minibatches?`,
+        choices: [R`If the target sequence is shifted one position ahead of the input, ⟨start⟩ is placed at the front of the input, and a causal mask lets each position see only itself and earlier positions, then the next-token predictions at all positions can be trained together in a single forward pass`, R`During training, just as during generation, the tokens produced by the model itself are fed in as the input at the next position`, R`The causal mask is implemented by setting the scores for future positions to 0 before the softmax, which makes those weights 0`, R`Like the causal mask, the padding mask has the same shape for every sequence, so a single mask suffices for the whole minibatch`], ans: 0,
         sol: R`
 **핵심.** 학습 때는 사람이 쓴 서열을 그대로 입력으로 넣고, 입력과 목표를 한 칸 어긋나게 둔 뒤 인과 마스크로 미래 정보의 누출을 막습니다. 마스크는 점수에 $-\infty$를 더해 구현합니다.
 
@@ -165,7 +165,7 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3|디코더 트랜스포머(GPT)와 표본 추출]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`마스크된 셀프 어텐션 층의 머리 하나를 생각한다. 생성 중인 서열에 방금 64번째 토큰이 붙었다. 서열 전체를 모델에 다시 넣으면 가려지지 않은 점수 $\mathbf q_n^T\mathbf k_m$ ($m\le n$)을 모두 새로 계산해야 하고, 앞 토큰들의 키·값을 저장해 두면(KV 캐시) 새 토큰의 몫만 계산하면 된다. 앞의 경우 계산하는 점수의 개수는 뒤의 경우의 몇 배인가? (분수 또는 소수)`, ans: '65/2', ansTex: R`\tfrac{64\cdot65/2}{64}=32.5`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`Consider one head of a masked self-attention layer. The 64th token has just been appended to the sequence being generated. If the whole sequence is fed into the model again, all unmasked scores $\mathbf q_n^T\mathbf k_m$ ($m\le n$) must be recomputed; if the keys and values of the earlier tokens are stored (KV cache), only the part belonging to the new token needs to be computed. How many times as many scores are computed in the former case as in the latter? (fraction or decimal)`, ans: '65/2', ansTex: R`\tfrac{64\cdot65/2}{64}=32.5`,
         sol: R`
 **핵심.** 인과 마스크 때문에 위치 $n$의 표현은 $\mathbf x_1,\dots,\mathbf x_n$에만 의존해 뒤에 토큰이 붙어도 바뀌지 않습니다. 그래서 앞 위치들의 점수·키·값은 다시 계산할 필요가 없고, 새 토큰의 쿼리와 모든 키의 점수만 새로 구하면 됩니다.
 
@@ -181,11 +181,11 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3|디코더 트랜스포머(GPT)와 표본 추출]]
 ` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`어휘가 $\{A,B\}$인 언어 모델이 세 토큰 $y_1y_2y_3$을 생성한다. 아래 표의 첫 행은 $p(y_1)$, 다음 두 행은 $p(y_2\mid y_1)$, 마지막 네 행은 $p(y_3\mid y_1,y_2)$이다.
+      { ch: 'ch15', type: 'open', lv: 3, pts: 10, q: R`A language model with vocabulary $\{A,B\}$ generates three tokens $y_1y_2y_3$. In the table below, the first row gives $p(y_1)$, the next two rows $p(y_2\mid y_1)$, and the last four rows $p(y_3\mid y_1,y_2)$.
 
-| 조건 | 다음이 $A$ | 다음이 $B$ |
+| Condition | Next is $A$ | Next is $B$ |
 |---|---|---|
-| (시작) | 0.6 | 0.4 |
+| (start) | 0.6 | 0.4 |
 | $y_1=A$ | 0.55 | 0.45 |
 | $y_1=B$ | 0.3 | 0.7 |
 | $y_1y_2=AA$ | 0.52 | 0.48 |
@@ -193,10 +193,10 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 | $y_1y_2=BA$ | 0.6 | 0.4 |
 | $y_1y_2=BB$ | 0.9 | 0.1 |
 
-(1) 탐욕 탐색이 고르는 서열과 그 결합확률을 구하세요.
-(2) 빔 너비 $B=2$인 빔 탐색을 단계별로 따라가(단계마다 남는 가설과 확률) 최종 서열과 확률을 구하세요.
-(3) 가장 그럴듯한 서열을 찾고, 빔 탐색이 그것을 놓친 이유를 설명하세요.
-(4) 어휘 $K=30{,}000$, 길이 $N=20$에서 탐욕 탐색, 빔 탐색($B=2$), 모든 서열 비교의 비용을 비교하세요.`,
+(1) Find the sequence chosen by greedy search and its joint probability.
+(2) Trace beam search with beam width $B=2$ step by step (the hypotheses kept at each step and their probabilities), and find the final sequence and its probability.
+(3) Find the most probable sequence, and explain why beam search missed it.
+(4) For vocabulary size $K=30{,}000$ and length $N=20$, compare the costs of greedy search, beam search ($B=2$), and comparing all sequences.`,
         rubric: R`
 - (1) 단계마다 최댓값 $A,A,A$ → $AAA$, $0.6\cdot0.55\cdot0.52=0.1716$ — 2점
 - (2) 2단계 후보 4개 중 $AA$(0.33)와 $BB$(0.28)를 남기고, 3단계에서 $BBA$(0.252) — 3점
@@ -212,8 +212,8 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3|디코더 트랜스포머(GPT)와 표본 추출]]
 ` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`BERT의 사전 학습과 미세 조정에 관해 맞는 진술을 고르세요.`,
-        choices: [R`사전 학습의 오차함수에는 ⟨class⟩ 위치를 포함한 모든 위치의 출력이 들어가므로, 학습 효율이 디코더와 같다`, R`가려진 토큰을 맞힐 때 정답을 베끼지 못하도록 인과 마스크를 함께 쓴다`, R`미세 조정 때는 사전 학습한 모수를 모두 얼리고 새로 붙인 출력층만 학습한다`, R`고른 15% 가운데 일부를 무작위 토큰으로 바꾸거나 그대로 두는 것은 미세 조정 때 ⟨mask⟩가 나오지 않아 생기는 차이를 줄이기 위해서이며, 그대로 둔 위치도 원래 단어를 맞혀야 한다`], ans: 3,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`Which statement about the pre-training and fine-tuning of BERT is correct?`,
+        choices: [R`The pre-training error function includes the outputs at all positions, including the ⟨class⟩ position, so its training efficiency is the same as that of a decoder`, R`A causal mask is used as well, so that the model cannot copy the answer when predicting the masked tokens`, R`During fine-tuning, all pre-trained parameters are frozen and only the newly added output layer is trained`, R`Replacing some of the selected 15% with random tokens or leaving them unchanged serves to reduce the mismatch caused by ⟨mask⟩ never appearing during fine-tuning, and the positions left unchanged must also predict the original word`], ans: 3,
         sol: R`
 **핵심.** BERT는 마스크 언어 모델링으로 사전 학습하는 양방향 인코더입니다. 오차에는 **고른 위치의 출력만** 들어가고, 미세 조정은 새 출력층을 붙여 **모든 모수**를 학습합니다.
 
@@ -227,7 +227,7 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3b|인코더 트랜스포머(BERT)와 인코더–디코더]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`인코더 층 6개와 디코더 층 6개로 된 인코더–디코더 트랜스포머가 있다. $D=512$이고, 모든 멀티헤드 어텐션은 $D_k=D_v=D/H$인 머리 $H$개와 출력 투영을 쓰며, 위치별 MLP는 은닉 유닛 $4D$개의 2층망이다. 디코더 층은 마스크된 셀프 어텐션, 교차 어텐션, MLP로 이루어진다. 편향, 층 정규화, 임베딩을 빼면 가중치는 모두 몇 개인가? (정수)`, ans: '168*512^2', ansTex: R`6\cdot12D^2+6\cdot16D^2=168D^2=44{,}040{,}192`,
+      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`An encoder–decoder transformer has 6 encoder layers and 6 decoder layers. $D=512$, every multi-head attention uses $H$ heads with $D_k=D_v=D/H$ and an output projection, and the position-wise MLP is a two-layer network with $4D$ hidden units. Each decoder layer consists of masked self-attention, cross-attention, and an MLP. Excluding biases, layer normalization, and embeddings, how many weights are there in total? (integer)`, ans: '168*512^2', ansTex: R`6\cdot12D^2+6\cdot16D^2=168D^2=44{,}040{,}192`,
         sol: R`
 **핵심.** 멀티헤드 어텐션 하나의 가중치는 머리 수와 무관하게 $4D^2$이고(쿼리·키·값 투영 $3D^2$ + 출력 투영 $D^2$), 은닉 $4D$의 MLP는 $8D^2$입니다. 교차 어텐션은 쿼리를 디코더에서, 키·값을 인코더 표현 $\mathbf Z$($D$차원)에서 투영할 뿐 행렬 크기는 같습니다.
 
@@ -245,7 +245,7 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3b|인코더 트랜스포머(BERT)와 인코더–디코더]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`$D=4096$이고 트랜스포머 층이 32개인 언어 모델을 새 과제에 맞춘다. (가) 전체 미세 조정은 층마다의 가중치(멀티헤드 어텐션 $4D^2$와 은닉 $4D$인 MLP의 $8D^2$)를 모두 학습하고, (나) LoRA는 층마다 $\mathbf W^{(q)}$와 $\mathbf W^{(v)}$ 두 행렬에만 계수 $R=8$의 갱신 $\mathbf A\mathbf B$를 붙여 학습한다. 임베딩과 편향을 빼면 (가)의 학습 모수는 (나)의 몇 배인가? (정수)`, ans: '1536', ansTex: R`\tfrac{12LD^2}{L\cdot2\cdot2DR}=\tfrac{3D}R=1536`,
+      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`A language model with $D=4096$ and 32 transformer layers is adapted to a new task. (a) Full fine-tuning trains all the weights of every layer (multi-head attention, $4D^2$, and the MLP with $4D$ hidden units, $8D^2$); (b) LoRA attaches rank-$R=8$ updates $\mathbf A\mathbf B$ only to the two matrices $\mathbf W^{(q)}$ and $\mathbf W^{(v)}$ in each layer and trains those. Excluding embeddings and biases, how many times as many trainable parameters does (a) have as (b)? (integer)`, ans: '1536', ansTex: R`\tfrac{12LD^2}{L\cdot2\cdot2DR}=\tfrac{3D}R=1536`,
         sol: R`
 **핵심.** LoRA는 $D\times D$ 행렬 $\mathbf W_0$를 얼리고 $\widehat{\mathbf W}=\mathbf W_0+\mathbf A\mathbf B$ ($\mathbf A\in\mathbb R^{D\times R}$, $\mathbf B\in\mathbb R^{R\times D}$)의 $\mathbf A,\mathbf B$만 학습하므로 행렬 하나에 $2DR$개입니다. 트랜스포머 층 하나의 가중치는 $12D^2$입니다.
 
@@ -261,8 +261,8 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3c|LoRA와 파운데이션 모델]]
 ` },
-      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`대규모 언어 모델의 사전 학습을 “자기 지도 학습”이라 부르는 이유로 옳은 것은?`,
-        choices: [R`사람이 문장마다 다음 단어를 레이블로 달아 준 대규모 자료로 학습하기 때문`, R`서열에서 각 토큰이 목표가 되고 그 앞의 토큰들이 입력 문맥이 되어, 레이블 없는 텍스트가 스스로 레이블 역할을 하기 때문`, R`사람이 모델의 출력을 평가한 점수를 학습 신호로 쓰기 때문`, R`프롬프트 안에 넣은 예시로부터 모델이 스스로 모수를 갱신하기 때문`], ans: 1,
+      { ch: 'ch15', type: 'mc', lv: 1, pts: 4, q: R`Which of the following is the correct reason why the pre-training of large language models is called “self-supervised learning”?`,
+        choices: [R`Because it trains on large datasets in which people have labelled the next word of every sentence`, R`Because each token in a sequence serves as a target and the tokens before it serve as the input context, so unlabelled text provides its own labels`, R`Because scores from human evaluations of the model's outputs are used as the training signal`, R`Because the model updates its own parameters from the examples placed in the prompt`], ans: 1,
         sol: R`
 **핵심.** 자기 지도 학습은 사람이 레이블을 달지 않고 자료 자체에서 입력–목표 쌍을 만드는 학습입니다. 자기회귀 언어 모델링에서는 텍스트의 다음 토큰이 곧 정답입니다.
 
@@ -275,7 +275,7 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.3c|대규모 언어 모델과 자기 지도 학습]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`$512\times512$ 크기의 단일 채널 CT 단면($C=1$)을 $16\times16$ 패치로 나누어 $D=768$차원 토큰으로 바꾸는 비전 트랜스포머가 있다. 편 패치 벡터를 $D$차원으로 보내는 선형 투영 $\mathbf E$(편향 제외)와, ⟨class⟩를 포함한 모든 입력 토큰마다 하나씩 있는 $D$차원 학습된 위치 임베딩의 모수를 합하면 몇 개인가? (정수)`, ans: '768*256+1025*768', ansTex: R`768\cdot256+1025\cdot768=983{,}808`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`A vision transformer splits a $512\times512$ single-channel CT slice ($C=1$) into $16\times16$ patches and turns them into $D=768$-dimensional tokens. What is the total number of parameters in the linear projection $\mathbf E$ (excluding bias) that maps each flattened patch vector to $D$ dimensions together with the $D$-dimensional learned positional embeddings, one for every input token including ⟨class⟩? (integer)`, ans: '768*256+1025*768', ansTex: R`768\cdot256+1025\cdot768=983{,}808`,
         sol: R`
 **핵심.** $H\times W\times C$ 영상을 $P\times P$ 패치로 나누면 토큰은 $N=HW/P^2$개, 편 패치의 길이는 $P^2C$이고, 각 토큰은 $\mathbf x_n=\mathbf E\operatorname{vec}(\text{패치}_n)+\mathbf r_n$입니다. 여기에 ⟨class⟩ 토큰이 하나 더해집니다.
 
@@ -293,7 +293,7 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.4|멀티모달 트랜스포머와 비전 트랜스포머]]
 ` },
-      { ch: 'ch15', type: 'num', lv: 1, pts: 4, q: R`$256\times256$ 크기의 8비트 RGB 영상을 $16\times16$ 패치로 나누고, 각 패치를 크기 $K=1024$인 코드북의 번호 하나로 벡터 양자화한다. 원래 영상의 비트 수는 토큰 서열의 비트 수의 몇 배인가? (소수 첫째 자리)`, ans: '256*256*3*8/(256*10)', ansTex: R`\tfrac{1{,}572{,}864}{2{,}560}=614.4`,
+      { ch: 'ch15', type: 'num', lv: 1, pts: 4, q: R`A $256\times256$ 8-bit RGB image is split into $16\times16$ patches, and each patch is vector-quantized to a single index into a codebook of size $K=1024$. How many times the number of bits in the token sequence is the number of bits in the original image? (1 decimal place)`, ans: '256*256*3*8/(256*10)', ansTex: R`\tfrac{1{,}572{,}864}{2{,}560}=614.4`,
         sol: R`
 **핵심.** 벡터 양자화는 각 패치를 가장 가까운 코드북 벡터의 **번호**로 바꾸므로, 토큰 하나의 정보량은 $\log_2K$비트입니다.
 
@@ -310,11 +310,11 @@ $$y_i=\frac{\exp(a_i/T)}{\sum_j\exp(a_j/T)}$$
 
 관련: [[ch15:12.4b|생성 영상 트랜스포머와 벡터 양자화]]
 ` },
-      { ch: 'ch15', type: 'open', lv: 2, pts: 10, q: R`영상 부호기의 출력 $\mathbf x=(0.7,\ 0.2)$를 코드북 $\mathbf c_1=(0,0)$, $\mathbf c_2=(1,0)$, $\mathbf c_3=(1,1)$로 벡터 양자화해 $\mathbf q$를 얻고, 오차 $E=\lVert\mathbf q-\mathbf t\rVert^2$ ($\mathbf t=(0.8,\ 0.6)$, 복호기는 항등함수로 단순화)를 줄이도록 부호기를 학습하려 한다.
-(1) $\mathbf q$와 토큰 번호를 구하세요.
-(2) $\partial\mathbf q/\partial\mathbf x$가 거의 모든 곳에서 0인 이유와, 그 결과 정확한 역전파가 부호기에 무엇을 전하는지 설명하세요.
-(3) 직통 기울기 추정으로 $\partial E/\partial\mathbf x$를 구하고, 학습률 $0.1$로 $\mathbf x$를 한 번 갱신한 뒤 다시 양자화하세요. 같은 갱신을 되풀이하면 어떻게 되는지도 쓰세요.
-(4) 목표 $t$가 확률 $\tfrac12$씩 $0$ 또는 $1$일 때 $\E[(y-t)^2]$을 최소로 하는 상수 $y$와 그 최솟값을 구하고, 이것이 영상 생성과 음성 합성(TTS)에서 연속 회귀 대신 이산 토큰을 쓰는 이유와 어떻게 이어지는지 쓰세요.`,
+      { ch: 'ch15', type: 'open', lv: 2, pts: 10, q: R`The output $\mathbf x=(0.7,\ 0.2)$ of an image encoder is vector-quantized with the codebook $\mathbf c_1=(0,0)$, $\mathbf c_2=(1,0)$, $\mathbf c_3=(1,1)$ to give $\mathbf q$, and the encoder is to be trained to reduce the error $E=\lVert\mathbf q-\mathbf t\rVert^2$ ($\mathbf t=(0.8,\ 0.6)$, with the decoder simplified to the identity function).
+(1) Find $\mathbf q$ and the token index.
+(2) Explain why $\partial\mathbf q/\partial\mathbf x$ is zero almost everywhere, and what exact backpropagation therefore passes to the encoder.
+(3) Using the straight-through gradient estimator, compute $\partial E/\partial\mathbf x$, update $\mathbf x$ once with learning rate $0.1$, and quantize again. Also state what happens when the same update is repeated.
+(4) When the target $t$ is $0$ or $1$ with probability $\tfrac12$ each, find the constant $y$ that minimizes $\E[(y-t)^2]$ and its minimum value, and explain how this relates to the reason why image generation and speech synthesis (TTS) use discrete tokens instead of continuous regression.`,
         rubric: R`
 - (1) 거리 제곱 $0.53,\ 0.13,\ 0.73$ → $\mathbf q=\mathbf c_2$, 토큰 2 — 2점
 - (2) $\arg\min$이 조각마다 상수라 기울기 0, 부호기에 학습 신호가 가지 않음 — 2점

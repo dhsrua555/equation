@@ -8,8 +8,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '의료 데이터, 다항식 적합과 규제, 베이즈 정리와 선별검사, 가우시안 MLE와 편향, 밀도 변환, 엔트로피와 KL, MAP. 계산과 증명을 함께 봅니다.',
     minutes: 80, plot: 'roc',
     problems: [
-      { ch: 'ch01', type: 'mc', lv: 1, pts: 4, q: R`다음 중 시간에 따른 **1차원 신호** 자료는?`,
-        choices: [R`CT 영상`, R`전자의무기록(EMR)`, R`MRI 영상`, R`심전도(ECG)`], ans: 3,
+      { ch: 'ch01', type: 'mc', lv: 1, pts: 4, q: R`Which of the following is a **one-dimensional signal** recorded over time?`,
+        choices: [R`CT image`, R`Electronic medical record (EMR)`, R`MRI image`, R`Electrocardiogram (ECG)`], ans: 3,
         sol: R`
 **핵심.** 의료 데이터는 모양(차원)으로 나뉩니다. 생체전기 신호는 시간에 따른 1차원 시계열 $\mathbb R^{T}$, 의료영상은 2D·3D 격자 $\mathbb R^{H\times W}$, $\mathbb R^{D\times H\times W}$, 기록은 표와 텍스트입니다.
 
@@ -24,8 +24,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **자주 하는 실수.** 4D 영상(3D+시간)에도 시간이 들어 있어 헷갈리기 쉽지만, 한 시점의 값이 3차원 부피이므로 1차원 신호가 아닙니다. 자료의 차원이 1D 시계열 모델, 2D/3D 격자 모델, 표·텍스트 모델 중 무엇을 쓸지를 정합니다.
 
 관련: [[ch01:0.1|의료 데이터의 모양]]` },
-      { ch: 'ch02', type: 'mc', lv: 1, pts: 5, q: R`자료 $N=10$개에 $M=9$차 다항식을 제곱오차합으로 맞출 때 옳은 것은? (서로 다른 $x_n$)`,
-        choices: [R`훈련 오차는 0이 될 수 있지만 시험 오차는 커지기 쉽다(과적합)`, R`훈련 오차와 시험 오차가 모두 0이다`, R`계수가 모두 작아진다`, R`$M$을 줄일수록 훈련 오차가 줄어든다`], ans: 0,
+      { ch: 'ch02', type: 'mc', lv: 1, pts: 5, q: R`A polynomial of order $M=9$ is fitted to $N=10$ data points by minimizing the sum-of-squares error. Which statement is correct? (The $x_n$ are distinct.)`,
+        choices: [R`The training error can be zero, but the test error is likely to be large (over-fitting)`, R`Both the training error and the test error are zero`, R`All the coefficients become small`, R`Decreasing $M$ reduces the training error`], ans: 0,
         sol: R`
 **핵심.** $M$차 다항식 $y(x,\mathbf w)=\sum_{j=0}^Mw_jx^j$의 계수는 $M+1$개입니다. 계수 수가 자료 수와 같으면 모든 점을 정확히 지날 수 있지만, 그것은 규칙이 아니라 잡음까지 외운 결과입니다.
 
@@ -38,7 +38,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **보기 검토.** ① 정답 — 훈련 오차 0, 시험 오차 큼. ② 시험 자료는 학습에 쓰이지 않았으므로 오차가 0이 될 이유가 없습니다. ③ 반대입니다. 규제가 없으면 계수가 매우 커집니다. ④ 차수를 줄이면 모델이 덜 유연해져 훈련 오차는 같거나 커집니다($M$이 클수록 훈련 오차가 줄어듭니다).
 
 관련: [[ch02:1.2b|모델 복잡도와 과적합]]` },
-      { ch: 'ch02', type: 'num', lv: 1, pts: 6, q: R`어떤 모델의 네 시험 자료 잔차 $y(x_n,\mathbf w^\star)-t_n$이 $1,-1,2,0$이다. $E_{\text{RMS}}$는? (소수 넷째 자리)`, ans: 'sqrt(1.5)', ansTex: R`\sqrt{1.5}\approx1.2247`,
+      { ch: 'ch02', type: 'num', lv: 1, pts: 6, q: R`The residuals $y(x_n,\mathbf w^\star)-t_n$ of a model on four test points are $1,-1,2,0$. Find $E_{\text{RMS}}$. (4 decimal places)`, ans: 'sqrt(1.5)', ansTex: R`\sqrt{1.5}\approx1.2247`,
         sol: R`
 **핵심.** RMS 오차는 제곱오차의 평균에 제곱근을 씌운 값입니다.
 $$E_{\text{RMS}}=\sqrt{\frac1N\sum_{n=1}^N\{y(x_n,\mathbf w^\star)-t_n\}^2}$$
@@ -54,7 +54,7 @@ $$E_{\text{RMS}}=\sqrt{\frac1N\sum_{n=1}^N\{y(x_n,\mathbf w^\star)-t_n\}^2}$$
 **검산.** $E_{\text{RMS}}$는 잔차 크기의 평균 $(1+1+2+0)/4=1$보다 크거나 같고(제곱평균 ≥ 산술평균) 가장 큰 잔차 크기 $2$보다 작아야 합니다. $1\le1.2247\le2$로 맞습니다.
 
 관련: [[ch02:1.2b|RMS 오차]]` },
-      { ch: 'ch03', type: 'num', lv: 2, pts: 8, q: R`유병률 5%인 질환에 민감도 0.8, 특이도 0.9인 검사를 했다. 양성일 때 질환일 확률은? (소수 넷째 자리)`, ans: '0.04/0.135', ansTex: R`\tfrac{0.04}{0.135}\approx0.2963`,
+      { ch: 'ch03', type: 'num', lv: 2, pts: 8, q: R`A test with sensitivity 0.8 and specificity 0.9 is used for a disease with prevalence 5%. Given a positive result, what is the probability that the patient has the disease? (4 decimal places)`, ans: '0.04/0.135', ansTex: R`\tfrac{0.04}{0.135}\approx0.2963`,
         sol: R`
 **핵심.** 양성 예측도는 베이즈 정리로 조건의 방향을 뒤집어 구합니다. 유병률 $\pi$, 민감도 $s$, 특이도 $c$이면
 $$p(D=1\mid T=1)=\frac{s\pi}{s\pi+(1-c)(1-\pi)}$$
@@ -72,7 +72,7 @@ $$p(D=1\mid T=1)=\frac{s\pi}{s\pi+(1-c)(1-\pi)}$$
 **검산.** 1000명으로 생각하면 환자 50명 중 40명, 건강한 950명 중 95명이 양성입니다. 양성 135명 가운데 환자는 40명이므로 $40/135\approx0.2963$. 건강한 사람이 19배 많아서 위양성(95명)이 참양성(40명)보다 많습니다.
 
 관련: [[ch03:2.1b|베이즈 정리와 의료 선별검사]]` },
-      { ch: 'ch03', type: 'num', lv: 3, pts: 6, q: R`위 환자에게 질환 여부가 주어졌을 때 첫 검사와 독립인 같은 검사를 한 번 더 했더니 또 양성이었다. 질환일 확률은? (소수 넷째 자리)`, ans: '0.032/0.0415', ansTex: R`\tfrac{0.032}{0.0415}\approx0.7711`,
+      { ch: 'ch03', type: 'num', lv: 3, pts: 6, q: R`The same patient takes the same test once more; given the disease status, the second test is independent of the first. The result is again positive. What is the probability that the patient has the disease? (4 decimal places)`, ans: '0.032/0.0415', ansTex: R`\tfrac{0.032}{0.0415}\approx0.7711`,
         sol: R`
 **핵심.** 질환 여부 $D$가 주어지면 두 검사 결과가 독립(조건부 독립)이므로 가능도가 곱해집니다: $p(T_1=1,T_2=1\mid D)=p(T=1\mid D)^2$. 첫 검사의 사후확률을 다음 검사의 사전확률로 써도 같은 답이 나옵니다.
 
@@ -88,7 +88,7 @@ $$p(D=1\mid T=1)=\frac{s\pi}{s\pi+(1-c)(1-\pi)}$$
 **자주 하는 실수.** 두 결과를 조건 없이 독립으로 보고 사후확률끼리 곱해 $0.2963^2\approx0.0878$을 쓰는 것은 틀립니다. 독립은 $D$가 주어졌을 때의 가정이므로 곱하는 것은 가능도 $p(T\mid D)$입니다. 두 번 양성이면 확률이 줄어들 리 없다는 점으로도 걸러낼 수 있습니다.
 
 관련: [[ch03:2.1b|베이즈 정리와 의료 선별검사]], [[ch03:2.1|곱의 규칙]]` },
-      { ch: 'ch04', type: 'num', lv: 2, pts: 7, q: R`자료 $2,4,4,4,5,5,7,9$로 가우시안의 분산을 추정한다. **불편** 추정값 $\tilde\sigma^2$는? (소수 넷째 자리)`, ans: '32/7', ansTex: R`\tfrac{32}{7}\approx4.5714`,
+      { ch: 'ch04', type: 'num', lv: 2, pts: 7, q: R`The variance of a Gaussian is estimated from the data $2,4,4,4,5,5,7,9$. Find the **unbiased** estimate $\tilde\sigma^2$. (4 decimal places)`, ans: '32/7', ansTex: R`\tfrac{32}{7}\approx4.5714`,
         sol: R`
 **핵심.** 가우시안의 최대가능도 분산 $\sigma^2_{\text{ML}}=\frac1N\sum_n(x_n-\mu_{\text{ML}})^2$은 기댓값이 $\frac{N-1}N\sigma^2$로 작게 치우치므로, $\frac N{N-1}$을 곱한 $\tilde\sigma^2=\frac1{N-1}\sum_n(x_n-\mu_{\text{ML}})^2$이 불편 추정량입니다.
 
@@ -104,7 +104,7 @@ $$p(D=1\mid T=1)=\frac{s\pi}{s\pi+(1-c)(1-\pi)}$$
 **검산.** $\sum_nx_n^2-N\bar x^2=(4+16\times3+25\times2+49+81)-8\times25=232-200=32$로 편차 제곱합이 같습니다.
 
 관련: [[ch04:2.3b|최대가능도의 편향과 보정]]` },
-      { ch: 'ch04', type: 'mc', lv: 1, pts: 5, q: R`가우시안 i.i.d. 표본 $N$개에서 $\E[\sigma^2_{\text{ML}}]$은?`,
+      { ch: 'ch04', type: 'mc', lv: 1, pts: 5, q: R`For $N$ i.i.d. samples from a Gaussian, what is $\E[\sigma^2_{\text{ML}}]$?`,
         choices: [R`$\sigma^2$`, R`$\frac N{N-1}\sigma^2$`, R`$\frac{N-1}N\sigma^2$`, R`$\frac{\sigma^2}N$`], ans: 2,
         sol: R`
 **핵심.** $\sigma^2_{\text{ML}}=\frac1N\sum_n(x_n-\mu_{\text{ML}})^2$은 참 평균 $\mu$가 아니라 자료에 맞춘 평균 $\mu_{\text{ML}}=\bar x$를 기준으로 퍼짐을 잽니다.
@@ -118,7 +118,7 @@ $$p(D=1\mid T=1)=\frac{s\pi}{s\pi+(1-c)(1-\pi)}$$
 **보기 검토.** ① $\sigma^2$ — 참 평균 $\mu$를 알 때 쓰는 $\frac1N\sum(x_n-\mu)^2$의 기댓값입니다. ② $\frac N{N-1}\sigma^2$ — 보정 인수를 거꾸로 쓴 것입니다(불편 추정량을 만들 때 $\sigma^2_{\text{ML}}$에 곱하는 인수). ③ 정답. ④ $\frac{\sigma^2}N$ — 표본평균의 분산 $\Var[\bar x]$입니다.
 
 관련: [[ch04:2.3b|최대가능도의 편향과 보정]]` },
-      { ch: 'ch05', type: 'num', lv: 2, pts: 7, q: R`$x\sim U(0,1)$이고 $y=x^2$일 때 $y=0.04$에서의 밀도 $p_y(0.04)$는?`, ans: '2.5', ansTex: R`\tfrac1{2\sqrt{0.04}}=2.5`,
+      { ch: 'ch05', type: 'num', lv: 2, pts: 7, q: R`Let $x\sim U(0,1)$ and $y=x^2$. Find the density $p_y(0.04)$ at $y=0.04$.`, ans: '2.5', ansTex: R`\tfrac1{2\sqrt{0.04}}=2.5`,
         sol: R`
 **핵심.** 확률밀도는 대입만으로 바뀌지 않고, 대응하는 구간의 확률이 같도록 야코비안을 곱합니다.
 $$p_y(y)=p_x(g(y))\,\lvert g'(y)\rvert,\qquad x=g(y)$$
@@ -135,7 +135,7 @@ $$p_y(y)=p_x(g(y))\,\lvert g'(y)\rvert,\qquad x=g(y)$$
 **자주 하는 실수.** 대입만 하면 $p_x(\sqrt{0.04})=1$, 야코비안 대신 $dy/dx=2x=0.4$를 곱하면 $0.4$가 나옵니다. 곱할 것은 $dy/dx$가 아니라 그 역수 $dx/dy$입니다. 밀도가 $y\to0$에서 커지는 것은 $x$의 구간이 $y$의 더 좁은 구간으로 눌리기 때문입니다($y=0.25$에서는 야코비안이 우연히 1이라 세 방법이 모두 1을 내므로 방법을 가려내지 못합니다).
 
 관련: [[ch05:2.4|확률밀도의 변환]]` },
-      { ch: 'ch05', type: 'num', lv: 1, pts: 6, q: R`확률이 $\frac12,\frac14,\frac18,\frac18$인 네 상태의 엔트로피(비트)는?`, ans: '1.75', ansTex: R`1.75`,
+      { ch: 'ch05', type: 'num', lv: 1, pts: 6, q: R`Find the entropy (in bits) of four states with probabilities $\frac12,\frac14,\frac18,\frac18$.`, ans: '1.75', ansTex: R`1.75`,
         sol: R`
 **핵심.** 섀넌 엔트로피는 정보량 $h(x)=-\log_2p(x)$의 평균입니다.
 $$\mathrm H[x]=-\sum_xp(x)\log_2p(x)\quad(\text{비트})$$
@@ -151,7 +151,7 @@ $$\mathrm H[x]=-\sum_xp(x)\log_2p(x)\quad(\text{비트})$$
 **자주 하는 실수.** 자연로그로 계산하면 $1.75\ln2\approx1.213$내트가 됩니다. 문제는 비트를 묻습니다. 정보량에 확률을 곱하지 않고 $1+2+3+3=9$를 쓰는 실수도 있습니다.
 
 관련: [[ch05:2.5|정보량, 엔트로피]]` },
-      { ch: 'ch05', type: 'num', lv: 2, pts: 7, q: R`$p=(\frac12,\frac12)$, $q=(\frac14,\frac34)$일 때 $\KL(p\Vert q)$ (내트)는? (소수 넷째 자리)`, ans: '0.5*ln(4/3)', ansTex: R`\tfrac12\ln\tfrac43\approx0.1438`,
+      { ch: 'ch05', type: 'num', lv: 2, pts: 7, q: R`For $p=(\frac12,\frac12)$ and $q=(\frac14,\frac34)$, find $\KL(p\Vert q)$ (in nats). (4 decimal places)`, ans: '0.5*ln(4/3)', ansTex: R`\tfrac12\ln\tfrac43\approx0.1438`,
         sol: R`
 **핵심.** 이산 분포의 KL 발산은 $p$에 대한 기댓값입니다.
 $$\KL(p\Vert q)=-\sum_kp_k\ln\frac{q_k}{p_k}=\sum_kp_k\ln\frac{p_k}{q_k}\quad(\text{내트})$$
@@ -167,7 +167,7 @@ $$\KL(p\Vert q)=-\sum_kp_k\ln\frac{q_k}{p_k}=\sum_kp_k\ln\frac{p_k}{q_k}\quad(\t
 **검산.** $\KL\ge0$이고 등호는 $p=q$일 때뿐인데, 여기서는 $p\ne q$이므로 양수여야 합니다. $0.1438\gt0$으로 맞습니다.
 
 관련: [[ch05:2.5b|KL 발산]]` },
-      { ch: 'ch06', type: 'num', lv: 2, pts: 6, q: R`잡음 분산 $\sigma^2=0.25$인 회귀에 사전분포 $w_i\sim\N(0,s^2)$, $s^2=0.5$를 두었다. MAP 추정과 같은 L2 규제 계수 $\lambda$ (오차 $\frac12\sum\{\cdot\}^2+\frac\lambda2\mathbf w^T\mathbf w$ 기준)는?`, ans: '0.5', ansTex: R`\lambda=\sigma^2/s^2=0.5`,
+      { ch: 'ch06', type: 'num', lv: 2, pts: 6, q: R`In a regression problem with noise variance $\sigma^2=0.25$, the prior $w_i\sim\N(0,s^2)$ with $s^2=0.5$ is placed on the weights. Find the L2 regularization coefficient $\lambda$ equivalent to MAP estimation (for the error $\frac12\sum\{\cdot\}^2+\frac\lambda2\mathbf w^T\mathbf w$).`, ans: '0.5', ansTex: R`\lambda=\sigma^2/s^2=0.5`,
         sol: R`
 **핵심.** MAP은 음의 로그 사후분포 $-\ln p(\mathbf w\mid\mathcal D)=-\ln p(\mathcal D\mid\mathbf w)-\ln p(\mathbf w)+\text{const}$를 최소화합니다. 가우시안 잡음과 영평균 가우시안 사전분포에서는
 $$E(\mathbf w)=\frac1{2\sigma^2}\sum_{n=1}^N\{y(x_n,\mathbf w)-t_n\}^2+\frac1{2s^2}\mathbf w^T\mathbf w$$
@@ -183,8 +183,8 @@ $$E(\mathbf w)=\frac1{2\sigma^2}\sum_{n=1}^N\{y(x_n,\mathbf w)-t_n\}^2+\frac1{2s
 **검산.** 사전분포가 좁을수록($s^2$가 작을수록) 가중치를 0 근처에 묶는 믿음이 강하고, 잡음이 클수록($\sigma^2$가 클수록) 자료를 덜 믿으므로 규제가 세져야 합니다. $\lambda=\sigma^2/s^2$은 두 방향 모두 맞습니다.
 
 관련: [[ch06:2.6b|MAP 추정과 규제]]` },
-      { ch: 'ch06', type: 'mc', lv: 2, pts: 5, q: R`베이지안 예측분포 $p(t\mid x,\mathcal D)$에 대한 설명으로 옳은 것은?`,
-        choices: [R`$p(t\mid x,\mathbf w_{\text{MAP}})$와 항상 같다`, R`모든 $\mathbf w$의 예측을 사후확률로 가중 평균한 것이다`, R`사전분포만으로 계산한다`, R`자료가 많을수록 넓어진다`], ans: 1,
+      { ch: 'ch06', type: 'mc', lv: 2, pts: 5, q: R`Which statement about the Bayesian predictive distribution $p(t\mid x,\mathcal D)$ is correct?`,
+        choices: [R`It is always equal to $p(t\mid x,\mathbf w_{\text{MAP}})$`, R`It is the average of the predictions of all $\mathbf w$, weighted by their posterior probabilities`, R`It is computed from the prior distribution alone`, R`It becomes broader as the amount of data increases`], ans: 1,
         sol: R`
 **핵심.** 완전 베이지안 예측은 모수 하나를 고르지 않고 사후분포 전체로 평균합니다.
 $$p(t\mid x,\mathcal D)=\int p(t\mid x,\mathbf w)\,p(\mathbf w\mid\mathcal D)\,d\mathbf w$$
@@ -198,7 +198,7 @@ $$p(t\mid x,\mathcal D)=\int p(t\mid x,\mathbf w)\,p(\mathbf w\mid\mathcal D)\,d
 **보기 검토.** ① 사후분포가 한 점에 몰릴 때만 플러그인 예측 $p(t\mid x,\mathbf w_{\text{MAP}})$에 가까워질 뿐 항상 같지는 않습니다. MAP은 모수 하나만 고르므로 부분적으로만 베이지안입니다. ② 정답. ③ 사후분포를 쓰므로 자료가 들어갑니다. 사전분포만 쓰면 자료를 보기 전의 예측입니다. ④ 반대입니다. 자료가 많을수록 사후분포가 좁아져 예측분포도 좁아집니다(자료가 적은 곳에서 넓음).
 
 관련: [[ch06:2.6c|완전 베이지안 머신러닝]]` },
-      { ch: 'ch04', type: 'open', lv: 2, pts: 12, q: R`$x_1,\dots,x_N\sim\N(\mu,\sigma^2)$ i.i.d.일 때 $\E[\sigma^2_{\text{ML}}]=\frac{N-1}N\sigma^2$를 증명하고, 불편 추정량을 쓰세요.`,
+      { ch: 'ch04', type: 'open', lv: 2, pts: 12, q: R`Let $x_1,\dots,x_N\sim\N(\mu,\sigma^2)$ i.i.d. Prove that $\E[\sigma^2_{\text{ML}}]=\frac{N-1}N\sigma^2$, and write down the unbiased estimator.`,
         rubric: R`
 - $\E[x_nx_m]=\mu^2+I_{nm}\sigma^2$ — 3점
 - $\E[\bar x^2]$, $\E[x_n\bar x]$ 계산 — 4점
@@ -225,7 +225,7 @@ $$\tilde\sigma^2=\frac N{N-1}\sigma^2_{\text{ML}}=\frac1{N-1}\sum_{n=1}^N(x_n-\b
 **검산.** $N=1$이면 $\sigma^2_{\text{ML}}=0$이고 식도 $\frac01\sigma^2=0$을 줍니다. $N\to\infty$이면 편향 인수가 1로 갑니다. 편향의 원인은 $\sum(x_n-c)^2$을 최소로 하는 $c=\bar x$를 기준으로 재기 때문입니다(참 평균 $\mu$를 알면 $\frac1N\sum(x_n-\mu)^2$은 불편).
 
 관련: [[ch04:2.3b|최대가능도의 편향과 보정]], [[ch04:2.2b|기댓값, 분산, 공분산]]` },
-      { ch: 'ch05', type: 'open', lv: 3, pts: 16, q: R`(1) 옌센 부등식으로 $\KL(p\Vert q)\ge0$과 등호 조건을 증명하세요. (2) 자료 $\mathbf x_n\sim p$로 모델 $q(\mathbf x\mid\boldsymbol\theta)$를 맞출 때 KL 최소화가 최대가능도와 같은 이유를 설명하세요.`,
+      { ch: 'ch05', type: 'open', lv: 3, pts: 16, q: R`(1) Using Jensen's inequality, prove that $\KL(p\Vert q)\ge0$, together with the condition for equality. (2) When a model $q(\mathbf x\mid\boldsymbol\theta)$ is fitted to data $\mathbf x_n\sim p$, explain why minimizing the KL divergence is equivalent to maximum likelihood.`,
         rubric: R`
 - (1) $-\ln$의 볼록성과 옌센 적용 — 5점
 - (1) $\int q=1$로 $\ge0$ 결론 — 2점
@@ -260,7 +260,7 @@ $$\E_p[-\ln q(\mathbf x\mid\boldsymbol\theta)]\simeq-\frac1N\sum_{n=1}^N\ln q(\m
     desc: '모멘텀과 Adam, 초기화, 배치·층 정규화, 역전파 손계산과 야코비안, 가중치 감쇠·라쏘·조기 종료, 앙상블과 드롭아웃.',
     minutes: 80, plot: 'momentum',
     problems: [
-      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`모멘텀 $\mu=0.95$일 때 기울기가 거의 일정한 영역의 유효 학습률은 $\eta$의 몇 배인가?`, ans: '20', ansTex: R`20`,
+      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`With momentum $\mu=0.95$, in a region where the gradient is nearly constant, the effective learning rate is what multiple of $\eta$?`, ans: '20', ansTex: R`20`,
         sol: R`
 **핵심.** 모멘텀 갱신 $\Delta\mathbf w^{(\tau-1)}=-\eta\nabla E+\mu\Delta\mathbf w^{(\tau-2)}$에서 기울기가 거의 일정하면 이전 걸음이 등비급수로 쌓입니다.
 $$\Delta\mathbf w=-\eta\nabla E\{1+\mu+\mu^2+\cdots\}=-\frac\eta{1-\mu}\nabla E$$
@@ -276,7 +276,7 @@ $$\Delta\mathbf w=-\eta\nabla E\{1+\mu+\mu^2+\cdots\}=-\frac\eta{1-\mu}\nabla E$
 **검산.** $\mu=0.9$이면 10배(교재 값), $\mu=0$이면 1배(보통 경사하강법)이고 $\mu\to1$이면 한없이 커집니다. 곡률이 큰 영역에서는 연속된 기여의 부호가 바뀌며 상쇄되어 유효 학습률이 $\eta$에 가깝습니다.
 
 관련: [[ch08:7.3b|모멘텀]]` },
-      { ch: 'ch08', type: 'num', lv: 2, pts: 7, q: R`Adam($\beta_1=0.9$, $\beta_2=0.99$, $\delta\approx0$, $\eta=0.001$)의 첫 단계에서 기울기가 $g=0.2$이다. 편향 보정 후의 가중치 변화량 $\Delta w$는? ($s^{(0)}=r^{(0)}=0$)`, ans: '-0.001', ansTex: R`-0.001`,
+      { ch: 'ch08', type: 'num', lv: 2, pts: 7, q: R`In the first step of Adam ($\beta_1=0.9$, $\beta_2=0.99$, $\delta\approx0$, $\eta=0.001$), the gradient is $g=0.2$. Find the weight change $\Delta w$ after bias correction. ($s^{(0)}=r^{(0)}=0$)`, ans: '-0.001', ansTex: R`-0.001`,
         sol: R`
 **핵심.** Adam은 1차 모멘트 $s$와 2차 모멘트 $r$을 0에서 시작하는 지수가중 이동평균으로 두고, 초기의 0 쪽 편향을 $1/(1-\beta^\tau)$로 보정합니다.
 $$\hat s^{(\tau)}=\frac{s^{(\tau)}}{1-\beta_1^\tau},\qquad \hat r^{(\tau)}=\frac{r^{(\tau)}}{1-\beta_2^\tau},\qquad \Delta w=-\eta\frac{\hat s^{(\tau)}}{\sqrt{\hat r^{(\tau)}}+\delta}$$
@@ -293,7 +293,7 @@ $$\hat s^{(\tau)}=\frac{s^{(\tau)}}{1-\beta_1^\tau},\qquad \hat r^{(\tau)}=\frac
 **검산.** 첫 걸음에서는 $\hat s^{(1)}=g$, $\hat r^{(1)}=g^2$이므로 $\Delta w=-\eta\operatorname{sign}(g)$, 즉 기울기 크기와 무관하게 $\eta$만큼 움직입니다. 보정을 빼도 여기서는 $\frac{0.1}{\sqrt{0.01}}=1$이라 같은 값이 나오지만, 이것은 $(1-\beta_1)^2=1-\beta_2$인 우연이고 $\beta_2=0.999$이면 보정 없는 걸음이 $0.1/\sqrt{0.001}\approx3.162$배가 됩니다.
 
 관련: [[ch08:7.3d|AdaGrad, RMSProp, Adam]]` },
-      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`입력 유닛 512개인 ReLU 층의 He 초기화 표준편차는?`, ans: '0.0625', ansTex: R`\sqrt{2/512}=\tfrac1{16}`,
+      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`Find the standard deviation of He initialization for a ReLU layer with 512 input units.`, ans: '0.0625', ansTex: R`\sqrt{2/512}=\tfrac1{16}`,
         sol: R`
 **핵심.** He 초기화는 ReLU가 사전활성의 음수 절반을 0으로 만들어 분산이 절반으로 줄어드는 것을 보정해, 가중치 분산을 $2/n_{\text{in}}$으로 둡니다(Xavier는 $2/(n_{\text{in}}+n_{\text{out}})$, 시그모이드·tanh용).
 
@@ -307,7 +307,7 @@ $$\hat s^{(\tau)}=\frac{s^{(\tau)}}{1-\beta_1^\tau},\qquad \hat r^{(\tau)}=\frac
 **검산.** 같은 분산을 균등분포 $U[-\epsilon,\epsilon]$로 내려면 그 분산이 $\epsilon^2/3$이므로 $\epsilon=\sqrt3\times0.0625\approx0.1083$입니다. 가중치를 모두 같은 값으로 두지 않고 무작위로 뽑는 것은 같은 입력을 받는 뉴런들이 똑같이 학습되지 않도록 대칭을 깨기 위해서입니다.
 
 관련: [[ch08:7.2b|파라미터 초기화]]` },
-      { ch: 'ch08', type: 'mc', lv: 2, pts: 5, q: R`헤시안의 최대 고윳값이 4인 이차 오차에 고정 학습률 경사하강법을 쓸 때 수렴하는 학습률은?`,
+      { ch: 'ch08', type: 'mc', lv: 2, pts: 5, q: R`Gradient descent with a fixed learning rate is applied to a quadratic error whose Hessian has largest eigenvalue 4. Which learning rate gives convergence?`,
         choices: [R`$\eta=0.4$`, R`$\eta=0.6$`, R`$\eta=1$`, R`$\eta=2$`], ans: 0,
         sol: R`
 **핵심.** 이차 오차에서 헤시안 고유방향 $\mathbf u_i$의 성분은 경사하강법 한 걸음마다 $(1-\eta\lambda_i)$배가 됩니다. 모든 방향이 수렴하려면 $\lvert1-\eta\lambda_i\rvert\lt1$, 즉
@@ -324,7 +324,7 @@ $$0\lt\eta\lt\frac2{\lambda_{\max}}$$
 **자주 하는 실수.** 상한을 $1/\lambda_{\max}=0.25$로 기억하면 ①도 안 된다고 판단하게 됩니다. $\eta=1/\lambda_{\max}$은 그 방향을 한 걸음에 끝내는 값이고, 발산 경계는 그 두 배입니다. 수렴 속도는 가장 완만한 방향 $\lambda_{\min}$이 정합니다.
 
 관련: [[ch08:7.3|학습률과 수렴]]` },
-      { ch: 'ch09', type: 'num', lv: 2, pts: 7, q: R`미니배치($K=4$)의 사전활성이 $2,4,6,8$이고 $\gamma=0.5$, $\beta=-1$, $\delta=0$이다. $a=8$의 배치 정규화 출력은? (소수 넷째 자리)`, ans: '0.5*3/sqrt(5)-1', ansTex: R`\tfrac{1.5}{\sqrt5}-1\approx-0.3292`,
+      { ch: 'ch09', type: 'num', lv: 2, pts: 7, q: R`The pre-activations in a minibatch ($K=4$) are $2,4,6,8$, with $\gamma=0.5$, $\beta=-1$, $\delta=0$. Find the batch normalization output for $a=8$. (4 decimal places)`, ans: '0.5*3/sqrt(5)-1', ansTex: R`\tfrac{1.5}{\sqrt5}-1\approx-0.3292`,
         sol: R`
 **핵심.** 배치 정규화는 미니배치 안에서 유닛별 평균·분산으로 표준화한 뒤 학습 가능한 $\gamma,\beta$로 다시 척도화합니다.
 $$\mu=\frac1K\sum_na_n,\quad \sigma^2=\frac1K\sum_n(a_n-\mu)^2,\quad \hat a=\frac{a-\mu}{\sqrt{\sigma^2+\delta}},\quad \tilde a=\gamma\hat a+\beta$$
@@ -341,8 +341,8 @@ $$\mu=\frac1K\sum_na_n,\quad \sigma^2=\frac1K\sum_n(a_n-\mu)^2,\quad \hat a=\fra
 **검산.** 표준화된 네 값 $\hat a=(-1.342,\,-0.447,\,0.447,\,1.342)$는 평균 0, 분산 1이고, $\tilde a$는 평균 $\beta=-1$, 표준편차 $\gamma=0.5$를 가집니다. $a=8$은 평균보다 $1.342$ 표준편차 위이므로 $\tilde a=-1+0.5\times1.342$가 맞습니다.
 
 관련: [[ch09:7.4b|배치 정규화]]` },
-      { ch: 'ch09', type: 'mc', lv: 1, pts: 5, q: R`배치 크기 1로 학습해야 하는 상황에 알맞은 정규화와 그 이유는?`,
-        choices: [R`배치 정규화 — 이동평균이 있어서`, R`입력 정규화 — 은닉층도 처리해서`, R`층 정규화 — 한 예제 안의 유닛들로 통계를 구해서`, R`어느 것도 쓸 수 없다`], ans: 2,
+      { ch: 'ch09', type: 'mc', lv: 1, pts: 5, q: R`Training must be done with a batch size of 1. Which normalization is appropriate, and why?`,
+        choices: [R`Batch normalization — because it keeps moving averages`, R`Input normalization — because it also handles the hidden layers`, R`Layer normalization — because it computes the statistics over the units within a single example`, R`None of them can be used`], ans: 2,
         sol: R`
 **핵심.** 정규화 방법은 평균·분산을 어느 축으로 구하는지가 다릅니다. 배치 정규화는 미니배치의 예제들에 걸쳐(유닛마다), 층 정규화는 한 예제 안의 은닉 유닛 $M$개에 걸쳐(예제마다) 구합니다.
 
@@ -354,7 +354,7 @@ $$\mu=\frac1K\sum_na_n,\quad \sigma^2=\frac1K\sum_n(a_n-\mu)^2,\quad \hat a=\fra
 **보기 검토.** ① 이동평균은 추론 때 쓰는 값이고 학습 자체에는 쓰이지 않습니다. 학습 중에는 여전히 미니배치 통계가 필요해 $K=1$에서 퇴화합니다. ② 입력 정규화는 훈련 전에 한 번 입력만 표준화할 뿐 은닉층은 다루지 않습니다. ③ 정답. ④ 층 정규화를 쓸 수 있으므로 틀립니다.
 
 관련: [[ch09:7.4c|층 정규화]]` },
-      { ch: 'ch10', type: 'num', lv: 2, pts: 8, q: R`입력·은닉·출력이 하나씩인 망(편향 없음): $x=1$, $w^{(1)}=1$, $z=\tanh a$, $y=w^{(2)}z$, $w^{(2)}=1$, $E=\frac12(y-t)^2$, $t=0$. $\partial E/\partial w^{(1)}$은? (소수 넷째 자리)`, ans: '(1-tanh(1)^2)*tanh(1)', ansTex: R`(1-\tanh^21)\tanh1\approx0.3199`,
+      { ch: 'ch10', type: 'num', lv: 2, pts: 8, q: R`A network with one input, one hidden and one output unit (no biases): $x=1$, $w^{(1)}=1$, $z=\tanh a$, $y=w^{(2)}z$, $w^{(2)}=1$, $E=\frac12(y-t)^2$, $t=0$. Find $\partial E/\partial w^{(1)}$. (4 decimal places)`, ans: '(1-tanh(1)^2)*tanh(1)', ansTex: R`(1-\tanh^21)\tanh1\approx0.3199`,
         sol: R`
 **핵심.** tanh 은닉층·선형 출력의 2층망 역전파는 출력 오차 $\delta_k=y-t$, 은닉 오차 $\delta_j=h'(a_j)\,w^{(2)}\delta_k$, 가중치 기울기 $\partial E/\partial w^{(1)}=\delta_jx$이고, $h=\tanh$이면 $h'(a)=1-\tanh^2a=1-z^2$입니다.
 
@@ -370,7 +370,7 @@ $$\mu=\frac1K\sum_na_n,\quad \sigma^2=\frac1K\sum_n(a_n-\mu)^2,\quad \hat a=\fra
 **검산.** 직접 미분: $E=\frac12\tanh^2(w^{(1)}x)$이므로 $\frac{\partial E}{\partial w^{(1)}}=\tanh(w^{(1)}x)\{1-\tanh^2(w^{(1)}x)\}x\approx0.7616\times0.4200\approx0.3199$로 같습니다.
 
 관련: [[ch10:8.1c|2층 신경망 예제]]` },
-      { ch: 'ch10', type: 'num', lv: 2, pts: 6, q: R`소프트맥스 출력이 $\mathbf y=(0.5,0.3,0.2)$일 때 $\partial y_1/\partial a_2$는?`, ans: '-0.15', ansTex: R`-y_1y_2=-0.15`,
+      { ch: 'ch10', type: 'num', lv: 2, pts: 6, q: R`The softmax outputs are $\mathbf y=(0.5,0.3,0.2)$. Find $\partial y_1/\partial a_2$.`, ans: '-0.15', ansTex: R`-y_1y_2=-0.15`,
         sol: R`
 **핵심.** 소프트맥스 $y_k=\frac{e^{a_k}}{\sum_me^{a_m}}$의 도함수는 크로네커 델타 $\delta_{kl}$로
 $$\frac{\partial y_k}{\partial a_l}=\delta_{kl}y_k-y_ky_l$$
@@ -386,8 +386,8 @@ $$\frac{\partial y_k}{\partial a_l}=\delta_{kl}y_k-y_ky_l$$
 **검산.** 모든 로짓에 같은 상수를 더해도 소프트맥스는 변하지 않으므로 한 행의 합이 0이어야 합니다: $\partial y_1/\partial a_1=0.5-0.25=0.25$, $\partial y_1/\partial a_2=-0.15$, $\partial y_1/\partial a_3=-0.5\times0.2=-0.1$, 합 $0$.
 
 관련: [[ch10:8.1d|야코비안과 헤시안]]` },
-      { ch: 'ch10', type: 'mc', lv: 2, pts: 5, q: R`출력 $K$개, 입력 $D$개인 함수의 전체 야코비안을 자동 미분으로 구할 때 필요한 패스 수는?`,
-        choices: [R`전진 모드 $K$번, 후진 모드 $D$번`, R`전진 모드 $D$번, 후진 모드 $K$번`, R`둘 다 1번`, R`둘 다 $KD$번`], ans: 1,
+      { ch: 'ch10', type: 'mc', lv: 2, pts: 5, q: R`How many passes of automatic differentiation are needed to compute the full Jacobian of a function with $K$ outputs and $D$ inputs?`,
+        choices: [R`$K$ in forward mode, $D$ in reverse mode`, R`$D$ in forward mode, $K$ in reverse mode`, R`1 in either mode`, R`$KD$ in either mode`], ans: 1,
         sol: R`
 **핵심.** 전진 모드는 입력 하나의 접선 변수 $\dot v_i=\partial v_i/\partial x$를 순전파와 함께 밀고 나가 야코비안의 **한 열**을, 후진 모드는 출력 하나의 수반 변수 $\bar v_i=\partial f/\partial v_i$를 거꾸로 전달해 **한 행**을 얻습니다.
 
@@ -402,7 +402,7 @@ $$\frac{\partial y_k}{\partial a_l}=\delta_{kl}y_k-y_ky_l$$
 **자주 하는 실수.** 신경망 학습은 출력이 스칼라 오차 하나($K=1$)이고 입력(파라미터)이 수백만 개라 후진 모드 한 번이면 됩니다. 이 사실만 기억하고 “후진 모드는 입력마다 한 번”이라고 거꾸로 외우는 경우가 많습니다.
 
 관련: [[ch10:8.2|자동 미분]]` },
-      { ch: 'ch11', type: 'num', lv: 2, pts: 7, q: R`이차 오차의 한 고유방향 곡률이 $\lambda_j=2$일 때 가중치 감쇠 $\lambda=0.5$를 쓰면 그 방향 성분은 최소점 $w_j^\star$의 몇 배가 되는가?`, ans: '0.8', ansTex: R`\tfrac{2}{2.5}=0.8`,
+      { ch: 'ch11', type: 'num', lv: 2, pts: 7, q: R`Along one eigendirection of a quadratic error the curvature is $\lambda_j=2$. With weight decay $\lambda=0.5$, the component along that direction becomes what multiple of the minimum $w_j^\star$?`, ans: '0.8', ansTex: R`\tfrac{2}{2.5}=0.8`,
         sol: R`
 **핵심.** 이차 오차에 가중치 감쇠 $\frac\lambda2\mathbf w^T\mathbf w$를 더하면 헤시안 고유좌표에서 각 성분이 그 방향의 곡률 $\lambda_j$에 따라
 $$\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$$
@@ -419,7 +419,7 @@ $$\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$$
 **검산.** $\lambda\to0$이면 배율 1(규제 없음), $\lambda\to\infty$이면 0입니다. 이 방향은 곡률 $\lambda_j=2$가 $\lambda=0.5$보다 큰 민감한 방향이라 20%만 줄었습니다. 곡률이 $0.1$인 둔감한 방향이었다면 $0.1/0.6\approx0.1667$배로 크게 줄었을 것입니다.
 
 관련: [[ch11:9.2|가중치 감쇠]]` },
-      { ch: 'ch11', type: 'num', lv: 3, pts: 6, q: R`1차원 $\frac h2(w-w^\star)^2+\frac\lambda2\lvert w\rvert$에서 $h=2$, $w^\star=0.3$, $\lambda=1$이면 최소점 $\hat w$는?`, ans: '0.05', ansTex: R`0.05`,
+      { ch: 'ch11', type: 'num', lv: 3, pts: 6, q: R`For the one-dimensional error $\frac h2(w-w^\star)^2+\frac\lambda2\lvert w\rvert$ with $h=2$, $w^\star=0.3$, $\lambda=1$, find the minimizer $\hat w$.`, ans: '0.05', ansTex: R`0.05`,
         sol: R`
 **핵심.** $L_1$ 벌점(라쏘)의 1차원 해는 소프트 문턱입니다. $E(w)=\frac h2(w-w^\star)^2+\frac\lambda2\lvert w\rvert$에서 $\lvert w^\star\rvert\gt\frac\lambda{2h}$이면 $w^\star$를 0 쪽으로 $\frac\lambda{2h}$만큼 옮기고, 아니면 정확히 0입니다.
 
@@ -435,7 +435,7 @@ $$\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$$
 **검산.** $w=0.05$에서 $E'=2(0.05-0.3)+0.5=-0.5+0.5=0$. 만약 $w^\star=0.2$였다면 $0.2\le0.25$라 해가 정확히 0이 되는데, 이것이 라쏘가 희소해를 만드는 이유입니다.
 
 관련: [[ch11:9.2b|일관된 규제와 라쏘]]` },
-      { ch: 'ch11', type: 'mc', lv: 2, pts: 5, q: R`학습률 $\rho$로 $\tau$번 갱신하고 조기 종료하는 것은 대략 어떤 가중치 감쇠 계수와 비슷한가?`,
+      { ch: 'ch11', type: 'mc', lv: 2, pts: 5, q: R`Early stopping after $\tau$ updates with learning rate $\rho$ is approximately equivalent to weight decay with which coefficient?`,
         choices: [R`$\lambda\approx\rho\tau$`, R`$\lambda\approx\rho/\tau$`, R`$\lambda\approx\tau/\rho$`, R`$\lambda\approx(\rho\tau)^{-1}$`], ans: 3,
         sol: R`
 **핵심.** 이차 오차에서 원점부터 학습률 $\rho$로 $\tau$번 갱신하면 헤시안 고유방향($\mathbf H\mathbf u_j=\eta_j\mathbf u_j$) 성분이
@@ -451,7 +451,7 @@ $$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
 **보기 검토.** ① $\rho\tau$ — 역수를 놓친 것으로, 오래 학습할수록 규제가 세진다는 뜻이 되어 반대입니다. ② $\rho/\tau$ — 학습률이 클수록 규제가 세진다는 뜻이라 틀립니다. ③ $\tau/\rho$ — 반복이 많을수록 규제가 세진다는 뜻이라 틀립니다. ④ 정답 — 학습률이나 반복 수가 커질수록 유효 $\lambda$가 작아져 유효 복잡도(유효 파라미터 수)가 커집니다.
 
 관련: [[ch11:9.3|학습 곡선, 조기 종료, 이중 하강]]` },
-      { ch: 'ch12', type: 'num', lv: 1, pts: 6, q: R`오차가 평균 0이고 서로 무상관인 모델 4개의 평균 오차가 $E_{\text{AV}}=0.08$이다. 위원회 오차는?`, ans: '0.02', ansTex: R`0.02`,
+      { ch: 'ch12', type: 'num', lv: 1, pts: 6, q: R`Four models have zero-mean, mutually uncorrelated errors, and their average error is $E_{\text{AV}}=0.08$. Find the committee error.`, ans: '0.02', ansTex: R`0.02`,
         sol: R`
 **핵심.** 모델 $y_m=h+\epsilon_m$의 평균 $y_{\text{COM}}=\frac1M\sum_my_m$의 오차는 $E_{\text{COM}}=\E\big[\{\frac1M\sum_m\epsilon_m\}^2\big]$이고, 오차가 평균 0이며 무상관이면 교차항이 사라져 $E_{\text{COM}}=\frac1ME_{\text{AV}}$입니다.
 
@@ -466,7 +466,7 @@ $$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
 **검산.** 쌍마다 상관계수가 $\rho$이면 $E_{\text{COM}}=\{\rho+(1-\rho)/M\}E_{\text{AV}}$이고, $\rho=0$을 넣으면 $0.08/4$로 맞습니다. 실제 모델들은 오차가 강하게 상관되어 이만큼 줄지는 않지만 $E_{\text{AV}}$보다 나빠지지는 않습니다.
 
 관련: [[ch12:9.6|모델 평균]]` },
-      { ch: 'ch12', type: 'num', lv: 1, pts: 5, q: R`입력 노드를 $\rho=0.8$로 유지하며 드롭아웃 학습했다. 추론 시 전체 망을 쓸 때 입력 노드에서 나가는 가중치 $2.5$는 얼마로 바꾸는가?`, ans: '2', ansTex: R`2.5\times0.8=2`,
+      { ch: 'ch12', type: 'num', lv: 1, pts: 5, q: R`A network was trained with dropout, keeping each input node with probability $\rho=0.8$. When the full network is used at inference, what should an outgoing weight of $2.5$ from an input node be changed to?`, ans: '2', ansTex: R`2.5\times0.8=2`,
         sol: R`
 **핵심.** 드롭아웃 학습에서 노드는 확률 $\rho$로만 존재합니다. 추론 때 마스크 없는 전체 망을 쓰려면 그 노드에서 **나가는 가중치에 $\rho$를 곱해** 다음 노드가 받는 입력의 기댓값을 학습 때와 맞춥니다.
 
@@ -481,7 +481,7 @@ $$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
 **검산.** 두 관행 모두 기댓값을 맞춥니다: 학습 때 $\times\frac1\rho$ 후 추론 그대로, 또는 학습 그대로 후 추론 때 $\times\rho$. 가중치를 바꾸지 않으려면 몬테카를로 드롭아웃(마스크 10–20개를 뽑아 예측을 평균)을 씁니다.
 
 관련: [[ch12:9.6b|드롭아웃]]` },
-      { ch: 'ch10', type: 'open', lv: 3, pts: 16, q: R`(1) $a_j=\sum_iw_{ji}z_i$, $z_j=h(a_j)$, $\delta_j=\partial E_n/\partial a_j$일 때 $\partial E_n/\partial w_{ji}=\delta_jz_i$와 $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$를 유도하세요. (2) 소프트맥스 출력과 교차엔트로피 $E_n=-\sum_kt_k\ln y_k$ ($\sum_kt_k=1$)에서 $\delta_l=y_l-t_l$임을 보이세요.`,
+      { ch: 'ch10', type: 'open', lv: 3, pts: 16, q: R`(1) With $a_j=\sum_iw_{ji}z_i$, $z_j=h(a_j)$ and $\delta_j=\partial E_n/\partial a_j$, derive $\partial E_n/\partial w_{ji}=\delta_jz_i$ and $\delta_j=h'(a_j)\sum_kw_{kj}\delta_k$. (2) For softmax outputs with the cross-entropy error $E_n=-\sum_kt_k\ln y_k$ ($\sum_kt_k=1$), show that $\delta_l=y_l-t_l$.`,
         rubric: R`
 - (1) $w_{ji}$는 $a_j$를 통해서만 영향 — 3점
 - (1) 다음 층 $a_k$들에 대한 연쇄법칙 합 — 4점
@@ -518,7 +518,7 @@ $$\delta_l=\frac{\partial E_n}{\partial a_l}=-\sum_kt_k\frac{\partial\ln y_k}{\p
     desc: '확률과 정보이론부터 옵티마이저·정규화·역전파·규제까지. 실제 시험처럼 계산과 유도를 섞었습니다.',
     minutes: 100, plot: 'exam',
     problems: [
-      { ch: 'ch03', type: 'num', lv: 2, pts: 7, q: R`유병률 0.1%인 희귀 질환에 민감도 99%, 위양성률 1%인 검사를 했다. 양성일 때 질환일 확률은? (소수 넷째 자리)`, ans: '0.00099/0.01098', ansTex: R`\tfrac{0.00099}{0.01098}\approx0.0902`,
+      { ch: 'ch03', type: 'num', lv: 2, pts: 7, q: R`A test with sensitivity 99% and false-positive rate 1% is used for a rare disease with prevalence 0.1%. Given a positive result, what is the probability that the patient has the disease? (4 decimal places)`, ans: '0.00099/0.01098', ansTex: R`\tfrac{0.00099}{0.01098}\approx0.0902`,
         sol: R`
 **핵심.** 유병률이 매우 낮으면 정확한 검사라도 양성 예측도가 낮습니다. 베이즈 정리
 $$p(D=1\mid T=1)=\frac{p(T=1\mid D=1)p(D=1)}{p(T=1\mid D=1)p(D=1)+p(T=1\mid D=0)p(D=0)}$$
@@ -536,7 +536,7 @@ $$p(D=1\mid T=1)=\frac{p(T=1\mid D=1)p(D=1)}{p(T=1\mid D=1)p(D=1)+p(T=1\mid D=0)
 **검산.** 10만 명 중 환자 100명에서 99명, 건강한 99,900명에서 999명이 양성입니다. 양성 1,098명 가운데 환자는 99명이라 $99/1098\approx0.0902$, 즉 양성의 약 91%가 위양성입니다.
 
 관련: [[ch03:2.1b|베이즈 정리와 의료 선별검사]]` },
-      { ch: 'ch04', type: 'num', lv: 1, pts: 6, q: R`자료 $1,2,6$에 가우시안을 최대가능도로 맞출 때 $\sigma^2_{\text{ML}}$은?`, ans: '14/3', ansTex: R`\tfrac{14}3`,
+      { ch: 'ch04', type: 'num', lv: 1, pts: 6, q: R`A Gaussian is fitted to the data $1,2,6$ by maximum likelihood. Find $\sigma^2_{\text{ML}}$.`, ans: '14/3', ansTex: R`\tfrac{14}3`,
         sol: R`
 **핵심.** 가우시안의 최대가능도 해는 표본평균과 $N$으로 나눈 표본분산입니다.
 $$\mu_{\text{ML}}=\frac1N\sum_nx_n,\qquad \sigma^2_{\text{ML}}=\frac1N\sum_n(x_n-\mu_{\text{ML}})^2$$
@@ -552,8 +552,8 @@ $$\mu_{\text{ML}}=\frac1N\sum_nx_n,\qquad \sigma^2_{\text{ML}}=\frac1N\sum_n(x_n
 **검산.** $\frac1N\sum x_n^2-\bar x^2=\frac{1+4+36}3-9=\frac{41}3-9=\frac{14}3$으로 같습니다.
 
 관련: [[ch04:2.3|가우시안 분포와 최대가능도]]` },
-      { ch: 'ch05', type: 'mc', lv: 2, pts: 5, q: R`다음 중 **항상** 옳은 것은?`,
-        choices: [R`$\KL(p\Vert q)=\KL(q\Vert p)$`, R`$\mathrm H[\mathbf x\mid\mathbf y]\le\mathrm H[\mathbf x]$`, R`미분 엔트로피는 항상 0 이상`, R`$\mathrm I[\mathbf x,\mathbf y]<0$일 수 있다`], ans: 1,
+      { ch: 'ch05', type: 'mc', lv: 2, pts: 5, q: R`Which of the following is **always** true?`,
+        choices: [R`$\KL(p\Vert q)=\KL(q\Vert p)$`, R`$\mathrm H[\mathbf x\mid\mathbf y]\le\mathrm H[\mathbf x]$`, R`Differential entropy is always nonnegative`, R`It is possible that $\mathrm I[\mathbf x,\mathbf y]<0$`], ans: 1,
         sol: R`
 **핵심.** 상호정보량은 KL 발산이라 음이 아닙니다.
 $$\mathrm I[\mathbf x,\mathbf y]\equiv\KL\big(p(\mathbf x,\mathbf y)\Vert p(\mathbf x)p(\mathbf y)\big)=\mathrm H[\mathbf x]-\mathrm H[\mathbf x\mid\mathbf y]\ge0$$
@@ -566,7 +566,7 @@ $$\mathrm I[\mathbf x,\mathbf y]\equiv\KL\big(p(\mathbf x,\mathbf y)\Vert p(\mat
 **보기 검토.** ① KL은 대칭이 아닙니다. 예: $p=(\frac12,\frac12)$, $q=(\frac14,\frac34)$이면 $\KL(p\Vert q)\approx0.1438$, $\KL(q\Vert p)\approx0.1308$. ② 정답. ③ 가우시안의 미분 엔트로피 $\frac12\{1+\ln(2\pi\sigma^2)\}$는 $\sigma^2\lt\frac1{2\pi e}\approx0.0585$이면 음수입니다. 항상 0 이상인 것은 이산 엔트로피입니다. ④ 상호정보량은 KL이므로 음수가 될 수 없습니다.
 
 관련: [[ch05:2.5c|조건부 엔트로피와 상호정보량]]` },
-      { ch: 'ch05', type: 'num', lv: 2, pts: 6, q: R`$\N(0,4)$와 $\N(0,1)$의 미분 엔트로피 차이 $\mathrm H[\N(0,4)]-\mathrm H[\N(0,1)]$ (내트)는? (소수 넷째 자리)`, ans: 'ln(2)', ansTex: R`\tfrac12\ln4=\ln2\approx0.6931`,
+      { ch: 'ch05', type: 'num', lv: 2, pts: 6, q: R`Find the difference in differential entropy between $\N(0,4)$ and $\N(0,1)$, $\mathrm H[\N(0,4)]-\mathrm H[\N(0,1)]$ (in nats). (4 decimal places)`, ans: 'ln(2)', ansTex: R`\tfrac12\ln4=\ln2\approx0.6931`,
         sol: R`
 **핵심.** 가우시안의 미분 엔트로피는 분산에만 의존합니다.
 $$\mathrm H[x]=\frac12\{1+\ln(2\pi\sigma^2)\}\quad(\text{내트})$$
@@ -582,7 +582,7 @@ $$\mathrm H[x]=\frac12\{1+\ln(2\pi\sigma^2)\}\quad(\text{내트})$$
 **검산.** $x\sim\N(0,1)$이면 $y=2x\sim\N(0,4)$이고, 밀도 변환 $p_y(y)=p_x(y/2)\cdot\frac12$에서 $\mathrm H[y]=-\E[\ln p_x(x)-\ln2]=\mathrm H[x]+\ln2$로 같은 결과입니다.
 
 관련: [[ch05:2.5|정보량, 엔트로피, 미분 엔트로피]]` },
-      { ch: 'ch06', type: 'num', lv: 2, pts: 6, q: R`성공 확률 $\mu$에 균등 사전분포를 두고 10번 중 7번 성공을 관측했다. 사후평균은? (소수 넷째 자리)`, ans: '2/3', ansTex: R`\tfrac{7+1}{10+2}=\tfrac23`,
+      { ch: 'ch06', type: 'num', lv: 2, pts: 6, q: R`A uniform prior is placed on the success probability $\mu$, and 7 successes are observed in 10 trials. Find the posterior mean. (4 decimal places)`, ans: '2/3', ansTex: R`\tfrac{7+1}{10+2}=\tfrac23`,
         sol: R`
 **핵심.** 성공 확률 $\mu$에 균등 사전분포 $p(\mu)=1$ ($0\le\mu\le1$)을 두고 $N$번 중 $m$번 성공을 보면 사후분포는 $\mu^m(1-\mu)^{N-m}$에 비례하고
 $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
@@ -598,8 +598,8 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **검산.** 사후평균은 MLE $0.7$에서 사전분포의 평균 $0.5$ 쪽으로 당겨져야 하는데 $0.6667$이 둘 사이에 있습니다. $N\to\infty$이면 $\frac{m+1}{N+2}\to\frac mN$으로 MLE에 가까워집니다.
 
 관련: [[ch06:2.6|모수의 불확실성과 사후분포]]` },
-      { ch: 'ch02', type: 'mc', lv: 1, pts: 5, q: R`다항식 곡선 적합에서 규제 계수 $\lambda$를 매우 크게 하면?`,
-        choices: [R`과적합이 심해진다`, R`계수가 0 쪽으로 눌려 과소적합(편향 증가)이 된다`, R`훈련 오차가 0이 된다`, R`아무 변화가 없다`], ans: 1,
+      { ch: 'ch02', type: 'mc', lv: 1, pts: 5, q: R`In polynomial curve fitting, what happens if the regularization coefficient $\lambda$ is made very large?`,
+        choices: [R`Over-fitting becomes more severe`, R`The coefficients are pushed toward zero, giving under-fitting (increased bias)`, R`The training error becomes zero`, R`Nothing changes`], ans: 1,
         sol: R`
 **핵심.** $L_2$ 규제된 오차 $\tilde E(\mathbf w)=\frac12\sum_n\{y(x_n,\mathbf w)-t_n\}^2+\frac\lambda2\lVert\mathbf w\rVert^2$에서 $\lambda$는 벌점항의 상대적 중요도입니다.
 
@@ -614,7 +614,7 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **자주 하는 실수.** 적절한 $\lambda$를 훈련 오차로 고르면 항상 $\lambda=0$이 이깁니다. 초매개변수는 검증 자료(또는 $S$겹 교차검증)로 골라야 합니다.
 
 관련: [[ch02:1.2c|규제와 모델 선택]]` },
-      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`지수 스케줄 $\eta^{(\tau)}=\eta^{(0)}c^{\tau/s}$에서 $\eta^{(0)}=0.01$, $c=0.1$, $s=100$일 때 $\tau=200$의 학습률은?`, ans: '0.0001', ansTex: R`10^{-4}`,
+      { ch: 'ch08', type: 'num', lv: 1, pts: 6, q: R`For the exponential schedule $\eta^{(\tau)}=\eta^{(0)}c^{\tau/s}$ with $\eta^{(0)}=0.01$, $c=0.1$, $s=100$, find the learning rate at $\tau=200$.`, ans: '0.0001', ansTex: R`10^{-4}`,
         sol: R`
 **핵심.** 학습률 스케줄은 처음에 큰 $\eta$로 빠르게 움직이고 시간이 지나면 줄여 안정적으로 수렴하게 합니다. 지수 스케줄 $\eta^{(\tau)}=\eta^{(0)}c^{\tau/s}$ ($0\lt c\lt1$)는 $s$단계마다 학습률을 $c$배로 줄입니다.
 
@@ -629,8 +629,8 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **검산.** $\tau=100$에서 $10^{-3}$, $\tau=200$에서 $10^{-4}$로 100단계마다 한 자릿수씩 줄어 $c=0.1$, $s=100$의 의미와 맞습니다. $\ln\eta^{(\tau)}$가 $\tau$의 일차함수라 로그 눈금에서 직선입니다.
 
 관련: [[ch08:7.3c|학습률 스케줄]]` },
-      { ch: 'ch08', type: 'mc', lv: 2, pts: 5, q: R`$E=\sum_nE_n$일 때 무작위 미니배치 $\mathcal B$ (크기 $B$)로 만든 $\frac NB\sum_{n\in\mathcal B}\nabla E_n$에 대해 옳은 것은?`,
-        choices: [R`기댓값이 $\nabla E$이고 분산은 $B$가 클수록 작다`, R`항상 $\nabla E$와 같다`, R`기댓값이 $\nabla E/B$이다`, R`$B$와 무관한 분산을 가진다`], ans: 0,
+      { ch: 'ch08', type: 'mc', lv: 2, pts: 5, q: R`Let $E=\sum_nE_n$. Which statement about $\frac NB\sum_{n\in\mathcal B}\nabla E_n$, formed from a random minibatch $\mathcal B$ (of size $B$), is correct?`,
+        choices: [R`Its expectation is $\nabla E$, and its variance is smaller for larger $B$`, R`It is always equal to $\nabla E$`, R`Its expectation is $\nabla E/B$`, R`Its variance does not depend on $B$`], ans: 0,
         sol: R`
 **핵심.** $E=\sum_nE_n$이므로 전체 기울기는 $\nabla E=\sum_{n=1}^N\nabla E_n$입니다. 무작위로 뽑은 $B$개의 합에 $\frac NB$를 곱하면 이 전체 합의 불편 추정량이 됩니다.
 
@@ -645,8 +645,8 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **검산.** $B=1$이면 SGD의 $N\nabla E_n$(잡음이 매우 큼), $B=N$이면 배치 경사하강법의 $\nabla E$(분산 0)로 두 극단과 맞습니다.
 
 관련: [[ch08:7.2|배치, 확률적, 미니배치 경사하강법]]` },
-      { ch: 'ch09', type: 'mc', lv: 3, pts: 5, q: R`배치 정규화 바로 앞 선형층의 가중치 $\mathbf w_i$에 대해 옳은 것은? ($\delta\approx0$)`,
-        choices: [R`$\mathbf w_i$를 2배 하면 출력도 2배`, R`앞 층 편향 $b_i$가 출력에 큰 영향을 준다`, R`손실의 기울기 $\nabla_{\mathbf w_i}L$은 $\mathbf w_i$에 수직이다`, R`$\gamma_i,\beta_i$가 없으면 학습이 더 쉽다`], ans: 2,
+      { ch: 'ch09', type: 'mc', lv: 3, pts: 5, q: R`Which statement about the weights $\mathbf w_i$ of the linear layer immediately before batch normalization is correct? ($\delta\approx0$)`,
+        choices: [R`Doubling $\mathbf w_i$ doubles the output`, R`The bias $b_i$ of the preceding layer has a large effect on the output`, R`The gradient of the loss $\nabla_{\mathbf w_i}L$ is orthogonal to $\mathbf w_i$`, R`Training is easier without $\gamma_i,\beta_i$`], ans: 2,
         sol: R`
 **핵심.** 배치 정규화는 사전활성 $a_{ni}=\mathbf w_i^T\mathbf z_n+b_i$에서 미니배치 평균 $\mu_i$를 빼고 표준편차 $\sigma_i$로 나눕니다. 그래서 $\hat a_{ni}=\frac{a_{ni}-\mu_i}{\sigma_i}$ ($\delta\approx0$)는 $\mathbf w_i$의 **크기**와 편향 $b_i$에 무관합니다.
 
@@ -659,7 +659,7 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **보기 검토.** ① 2배 해도 평균과 표준편차가 함께 2배가 되어 출력은 변하지 않습니다. ② $b_i$는 평균을 빼면서 상쇄되어 영향이 없습니다. 정규화 뒤의 평균은 $\beta_i$가 정합니다. ③ 정답. ④ $\gamma_i,\beta_i$가 없으면 층의 표현력이 줄어듭니다. 이들이 평균·분산을 직접 정하는 독립 파라미터라 오히려 학습이 쉬워집니다.
 
 관련: [[ch09:7.4b|배치 정규화]]` },
-      { ch: 'ch10', type: 'num', lv: 3, pts: 7, q: R`$f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$의 $(x_1,x_2)=(1,1)$에서 $\partial f/\partial x_2$는? (소수 넷째 자리)`, ans: '1+e-cos(1)', ansTex: R`1+e-\cos1\approx3.1780`,
+      { ch: 'ch10', type: 'num', lv: 3, pts: 7, q: R`For $f(x_1,x_2)=x_1x_2+\exp(x_1x_2)-\sin x_2$, find $\partial f/\partial x_2$ at $(x_1,x_2)=(1,1)$. (4 decimal places)`, ans: '1+e-cos(1)', ansTex: R`1+e-\cos1\approx3.1780`,
         sol: R`
 **핵심.** 후진 모드 자동 미분은 출력에서 시작해 수반 변수 $\bar v_i=\partial f/\partial v_i$를 $\bar v_i=\sum_{j\in\mathrm{ch}(i)}\bar v_j\frac{\partial v_j}{\partial v_i}$로 거꾸로 전달합니다. 교재의 중간 변수는 $v_1=x_1$, $v_2=x_2$, $v_3=v_1v_2$, $v_4=\sin v_2$, $v_5=\exp v_3$, $v_6=v_3-v_4$, $v_7=v_5+v_6=f$입니다.
 
@@ -675,7 +675,7 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **검산.** 직접 미분: $\frac{\partial f}{\partial x_2}=x_1+x_1e^{x_1x_2}-\cos x_2=1+e-\cos1$. 같은 역방향 패스에서 $\bar v_1=\bar v_3v_2=1+e$도 함께 나옵니다(출력이 하나라 한 번으로 충분).
 
 관련: [[ch10:8.2|자동 미분]]` },
-      { ch: 'ch10', type: 'num', lv: 2, pts: 6, q: R`$E(w)=w^3$의 $w=1$에서의 도함수를 중앙 차분 $\epsilon=0.1$로 근사한 값은?`, ans: '3.01', ansTex: R`3.01`,
+      { ch: 'ch10', type: 'num', lv: 2, pts: 6, q: R`Approximate the derivative of $E(w)=w^3$ at $w=1$ by central differences with $\epsilon=0.1$.`, ans: '3.01', ansTex: R`3.01`,
         sol: R`
 **핵심.** 중앙 차분 $\frac{E(w+\epsilon)-E(w-\epsilon)}{2\epsilon}$은 테일러 전개 $E(w\pm\epsilon)=E\pm\epsilon E'+\frac{\epsilon^2}2E''\pm\frac{\epsilon^3}6E'''+\cdots$에서 짝수 차 항이 상쇄되어 $E'(w)+\frac{\epsilon^2}6E'''(w)+O(\epsilon^4)$, 즉 오차가 $O(\epsilon^2)$입니다.
 
@@ -690,7 +690,7 @@ $$\E[\mu\mid\mathcal D]=\frac{m+1}{N+2}$$
 **자주 하는 실수.** 전진 차분 $\frac{E(1.1)-E(1)}{0.1}=3.31$을 쓰면 오차가 $O(\epsilon)$이라 오차($0.31$)가 31배 큽니다. $2\epsilon$ 대신 $\epsilon$으로 나눠 $6.02$를 쓰는 실수도 있습니다. 중앙 차분은 역전파 구현을 검증(gradient check)하는 데 쓰며, 가중치를 하나씩 흔들어야 해 전체 기울기에 $O(W^2)$이 듭니다.
 
 관련: [[ch10:8.1c|2층 신경망 예제와 수치 미분]]` },
-      { ch: 'ch11', type: 'num', lv: 2, pts: 6, q: R`원점에서 시작해 학습률 $\rho=0.1$로 10번 갱신하고 멈췄다. 곡률 $\eta_j=0.1$인 방향 성분은 $w_j^\star$의 몇 배인가? (소수 넷째 자리)`, ans: '1-0.99^10', ansTex: R`1-0.99^{10}\approx0.0956`,
+      { ch: 'ch11', type: 'num', lv: 2, pts: 6, q: R`Starting from the origin, training is stopped after 10 updates with learning rate $\rho=0.1$. The component along the direction with curvature $\eta_j=0.1$ is what multiple of $w_j^\star$? (4 decimal places)`, ans: '1-0.99^10', ansTex: R`1-0.99^{10}\approx0.0956`,
         sol: R`
 **핵심.** 이차 오차 $E=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$에서 원점부터 $\mathbf w^{(\tau)}=\mathbf w^{(\tau-1)}-\rho\nabla E$로 갱신하면 헤시안 고유방향($\mathbf H\mathbf u_j=\eta_j\mathbf u_j$) 성분이
 $$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
@@ -706,7 +706,7 @@ $$w_j^{(\tau)}=\big\{1-(1-\rho\eta_j)^\tau\big\}w_j^\star$$
 **검산.** 조기 종료는 $\lambda\approx(\rho\tau)^{-1}=1$인 가중치 감쇠와 비슷해야 하고, 그 축소 배율 $\frac{\eta_j}{\eta_j+\lambda}=\frac{0.1}{1.1}\approx0.0909$는 $0.0956$과 가깝습니다. 둔감한 방향이라 거의 움직이지 않은 상태에서 멈춘 것입니다.
 
 관련: [[ch11:9.3|학습 곡선, 조기 종료, 이중 하강]]` },
-      { ch: 'ch12', type: 'num', lv: 3, pts: 6, q: R`모델 5개의 오차가 각각 분산 1(평균 0)이고 서로 상관계수 0.5이다. 위원회 오차 $E_{\text{COM}}$은?`, ans: '0.6', ansTex: R`\tfrac15+\tfrac45(0.5)=0.6`,
+      { ch: 'ch12', type: 'num', lv: 3, pts: 6, q: R`The errors of five models each have variance 1 (zero mean), and every pair has correlation coefficient 0.5. Find the committee error $E_{\text{COM}}$.`, ans: '0.6', ansTex: R`\tfrac15+\tfrac45(0.5)=0.6`,
         sol: R`
 **핵심.** 오차의 분산이 모두 $v$이고 쌍마다 상관계수가 $\rho$이면 $\E[\epsilon_m\epsilon_l]=\rho v$ ($m\ne l$)이고
 $$E_{\text{COM}}=\Big(\rho+\frac{1-\rho}M\Big)E_{\text{AV}}$$
@@ -722,8 +722,8 @@ $$E_{\text{COM}}=\Big(\rho+\frac{1-\rho}M\Big)E_{\text{AV}}$$
 **검산.** $\rho=0$이면 $1/M=0.2$, $\rho=1$이면 $1$(모델이 모두 같아 전혀 줄지 않음)이고, $0.6$은 그 사이입니다. $E_{\text{AV}}=1$보다 작아 $E_{\text{COM}}\le E_{\text{AV}}$와도 맞습니다.
 
 관련: [[ch12:9.6|모델 평균]]` },
-      { ch: 'ch12', type: 'mc', lv: 2, pts: 5, q: R`잔차 연결이 매우 깊은 망의 학습을 돕는 이유로 옳지 않은 것은?`,
-        choices: [R`블록의 야코비안이 $\mathbf I+J_l$이라 항등 경로가 기울기를 직접 전달한다`, R`오차 곡면이 매끄러워진다`, R`얕은 경로와 깊은 경로의 앙상블처럼 작동한다`, R`파라미터 수를 크게 줄인다`], ans: 3,
+      { ch: 'ch12', type: 'mc', lv: 2, pts: 5, q: R`Which of the following is **not** a correct reason why residual connections help in training very deep networks?`,
+        choices: [R`The Jacobian of a block is $\mathbf I+J_l$, so the identity path passes the gradient directly`, R`The error surface becomes smoother`, R`The network behaves like an ensemble of shallow and deep paths`, R`They greatly reduce the number of parameters`], ans: 3,
         sol: R`
 **핵심.** 잔차 블록 $\mathbf z_l=F_l(\mathbf z_{l-1})+\mathbf z_{l-1}$은 입력을 출력에 그대로 더하는 건너뛰는 연결입니다. 더하기에는 파라미터가 없으므로 파라미터 수는 거의 같고, 달라지는 것은 기울기의 전달과 오차 곡면의 성질입니다.
 
@@ -736,7 +736,7 @@ $$E_{\text{COM}}=\Big(\rho+\frac{1-\rho}M\Big)E_{\text{AV}}$$
 **보기 검토.** ① 옳은 설명 — 항등 행렬 $\mathbf I$가 기울기의 직통 경로입니다. ② 옳은 설명 — 교재가 든 효과(56층 망의 곡면 시각화)입니다. ③ 옳은 설명 — 펼친 식의 경로 앙상블 해석입니다. ④ 옳지 않음, 정답 — 건너뛰는 연결은 파라미터를 거의 늘리지도 줄이지도 않습니다. 차원이 다를 때 쓰는 $\mathbf z_l=F_l(\mathbf z_{l-1})+\mathbf W\mathbf z_{l-1}$은 오히려 파라미터를 더합니다.
 
 관련: [[ch12:9.5|잔차 연결]]` },
-      { ch: 'ch11', type: 'open', lv: 3, pts: 10, q: R`이차 오차 $E=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$에 $\frac\lambda2\mathbf w^T\mathbf w$를 더한 최소점이 헤시안 고유좌표에서 $\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$임을 보이고, 곡률이 작은 방향이 더 많이 줄어드는 의미를 설명하세요.`,
+      { ch: 'ch11', type: 'open', lv: 3, pts: 10, q: R`Add $\frac\lambda2\mathbf w^T\mathbf w$ to the quadratic error $E=E_0+\frac12(\mathbf w-\mathbf w^\star)^T\mathbf H(\mathbf w-\mathbf w^\star)$. Show that, in the eigenvector coordinates of the Hessian, the minimizer is $\hat w_j=\frac{\lambda_j}{\lambda_j+\lambda}w_j^\star$, and explain what it means that directions of small curvature are shrunk more.`,
         rubric: R`
 - $(\mathbf H+\lambda\mathbf I)\hat{\mathbf w}=\mathbf H\mathbf w^\star$ — 3점
 - 고유분해·사영으로 성분식 — 4점
@@ -759,7 +759,7 @@ $$(\lambda_j+\lambda)\hat w_j=\lambda_jw_j^\star\quad\Longrightarrow\quad\hat w_
 **검산.** 예: $\lambda_1=0.25$, $\lambda_2=4$, $\lambda=1$이면 배율이 $0.2$와 $0.8$이라 둔감한 방향은 80% 줄고 민감한 방향은 20%만 줄어듭니다. $\lambda=0$이면 모든 배율이 1이 되어 $\hat{\mathbf w}=\mathbf w^\star$로 돌아옵니다.
 
 관련: [[ch11:9.2|가중치 감쇠]]` },
-      { ch: 'ch12', type: 'open', lv: 2, pts: 9, q: R`$y_m=h+\epsilon_m$ ($m=1,\dots,M$)의 평균 $y_{\text{COM}}$에 대해 $E_{\text{COM}}\le E_{\text{AV}}$를 증명하세요.`,
+      { ch: 'ch12', type: 'open', lv: 2, pts: 9, q: R`For the average $y_{\text{COM}}$ of the models $y_m=h+\epsilon_m$ ($m=1,\dots,M$), prove that $E_{\text{COM}}\le E_{\text{AV}}$.`,
         rubric: R`
 - $E_{\text{COM}}$, $E_{\text{AV}}$를 $\epsilon_m$으로 표현 — 3점
 - 점별로 $(\frac1M\sum\epsilon_m)^2\le\frac1M\sum\epsilon_m^2$ (볼록성·옌센 또는 코시-슈바르츠) — 4점

@@ -8,8 +8,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '두 검사를 잇는 선별검사와 결합표의 주변화, 정규방정식과 교차검증, 공분산의 선형변환과 회귀의 잡음 정밀도, 극좌표 야코비안·상호정보량·최대 엔트로피 증명, 이산 후보와 베타 사후분포의 예측분포까지 다룹니다. I회보다 단계가 많은 계산과 증명 위주입니다.',
     minutes: 110, plot: 'posterior',
     problems: [
-      { ch: 'ch01', type: 'mc', lv: 1, pts: 3, q: R`저선량 PET에서 한 화소의 검출 계수는 평균 $\lambda$인 포아송 분포를 따른다(분산도 $\lambda$). 표준 촬영의 평균 계수가 $\lambda=400$이고 계수는 촬영 시간에 비례한다. 신호 대 잡음비(SNR)를 표준 촬영의 **절반 이상**으로 유지할 때 줄일 수 있는 최소 촬영 시간은 표준 촬영의 몇 %인가?`,
-        choices: [R`50%`, R`25%`, R`약 31.6%`, R`6.25%`], ans: 1,
+      { ch: 'ch01', type: 'mc', lv: 1, pts: 3, q: R`In low-dose PET, the detected count in a pixel follows a Poisson distribution with mean $\lambda$ (its variance is also $\lambda$). The mean count of a standard scan is $\lambda=400$, and the count is proportional to the scan time. If the signal-to-noise ratio (SNR) must stay **at least half** that of the standard scan, what is the shortest scan time allowed, as a percentage of the standard scan time?`,
+        choices: [R`50%`, R`25%`, R`about 31.6%`, R`6.25%`], ans: 1,
         sol: R`
 **핵심.** 포아송 계수는 평균과 분산이 모두 $\lambda$이므로 $\text{SNR}=\lambda/\sqrt\lambda=\sqrt\lambda$입니다. SNR은 계수의 제곱근에 비례합니다.
 
@@ -25,7 +25,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch01:0.4|의료 영상 AI의 응용]]
 ` },
-      { ch: 'ch02', type: 'num', lv: 2, pts: 4, q: R`네 점 $(x_n,t_n)=(0,1),(1,3),(2,2),(3,6)$에 직선 $y(x,\mathbf w)=w_0+w_1x$를 제곱오차합으로 맞춘다. 정규방정식 $\Phi^T\Phi\,\mathbf w^\star=\Phi^T\mathbf t$를 풀어 얻은 모델의 $x=4$에서의 예측값 $y(4,\mathbf w^\star)$는? (소수)`, ans: '6.5', ansTex: R`w_0^\star+4w_1^\star=0.9+5.6=6.5`,
+      { ch: 'ch02', type: 'num', lv: 2, pts: 4, q: R`A straight line $y(x,\mathbf w)=w_0+w_1x$ is fitted to the four points $(x_n,t_n)=(0,1),(1,3),(2,2),(3,6)$ by minimizing the sum-of-squares error. Solve the normal equations $\Phi^T\Phi\,\mathbf w^\star=\Phi^T\mathbf t$ and find the model's prediction $y(4,\mathbf w^\star)$ at $x=4$. (decimal)`, ans: '6.5', ansTex: R`w_0^\star+4w_1^\star=0.9+5.6=6.5`,
         sol: R`
 **핵심.** 계획행렬 $\Phi_{nj}=x_n^j$ ($j=0,1$)로 정규방정식 $\Phi^T\Phi\,\mathbf w^\star=\Phi^T\mathbf t$를 세우고 $2\times2$ 연립방정식을 풉니다.
 
@@ -42,7 +42,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch02:1.2a|자료, 선형 모델, 오차함수]]
 ` },
-      { ch: 'ch02', type: 'num', lv: 3, pts: 5, q: R`같은 네 점 $(0,1),(1,3),(2,2),(3,6)$에 같은 직선 모델을 $L_2$ 규제 오차 $\tilde E(\mathbf w)=\frac12\sum_n\{y(x_n,\mathbf w)-t_n\}^2+\frac\lambda2\lVert\mathbf w\rVert^2$로 맞춘다. 여기서 $\lVert\mathbf w\rVert^2=w_0^2+w_1^2$이라 절편도 규제한다. $\lambda=2$일 때의 기울기 $w_1^\star$는? (소수)`, ans: '1.3', ansTex: R`w_1^\star=\tfrac{78}{60}=1.3`,
+      { ch: 'ch02', type: 'num', lv: 3, pts: 5, q: R`The same straight-line model is fitted to the same four points $(0,1),(1,3),(2,2),(3,6)$ by minimizing the $L_2$-regularized error $\tilde E(\mathbf w)=\frac12\sum_n\{y(x_n,\mathbf w)-t_n\}^2+\frac\lambda2\lVert\mathbf w\rVert^2$. Here $\lVert\mathbf w\rVert^2=w_0^2+w_1^2$, so the bias (intercept) is regularized as well. Find the slope $w_1^\star$ for $\lambda=2$. (decimal)`, ans: '1.3', ansTex: R`w_1^\star=\tfrac{78}{60}=1.3`,
         sol: R`
 **핵심.** 규제 항을 더해도 $\tilde E$는 $\mathbf w$의 이차식이고, $\nabla\tilde E=\Phi^T(\Phi\mathbf w-\mathbf t)+\lambda\mathbf w=\mathbf 0$에서 $(\Phi^T\Phi+\lambda\mathbf I)\mathbf w^\star=\Phi^T\mathbf t$를 얻습니다. 절편도 규제하므로 $\lambda$가 대각 원소 **둘 다**에 더해집니다.
 
@@ -60,12 +60,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch02:1.2c|규제와 모델 선택]]
 ` },
-      { ch: 'ch02', type: 'mc', lv: 2, pts: 3, q: R`흉부 X선 판독 보조 모델을 만드는 연구팀이 자료 1,000건을 훈련용 800건과 테스트용 200건으로 나눴다. 규제 계수 $\lambda$의 후보 10개마다 훈련용 800건으로 학습한 뒤 **테스트용 200건의 오차가 가장 작은** $\lambda$를 골랐고, 그 테스트 오차를 최종 성능으로 보고했다. 이 절차에 대한 평가로 옳은 것은?`,
+      { ch: 'ch02', type: 'mc', lv: 2, pts: 3, q: R`A research team building a model to assist chest X-ray reading splits 1,000 cases into 800 for training and 200 for testing. For each of 10 candidate values of the regularization coefficient $\lambda$, they train on the 800 training cases, pick the $\lambda$ with the **smallest error on the 200 test cases**, and report that test error as the final performance. Which assessment of this procedure is correct?`,
         choices: [
-          R`테스트 자료를 가중치 학습에 쓰지 않았으므로 보고한 오차는 편향 없는 추정이다`,
-          R`$\lambda$는 훈련 오차가 가장 작은 값으로 골랐어야 한다`,
-          R`테스트 자료로 모델을 고른 탓에 보고한 오차는 낙관적으로 편향되어 있다. 훈련용 800건 안에서 검증 집합이나 $S$겹 교차검증으로 $\lambda$를 고르고, 테스트용 200건은 마지막에 한 번만 써야 한다`,
-          R`교차검증은 학습을 $S$번 해야 하므로 이 문제에는 쓸 수 없고, 테스트 자료를 늘리는 것만이 해결책이다`,
+          R`Since the test data were not used to learn the weights, the reported error is an unbiased estimate`,
+          R`$\lambda$ should have been chosen as the value with the smallest training error`,
+          R`Because the model was selected using the test data, the reported error is optimistically biased. $\lambda$ should be chosen within the 800 training cases, using a validation set or $S$-fold cross-validation, and the 200 test cases used only once at the very end`,
+          R`Cross-validation requires training $S$ times, so it cannot be used here; the only remedy is to enlarge the test set`,
         ], ans: 2,
         sol: R`
 **핵심.** 초매개변수는 검증 오차로 고르고, 최종 성능은 고르는 데 쓰지 않은 테스트 자료로 한 번만 평가합니다. 어떤 자료에서 성능이 가장 좋은 후보를 골랐다면 그 자료의 오차는 더 이상 공정한 추정이 아닙니다.
@@ -80,12 +80,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch02:1.2c|규제와 모델 선택]]
 ` },
-      { ch: 'ch03', type: 'mc', lv: 1, pts: 3, q: R`흉부 X선 한 장만 입력으로 폐결절의 악성 여부를 예측하는 모델이 있다. 훈련 자료를 10배로 늘려도 시험 오차가 어느 수준 아래로 내려가지 않았는데, 같은 환자의 CT 영상을 입력에 추가하자 오차가 크게 줄었다. 자료를 늘려도 남았던 불확실성의 종류와 줄이는 방법을 바르게 짝지은 것은?`,
+      { ch: 'ch03', type: 'mc', lv: 1, pts: 3, q: R`A model predicts whether a lung nodule is malignant using a single chest X-ray as its only input. Even with 10 times more training data, the test error did not fall below a certain level, but adding the same patient's CT images to the input reduced the error substantially. Which option correctly pairs the type of uncertainty that remained despite more data with the way to reduce it?`,
         choices: [
-          R`인식적(epistemic) 불확실성이며, 자료를 더 모으면 결국 사라진다`,
-          R`빈도주의 확률을 썼기 때문에 생긴 불확실성이며, 베이지안 확률로 해석을 바꾸면 사라진다`,
-          R`과적합 때문이며, 규제를 세게 하면 사라진다`,
-          R`우연적(aleatoric) 불확실성이며, X선에 담기지 않은 정보(관측하지 않은 변수)가 잡음처럼 보인 것이다. 더 좋은 특징(관측)을 더해야 줄어든다`,
+          R`It is epistemic uncertainty, and it will eventually vanish if more data are collected`,
+          R`It arises from using frequentist probability, and it vanishes if we switch to the Bayesian interpretation of probability`,
+          R`It is due to over-fitting, and it vanishes with stronger regularization`,
+          R`It is aleatoric uncertainty: information not contained in the X-ray (an unobserved variable) appears as noise. It is reduced only by adding better features (observations)`,
         ], ans: 3,
         sol: R`
 **핵심.** 인식적 불확실성은 유한한 자료에서 오는 지식 부족이라 자료를 늘리면 줄고, 우연적 불확실성은 본질적 무작위성이나 관측하지 않은 변수에서 오므로 자료 수가 아니라 관측(특징)을 바꿔야 줄어듭니다.
@@ -100,15 +100,15 @@ window.EM = window.EM || { chapters: [], exams: [] };
 
 관련: [[ch03:2.0|불확실성과 확률의 두 해석]]
 ` },
-      { ch: 'ch03', type: 'num', lv: 1, pts: 3, q: R`호흡기 클리닉 환자 200명의 최종 진단 $C$와 흉부 X선 소견 $T$를 센 빈도표이다.
+      { ch: 'ch03', type: 'num', lv: 1, pts: 3, q: R`The table counts the final diagnosis $C$ and the chest X-ray finding $T$ for 200 patients at a respiratory clinic.
 
-| | $T=$ 정상 | $T=$ 침윤 | $T=$ 공동 |
+| | $T=$ normal | $T=$ infiltrate | $T=$ cavity |
 |---|---|---|---|
-| $C=$ 정상 | 120 | 18 | 2 |
-| $C=$ 폐렴 | 8 | 30 | 2 |
-| $C=$ 결핵 | 2 | 10 | 8 |
+| $C=$ normal | 120 | 18 | 2 |
+| $C=$ pneumonia | 8 | 30 | 2 |
+| $C=$ tuberculosis | 2 | 10 | 8 |
 
-X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(C=\text{결핵}\mid T\ne\text{정상})$은? (분수 또는 소수 넷째 자리)`, ans: '18/70', ansTex: R`\tfrac{18}{70}=\tfrac9{35}\approx0.2571`,
+Among patients whose X-ray finding is **not** normal, what fraction have tuberculosis, i.e. $p(C=\text{tuberculosis}\mid T\ne\text{normal})$? (fraction or 4 decimal places)`, ans: '18/70', ansTex: R`\tfrac{18}{70}=\tfrac9{35}\approx0.2571`,
         sol: R`
 **핵심.** 조건 $T\ne\text{정상}$은 두 값(침윤, 공동)을 합친 사건입니다. 합의 규칙으로 두 열을 더한 뒤 조건부확률 = 결합확률 / 주변확률로 계산합니다.
 
@@ -124,8 +124,8 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch03:2.1|결합·주변·조건부 확률과 두 규칙]]
 ` },
-      { ch: 'ch03', type: 'mc', lv: 2, pts: 3, q: R`교재의 암 선별검사(유병률 1%, 민감도 90%, 위양성률 3%)의 양성 예측도는 $p(C=1\mid T=1)=90/387\approx0.23$이다. 다른 조건은 그대로 두고 다음 중 **하나만** 바꿀 때 양성 예측도가 가장 크게 오르는 것은?`,
-        choices: [R`위양성률을 3%에서 1%로 낮춘다`, R`민감도를 90%에서 99%로 높인다`, R`민감도를 100%로 만든다`, R`유병률이 2%인 집단에 검사한다`], ans: 0,
+      { ch: 'ch03', type: 'mc', lv: 2, pts: 3, q: R`For the textbook's cancer screening test (prevalence 1%, sensitivity 90%, false-positive rate 3%), the positive predictive value is $p(C=1\mid T=1)=90/387\approx0.23$. Keeping everything else fixed and changing **only one** of the following, which raises the positive predictive value the most?`,
+        choices: [R`Lower the false-positive rate from 3% to 1%`, R`Raise the sensitivity from 90% to 99%`, R`Make the sensitivity 100%`, R`Apply the test to a population with prevalence 2%`], ans: 0,
         sol: R`
 **핵심.** 민감도 $s$, 위양성률 $f$, 유병률 $\pi$이면 $p(C=1\mid T=1)=\frac{s\pi}{s\pi+f(1-\pi)}$입니다. 유병률이 낮으면 분모의 위양성 항 $f(1-\pi)$가 지배하므로 그 항을 줄이는 것이 가장 효과적입니다.
 
@@ -143,11 +143,11 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch03:2.1b|베이즈 정리와 선별검사]]
 ` },
-      { ch: 'ch03', type: 'open', lv: 3, pts: 12, q: R`어떤 암의 검진 대상 집단 유병률이 $\pi=0.02$이다. 1차 검사 A는 민감도 $0.95$, 특이도 $0.90$이고, 확진 검사 B는 민감도 $0.90$, 특이도 $0.99$이다. 질환 여부 $C$가 주어지면 두 검사 결과는 서로 독립이라고 가정한다(조건부 독립).
-(1) 검사 A가 양성일 확률 $p(A=1)$과 양성 예측도 $p(C=1\mid A=1)$을 구하세요.
-(2) A 양성인 사람에게 B를 했더니 양성이었다. $p(C=1\mid A=1,B=1)$을 (1)의 사후확률을 새 사전확률로 쓰는 방법과 두 검사 결과를 한 번에 쓰는 방법으로 각각 구해 같음을 보이세요.
-(3) A 양성, B 음성일 때의 $p(C=1\mid A=1,B=0)$을 구하고, A 음성일 때의 $p(C=1\mid A=0)$과 함께 해석하세요.
-(4) 같은 검사 A를 유병률 30%인 응급실 의뢰 환자 집단에 쓰면 양성 예측도와 음성 예측도 $p(C=0\mid A=0)$은 각각 얼마인가? 검진 집단과 비교해 해석하세요.`,
+      { ch: 'ch03', type: 'open', lv: 3, pts: 12, q: R`The prevalence of a certain cancer in the screening population is $\pi=0.02$. The first-line test A has sensitivity $0.95$ and specificity $0.90$; the confirmatory test B has sensitivity $0.90$ and specificity $0.99$. Assume that, given the disease status $C$, the two test results are independent (conditional independence).
+(1) Find the probability $p(A=1)$ that test A is positive, and the positive predictive value $p(C=1\mid A=1)$.
+(2) A person who tested positive on A is given B, which is also positive. Compute $p(C=1\mid A=1,B=1)$ in two ways, by using the posterior from (1) as the new prior and by using both test results at once, and show that the two agree.
+(3) Find $p(C=1\mid A=1,B=0)$ for A positive and B negative, and interpret it together with $p(C=1\mid A=0)$ for A negative.
+(4) If the same test A is used on emergency-department referrals, where the prevalence is 30%, what are the positive predictive value and the negative predictive value $p(C=0\mid A=0)$? Interpret the result in comparison with the screening population.`,
         rubric: R`
 - (1) 합의 규칙으로 $p(A=1)=0.117$, 베이즈 정리로 $0.019/0.117\approx0.1624$ — 3점
 - (2) 순차 갱신과 한 번에 계산이 모두 $0.0171/0.01808\approx0.9458$, 근거로 조건부 독립 사용 — 3점
@@ -169,7 +169,7 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch03:2.1b|베이즈 정리와 선별검사]]
 ` },
-      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`어떤 검사 수치를 $[0,2]$로 척도화한 값 $x$의 밀도가 $p(x)=c\,x(2-x)$ ($0\le x\le2$, 그 밖에서는 0)이다. $\Var[x]$는? (분수 또는 소수)`, ans: '1/5', ansTex: R`\tfrac15=0.2`,
+      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`A lab value rescaled to $[0,2]$, denoted $x$, has density $p(x)=c\,x(2-x)$ ($0\le x\le2$, and 0 elsewhere). Find $\Var[x]$. (fraction or decimal)`, ans: '1/5', ansTex: R`\tfrac15=0.2`,
         sol: R`
 **핵심.** 정규화 조건 $\int p(x)\,dx=1$로 $c$를 정하고 $\Var[x]=\E[x^2]-\E[x]^2$로 계산합니다.
 
@@ -186,7 +186,7 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch04:2.2|확률밀도와 대표 분포]], [[ch04:2.2b|기댓값, 분산, 공분산]]
 ` },
-      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`두 검사 수치 $\mathbf x=(x_1,x_2)^T$의 공분산 행렬이 $\Cov[\mathbf x]=\begin{pmatrix}4&1.5\\1.5&1\end{pmatrix}$이다. 두 합성 지표 $y_1=x_1+x_2$, $y_2=x_1-2x_2+3$의 공분산 $\Cov[y_1,y_2]$는? (소수)`, ans: '0.5', ansTex: R`\Cov[y_1,y_2]=\tfrac12`,
+      { ch: 'ch04', type: 'num', lv: 2, pts: 4, q: R`Two lab values $\mathbf x=(x_1,x_2)^T$ have covariance matrix $\Cov[\mathbf x]=\begin{pmatrix}4&1.5\\1.5&1\end{pmatrix}$. Find the covariance $\Cov[y_1,y_2]$ of the two composite indices $y_1=x_1+x_2$ and $y_2=x_1-2x_2+3$. (decimal)`, ans: '0.5', ansTex: R`\Cov[y_1,y_2]=\tfrac12`,
         sol: R`
 **핵심.** 공분산은 두 인자 각각에 대해 선형이고 상수 이동과 무관합니다: $\Cov[ax_1+bx_2,\ cx_1+dx_2+e]=ac\Var[x_1]+(ad+bc)\Cov[x_1,x_2]+bd\Var[x_2]$. 행렬로 쓰면 $\mathbf y=A\mathbf x+\mathbf b$일 때 $\Cov[\mathbf y]=A\Cov[\mathbf x]A^T$입니다.
 
@@ -202,12 +202,12 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch04:2.2b|기댓값, 분산, 공분산]]
 ` },
-      { ch: 'ch04', type: 'mc', lv: 2, pts: 3, q: R`가우시안 $\N(\mu,\sigma^2)$에서 i.i.d.로 얻은 자료가 $1,4,7$이다. 다음 중 옳지 **않은** 것은?`,
+      { ch: 'ch04', type: 'mc', lv: 2, pts: 3, q: R`The data $1,4,7$ are drawn i.i.d. from a Gaussian $\N(\mu,\sigma^2)$. Which of the following is **false**?`,
         choices: [
-          R`$\sigma^2_{\text{ML}}=6$이고, 그 기댓값은 $\E[\sigma^2_{\text{ML}}]=\frac23\sigma^2$이다`,
-          R`불편 추정값은 $\tilde\sigma^2=\frac32\sigma^2_{\text{ML}}=9$이다`,
-          R`참 평균 $\mu=5$가 알려져 있어도 $\frac N{N-1}$ 보정이 필요하므로 불편 추정값은 $\frac32\cdot\frac13\sum_n(x_n-5)^2=10.5$이다`,
-          R`참 평균 $\mu=5$가 알려져 있으면 $\frac13\sum_n(x_n-5)^2=7$이 $\sigma^2$의 불편 추정값이다`,
+          R`$\sigma^2_{\text{ML}}=6$, and its expectation is $\E[\sigma^2_{\text{ML}}]=\frac23\sigma^2$`,
+          R`The unbiased estimate is $\tilde\sigma^2=\frac32\sigma^2_{\text{ML}}=9$`,
+          R`Even when the true mean $\mu=5$ is known, the $\frac N{N-1}$ correction is still needed, so the unbiased estimate is $\frac32\cdot\frac13\sum_n(x_n-5)^2=10.5$`,
+          R`When the true mean $\mu=5$ is known, $\frac13\sum_n(x_n-5)^2=7$ is an unbiased estimate of $\sigma^2$`,
         ], ans: 2,
         sol: R`
 **핵심.** $\sigma^2_{\text{ML}}$의 편향 $\frac{N-1}N$은 편차를 **자료에서 추정한 평균** $\mu_{\text{ML}}$ 기준으로 재기 때문에 생깁니다. 참 평균으로 재면 각 항의 기댓값이 정확히 $\sigma^2$이라 보정이 필요 없습니다.
@@ -225,7 +225,7 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch04:2.3b|최대가능도의 편향과 보정]]
 ` },
-      { ch: 'ch04', type: 'num', lv: 3, pts: 5, q: R`투여량 $x$와 반응 $t$의 자료 $(1,2),(2,3),(3,7)$에 원점을 지나는 모델 $y(x,w)=wx$와 가우시안 잡음 $p(t\mid x,w,\beta)=\N(t\mid wx,\beta^{-1})$ (정밀도 $\beta=1/\sigma^2$)를 가정한다. 최대가능도로 $w$와 $\beta$를 함께 추정할 때 $\beta_{\text{ML}}$은? (분수 또는 소수 넷째 자리)`, ans: '14/9', ansTex: R`\beta_{\text{ML}}=\tfrac{14}9\approx1.5556`,
+      { ch: 'ch04', type: 'num', lv: 3, pts: 5, q: R`For dose $x$ and response $t$ with data $(1,2),(2,3),(3,7)$, assume a model through the origin, $y(x,w)=wx$, with Gaussian noise $p(t\mid x,w,\beta)=\N(t\mid wx,\beta^{-1})$ (precision $\beta=1/\sigma^2$). When $w$ and $\beta$ are estimated jointly by maximum likelihood, find $\beta_{\text{ML}}$. (fraction or 4 decimal places)`, ans: '14/9', ansTex: R`\beta_{\text{ML}}=\tfrac{14}9\approx1.5556`,
         sol: R`
 **핵심.** 로그가능도는 $\ln p(\mathbf t\mid\mathbf x,w,\beta)=-\frac\beta2\sum_n(wx_n-t_n)^2+\frac N2\ln\beta-\frac N2\ln(2\pi)$입니다. $w$는 제곱오차합 최소화로 정해지고($\beta$와 무관), $\beta$는 $w_{\text{ML}}$을 넣은 뒤 $\beta$로 미분해 구합니다. 결과는 $1/\beta_{\text{ML}}=$ 평균제곱잔차입니다.
 
@@ -243,7 +243,7 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch04:2.3c|선형회귀의 확률적 해석]]
 ` },
-      { ch: 'ch05', type: 'num', lv: 3, pts: 5, q: R`$x_1,x_2$가 서로 독립인 $\N(0,1)$이다. 극좌표 $x_1=r\cos\theta$, $x_2=r\sin\theta$ ($r>0$, $0\le\theta<2\pi$)로 변수를 바꿀 때, 반지름 $r$의 주변 밀도 $p_r(r)$의 $r=1$에서의 값은? (소수 넷째 자리)`, ans: 'exp(-0.5)', ansTex: R`p_r(1)=e^{-1/2}\approx0.6065`,
+      { ch: 'ch05', type: 'num', lv: 3, pts: 5, q: R`Let $x_1,x_2$ be independent $\N(0,1)$ variables. Changing to polar coordinates $x_1=r\cos\theta$, $x_2=r\sin\theta$ ($r>0$, $0\le\theta<2\pi$), find the value at $r=1$ of the marginal density $p_r(r)$ of the radius $r$. (4 decimal places)`, ans: 'exp(-0.5)', ansTex: R`p_r(1)=e^{-1/2}\approx0.6065`,
         sol: R`
 **핵심.** 다변수 변수변환 $p_{\mathbf y}(\mathbf y)=p_{\mathbf x}(\mathbf g(\mathbf y))\,\lvert\det J\rvert$ ($J_{ij}=\partial g_i/\partial y_j$)로 $(r,\theta)$의 결합밀도를 구한 뒤, 합의 규칙으로 $\theta$를 적분해 없앱니다. 여기서 $\mathbf y=(r,\theta)$, $\mathbf x=\mathbf g(\mathbf y)=(r\cos\theta,r\sin\theta)$입니다.
 
@@ -261,7 +261,7 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch05:2.4|확률밀도의 변환]]
 ` },
-      { ch: 'ch05', type: 'num', lv: 1, pts: 4, q: R`유방촬영 판독 결과의 분포가 다음과 같다: 전체의 $\frac12$은 정상이고, 이상 소견 가운데 $\frac34$은 양성 종양, $\frac14$은 악성이다. 판독 결과(정상, 양성 종양, 악성의 세 값)의 엔트로피는 몇 비트인가? (소수 넷째 자리)`, ans: '(0.5*ln(2)+0.375*ln(8/3)+0.125*ln(8))/ln(2)', ansTex: R`\mathrm H\approx1.4056\ \text{비트}`,
+      { ch: 'ch05', type: 'num', lv: 1, pts: 4, q: R`Mammography reading results are distributed as follows: $\frac12$ of all cases are normal, and among the abnormal findings $\frac34$ are benign tumors and $\frac14$ are malignant. What is the entropy, in bits, of the reading result (three values: normal, benign tumor, malignant)? (4 decimal places)`, ans: '(0.5*ln(2)+0.375*ln(8/3)+0.125*ln(8))/ln(2)', ansTex: R`\mathrm H\approx1.4056\ \text{비트}`,
         sol: R`
 **핵심.** 먼저 곱의 규칙으로 세 값의 확률을 만든 뒤 $\mathrm H=-\sum p\log_2p$를 계산합니다.
 
@@ -277,14 +277,14 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch05:2.5|정보량, 엔트로피, 미분 엔트로피]], [[ch05:2.5c|조건부 엔트로피와 상호정보량]]
 ` },
-      { ch: 'ch05', type: 'num', lv: 2, pts: 4, q: R`영상의학과 의사의 판정 $x$와 AI의 판정 $y$ (0 = 정상, 1 = 이상)의 결합분포가 다음과 같다.
+      { ch: 'ch05', type: 'num', lv: 2, pts: 4, q: R`The joint distribution of a radiologist's call $x$ and an AI's call $y$ (0 = normal, 1 = abnormal) is as follows.
 
 | | $y=0$ | $y=1$ |
 |---|---|---|
 | $x=0$ | $1/2$ | $1/8$ |
 | $x=1$ | $1/8$ | $1/4$ |
 
-상호정보량 $\mathrm I[x,y]$는 몇 비트인가? (소수 넷째 자리)`, ans: '2*(-(0.625*ln(0.625)+0.375*ln(0.375)))/ln(2)-1.75', ansTex: R`\mathrm I\approx0.1589\ \text{비트}`,
+What is the mutual information $\mathrm I[x,y]$ in bits? (4 decimal places)`, ans: '2*(-(0.625*ln(0.625)+0.375*ln(0.375)))/ln(2)-1.75', ansTex: R`\mathrm I\approx0.1589\ \text{비트}`,
         sol: R`
 **핵심.** $\mathrm I[x,y]=\KL\big(p(x,y)\Vert p(x)p(y)\big)=\sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)}$이고, 같은 값이 $\mathrm H[x]+\mathrm H[y]-\mathrm H[x,y]$로도 나옵니다($\mathrm H[x,y]=\mathrm H[y\mid x]+\mathrm H[x]$를 대입).
 
@@ -300,10 +300,10 @@ X선 소견이 정상이 **아닌** 환자 가운데 결핵 환자의 비율 $p(
 
 관련: [[ch05:2.5c|조건부 엔트로피와 상호정보량]]
 ` },
-      { ch: 'ch05', type: 'open', lv: 3, pts: 12, q: R`$q(x)=\N(x\mid\mu,s^2)$이고 $p(x)$는 평균 $m$, 분산 $v$인 **임의의** 연속 밀도이다.
-(1) $-\int p(x)\ln q(x)\,dx=\frac12\ln(2\pi s^2)+\frac{v+(m-\mu)^2}{2s^2}$임을 보이세요. 이 값이 $p$의 모양과 무관하고 평균과 분산에만 의존함에 주목하세요.
-(2) (1)과 $\KL(p\Vert q)\ge0$을 이용해, 평균과 분산 $\sigma^2$이 고정된 연속 밀도 가운데 미분 엔트로피가 가장 큰 것이 가우시안이고 그 값이 $\frac12\{1+\ln(2\pi\sigma^2)\}$임을 증명하세요. 등호 조건도 쓰세요.
-(3) $\KL\big(\N(m,v)\Vert\N(\mu,s^2)\big)$을 $m,v,\mu,s^2$로 쓰고, $p=\N(1,1)$, $q=\N(0,4)$에 대해 $\KL(p\Vert q)$와 $\KL(q\Vert p)$를 계산해 비교하세요.`,
+      { ch: 'ch05', type: 'open', lv: 3, pts: 12, q: R`Let $q(x)=\N(x\mid\mu,s^2)$, and let $p(x)$ be an **arbitrary** continuous density with mean $m$ and variance $v$.
+(1) Show that $-\int p(x)\ln q(x)\,dx=\frac12\ln(2\pi s^2)+\frac{v+(m-\mu)^2}{2s^2}$. Note that this value does not depend on the shape of $p$, only on its mean and variance.
+(2) Using (1) and $\KL(p\Vert q)\ge0$, prove that among continuous densities with fixed mean and variance $\sigma^2$, the one with the largest differential entropy is the Gaussian, and that this entropy is $\frac12\{1+\ln(2\pi\sigma^2)\}$. State the condition for equality.
+(3) Express $\KL\big(\N(m,v)\Vert\N(\mu,s^2)\big)$ in terms of $m,v,\mu,s^2$, and for $p=\N(1,1)$, $q=\N(0,4)$ compute and compare $\KL(p\Vert q)$ and $\KL(q\Vert p)$.`,
         rubric: R`
 - (1) $-\ln q$를 펼치고 $\E_p[(x-\mu)^2]=v+(m-\mu)^2$ 유도 — 4점
 - (2) $q=\N(m,\sigma^2)$로 두면 $-\int p\ln q=\mathrm H[q]$이고 $\KL(p\Vert q)=\mathrm H[q]-\mathrm H[p]\ge0$ — 3점
@@ -328,7 +328,7 @@ $p=\N(1,1)$, $q=\N(0,4)$: $\KL(p\Vert q)=\frac12\ln4+\frac{1+1}8-\frac12=\ln2-\f
 
 관련: [[ch05:2.5b|KL 발산]], [[ch05:2.5|정보량, 엔트로피, 미분 엔트로피]]
 ` },
-      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`어떤 약을 쓴 뒤 혈압 변화량 $x$가 $\N(\mu,\sigma^2)$를 따르고 $\sigma^2=1$은 알려져 있다. 환자 4명의 측정값이 $1.2,\ 0.8,\ 1.5,\ 0.5$이고, 효과 $\mu$에 사전분포 $\N(\mu\mid0,s^2)$, $s^2=0.5$를 둔다. $\mu_{\text{MAP}}$은? (분수 또는 소수 넷째 자리)`, ans: '2/3', ansTex: R`\mu_{\text{MAP}}=\tfrac4{4+2}=\tfrac23\approx0.6667`,
+      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`After a drug is given, the change in blood pressure $x$ follows $\N(\mu,\sigma^2)$ with $\sigma^2=1$ known. The measurements for 4 patients are $1.2,\ 0.8,\ 1.5,\ 0.5$, and the effect $\mu$ is given the prior $\N(\mu\mid0,s^2)$ with $s^2=0.5$. Find $\mu_{\text{MAP}}$. (fraction or 4 decimal places)`, ans: '2/3', ansTex: R`\mu_{\text{MAP}}=\tfrac4{4+2}=\tfrac23\approx0.6667`,
         sol: R`
 **핵심.** 가능도를 $\mu$의 함수로 보면 $\N(\mu\mid\bar x,\sigma^2/N)$ 모양의 가우시안입니다. 따라서 가중치 하나의 MAP 공식 $\mu_{\text{MAP}}=\frac{s^2}{s^2+v}\,\mu_{\text{ML}}$ ($v=\sigma^2/N$)을 쓸 수 있습니다.
 
@@ -344,12 +344,12 @@ $p=\N(1,1)$, $q=\N(0,4)$: $\KL(p\Vert q)=\frac12\ln4+\frac{1+1}8-\frac12=\ln2-\f
 
 관련: [[ch06:2.6b|MAP 추정과 규제]]
 ` },
-      { ch: 'ch06', type: 'mc', lv: 3, pts: 3, q: R`자료 $\mathcal D$로 모수 $\mu$를 추정할 때, 사후분포 $p(\mu\mid\mathcal D)$를 최대로 하는 MAP 추정값 $\mu_{\text{MAP}}$에 관한 다음 네 진술 가운데 참인 것을 고르세요.`,
+      { ch: 'ch06', type: 'mc', lv: 3, pts: 3, q: R`A parameter $\mu$ is estimated from data $\mathcal D$. Of the following four statements about the MAP estimate $\mu_{\text{MAP}}$, which maximizes the posterior distribution $p(\mu\mid\mathcal D)$, choose the one that is true.`,
         choices: [
-          R`사전분포가 모수의 범위에서 상수(균등)이면 MAP 추정은 최대가능도 추정과 같다`,
-          R`모수를 $\eta=\ln\frac{\mu}{1-\mu}$처럼 다시 매개화해 $\eta$의 사후밀도로 MAP을 구해도, 그 값은 항상 $\mu_{\text{MAP}}$을 옮긴 값과 같다`,
-          R`사후분포의 모양과 무관하게 MAP 추정은 사후평균과 같다`,
-          R`라플라스 사전분포 $p(w_i)\propto e^{-\lvert w_i\rvert/b}$로 MAP을 구하면 $L_2$ 규제가 된다`,
+          R`If the prior is constant (uniform) over the range of the parameter, the MAP estimate equals the maximum likelihood estimate`,
+          R`If the parameter is reparameterized, e.g. $\eta=\ln\frac{\mu}{1-\mu}$, and the MAP estimate is found from the posterior density of $\eta$, the result is always the transformed value of $\mu_{\text{MAP}}$`,
+          R`Regardless of the shape of the posterior, the MAP estimate equals the posterior mean`,
+          R`MAP estimation with a Laplace prior $p(w_i)\propto e^{-\lvert w_i\rvert/b}$ gives $L_2$ regularization`,
         ], ans: 0,
         sol: R`
 **핵심.** $p(\mu\mid\mathcal D)\propto p(\mathcal D\mid\mu)\,p(\mu)$이므로 $p(\mu)$가 상수면 사후분포와 가능도의 최대점이 같습니다. MAP은 사후 **밀도**의 최빈값이라 밀도 변환의 성질을 그대로 물려받습니다.
@@ -365,7 +365,7 @@ $p=\N(1,1)$, $q=\N(0,4)$: $\KL(p\Vert q)=\frac12\ln4+\frac{1+1}8-\frac12=\ln2-\f
 
 관련: [[ch06:2.6b|MAP 추정과 규제]], [[ch05:2.4|확률밀도의 변환]]
 ` },
-      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`새 치료의 반응률 $\mu$가 세 값 $0.2,\ 0.5,\ 0.8$ 중 하나라고 보고 사전확률을 각각 $0.25,\ 0.5,\ 0.25$로 둔다. 환자 3명에게 치료했더니 반응, 반응, 무반응이었다(환자끼리 독립). 완전 베이지안 예측으로 구한, 다음 환자가 반응할 확률 $p(x_4=1\mid\mathcal D)$는? (소수 넷째 자리)`, ans: '0.05845/0.1025', ansTex: R`\tfrac{0.05845}{0.1025}\approx0.5702`,
+      { ch: 'ch06', type: 'num', lv: 2, pts: 4, q: R`The response rate $\mu$ of a new treatment is taken to be one of three values $0.2,\ 0.5,\ 0.8$, with prior probabilities $0.25,\ 0.5,\ 0.25$ respectively. Three patients were treated, with outcomes response, response, no response (patients independent). Using the fully Bayesian prediction, find the probability $p(x_4=1\mid\mathcal D)$ that the next patient responds. (4 decimal places)`, ans: '0.05845/0.1025', ansTex: R`\tfrac{0.05845}{0.1025}\approx0.5702`,
         sol: R`
 **핵심.** 사후 ∝ 가능도 × 사전으로 세 후보의 사후확률을 구하고, 예측분포 $p(x_4=1\mid\mathcal D)=\sum_\mu p(x_4=1\mid\mu)\,p(\mu\mid\mathcal D)=\sum_\mu\mu\,p(\mu\mid\mathcal D)$를 계산합니다(후보가 유한하므로 적분 대신 합).
 
@@ -384,11 +384,11 @@ $p=\N(1,1)$, $q=\N(0,4)$: $\KL(p\Vert q)=\frac12\ln4+\frac{1+1}8-\frac12=\ln2-\f
 
 관련: [[ch06:2.6c|완전 베이지안 머신러닝]], [[ch06:2.6|모수의 불확실성과 사후분포]]
 ` },
-      { ch: 'ch06', type: 'open', lv: 3, pts: 12, q: R`새 진단 보조 AI를 어려운 증례 5건에 시험했더니 4건을 맞혔다. 정답률 $\mu$에 균등 사전분포 $p(\mu)=1$ ($0\le\mu\le1$)을 두고, 증례마다 독립인 베르누이 시행으로 본다.
-(1) 정규화 상수까지 포함한 사후분포 $p(\mu\mid\mathcal D)$를 쓰고 적분이 1임을 확인하세요.
-(2) MLE, MAP, 사후평균을 각각 구하고, MAP이 MLE와 같은 이유를 설명하세요.
-(3) 다음 증례를 맞힐 예측확률 $p(x_6=1\mid\mathcal D)$를 합·곱의 규칙으로 유도하고 값을 구하세요.
-(4) 다음 두 증례를 **모두** 맞힐 예측확률을 구하고, MLE를 꽂은 값 $\mu_{\text{ML}}^2$ 및 $\{p(x_6=1\mid\mathcal D)\}^2$와 비교해 차이를 설명하세요.`,
+      { ch: 'ch06', type: 'open', lv: 3, pts: 12, q: R`A new diagnostic-assistance AI was tested on 5 difficult cases and got 4 right. Put a uniform prior $p(\mu)=1$ ($0\le\mu\le1$) on its accuracy $\mu$, and treat each case as an independent Bernoulli trial.
+(1) Write the posterior distribution $p(\mu\mid\mathcal D)$ including its normalization constant, and verify that it integrates to 1.
+(2) Find the MLE, the MAP estimate and the posterior mean, and explain why the MAP estimate equals the MLE.
+(3) Derive, using the sum and product rules, the predictive probability $p(x_6=1\mid\mathcal D)$ that the next case is answered correctly, and find its value.
+(4) Find the predictive probability that the next two cases are **both** answered correctly, compare it with the plug-in MLE value $\mu_{\text{ML}}^2$ and with $\{p(x_6=1\mid\mathcal D)\}^2$, and explain the differences.`,
         rubric: R`
 - (1) $p(\mu\mid\mathcal D)=30\mu^4(1-\mu)$, 증거 $\frac1{30}$로 적분이 1임을 확인 — 3점
 - (2) MLE와 MAP 모두 $\frac45$ (사전분포가 상수), 사후평균 $\frac57$ — 3점

@@ -8,7 +8,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
     desc: '보편 근사·활성화·전이 학습·CLIP 손실, 보폭 합성곱의 계산량·풀링·수용 영역, 비최대 억제·스타일 오차·U-net 설계를 거쳐, 패치 임베딩·교차 어텐션·“합성곱은 위치로 고정한 어텐션” 증명·ViT와 CNN의 비용 비교로 세 단원을 잇습니다. 서술형 셋은 설계 계산 둘과 증명 하나입니다.',
     minutes: 110, plot: 'unet',
     problems: [
-      { ch: 'ch07', type: 'num', lv: 1, pts: 3, q: R`보편 근사 정리의 구성적 증명은 시그모이드 두 개의 차로 ‘막대’ $b(x)=\sigma\big(s(x-c_1)\big)-\sigma\big(s(x-c_2)\big)$를 만들어 쌓습니다. $s=10$, $c_1=0.2$, $c_2=0.6$일 때 막대 한가운데 $x=0.4$에서의 높이 $b(0.4)$는? (소수 넷째 자리)`,
+      { ch: 'ch07', type: 'num', lv: 1, pts: 3, q: R`The constructive proof of the universal approximation theorem builds ‘bumps’ $b(x)=\sigma\big(s(x-c_1)\big)-\sigma\big(s(x-c_2)\big)$ from the difference of two sigmoids and stacks them. For $s=10$, $c_1=0.2$, $c_2=0.6$, find the height $b(0.4)$ at the centre of the bump, $x=0.4$. (4 decimal places)`,
         ans: 'tanh(1)', ansTex: R`2\sigma(2)-1=\tanh1\approx0.7616`,
         sol: R`
 **핵심.** 막대는 $x=c_1$에서 올라가는 계단과 $x=c_2$에서 올라가는 계단의 차입니다. 기울기 $s$가 유한하면 계단이 완만해 막대의 높이가 1에 못 미칩니다.
@@ -25,8 +25,8 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **검산.** 기울기를 $s=20$으로 키우면 $b=\tanh2\approx0.9640$으로 1에 가까워집니다. $s\to\infty$이면 $[c_1,c_2]$ 안에서 1, 밖에서 0인 막대가 되고, 막대마다 높이를 $g(c)$로 맞춰 쌓으면 연속함수 $g$를 근사합니다. 막대 하나에 은닉 유닛이 두 개 들므로, 구간 $[0,1]$을 폭 $\Delta$의 막대로 덮으려면 은닉 유닛이 $2/\Delta$개쯤 필요합니다.
 
 관련: [[ch07:6.2b|보편 근사 정리]]` },
-      { ch: 'ch07', type: 'mc', lv: 2, pts: 4, q: R`은닉 유닛의 활성화 함수에 대한 설명으로 옳은 것은?`,
-        choices: [R`softplus $\ln(1+e^a)$의 도함수는 $\tanh a$이므로 $a\gg1$에서 기울기가 1에 가깝다`, R`hard tanh $\max(-1,\min(1,a))$는 $\lvert a\rvert\gt1$에서도 기울기가 1이라 포화하지 않는다`, R`절댓값 함수 $\lvert a\rvert$는 leaky ReLU에서 $\alpha=-1$로 둔 것이며, $a\ne0$이면 기울기의 크기가 늘 1이다`, R`로지스틱 시그모이드의 도함수는 최댓값이 1이므로 여러 층을 지나도 기울기가 줄지 않는다`], ans: 2,
+      { ch: 'ch07', type: 'mc', lv: 2, pts: 4, q: R`Which statement about activation functions for hidden units is correct?`,
+        choices: [R`The derivative of softplus $\ln(1+e^a)$ is $\tanh a$, so the gradient is close to 1 for $a\gg1$`, R`Hard tanh $\max(-1,\min(1,a))$ has gradient 1 even for $\lvert a\rvert\gt1$, so it does not saturate`, R`The absolute value function $\lvert a\rvert$ is leaky ReLU with $\alpha=-1$, and for $a\ne0$ the magnitude of its gradient is always 1`, R`The derivative of the logistic sigmoid has maximum value 1, so the gradient does not shrink as it passes through many layers`], ans: 2,
         sol: R`
 **핵심.** 활성화마다 도함수를 직접 써 보면 판정됩니다: $\text{softplus}'(a)=\sigma(a)$, hard tanh의 도함수는 $\lvert a\rvert\lt1$에서 1이고 밖에서 0, $\sigma'=\sigma(1-\sigma)\le\tfrac14$.
 
@@ -40,7 +40,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **보기 검토.** ① 결론은 맞으나 도함수가 $\sigma(a)$이지 $\tanh a$가 아닙니다. ② $\lvert a\rvert\gt1$에서 기울기가 0이라 포화합니다. ③ 정답 — 절댓값 함수는 $\alpha=-1$인 leaky ReLU이고 $a\ne0$에서 기울기 크기가 1입니다. ④ 최댓값은 $\tfrac14$이고, 최댓값이 1인 것은 $\tanh'$입니다.
 
 관련: [[ch07:6.2c|은닉 유닛의 활성화 함수]]` },
-      { ch: 'ch07', type: 'num', lv: 1, pts: 3, q: R`ImageNet으로 사전학습한 VGG-16을 피부 병변 7종 분류에 전이 학습한다. 표지된 영상이 매우 적어서 마지막 분류층만 7출력(소프트맥스)으로 바꿔 다시 학습하고 나머지 층은 모두 고정한다. 학습하는 모수(편향 포함)는 몇 개인가? (정수)`,
+      { ch: 'ch07', type: 'num', lv: 1, pts: 3, q: R`A VGG-16 pre-trained on ImageNet is adapted by transfer learning to classify 7 types of skin lesion. Because very few labelled images are available, only the final classification layer is replaced by one with 7 outputs (softmax) and retrained, while all other layers are frozen. How many parameters (including biases) are trained? (integer)`,
         ans: '4097*7', ansTex: R`(4096+1)\cdot7=28{,}679`,
         sol: R`
 **핵심.** 대상 자료가 매우 적으면 사전학습 망을 고정된 특징 추출기로 쓰고 마지막 분류층만 다시 학습합니다. 완전연결층의 모수는 $(\text{입력 수}+1)\times\text{출력 수}$입니다.
@@ -56,9 +56,9 @@ window.EM = window.EM || { chapters: [], exams: [] };
 **검산.** 이 방식에서는 훈련 영상을 고정된 망에 한 번만 통과시켜 4,096차원 표현을 저장해 두면, 반복 최적화는 작은 소프트맥스 회귀 하나만 하면 됩니다. 자료가 더 많으면 여러 층을, 미세조정이면 전체를 작은 학습률과 적은 반복으로 다시 학습합니다. 앞쪽 층의 저수준 특징(모서리·질감)은 자연 영상과 피부 영상에 공통이라 그대로 쓸 수 있습니다.
 
 관련: [[ch07:6.3b|표현 학습, 전이 학습]], [[ch13:10.2f|VGG-16의 구조]]` },
-      { ch: 'ch07', type: 'num', lv: 3, pts: 5, q: R`흉부 X선 인코더 $\mathbf f_{\mathbf w}$와 판독문 인코더 $\mathbf g_{\boldsymbol\theta}$를 CLIP 손실로 함께 학습한다. 한 미니배치의 영상 3장과 판독문 3개의 정규화된 임베딩 내적 $\mathbf f_{\mathbf w}(\mathbf x_i)^T\mathbf g_{\boldsymbol\theta}(\mathbf y_j)$가 아래와 같다(행 $i$: 영상, 열 $j$: 판독문, 대각이 짝이 맞는 쌍).
+      { ch: 'ch07', type: 'num', lv: 3, pts: 5, q: R`A chest X-ray encoder $\mathbf f_{\mathbf w}$ and a radiology report encoder $\mathbf g_{\boldsymbol\theta}$ are trained jointly with the CLIP loss. For a minibatch of 3 images and 3 reports, the inner products of the normalized embeddings $\mathbf f_{\mathbf w}(\mathbf x_i)^T\mathbf g_{\boldsymbol\theta}(\mathbf y_j)$ are given below (row $i$: image, column $j$: report; the diagonal entries are the matching pairs).
 $$\begin{pmatrix}0.9&0.3&0.1\\0.5&0.8&0.2\\0.2&0.4&0.7\end{pmatrix}$$
-영상 1–판독문 1을 양성 쌍으로, 같은 배치의 나머지 영상과 판독문을 음성 예로 둘 때 이 쌍의 CLIP 손실은? (소수 넷째 자리)`,
+Taking image 1–report 1 as the positive pair and the other images and reports in the same batch as negative examples, find the CLIP loss for this pair. (4 decimal places)`,
         ans: '-0.5*ln(exp(0.9)/(exp(0.9)+exp(0.5)+exp(0.2)))-0.5*ln(exp(0.9)/(exp(0.9)+exp(0.3)+exp(0.1)))', ansTex: R`\tfrac12(0.7733+0.6922)\approx0.7328`,
         sol: R`
 **핵심.** CLIP 손실은 두 방향 InfoNCE의 평균입니다. 유사도 행렬을 $s_{ij}$라 하면
@@ -77,7 +77,7 @@ $$E=-\frac12\ln\frac{e^{s_{11}}}{e^{s_{11}}+\sum_{i\ne1}e^{s_{i1}}}-\frac12\ln\f
 **검산.** 대각 유사도를 키우거나 비대각을 줄이면 두 분수가 모두 1에 가까워져 $E\to0$입니다. 음성 항이 없으면 분수가 늘 1이라 손실이 상수 0이 되어 모든 임베딩을 한 점에 모으는 퇴화 해를 막지 못합니다. 영상 쪽 인코더로 비전 트랜스포머, 판독문 쪽으로 텍스트 트랜스포머를 쓰면 두 양식이 하나의 임베딩 공간을 공유하는 멀티모달 모델이 됩니다.
 
 관련: [[ch07:6.3c|대조 학습과 CLIP]], [[ch15:12.4|멀티모달 트랜스포머]]` },
-      { ch: 'ch07', type: 'num', lv: 2, pts: 4, q: R`흉부 X선의 정상/이상을 출력 2개와 소프트맥스로 분류한다. 어떤 영상의 로짓이 $(a_1,a_2)=(0.3,\ 1.8)$이고 정답은 정상(클래스 1)이다. 다중 클래스 교차 엔트로피 $E=-\sum_kt_k\ln y_k$는? (소수 넷째 자리)`,
+      { ch: 'ch07', type: 'num', lv: 2, pts: 4, q: R`Chest X-rays are classified as normal/abnormal using 2 outputs and a softmax. For one image the logits are $(a_1,a_2)=(0.3,\ 1.8)$ and the true label is normal (class 1). Find the multiclass cross-entropy $E=-\sum_kt_k\ln y_k$. (4 decimal places)`,
         ans: 'ln(1+exp(1.5))', ansTex: R`\ln(1+e^{1.5})\approx1.7014`,
         sol: R`
 **핵심.** 두 클래스 소프트맥스는 로짓 차의 시그모이드와 같습니다.
@@ -95,8 +95,8 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 망이 틀린 쪽(이상)의 로짓을 1.5만큼 더 크게 냈으므로, 오차가 반반으로 예측할 때의 $\ln2=0.6931$보다 커야 합니다. $1.7014\gt0.6931$로 맞습니다.
 
 관련: [[ch07:6.4|오차함수와 출력 활성화]]` },
-      { ch: 'ch13', type: 'mc', lv: 1, pts: 3, q: R`LeNet, AlexNet, VGG-16의 층 설계를 두고 한 말 가운데 교재와 일치하는 것은?`,
-        choices: [R`VGG-16은 최대 풀링으로 해상도를 절반으로 줄일 때마다 채널 수를 늘려($64\to128\to256\to512$) 표현 용량을 유지한다`, R`VGG-16의 모수는 대부분 첫 합성곱층에 있다`, R`LeNet은 ReLU 활성화와 최대 풀링을 썼다`, R`AlexNet은 $3\times3$ 필터만 쌓아 큰 수용 영역을 얻었다`], ans: 0,
+      { ch: 'ch13', type: 'mc', lv: 1, pts: 3, q: R`Which of the following statements about the layer designs of LeNet, AlexNet, and VGG-16 agrees with the textbook?`,
+        choices: [R`Each time VGG-16 halves the resolution with max-pooling, it increases the number of channels ($64\to128\to256\to512$) to preserve representational capacity`, R`Most of the parameters of VGG-16 are in the first convolutional layer`, R`LeNet used ReLU activations and max-pooling`, R`AlexNet obtained large receptive fields by stacking only $3\times3$ filters`], ans: 0,
         sol: R`
 **핵심.** 세 구조의 층 설계를 구별하는 문제입니다. LeNet은 시그모이드와 평균 풀링, AlexNet은 ReLU, GPU 학습, 드롭아웃과 $11\times11$(보폭 4) 첫 필터, VGG-16은 $3\times3$ 필터만 쌓는 단순한 원칙을 씁니다.
 
@@ -108,7 +108,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **보기 검토.** ① 정답 — 해상도를 줄일 때 채널을 늘리는 것이 VGG의 설계 원칙입니다. ② 모수와 연결을 바꿔 말했습니다. 모수는 첫 완전연결층, 연결은 첫 합성곱층에 몰려 있습니다. ③ LeNet은 시그모이드와 $2\times2$ 평균 풀링을 썼습니다. ④ $3\times3$만 쌓은 것은 VGG이고, AlexNet의 첫 층은 $11\times11$, 보폭 4입니다.
 
 관련: [[ch13:10.2f|다층 합성곱과 대표 구조]]` },
-      { ch: 'ch13', type: 'num', lv: 2, pts: 4, q: R`$112\times112\times64$ 특징 맵에 $3\times3$ 필터 128개를 패딩 1, 보폭 2로 적용하는 합성곱층의 곱셈 횟수는? (편향 무시, 정수)`,
+      { ch: 'ch13', type: 'num', lv: 2, pts: 4, q: R`A convolutional layer applies 128 filters of size $3\times3$ to a $112\times112\times64$ feature map with padding 1 and stride 2. How many multiplications does it perform? (ignore biases; integer)`,
         ans: '56*56*128*9*64', ansTex: R`56^2\cdot128\cdot576=231{,}211{,}008`,
         sol: R`
 **핵심.** 곱셈 수 = (출력 원소 수) × (출력 원소 하나에 드는 곱셈 수). 출력 한 변은 $\lfloor(J+2P-M)/S\rfloor+1$이고, 출력 원소 하나는 $M\times M\times C_{\text{IN}}$ 필터와 패치의 내적입니다.
@@ -125,7 +125,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 모수는 $(9\cdot64+1)\cdot128=73{,}856$개로 보폭과 무관하지만, 계산량은 보폭 $S$에 대해 대략 $1/S^2$로 줄어듭니다. 보폭 합성곱이 풀링처럼 다운샘플링으로 계산을 줄이는 이유입니다.
 
 관련: [[ch13:10.2c|패딩과 보폭]], [[ch13:10.2d|다채널 합성곱]]` },
-      { ch: 'ch13', type: 'num', lv: 2, pts: 4, q: R`교재 표의 AlexNet(입력 $224\times224\times3$)에서 합성곱 5의 출력은 $12\times12\times256$이고, 이어서 $3\times3$ 최대 풀링(보폭 2)을 한 뒤 펼쳐 은닉 4,096개의 완전연결층에 넣는다. 이 완전연결층의 모수(편향 포함)는? (정수)`,
+      { ch: 'ch13', type: 'num', lv: 2, pts: 4, q: R`In the AlexNet of the textbook's table (input $224\times224\times3$), the output of convolution 5 is $12\times12\times256$; it is followed by $3\times3$ max-pooling (stride 2), then flattened and fed into a fully connected layer with 4,096 hidden units. How many parameters (including biases) does this fully connected layer have? (integer)`,
         ans: '(5*5*256+1)*4096', ansTex: R`(6400+1)\cdot4096=26{,}218{,}496`,
         sol: R`
 **핵심.** 풀링 출력 크기도 합성곱과 같은 공식 $\lfloor(J-M)/S\rfloor+1$을 따르고(패딩 없음), 풀링에는 학습할 모수가 없습니다. 완전연결층은 펼친 길이에 편향 1을 더해 출력 수를 곱합니다.
@@ -141,7 +141,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 같은 공식이 표의 다른 풀링과도 맞습니다: 풀링 1 $\lfloor(54-3)/2\rfloor+1=26$, 풀링 2 $\lfloor(26-3)/2\rfloor+1=12$. 합성곱 다섯 층의 모수를 모두 더해도 약 375만 개라, 이 한 층이 그 7배쯤입니다. CNN의 자유도 대부분이 완전연결층에 있다는 교재 설명과 맞습니다.
 
 관련: [[ch13:10.2e|풀링]], [[ch13:10.2f|AlexNet]]` },
-      { ch: 'ch13', type: 'num', lv: 3, pts: 5, q: R`VGG의 앞부분처럼 입력 → $3\times3$ 합성곱 → $3\times3$ 합성곱 → $2\times2$ 최대 풀링(보폭 2) → $3\times3$ 합성곱 → $3\times3$ 합성곱으로 이어진 망이 있다(합성곱은 모두 보폭 1). 마지막 층 유닛 하나의 수용 영역은 입력에서 한 변이 몇 화소인가? (정수)`,
+      { ch: 'ch13', type: 'num', lv: 3, pts: 5, q: R`Like the front part of VGG, a network consists of input → $3\times3$ convolution → $3\times3$ convolution → $2\times2$ max-pooling (stride 2) → $3\times3$ convolution → $3\times3$ convolution (all convolutions have stride 1). How many pixels on a side is the receptive field, in the input, of a single unit in the last layer? (integer)`,
         ans: '14', ansTex: R`3\to5\to6\to10\to14`,
         sol: R`
 **핵심.** 보폭 1 합성곱만 있으면 한 변이 $L(M-1)+1$이지만, 보폭 2 풀링 뒤에는 위층의 한 칸이 입력에서 2화소씩 건너뛰므로 같은 $3\times3$ 창이 수용 영역을 2배 빠르게 넓힙니다. 가로·세로가 같으므로 한 변(1차원)만 셉니다.
@@ -158,8 +158,8 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 위에서 아래로 거꾸로 펼쳐 봅니다. 맨 위 유닛 → 셋째 합성곱 출력 3칸 → 풀링 맵 5칸 → 합성곱 2 출력 10칸(풀링 칸마다 겹치지 않는 2칸) → 합성곱 1 출력 12칸 → 입력 14칸. 같은 결과입니다. 풀링이 수용 영역을 키우는 속도를 높여 깊은 층이 물체 수준의 넓은 패턴을 보게 됩니다.
 
 관련: [[ch13:10.2f|유효 수용 영역]], [[ch13:10.2e|풀링]]` },
-      { ch: 'ch13', type: 'mc', lv: 2, pts: 4, q: R`합성곱층들 사이에 아래 처리를 넣을 때, 망의 평행이동 등변성(입력을 옮기면 특징 맵도 그만큼 옮겨짐)을 해치지 **않는** 것은?`,
-        choices: [R`배치 정규화의 평균과 분산을 화소 위치 $(i,j)$마다 따로 계산해 정규화한다`, R`배치 정규화에서 한 특징 맵(채널)의 모든 공간 위치에 같은 평균과 분산, 같은 학습 이득과 편향을 쓴다`, R`가중치 공유를 풀어, 위치마다 서로 다른 $3\times3$ 가중치를 쓰는 국소 연결층으로 바꾼다`, R`특징 맵의 각 화소에 그 위치 $(i,j)$에 따라 다르게 학습한 편향을 더한다`], ans: 1,
+      { ch: 'ch13', type: 'mc', lv: 2, pts: 4, q: R`When one of the following operations is inserted between convolutional layers, which one does **not** break the translation equivariance of the network (shifting the input shifts the feature maps by the same amount)?`,
+        choices: [R`Batch normalization in which the mean and variance are computed separately for each pixel position $(i,j)$`, R`Batch normalization that uses the same mean and variance, and the same learned gain and bias, at all spatial positions of a feature map (channel)`, R`Removing weight sharing to obtain a locally connected layer that uses different $3\times3$ weights at each position`, R`Adding to each pixel of a feature map a bias learned separately for its position $(i,j)$`], ans: 1,
         sol: R`
 **핵심.** 등변성은 “모든 위치에서 같은 연산을 한다”에서 나옵니다. 합성곱은 같은 커널을 미끄러뜨리기 때문에 등변이고, 위치마다 다른 무엇이 끼어들면 옮긴 입력이 다른 처리를 받아 등변성이 깨집니다.
 
@@ -172,8 +172,8 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **보기 검토.** ① 위치마다 다른 정규화라 이동한 특징이 다른 처리를 받습니다. ② 정답 — 채널마다 통계와 이득·편향이 하나라 위치와 무관합니다. ③ 가중치 공유가 사라지면 등변성의 근거(같은 필터를 모든 위치에)가 없어지고 모수도 크게 늘어납니다. ④ 위치별 편향은 같은 무늬라도 위치에 따라 다른 값을 내게 합니다.
 
 관련: [[ch13:10.2b|합성곱 연산과 평행이동 등변성]], [[ch09:7.4b|배치 정규화]]` },
-      { ch: 'ch14', type: 'mc', lv: 1, pts: 3, q: R`Grad-CAM으로 흉부 X선 분류기가 어디를 보고 “기흉”이라고 판단했는지 열지도를 그리려 한다. 기울기를 구하는 층과 미분하는 양, 그 이유로 알맞은 것은?`,
-        choices: [R`첫 합성곱층, 소프트맥스 확률 $y_c$ — 해상도가 가장 높아서`, R`마지막 완전연결층, 소프트맥스 확률 $y_c$ — 클래스 판단에 가장 가까워서`, R`입력 화소, 오차 $E(\mathbf x,t)$ — FGSM과 같은 기울기라서`, R`마지막 합성곱층, 소프트맥스 이전 사전활성 $a^{(c)}$ — 공간 위치 정보가 남아 있으면서 의미 수준이 가장 높아서`], ans: 3,
+      { ch: 'ch14', type: 'mc', lv: 1, pts: 3, q: R`Grad-CAM is to be used to draw a heat map of where a chest X-ray classifier looked when it decided “pneumothorax”. Which choice of the layer at which the gradient is taken, the quantity that is differentiated, and the reason is appropriate?`,
+        choices: [R`The first convolutional layer, the softmax probability $y_c$ — because its resolution is the highest`, R`The last fully connected layer, the softmax probability $y_c$ — because it is closest to the class decision`, R`The input pixels, the error $E(\mathbf x,t)$ — because it is the same gradient as in FGSM`, R`The last convolutional layer, the pre-softmax pre-activation $a^{(c)}$ — because it retains spatial position information while having the highest semantic level`], ans: 3,
         sol: R`
 **핵심.** Grad-CAM은 $\alpha_k=\frac1{M_k}\sum_{i,j}\partial a^{(c)}/\partial a_{ij}^{(k)}$로 마지막 합성곱층의 채널마다 중요도를 내고, $\mathbf L=\sum_k\alpha_k\mathbf A^{(k)}$로 열지도를 만듭니다.
 
@@ -186,9 +186,9 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **보기 검토.** ① 첫 층은 모서리 검출기 수준이라 클래스 판단의 근거를 보여 주지 못합니다. ② 완전연결층에는 공간 격자가 없어 열지도를 그릴 수 없습니다. ③ 입력 화소에 대한 오차의 기울기는 적대적 섭동을 만드는 FGSM의 재료이지 Grad-CAM이 아닙니다. ④ 정답.
 
 관련: [[ch14:10.3b|돌출 맵, 적대적 공격]]` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 4, q: R`한 클래스(폐결절)의 검출 상자 6개가 아래와 같다(상자는 $[x_1,x_2]\times[y_1,y_2]$).
+      { ch: 'ch14', type: 'num', lv: 2, pts: 4, q: R`The six detection boxes for one class (pulmonary nodule) are listed below (each box is $[x_1,x_2]\times[y_1,y_2]$).
 
-| 상자 | 위치 | 점수 |
+| Box | Location | Score |
 |---|---|---|
 | B1 | $[0,4]\times[0,4]$ | 0.92 |
 | B2 | $[1,5]\times[0,4]$ | 0.85 |
@@ -197,7 +197,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 | B5 | $[6,10]\times[6,10]$ | 0.70 |
 | B6 | $[11,13]\times[0,2]$ | 0.45 |
 
-점수 문턱 0.5, IoU 문턱 0.5로 비최대 억제를 하면, 최종 검출로 확정되는 상자들의 점수 합은? (소수 둘째 자리)`,
+If non-max suppression is applied with score threshold 0.5 and IoU threshold 0.5, what is the sum of the scores of the boxes kept as final detections? (2 decimal places)`,
         ans: '0.92+0.80+0.70', ansTex: R`0.92+0.80+0.70=2.42`,
         sol: R`
 **핵심.** 비최대 억제는 (1) 점수 문턱 아래 상자를 버리고 (2) 남은 것 중 **점수가 가장 높은** 상자를 확정하고 (3) 그것과 IoU가 문턱을 넘는 상자를 버리기를 (4) 반복합니다. 목록 순서가 아니라 점수 순서로 처리합니다. $\text{IoU}=\frac{\lvert A\cap B\rvert}{\lvert A\rvert+\lvert B\rvert-\lvert A\cap B\rvert}$.
@@ -215,7 +215,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 결과는 서로 다른 세 곳(왼쪽 아래, 가운데, 오른쪽 위)에 상자가 하나씩 남은 것으로, “같은 물체의 중복만 지우고 다른 물체의 검출은 살린다”는 비최대 억제의 목적과 맞습니다.
 
 관련: [[ch14:10.4|경계 상자와 IoU]], [[ch14:10.4b|비최대 억제]]` },
-      { ch: 'ch14', type: 'num', lv: 2, pts: 4, q: R`스타일 전이에서 한 층($2\times2$, 채널 2개)의 내용 영상 $\mathbf C$ 특징 맵이 채널 1 $\begin{pmatrix}2&0\\1&3\end{pmatrix}$, 채널 2 $\begin{pmatrix}1&1\\0&2\end{pmatrix}$이다. 생성 영상 $\mathbf G$의 같은 층 특징 맵이 이 두 맵의 위아래 행을 맞바꾼 것(두 채널에 같은 맞바꿈)일 때 내용 오차 $E_{\text{content}}(\mathbf G,\mathbf C)$는? (정수) 같은 $\mathbf C$를 스타일 영상으로도 쓸 때의 스타일 오차가 얼마인지도 생각해 보세요.`,
+      { ch: 'ch14', type: 'num', lv: 2, pts: 4, q: R`In style transfer, the feature maps of the content image $\mathbf C$ at one layer ($2\times2$, 2 channels) are channel 1 $\begin{pmatrix}2&0\\1&3\end{pmatrix}$ and channel 2 $\begin{pmatrix}1&1\\0&2\end{pmatrix}$. The feature maps of the generated image $\mathbf G$ at the same layer are these two maps with their top and bottom rows swapped (the same swap in both channels). Find the content error $E_{\text{content}}(\mathbf G,\mathbf C)$. (integer) Also consider what the style error is when the same $\mathbf C$ is used as the style image as well.`,
         ans: '24', ansTex: R`20+4=24`,
         sol: R`
 **핵심.** 내용 오차 $\sum_{i,j,k}\{a_{ijk}(\mathbf G)-a_{ijk}(\mathbf C)\}^2$는 **같은 위치**의 활성을 비교하고, 스타일 행렬 $F_{kk'}=\sum_{i,j}a_{ijk}a_{ijk'}$은 모든 위치에 걸쳐 **합**하므로 위치를 섞어도 변하지 않습니다.
@@ -233,15 +233,15 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 행 맞바꿈은 위치 $(i,j)$의 순열이고 $F_{kk'}$은 위치에 대한 합이라 어떤 순열에도 불변입니다. 스타일 오차는 특징이 “어디에” 나타나는지는 무시하고 “어떤 특징끼리 함께” 나타나는지만 맞추고, 배치는 내용 오차가 맞춥니다. 두 오차를 나눠 쓰는 원리가 이 계산에 그대로 드러납니다.
 
 관련: [[ch14:10.6|신경 스타일 전이]]` },
-      { ch: 'ch14', type: 'open', lv: 3, pts: 11, q: R`CT 한 단면($128\times128\times1$)을 배경·간·종양의 3클래스로 분할하는 작은 U-net을 설계한다. 인코더는 [$3\times3$ 같은 합성곱 두 번 → $2\times2$ 최대 풀링(보폭 2)]을 두 번 하며 채널을 $1\to32\to32$, 이어서 $32\to64\to64$로 늘리고, 바닥에서 $3\times3$ 같은 합성곱 두 번으로 $64\to128\to128$이 된다. 디코더는 [$2\times2$ 전치 합성곱(출력 보폭 2)으로 채널을 절반으로 → 같은 해상도의 인코더 특징과 이어 붙이기 → $3\times3$ 같은 합성곱 두 번(채널을 전치 합성곱 출력과 같은 수로)]을 두 번 하고, 마지막에 1×1 합성곱과 소프트맥스를 둔다. 편향은 출력 채널마다 하나다.
+      { ch: 'ch14', type: 'open', lv: 3, pts: 11, q: R`A small U-net is designed to segment a CT slice ($128\times128\times1$) into 3 classes: background, liver, and tumour. The encoder applies [two $3\times3$ “same” convolutions → $2\times2$ max-pooling (stride 2)] twice, increasing the channels $1\to32\to32$ and then $32\to64\to64$; at the bottom, two $3\times3$ “same” convolutions give $64\to128\to128$. The decoder applies [a $2\times2$ transpose convolution (output stride 2) that halves the number of channels → concatenation with the encoder features of the same resolution → two $3\times3$ “same” convolutions (with as many channels as the transpose-convolution output)] twice, and ends with a 1×1 convolution and a softmax. There is one bias per output channel.
 
-(1) 길이 $n$인 입력에 크기 $M$인 필터를 출력 보폭 $S$로 전치 합성곱하면(겹치면 더함, 잘라내지 않음) 출력 길이가 $S(n-1)+M$임을 보이고, 디코더의 두 전치 합성곱이 $32\to64\to128$로 해상도를 되살림을 확인하세요.
+(1) Show that a transpose convolution of an input of length $n$ with a filter of size $M$ and output stride $S$ (overlapping contributions are added, nothing is cropped) gives an output of length $S(n-1)+M$, and verify that the two transpose convolutions of the decoder restore the resolution $32\to64\to128$.
 
-(2) 바닥 출력, 첫 전치 합성곱 출력, 첫 이어 붙이기 직후, 둘째 이어 붙이기 직후, 최종 출력의 텐서 크기를 쓰세요.
+(2) Give the tensor sizes of the bottom output, the first transpose-convolution output, the result just after the first concatenation, the result just after the second concatenation, and the final output.
 
-(3) 첫 전치 합성곱($128\to64$ 채널), 그 바로 뒤의 첫 $3\times3$ 합성곱, 마지막 1×1 합성곱의 모수를 구하세요.
+(3) Find the number of parameters of the first transpose convolution ($128\to64$ channels), of the first $3\times3$ convolution right after it, and of the final 1×1 convolution.
 
-(4) 학습에 쓸 오차함수를 쓰고, 이어 붙이는 연결이 분할에 왜 필요한지 설명하세요.`,
+(4) Write down the error function used for training, and explain why the concatenating connections are needed for segmentation.`,
         rubric: R`
 - (1) 입력 칸 $i$의 무늬가 출력 $iS,\dots,iS+M-1$에 놓임을 보여 길이 $S(n-1)+M$ 유도 — 3점
 - (1) $M=S=2$이면 $2n$, $32\to64\to128$ 확인 — 1점
@@ -265,8 +265,8 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 (4) 오차는 화소별 교차 엔트로피의 합 $E=-\sum_{i,j}\ln p_{ij,\,c_{ij}}$ ($c_{ij}$: 화소 $(i,j)$의 정답 클래스, 출력 원소는 $128\cdot128\cdot3=49{,}152$개)입니다. 풀링과 보폭은 계산을 줄이고 채널을 늘리게 해 주지만 위치 정보를 버립니다. 영상 전체에 레이블 하나를 붙이는 분류에는 괜찮아도, 종양 경계를 화소 단위로 그려야 하는 분할에는 치명적입니다. 이어 붙이는 연결은 다운샘플링 전의 고해상도 특징을 디코더에 직접 넘겨 경계의 세부를 되살립니다. 잔차 연결처럼 **더하지** 않고 채널로 **쌓으므로** 이어 붙인 뒤 채널 수가 두 배가 되고, 뒤따르는 합성곱이 두 정보를 섞는 법을 배웁니다.
 
 관련: [[ch14:10.5b|전치 합성곱, 완전 합성곱망, U-net]], [[ch14:10.5|의미 분할과 업샘플링]]` },
-      { ch: 'ch15', type: 'mc', lv: 1, pts: 3, q: R`합성곱층과 셀프 어텐션 층을 비교한 설명 중 옳지 **않은** 것은?`,
-        choices: [R`셀프 어텐션 층의 학습 모수 수는 토큰 수 $N$과 무관하다`, R`합성곱층의 학습 모수 수는 입력 영상의 크기와 무관하다`, R`위치 부호화가 없는 셀프 어텐션은 입력 토큰의 순서를 바꾸면 출력도 똑같이 순서만 바뀐다`, R`보폭 1인 $3\times3$ 합성곱층 하나의 출력 유닛은 셀프 어텐션의 출력처럼 입력의 모든 위치에 의존한다`], ans: 3,
+      { ch: 'ch15', type: 'mc', lv: 1, pts: 3, q: R`Which statement comparing convolutional layers and self-attention layers is **false**?`,
+        choices: [R`The number of learnable parameters of a self-attention layer does not depend on the number of tokens $N$`, R`The number of learnable parameters of a convolutional layer does not depend on the size of the input image`, R`In self-attention without positional encoding, permuting the order of the input tokens merely permutes the output in the same way`, R`An output unit of a single $3\times3$ convolutional layer with stride 1 depends on all positions of the input, like the output of self-attention`], ans: 3,
         sol: R`
 **핵심.** 두 층 모두 모수를 공유합니다. 합성곱은 모든 위치가 같은 커널을, 어텐션은 모든 토큰이 같은 $\mathbf W^{(q)},\mathbf W^{(k)},\mathbf W^{(v)}$를 씁니다. 차이는 “누구를 보느냐”입니다. 합성곱 유닛은 수용 영역(이웃 $3\times3$)만 보고, 어텐션 출력 $\mathbf y_n=\sum_ma_{nm}\mathbf v_m$은 모든 토큰을 봅니다.
 
@@ -280,7 +280,7 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **보기 검토.** ① 옳음 — 멀티헤드 어텐션의 모수는 $4D^2$로 $N$이 없습니다. ② 옳음 — 같은 망을 크기가 다른 영상에 그대로 쓸 수 있는 이유입니다. ③ 옳음 — 순열 등변성입니다. ④ 틀림(정답) — 국소성은 CNN의 귀납적 편향이고, 한 층에서의 전역 의존은 어텐션의 성질입니다.
 
 관련: [[ch15:12.4|비전 트랜스포머와 CNN]], [[ch13:10.2|CNN의 네 원리]]` },
-      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`$224\times224$ 흑백 흉부 X선($C=1$)을 $P=16$ 패치로 나누고, 패치마다 펴서 모든 패치에 같은 선형 투영(편향 포함)을 적용해 $D=768$차원 토큰을 만든다. 이 패치 임베딩 층의 학습 모수는 몇 개인가? (정수)`,
+      { ch: 'ch15', type: 'num', lv: 2, pts: 4, q: R`A $224\times224$ greyscale chest X-ray ($C=1$) is split into patches with $P=16$; each patch is flattened, and the same linear projection (with bias) is applied to every patch to produce $D=768$-dimensional tokens. How many learnable parameters does this patch embedding layer have? (integer)`,
         ans: '(16*16*1+1)*768', ansTex: R`(256+1)\cdot768=197{,}376`,
         sol: R`
 **핵심.** 패치 하나를 편 길이는 $P^2C$이고, 투영 $\mathbf E$(크기 $D\times P^2C$)와 편향을 **모든 패치가 공유**합니다. 이는 커널 $P\times P$, 보폭 $P$, 출력 채널 $D$인 합성곱층과 똑같습니다.
@@ -296,9 +296,9 @@ $$y_1=\frac{e^{a_1}}{e^{a_1}+e^{a_2}}=\frac1{1+e^{-(a_1-a_2)}}=\sigma(a_1-a_2)$$
 **검산.** 토큰 수 $N=HW/P^2=224^2/16^2=196$이 합성곱 출력 크기와 맞습니다. ViT가 영상의 2차원 구조에 대해 가진 귀납적 편향은 이 패치 자르기(국소 창과 가중치 공유) 하나뿐이고, 그 뒤의 층들은 모두 전역 어텐션입니다.
 
 관련: [[ch15:12.4|비전 트랜스포머]], [[ch13:10.2d|다채널 합성곱]]` },
-      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`ViT 분류기에서 ⟨class⟩ 토큰의 마지막 출력 $\mathbf c\in\mathbb R^D$에 $\mathbf y=\operatorname{Softmax}(\mathbf W^T\mathbf c)$ ($\mathbf W\in\mathbb R^{D\times K}$)를 붙여 정상·폐렴·결핵($K=3$)을 분류한다. 장난감 크기 $D=3$에서
-$$\mathbf c=\begin{pmatrix}2\\1\\0\end{pmatrix},\qquad \mathbf W=\begin{pmatrix}1&-0.5&0\\0.5&1&-1\\0&0.5&1\end{pmatrix}\quad(\text{열 }k\text{가 클래스 }k)$$
-이고 정답이 폐렴(클래스 2)일 때, 교차 엔트로피 $E=-\sum_kt_k\ln y_k$의 기울기 $\partial E/\partial c_1$은? (소수 넷째 자리)`,
+      { ch: 'ch15', type: 'num', lv: 3, pts: 5, q: R`In a ViT classifier, $\mathbf y=\operatorname{Softmax}(\mathbf W^T\mathbf c)$ ($\mathbf W\in\mathbb R^{D\times K}$) is attached to the final output $\mathbf c\in\mathbb R^D$ of the ⟨class⟩ token to classify normal, pneumonia, and tuberculosis ($K=3$). With the toy size $D=3$,
+$$\mathbf c=\begin{pmatrix}2\\1\\0\end{pmatrix},\qquad \mathbf W=\begin{pmatrix}1&-0.5&0\\0.5&1&-1\\0&0.5&1\end{pmatrix}\quad(\text{column }k\text{ is class }k)$$
+and the true label is pneumonia (class 2). Find the gradient $\partial E/\partial c_1$ of the cross-entropy $E=-\sum_kt_k\ln y_k$. (4 decimal places)`,
         ans: '(exp(2.5)-0.5)/(exp(2.5)+1+exp(-1))+0.5', ansTex: R`(y_1-t_1)-0.5(y_2-t_2)\approx1.3622`,
         sol: R`
 **핵심.** 소프트맥스와 다중 클래스 교차 엔트로피의 짝은 $\partial E/\partial a_k=y_k-t_k$이고, 로짓 $a_k=\sum_dW_{dk}c_d$에 연쇄법칙을 쓰면
@@ -316,8 +316,8 @@ $$\frac{\partial E}{\partial c_d}=\sum_kW_{dk}(y_k-t_k),\qquad \nabla_{\mathbf c
 **검산.** 수치 미분: $c_1$을 $2.01$로 바꾸면 $E$가 $2.6064$에서 $2.6200$으로 약 $0.0136$ 늘어 기울기 $1.36$과 맞습니다. 정답 클래스 확률이 $0.074$로 작아 오차가 크고($E=2.6064$), 기울기도 큽니다. 미세 조정에서 이 기울기는 ⟨class⟩ 위치로만 들어가고, 셀프 어텐션을 거쳐 모든 패치 토큰과 모수로 역전파됩니다.
 
 관련: [[ch15:12.4|비전 트랜스포머]], [[ch07:6.4|오차함수와 출력 활성화]]` },
-      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`분할용 U-net과 번역용 인코더–디코더 트랜스포머는 모두 “인코더가 만든 표현을 디코더가 받아 쓴다”. 두 구조를 비교한 설명으로 옳은 것은?`,
-        choices: [R`U-net의 건너뛰는 연결도 교차 어텐션처럼, 디코더 위치마다 인코더의 모든 위치를 입력에 따라 정한 가중치로 평균해 가져온다`, R`교차 어텐션에도 인과 마스크를 씌워, 디코더가 인코더 서열의 뒤쪽 토큰을 보지 못하게 한다`, R`U-net은 같은 해상도의 인코더 특징 맵을 같은 위치끼리 채널 방향으로 이어 붙이고, 교차 어텐션은 디코더에서 온 쿼리를 인코더 표현 $\mathbf Z$의 키와 비교해 값의 가중합을 가져온다`, R`U-net의 디코더도 출력 화소를 래스터 순서로 하나씩 자기회귀 생성한다`], ans: 2,
+      { ch: 'ch15', type: 'mc', lv: 2, pts: 4, q: R`In both a U-net for segmentation and an encoder–decoder transformer for translation, “the decoder takes in and uses the representation produced by the encoder”. Which statement comparing the two architectures is correct?`,
+        choices: [R`Like cross-attention, the skip connections of a U-net bring to each decoder position an average over all encoder positions, with weights determined by the input`, R`A causal mask is applied to cross-attention as well, so that the decoder cannot see the later tokens of the encoder sequence`, R`A U-net concatenates the encoder feature maps of the same resolution along the channel direction, position by position, whereas cross-attention compares queries coming from the decoder with the keys of the encoder representation $\mathbf Z$ and takes a weighted sum of the values`, R`The decoder of a U-net also generates the output pixels autoregressively, one at a time in raster order`], ans: 2,
         sol: R`
 **핵심.** 인코더의 정보를 넘기는 방식이 다릅니다. U-net은 **위치로 고정된** 연결(같은 해상도, 같은 위치)이고, 교차 어텐션은 **내용으로 계산된** 연결입니다: $\mathbf Q=\mathbf X\mathbf W^{(q)}$, $\mathbf K=\mathbf Z\mathbf W^{(k)}$, $\mathbf V=\mathbf Z\mathbf W^{(v)}$, $\mathbf Y=\operatorname{Softmax}[\mathbf Q\mathbf K^T/\sqrt{D_k}]\mathbf V$.
 
@@ -331,13 +331,13 @@ $$\frac{\partial E}{\partial c_d}=\sum_kW_{dk}(y_k-t_k),\qquad \nabla_{\mathbf c
 **보기 검토.** ① 입력에 따라 가중 평균하는 것은 교차 어텐션이고, U-net의 연결은 같은 위치끼리 고정입니다. ② 인과 마스크는 디코더 셀프 어텐션에만 있습니다. ③ 정답. ④ U-net은 전체 분할 지도를 한 번에 내며 자기회귀가 아닙니다.
 
 관련: [[ch15:12.3b|인코더–디코더와 교차 어텐션]], [[ch14:10.5b|U-net]]` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 11, proof: true, q: R`길이 $N$인 1차원 서열(토큰 $\mathbf x_n\in\mathbb R^D$를 행으로 쌓은 $\mathbf X\in\mathbb R^{N\times D}$)에 커널 폭 3, 입력·출력 채널 $D$, 0 패딩 1, 보폭 1, 편향 없는 합성곱을 적용한다. 행벡터로 쓰면 $\mathbf y_n=\sum_{l\in\{-1,0,1\}}\mathbf x_{n+l}\mathbf K_l$ ($\mathbf K_l\in\mathbb R^{D\times D}$, $\mathbf x_0=\mathbf x_{N+1}=\mathbf 0$)이다.
+      { ch: 'ch15', type: 'open', lv: 3, pts: 11, proof: true, q: R`A convolution with kernel width 3, $D$ input and output channels, zero padding 1, stride 1, and no bias is applied to a one-dimensional sequence of length $N$ ($\mathbf X\in\mathbb R^{N\times D}$, with the tokens $\mathbf x_n\in\mathbb R^D$ stacked as rows). In row-vector form, $\mathbf y_n=\sum_{l\in\{-1,0,1\}}\mathbf x_{n+l}\mathbf K_l$ ($\mathbf K_l\in\mathbb R^{D\times D}$, $\mathbf x_0=\mathbf x_{N+1}=\mathbf 0$).
 
-(1) $m=n+l$이면 $(\mathbf S_l)_{nm}=1$, 그 밖에는 0인 $N\times N$ 행렬 $\mathbf S_l$로 $\mathbf Y=\sum_l\mathbf S_l\mathbf X\mathbf K_l$임을 보이세요.
+(1) Let $\mathbf S_l$ be the $N\times N$ matrix with $(\mathbf S_l)_{nm}=1$ if $m=n+l$ and 0 otherwise. Show that $\mathbf Y=\sum_l\mathbf S_l\mathbf X\mathbf K_l$.
 
-(2) 이 식을 멀티헤드 어텐션의 머리별 합 $\mathbf Y=\sum_h\mathbf A_h\mathbf X\mathbf W_h^{(v)}\mathbf W_h^{(o)}$와 비교해, 합성곱이 어떤 조건을 만족하는 머리 3개의 어텐션인지 쓰세요. 어텐션 행렬과 $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$에 각각 어떤 제약이 필요한지 밝히세요.
+(2) Compare this expression with the sum over heads of multi-head attention, $\mathbf Y=\sum_h\mathbf A_h\mathbf X\mathbf W_h^{(v)}\mathbf W_h^{(o)}$, and state which conditions three attention heads must satisfy for the convolution to be their attention. Make clear what constraint is needed on the attention matrices and on $\mathbf W_h^{(v)}\mathbf W_h^{(o)}$, respectively.
 
-(3) 위치 부호화가 없는 셀프 어텐션은 순열 등변인데 합성곱은 그렇지 않음을 $N=3$, $D=1$의 반례로 보이고, 셀프 어텐션이 합성곱 같은 연산을 배우려면 무엇이 필요한지 설명하세요.`,
+(3) Self-attention without positional encoding is permutation equivariant; show with a counterexample for $N=3$, $D=1$ that convolution is not, and explain what self-attention needs in order to learn a convolution-like operation.`,
         rubric: R`
 - (1) $\mathbf S_l\mathbf X$의 $n$행이 $\mathbf x_{n+l}$이고 경계 행이 0 패딩과 같음 — 3점
 - (2) $\mathbf A_h=\mathbf S_l$: 입력과 무관하게 상대 위치로 고정된 하드 어텐션 — 3점
@@ -358,15 +358,15 @@ $$\frac{\partial E}{\partial c_d}=\sum_kW_{dk}(y_k-t_k),\qquad \nabla_{\mathbf c
 **정리.** 합성곱은 상대 위치로 고정한 하드 어텐션에 모든 위치가 공유하는 커널을 붙인 것입니다. 어텐션은 이 고정을 풀어 내용으로 전역적으로 고르는 대신 국소성이라는 귀납적 편향을 내려놓아 자료가 더 필요합니다.
 
 관련: [[ch15:12.1c|멀티헤드 어텐션의 머리별 합]], [[ch15:12.1d|순열 등변성과 위치 부호화]]` },
-      { ch: 'ch15', type: 'open', lv: 3, pts: 12, q: R`$224\times224\times1$ 흉부 X선 분류에 ViT($P=16$, $D=768$, 머리 $H=12$, 위치별 MLP 은닉 $4D$, ⟨class⟩ 토큰 포함)를 쓴다. 곱셈 수만 세고 편향, 소프트맥스, 층 정규화는 무시한다.
+      { ch: 'ch15', type: 'open', lv: 3, pts: 12, q: R`A ViT ($P=16$, $D=768$, $H=12$ heads, position-wise MLP with $4D$ hidden units, including a ⟨class⟩ token) is used to classify $224\times224\times1$ chest X-rays. Count multiplications only, ignoring biases, softmax, and layer normalization.
 
-(1) 토큰 수 $N$과 한 층의 어텐션 행렬 원소 수(모든 머리의 합)를 구하세요.
+(1) Find the number of tokens $N$ and the number of attention-matrix entries in one layer (summed over all heads).
 
-(2) 트랜스포머 층 하나의 곱셈 수를 (가) Q·K·V와 출력 투영 (나) 점수 $\mathbf Q\mathbf K^T$와 가중합 $\operatorname{Softmax}[\cdot]\mathbf V$ (다) 위치별 MLP로 나눠 식으로 세고 계산하세요. 어느 쪽이 지배하며, 상수까지 셀 때 $N$이 얼마를 넘어야 (나)가 나머지 둘의 합보다 커지나요?
+(2) Count the multiplications of one transformer layer, split into (a) the Q, K, V and output projections, (b) the scores $\mathbf Q\mathbf K^T$ and the weighted sum $\operatorname{Softmax}[\cdot]\mathbf V$, and (c) the position-wise MLP; give each as a formula and evaluate it. Which part dominates, and, counting constants, how large must $N$ be for (b) to exceed the sum of the other two?
 
-(3) 같은 $14\times14$ 격자에서 $768\to768$ 채널 $3\times3$ 같은 합성곱층 하나의 곱셈 수와 모수(편향 포함)를 구해, 트랜스포머 층의 가중치 수 $12D^2$와 비교하세요.
+(3) On the same $14\times14$ grid, find the number of multiplications and the number of parameters (including biases) of a single $3\times3$ “same” convolutional layer with $768\to768$ channels, and compare them with the number of weights $12D^2$ of a transformer layer.
 
-(4) 보폭 1인 $3\times3$ 같은 합성곱만 쌓을 때, $14\times14$ 격자의 **모든** 출력 위치가 격자 전체를 보려면 몇 층이 필요한가요? 셀프 어텐션 한 층과 비교해, 두 구조의 귀납적 편향이 자료가 적은 의료 영상에서 무엇을 뜻하는지 설명하세요.`,
+(4) When only $3\times3$ “same” convolutions with stride 1 are stacked, how many layers are needed for **every** output position of the $14\times14$ grid to see the whole grid? Compare this with a single self-attention layer, and explain what the inductive biases of the two architectures imply for medical imaging, where data are scarce.`,
         rubric: R`
 - (1) $N=197$, 어텐션 원소 $12\cdot197^2=465{,}708$ — 2점
 - (2) 세 항의 식 $4ND^2$, $2N^2D$, $8ND^2$와 그 값 — 3점
@@ -380,11 +380,11 @@ $$\frac{\partial E}{\partial c_d}=\sum_kW_{dk}(y_k-t_k),\qquad \nabla_{\mathbf c
 (1) 패치 토큰 $224^2/16^2=14\cdot14=196$개에 ⟨class⟩를 더해 $N=197$. 머리마다 어텐션 행렬이 $197^2=38{,}809$칸, 12머리 합 $465{,}708$칸입니다.
 
 (2) 머리를 모은 투영은 $D\times D$ 크기입니다($HD_k=HD_v=D$).
-- (가) $\mathbf X\mathbf W^{(q)}$, $\mathbf X\mathbf W^{(k)}$, $\mathbf X\mathbf W^{(v)}$, $\mathbf H\mathbf W^{(o)}$는 각각 $N\times D$에 $D\times D$를 곱해 $ND^2$이므로 $4ND^2=4\cdot197\cdot768^2=464{,}781{,}312$.
-- (나) 머리마다 $\mathbf Q_h\mathbf K_h^T$가 $N^2D_k$, $\mathbf A_h\mathbf V_h$가 $N^2D_v$이고 머리를 더하면 $2N^2D=2\cdot38{,}809\cdot768=59{,}610{,}624$.
-- (다) 토큰마다 $D\to4D\to D$이므로 $N(4D^2+4D^2)=8ND^2=929{,}562{,}624$.
+- (a) $\mathbf X\mathbf W^{(q)}$, $\mathbf X\mathbf W^{(k)}$, $\mathbf X\mathbf W^{(v)}$, $\mathbf H\mathbf W^{(o)}$는 각각 $N\times D$에 $D\times D$를 곱해 $ND^2$이므로 $4ND^2=4\cdot197\cdot768^2=464{,}781{,}312$.
+- (b) 머리마다 $\mathbf Q_h\mathbf K_h^T$가 $N^2D_k$, $\mathbf A_h\mathbf V_h$가 $N^2D_v$이고 머리를 더하면 $2N^2D=2\cdot38{,}809\cdot768=59{,}610{,}624$.
+- (c) 토큰마다 $D\to4D\to D$이므로 $N(4D^2+4D^2)=8ND^2=929{,}562{,}624$.
 
-합은 $1{,}453{,}954{,}560\approx1.45\times10^9$이고 (나)는 약 4.1%뿐입니다. (가)+(다) $=12ND^2$와 (나)의 비는 $\frac{12ND^2}{2N^2D}=\frac{6D}N=\frac{4608}{197}\approx23.4$로 투영과 MLP가 지배합니다. (나)가 더 커지려면 $2N^2D\gt12ND^2\iff N\gt6D=4608$이어야 합니다. 교재의 $O$ 표기 비교($N\gt D$)에 상수 6이 붙은 것입니다. 예컨대 패치를 $P=2$로 줄이면 $N=12{,}545$로 어텐션 쪽이 지배합니다.
+합은 $1{,}453{,}954{,}560\approx1.45\times10^9$이고 (b)는 약 4.1%뿐입니다. (a)+(c) $=12ND^2$와 (b)의 비는 $\frac{12ND^2}{2N^2D}=\frac{6D}N=\frac{4608}{197}\approx23.4$로 투영과 MLP가 지배합니다. (b)가 더 커지려면 $2N^2D\gt12ND^2\iff N\gt6D=4608$이어야 합니다. 교재의 $O$ 표기 비교($N\gt D$)에 상수 6이 붙은 것입니다. 예컨대 패치를 $P=2$로 줄이면 $N=12{,}545$로 어텐션 쪽이 지배합니다.
 
 (3) 합성곱: 출력 $14\cdot14\cdot768$개마다 $9\cdot768$번 곱하므로 $196\cdot9\cdot768^2=1{,}040{,}449{,}536\approx1.04\times10^9$. 모수 $(9\cdot768+1)\cdot768=5{,}309{,}184$. 트랜스포머 층의 가중치 $4D^2+8D^2=12D^2=7{,}077{,}888$은 그 약 1.33배이고, 계산량도 같은 규모($1.45\times10^9$ 대 $1.04\times10^9$)입니다. 비용은 비슷한데 한 층이 보는 범위가 크게 다릅니다.
 

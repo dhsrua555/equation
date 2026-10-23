@@ -205,6 +205,8 @@
       if (p.type === 'mc' && !(p.ans >= 0 && p.ans < p.choices.length)) fail(`${p.id} ans index`);
       if (p.type === 'num') { try { window.EMCalc.parse(p.ans); } catch (e) { fail(`${p.id} num ans parse ${p.ans}`); } }
       if (p.type === 'open' && !p.rubric) log(`note: exam open without rubric ${p.id}`);
+      // med sets its mock-exam questions in English (the solutions and rubrics stay Korean)
+      if (A.FIELD === 'med' && /[가-힣]/.test([p.q, ...(p.choices || [])].join('\n'))) fail(`${p.id} question or choices must be in English`);
       checkHTML(md(p.q) + (p.choices || []).map(il).join('') + md(p.sol) + md(p.rubric) + (p.ansTex ? il('$' + p.ansTex + '$') : ''), p.id);
     });
     if (pts !== 100) fail(`exam ${x.id} points sum ${pts}`);
