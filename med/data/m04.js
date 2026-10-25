@@ -28,7 +28,11 @@ $$P(z)=\int_{-\infty}^zp(x)\,dx\ (\text{CDF}),\qquad P'(x)=p(x)$$
 :::fig pdfcdf
 :::
 
-$p(x)$는 확률이 아니라 **밀도**이므로 1보다 클 수 있습니다(예: 폭이 0.5인 균등분포의 밀도는 2). 작은 구간의 확률이 $p(x)\delta x$입니다.
+$p(x)$는 확률이 아니라 **밀도**이므로 1보다 클 수 있습니다(예: 폭이 0.5인 균등분포의 밀도는 2). 작은 구간의 확률이 $p(x)\delta x$입니다. **누적분포함수**(cumulative distribution function, CDF) $P(z)$는 $x$가 $z$ 이하일 확률, 곧 왼쪽 끝부터 $z$까지 밀도 곡선 아래 넓이입니다. 그래서 0에서 1까지 줄곧 늘어나기만 하고, 기울기가 그 점의 밀도입니다.
+
+:::warn 슬라이드의 용어
+슬라이드는 CDF를 “cumulative density function”이라고 적었지만, 쌓아 올리는 것은 밀도가 아니라 확률이므로 교재와 통계학의 표준 이름은 cumulative distribution function(누적분포함수)입니다.
+:::
 
 :::key 결합밀도의 합·곱·베이즈 규칙
 결합밀도 $p(\mathbf x)=p(x_1,\dots,x_D)$, $p(\mathbf x)\ge0$, $\int p(\mathbf x)d\mathbf x=1$.
@@ -94,6 +98,8 @@ $$\Var[x]=\E[x^2]-\E[x]^2=\sigma^2,\qquad \beta=1/\sigma^2\ (\text{정밀도})$$
 :::fig gaussfig
 :::
 
+자료점들이 서로 독립이고(한 관측값이 다른 관측값에 영향을 주지 않음) 모두 같은 분포에서 나왔을 때 **독립 동일 분포**(independent and identically distributed, i.i.d.)라고 합니다. 독립인 사건들이 함께 일어날 확률은 각 확률의 곱이므로, i.i.d. 자료 전체의 확률(밀도)은 자료점마다의 밀도를 곱한 것이 됩니다. 아래에서는 평균 $\mu$와 분산 $\sigma^2$을 모르는 가우시안에서 자료가 나왔다고 가정하고, 자료로부터 두 모수를 정하는 것(밀도 추정)을 목표로 합니다.
+
 :::key 가능도 함수 (i.i.d. 가우시안)
 관측 $\mathbf x=(x_1,\dots,x_N)$이 모수를 모르는 가우시안에서 i.i.d.로 나왔다면, 주어진 $(\mu,\sigma^2)$에서 자료가 나올 확률(밀도)은
 $$p(\mathbf x\mid\mu,\sigma^2)=\prod_{n=1}^N\N(x_n\mid\mu,\sigma^2).$$
@@ -124,6 +130,7 @@ $$\tilde\sigma^2=\frac N{N-1}\sigma^2_{\text{ML}}=\frac1{N-1}\sum_{n=1}^N(x_n-\m
 이 불편 추정량이다.
 :::
 
+- 슬라이드는 “표본에 따라 달라지므로 편향이 생긴다”고 짧게 요약하지만, 표본마다 값이 달라지는 것 자체는 **흩어짐**(추정량의 분산)이고, **편향**(bias)은 추정량을 수많은 표본에 대해 평균낸 값이 참값과 어긋나는 것($\E[\hat\theta]\ne\theta$)입니다. 위 그림에서 평균의 MLE는 흩어지기만 할 뿐 평균하면 참값이 되므로 편향이 없고, 분산의 MLE는 평균해도 참값보다 작으므로 편향이 있습니다.
 - 편향의 원인: 분산을 참 평균이 아니라 **자료에 맞춘 평균** $\mu_{\text{ML}}$ 기준으로 재므로, 편차 제곱합이 가능한 한 작아지는 쪽으로 치우칩니다($\sum(x_n-c)^2$은 $c=\bar x$에서 최소).
 - $N$이 크면 편향은 사라집니다. 가우시안처럼 단순한 모델은 보정이 쉽지만 신경망처럼 복잡한 모델은 어렵습니다.
 - MLE의 편향은 **과적합과 밀접**합니다: 모델이 자료에 너무 잘 맞춰져 불확실성(분산)을 과소평가합니다.
@@ -132,7 +139,11 @@ $$\tilde\sigma^2=\frac N{N-1}\sigma^2_{\text{ML}}=\frac1{N-1}\sum_{n=1}^N(x_n-\m
 :::key 회귀의 확률모델 (가우시안 잡음)
 목표값이 입력에 조건부로 가우시안이라고 가정합니다: 평균은 모델의 예측 $y(x,\mathbf w)$, 분산은 관측 잡음 $\sigma^2$.
 $$p(t\mid x,\mathbf w,\sigma^2)=\N\big(t\mid y(x,\mathbf w),\sigma^2\big),\qquad \mathbf w:\ \text{다항식 계수}$$
+자료 $(x_n,t_n)$이 i.i.d.이면 자료 전체의 가능도는 점마다의 밀도의 곱입니다:
+$$p(\mathbf t\mid\mathbf x,\mathbf w,\sigma^2)=\prod_{n=1}^N\N\big(t_n\mid y(x_n,\mathbf w),\sigma^2\big)$$
 :::
+
+$y(x,\mathbf w)$가 $x$에 대해서는 다항식이어도 계수 $\mathbf w$에 대해서는 선형이므로 “선형”회귀라고 부릅니다. 그림처럼 입력 $x_0$마다 목표값은 곡선 위의 한 점이 아니라 $y(x_0,\mathbf w)$를 중심으로 폭 $\sigma$인 종 모양 분포를 따른다고 보는 것입니다.
 
 :::fig regprob
 :::

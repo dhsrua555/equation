@@ -247,5 +247,138 @@
       return FK.fig(560, 222, '래스터 주사와 자기회귀 영상 생성', s,
         R`(a) 래스터 주사: 첫 행을 왼쪽에서 오른쪽으로 지난 뒤 다음 행으로 내려가며 화소에 번호 $1,\dots,16$을 붙입니다. 이 순서를 정하면 영상의 분포를 $p(\mathbf x_1,\dots,\mathbf x_N)=\prod_np(\mathbf x_n\mid\mathbf x_1,\dots,\mathbf x_{n-1})$로 쓸 수 있습니다. (b) 생성도 이 순서대로 합니다. 칠한 여섯 칸은 이미 뽑은 화소이고, 굵은 칸(7번)은 앞 여섯 화소에 조건화한 분포에서 뽑을 차례입니다.`);
     },
+    // 12.1 dynamic attention (slides 5–6): the same word "bank" spreads its attention differently in two sentences
+    dynattn() {
+      const rows = [
+        { y: 92, toks: [['I', 0.03], ['swam', 0.22], ['across', 0.05], ['the', 0.02], ['river', 0.4], ['to', 0.02], ['get', 0.04], ['to', 0.02], ['the', 0.03], ['other', 0.07], ['bank', 0.1]] },
+        { y: 204, toks: [['I', 0.03], ['walked', 0.06], ['across', 0.03], ['the', 0.02], ['road', 0.07], ['to', 0.02], ['get', 0.08], ['cash', 0.45], ['from', 0.05], ['the', 0.04], ['bank', 0.15]] },
+      ];
+      let s = '';
+      rows.forEach(({ y, toks }, r) => {
+        const ws = toks.map(([t]) => 10 + 6.6 * t.length), tot = ws.reduce((a, b) => a + b, 0) + 5 * (toks.length - 1);
+        let x = (560 - tot) / 2;
+        const cx = toks.map((_, k) => { const c = x + ws[k] / 2; x += ws[k] + 5; return c; });
+        const bx = cx[cx.length - 1];
+        toks.forEach(([t, a], k) => {
+          if (k < toks.length - 1) {
+            const d = bx - cx[k], h = 22 + 0.3 * d;
+            s += `<path class="ld" style="stroke-width:${FK.f1(0.6 + 9 * a)};stroke-opacity:${FK.f1(0.35 + 1.5 * a)}" d="M${FK.f1(bx - 4)},${y} Q${FK.f1((bx + cx[k]) / 2)},${FK.f1(y - h)} ${FK.f1(cx[k])},${y}"/>`;
+          }
+          s += FK.R(cx[k] - ws[k] / 2, y, ws[k], 22, a >= 0.2 ? 'rg hl' : k === toks.length - 1 ? 'bm2' : 'bm') + T(cx[k], y + 15, t, { s: 11, c: k === toks.length - 1 ? 'rl' : a >= 0.2 ? 'em' : '' })
+            + T(cx[k], y + 35, a.toFixed(2), { s: 9, c: a >= 0.2 ? 'lb' : '' });
+        });
+        s += T(14, y - 52, r ? '문장 2' : '문장 1', { a: 'start', c: 'em' });
+      });
+      return FK.fig(560, 246, '같은 단어, 다른 어텐션', s,
+        R`두 문장에서 마지막 단어 bank를 새로 표현할 때 다른 토큰에 주는 어텐션 가중치 $a_{nm}$입니다(선의 굵기와 상자 아래 수, 설명을 위한 예시 값으로 합은 1). 문장 1에서는 swam과 river에, 문장 2에서는 cash에 가중치가 몰립니다. 가중치는 학습 뒤 고정된 연결이 아니라 입력 문장마다 새로 계산되므로, 같은 bank가 문장 1에서는 “강둑”, 문장 2에서는 “은행” 쪽의 표현을 얻습니다. 멀리 떨어진 단어도 선 하나로 바로 이어지므로 장거리 의존성을 잡을 수 있습니다(슬라이드 5–6).`);
+    },
+    // 12.1 contextual embedding (slide 7): a fixed word vector vs. the vector of "bank" after self-attention in "river bank"
+    ctxemb() {
+      const W = [['nature', 5.6, 8.4], ['river', 7.6, 7.5], ['water', 8.2, 5.6], ['money', 0.6, 3.1], ['deposit', 1.6, 1.6], ['withdraw', 2.6, 0.9]];
+      const b0 = [4.4, 4.6], b1 = [6.7, 6.5];
+      const panel = (ox, title, moved) => ({ ox, w: 280, h: 250, x: [0, 10], y: [0, 10], m: [22, 10, 22, 26], title, xt: [[5, '5'], [10, '10']], yt: [[5, '5'], [10, '10']],
+        extra: (X, Y) => W.map(([t, u, v]) => FK.dot(X, Y, u, v) + T(X(u) + 6, Y(v) - 6, t, { a: 'start', s: 11 })).join('')
+          + (moved
+            ? FK.dot(X, Y, b0[0], b0[1], true) + T(X(b0[0]) + 6, Y(b0[1]) + 14, '원래 자리', { a: 'start', s: 10 }) + FK.A(X(b0[0]) + 3, Y(b0[1]) - 3, X(b1[0]) - 3, Y(b1[1]) + 3, 'ld ds', 7)
+              + FK.dot(X, Y, b1[0], b1[1], true) + T(X(b1[0]) - 8, Y(b1[1]) + 4, 'bank', { a: 'end', c: 'rl' })
+            : FK.dot(X, Y, b0[0], b0[1], true) + T(X(b0[0]) + 6, Y(b0[1]) - 6, 'bank', { a: 'start', c: 'rl' })) });
+      return FK.G2(560, 250, '문맥 임베딩', [panel(0, '(a) 문맥 없는 단어 임베딩', false), panel(280, '(b) 셀프 어텐션 뒤 (river bank)', true)],
+        R`(a) 단어마다 벡터 하나를 고정해 주는 보통의 단어 임베딩에서는 bank가 돈 쪽 단어(money, deposit, withdraw)와 강 쪽 단어(river, water, nature) 사이 어중간한 곳에 놓입니다. 두 뜻이 한 벡터에 섞여 있기 때문입니다. (b) “river bank” 문장에서 셀프 어텐션을 거친 bank의 문맥 임베딩은 river와 water 쪽으로 옮겨 갑니다. “financial bank” 문장이었다면 money 쪽으로 옮겨 갔을 것입니다. 좌표는 개념을 보이려고 2차원에 그린 예시입니다(슬라이드 7).`);
+    },
+    // 12.1.9 heat map of the sinusoidal position-encoding vectors (slide 25, right panel), one column per position
+    posheat() {
+      const D = 48, Lc = 30, N = 100, cw = 4.4, ch = 3.6, x0 = 66, y0 = 34, Q = 6, f1 = FK.f1;
+      const r = (n, i) => (i % 2 ? Math.cos(n / Math.pow(Lc, (i - 1) / D)) : Math.sin(n / Math.pow(Lc, i / D)));
+      // one path per sign and shade level keeps the 4,800 cells to a dozen elements
+      const P = {};
+      for (let i = 0; i < D; i++) for (let n = 0; n < N; n++) {
+        const v = r(n, i), k = Math.round(Math.abs(v) * Q);
+        if (!k) continue;
+        const key = (v > 0 ? 'vlh' : 'rxh') + k;
+        P[key] = (P[key] || '') + `M${f1(x0 + n * cw)},${f1(y0 + i * ch)}h${cw}v${ch}h-${cw}z`;
+      }
+      let s = Object.entries(P).map(([key, d]) => `<path class="${key.slice(0, 3)}" style="fill-opacity:${f1((+key.slice(3)) / Q * 100) / 100}" d="${d}"/>`).join('');
+      s += FK.R(x0, y0, N * cw, D * ch, 'sv') + FK.R(x0 + 12 * cw, y0 - 3, cw, D * ch + 6, 'sv') + T(x0 + 12.5 * cw, y0 - 9, 'r_12', { c: 'it', s: 12 });
+      [0, 20, 40, 60, 80, 100].forEach((n) => { s += FK.L(x0 + n * cw, y0 + D * ch, x0 + n * cw, y0 + D * ch + 4, 'ax') + T(x0 + n * cw, y0 + D * ch + 17, String(n), { s: 11 }); });
+      s += T(x0 + N * cw, y0 + D * ch + 34, '위치 n →', { a: 'end', s: 11 }) + T(x0 - 8, y0 + 9, 'i = 0', { a: 'end', s: 11 }) + T(x0 - 8, y0 + D * ch, 'i = 47', { a: 'end', s: 11 })
+        + T(x0 - 8, y0 + (D * ch) / 2 + 4, '차원 i ↓', { a: 'end', s: 11 });
+      s += FK.R(x0 + N * cw + 12, y0 + 20, 12, 12, 'vlh') + T(x0 + N * cw + 28, y0 + 30, '+1', { a: 'start', s: 11 })
+        + FK.R(x0 + N * cw + 12, y0 + 44, 12, 12, 'rxh') + T(x0 + N * cw + 28, y0 + 54, '−1', { a: 'start', s: 11 });
+      return FK.fig(560, 250, '위치 부호화 벡터의 열지도', s,
+        R`$D=48$, $L=30$일 때 처음 100개 위치의 사인파 위치 부호화를 열지도로 그렸습니다(슬라이드 25는 $D=100$, $L=30$으로 200개 위치). 세로 한 줄이 위치 $n$ 하나의 벡터 $\mathbf r_n$이고(굵은 테두리는 $\mathbf r_{12}$), 양수와 음수를 서로 다른 색으로, 절댓값이 클수록 진하게 칠했습니다. 위쪽 행(작은 $i$)은 위치에 따라 빠르게, 아래쪽 행은 아주 천천히 바뀝니다. 그래서 어느 두 줄도 무늬가 같지 않아 위치가 구별되고(유일), 모든 값이 $[-1,1]$ 안에 있으며(유계), 위치가 더 길어져도 같은 식으로 계속 만들 수 있습니다.`);
+    },
+    // 12.2.3–12.2.4 graphical models of the sequence models (slides 33, 35–36)
+    seqgm() {
+      const rN = 14, f1 = FK.f1;
+      const node = (x, y, lab, obs = true) => FK.C(x, y, rN, obs ? 'bm2' : 'nd') + T(x, y + 4, lab, { c: 'it', s: 12 });
+      const link = (x1, y1, x2, y2) => MF.link(x1, y1, x2, y2, rN, rN, 'ax', 6);
+      // curved arrow above a row of nodes, from the node at x1 to the node at x2
+      const arc = (x1, x2, y, h) => {
+        const a = [x1 + 0.34 * rN, y - 0.94 * rN], b = [x2 - 0.34 * rN, y - 0.94 * rN], c = [(x1 + x2) / 2, y - h];
+        const tx = b[0] - c[0], ty = b[1] - c[1], l = Math.hypot(tx, ty);
+        return FK.P(`M${f1(a[0])},${f1(a[1])} Q${f1(c[0])},${f1(c[1])} ${f1(b[0])},${f1(b[1])}`, 'ax') + FK.A(b[0] - (8 * tx) / l, b[1] - (8 * ty) / l, b[0], b[1], 'ax', 6);
+      };
+      let s = '';
+      // (a) bag of words
+      const xa = [45, 105, 165, 225];
+      xa.forEach((x, k) => { s += node(x, 70, `x_${k + 1}`); });
+      s += T(135, 20, '(a) 단어 주머니', { c: 'em' }) + T(135, 118, 'p(x_1, …, x_N) = ∏ p(x_n)', { c: 'it', s: 12 });
+      // (b) full autoregressive factorization
+      const xb = [325, 385, 445, 505];
+      xb.forEach((x, k) => { s += node(x, 80, `x_${k + 1}`); if (k) s += link(xb[k - 1], 80, x, 80); });
+      s += arc(xb[0], xb[2], 80, 46) + arc(xb[1], xb[3], 80, 46) + arc(xb[0], xb[3], 80, 80);
+      s += T(415, 20, '(b) 자기회귀 분해 (근사 없음)', { c: 'em' }) + T(415, 118, 'p(x_n | x_1, …, x_n−1)', { c: 'it', s: 12 });
+      // (c) trigram: second-order Markov
+      const xc = [35, 87, 139, 191, 243];
+      xc.forEach((x, k) => { s += node(x, 222, `x_${k + 1}`); if (k) s += link(xc[k - 1], 222, x, 222); if (k > 1) s += arc(xc[k - 2], x, 222, 44); });
+      s += T(135, 160, '(c) 트라이그램 (2차 마르코프)', { c: 'em' }) + T(135, 262, 'p(x_n | x_n−1, x_n−2)', { c: 'it', s: 12 });
+      // (d) hidden Markov model
+      const xd = [[325, 'z_1', 'x_1'], [385, 'z_2', 'x_2'], [445, 'z_3', 'x_3'], [515, 'z_N', 'x_N']];
+      xd.forEach(([x, z, o], k) => {
+        s += node(x, 198, z, false) + node(x, 248, o) + link(x, 198, x, 248);
+        if (k && k < 3) s += link(xd[k - 1][0], 198, x, 198);
+      });
+      s += FK.L(445 + rN, 198, 470, 198, 'ax') + T(480, 202, '…', { c: 'em' }) + FK.A(490, 198, 515 - rN, 198, 'ax', 6);
+      s += T(415, 160, '(d) 은닉 마르코프 모델', { c: 'em' }) + T(415, 284, 'p(z_n | z_n−1) p(x_n | z_n)', { c: 'it', s: 12 });
+      s += FK.L(280, 14, 280, 286, 'dm ds') + FK.L(10, 140, 550, 140, 'dm ds');
+      return FK.fig(560, 292, '서열 모델의 그래프 모형', s,
+        R`화살표는 “이 변수가 저 변수의 조건부 분포에 들어간다”는 뜻이고, 칠한 원은 관측되는 토큰, 흰 원은 잠재 상태입니다. (a) 단어 주머니: 연결선이 하나도 없어 단어들이 서로 독립이고 순서가 무시됩니다. (b) 자기회귀 분해: 각 단어에 앞의 모든 단어에서 화살표가 들어옵니다. 곱의 규칙만 쓴 정확한 분해지만 조건부 표가 서열 길이에 대해 지수적으로 커집니다. (c) 트라이그램: 바로 앞 두 단어에서만 화살표가 들어와 표가 작아지는 대신 창 밖의 정보는 버립니다. (d) HMM: 잠재 상태의 사슬 $\mathbf z_1\to\mathbf z_2\to\cdots$가 과거를 요약하고 관측 $\mathbf x_n$은 $\mathbf z_n$에서만 나옵니다. 먼 관측의 정보는 사슬을 여러 번 거쳐야 하므로 점점 흐려집니다(슬라이드 33, 35–36).`);
+    },
+    // 12.3.2 token probabilities along beam-search text and human text (slide 49, after Holtzman et al. 2019)
+    beamhuman() {
+      const r = MF.rng(49), beam = [], human = [];
+      for (let n = 0; n <= 100; n++) {
+        const dip = [22, 23, 47, 48, 71, 96].includes(n);
+        beam.push([n, dip ? 0.72 + 0.12 * r() : 0.96 + 0.035 * r()]);
+        const u = r(), w = r();
+        human.push([n, u < 0.3 ? 0.55 + 0.45 * w : 0.3 * Math.pow(w, 1.5)]);
+      }
+      return FK.G({ w: 560, h: 240, x: [0, 100], y: [0, 1.05], m: [24, 112, 40, 40], label: '빔 탐색과 사람이 쓴 글의 토큰 확률', title: '각 위치에서 쓰인 토큰이 모델 분포에서 가진 확률',
+        xt: [[0, '0'], [20, '20'], [40, '40'], [60, '60'], [80, '80'], [100, '100']], yt: [[0.5, '0.5'], [1, '1']],
+        c: [{ pts: human, c: 'rx' }, { pts: beam, c: 'ld' }],
+        extra: (X, Y) => FK.legend(X(100) + 14, Y(0.85), [['ld', '빔 탐색'], ['rx', '사람의 글']]) + T(X(50), Y(0) + 32, '토큰 위치 (생성 단계)', { s: 11 }),
+        cap: R`같은 학습된 언어 모델에 같은 첫 문장을 주고, 빔 탐색이 이어 쓴 글과 사람이 실제로 이어 쓴 글에서 각 위치의 토큰이 모델의 다음 토큰 분포에서 가졌던 확률을 비교한 그래프입니다(슬라이드 49, 원 그림은 Holtzman 등 2019, 교재 그림 12.17; 여기 값은 모양을 본뜬 예시). 빔 탐색은 거의 매번 확률이 1에 가까운 토큰만 고르지만, 사람의 글은 확률이 낮은 토큰을 자주 씁니다. 사람은 “가장 그럴듯한 단어”만 고르지 않으므로, 확률이 큰 쪽만 고르는 탐욕·빔 탐색은 사람 글보다 단조롭고 같은 말을 되풀이하기 쉽습니다. 그래서 다양성을 주는 표본 추출(top-$K$, top-$p$, 온도)을 씁니다.` });
+    },
+    // 12.4.4 VALL-E: text prompt tokens + acoustic prompt tokens → transformer → speech tokens → audio decoder (slide 75)
+    valle() {
+      let s = '';
+      const wave = (cx, cy, n, a) => {
+        let w = '';
+        for (let k = 0; k < n; k++) { const h = a * (0.2 + 0.8 * Math.abs(Math.sin(k * 1.7) * Math.cos(k * 0.37))); w += FK.L(cx + (k - (n - 1) / 2) * 4, cy - h, cx + (k - (n - 1) / 2) * 4, cy + h, 'gd'); }
+        return w;
+      };
+      const tok = (x, y, cls) => FK.R(x - 8, y, 16, 16, cls);
+      s += bx(30, 120, 500, 30, '트랜스포머', 'bm2');
+      [50, 85, 120, 155, 190].forEach((x) => { s += tok(x, 166, 'bm') + up(x, 166, x, 151); });
+      [245, 280, 315].forEach((x) => { s += tok(x, 166, 'rg hl') + up(x, 166, x, 151) + up(x, 202, x, 183); });
+      s += T(120, 200, '텍스트 프롬프트 토큰', { s: 11 }) + T(120, 215, '(무엇을 말할지)', { s: 10, c: 'lb' })
+        + bx(228, 202, 104, 26, '이산 토크나이저', 'bm', 11) + up(280, 244, 280, 229) + wave(280, 252, 13, 7)
+        + T(280, 276, '음향 프롬프트: 새 화자의 몇 초 (누구 목소리로)', { s: 10, c: 'lb' });
+      [370, 405, 440, 475, 510].forEach((x) => { s += up(x, 120, x, 103) + tok(x, 86, 'rg hl') + up(x, 86, x, 71); });
+      s += bx(358, 45, 164, 26, '오디오 디코더', 'bm', 11) + up(440, 45, 440, 32) + wave(440, 20, 21, 9) + T(352, 24, '합성 음성', { a: 'end', s: 11 })
+        + T(30, 60, '출력: 음성 토큰을 하나씩 생성', { a: 'start', s: 11, c: 'em' }) + T(30, 78, '(학습 때는 목표 음성 토큰을 맞힘)', { a: 'start', s: 11 });
+      return FK.fig(560, 284, 'VALL-E의 구조', s,
+        R`트랜스포머 기반 음성 합성(TTS) VALL-E의 큰 구조입니다(위치 부호화와 선형 투영은 생략, 슬라이드 75). 입력 서열은 말할 내용을 정하는 텍스트 토큰(흰 칸)과, 화자의 짧은 음성(음향 프롬프트)을 이산 토크나이저(벡터 양자화 코드북)로 바꾼 음성 토큰(칠한 칸)을 이어 붙인 것입니다. 트랜스포머는 이 둘에 조건화해 출력 음성 토큰을 자기회귀로 하나씩 만들고(학습 때는 같은 화자의 목표 음성 토큰을 맞히도록 학습), 오디오 디코더가 같은 코드북으로 토큰을 다시 파형으로 바꿉니다. 많은 화자로 학습해 두면 추론 때 새 화자의 몇 초짜리 음성만으로 그 목소리를 흉내 냅니다.`);
+    },
   });
 })();

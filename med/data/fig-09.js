@@ -45,6 +45,31 @@
         extra: (X, Y) => T(X(-4) - 8, Y(3) + 4, 'aₙᵢ (미니배치 16개)', { a: 'end', s: 11 }) + T(X(-4) - 8, Y(2) + 4, 'âₙᵢ: 평균 0, 분산 1', { a: 'end', s: 11 }) + T(X(-4) - 8, Y(1) + 4, 'γâ + β (0.6, 1.5)', { a: 'end', s: 11 }) + T(X(mu), Y(3) - 16, `μᵢ = ${mu.toFixed(2)}`, { c: 'rl', s: 11 }) + T(X(bet), Y(1) - 16, 'β', { c: 'lb', s: 11 }),
         cap: R`한 유닛의 사전활성 16개(맨 위)를 미니배치 평균 $\mu_i$와 표준편차로 표준화하면 가운데 줄처럼 0을 중심으로 폭 1로 모입니다. 마지막으로 학습 가능한 $\gamma_i$배 늘이고 $\beta_i$만큼 옮겨 층이 필요한 척도와 위치를 스스로 고르게 합니다.` });
     },
+    // 7.4.3 which values each statistic averages over: BatchNorm vs LayerNorm (slide 29)
+    bnlnaxes() {
+      const cw = 22, ch = 20, nr = 5, nc = 4; // rows = hidden units i, columns = examples n of the mini-batch
+      const grid = (x0, y0, hl) => { let s = ''; for (let i = 0; i < nr; i++) for (let j = 0; j < nc; j++) s += FK.R(x0 + j * cw, y0 + i * ch, cw, ch, hl(i, j) ? 'bm2' : 'bm'); return s; };
+      const cells = (x0, y0, n, dx, dy, hk) => Array.from({ length: n }, (_, k) => FK.R(x0 + k * dx, y0 + k * dy, cw, ch, k === hk ? 'bm2' : 'bm')).join('');
+      const sides = (x0, y0) => FK.A2(x0, y0 - 12, x0 + nc * cw, y0 - 12, 'dm', 6) + T(x0 + (nc * cw) / 2, y0 - 20, '미니배치의 예제 n', { s: 11 })
+        + FK.A2(x0 - 12, y0, x0 - 12, y0 + nr * ch, 'dm', 6) + T(x0 - 18, y0 + (nr * ch) / 2 + 4, '은닉 유닛 i', { a: 'end', s: 11 });
+      let s = '';
+      // left: BatchNorm averages each row (one unit) across the examples
+      const bx = 100, by = 66, gw = nc * cw;
+      s += T(150, 18, '배치 정규화 (BatchNorm)', { c: 'em' }) + sides(bx, by) + grid(bx, by, (i) => i === 1);
+      for (let i = 0; i < nr; i++) s += FK.A(bx + gw + 4, by + i * ch + ch / 2, bx + gw + 24, by + i * ch + ch / 2, 'ax', 6);
+      s += cells(bx + gw + 30, by, nr, 0, ch, 1) + cells(bx + gw + 58, by, nr, 0, ch, 1);
+      s += T(bx + gw + 41, by - 6, 'μ_i', { c: 'lb' }) + T(bx + gw + 69, by - 6, 'σ_i', { c: 'lb' });
+      s += T(160, 254, '유닛마다 μ_i, σ_i 하나씩', { s: 11, c: 'lb' }) + T(160, 270, '(미니배치의 예제 K개로 계산)', { s: 11 });
+      // right: LayerNorm averages each column (one example) across the hidden units
+      const lx = 380, ly = 64, gh = nr * ch;
+      s += T(416, 18, '층 정규화 (LayerNorm)', { c: 'em' }) + sides(lx, ly) + grid(lx, ly, (i, j) => j === 2);
+      for (let j = 0; j < nc; j++) s += FK.A(lx + j * cw + cw / 2, ly + gh + 4, lx + j * cw + cw / 2, ly + gh + 20, 'ax', 6);
+      s += cells(lx, ly + gh + 26, nc, cw, 0, 2) + cells(lx, ly + gh + 52, nc, cw, 0, 2);
+      s += T(lx - 8, ly + gh + 40, 'μ_n', { a: 'end', c: 'lb' }) + T(lx - 8, ly + gh + 66, 'σ_n', { a: 'end', c: 'lb' });
+      s += T(lx + gw / 2, 254, '예제마다 μ_n, σ_n 하나씩', { s: 11, c: 'lb' }) + T(lx + gw / 2, 270, '(은닉 유닛 M개로 계산)', { s: 11 });
+      return FK.fig(560, 278, '배치 정규화와 층 정규화가 평균을 내는 방향', s,
+        R`한 층의 사전활성 $a_{ni}$를 행이 은닉 유닛 $i$, 열이 미니배치의 예제 $n$인 표로 놓았습니다(슬라이드 29의 도식). 왼쪽 배치 정규화는 한 행, 곧 한 유닛의 값들을 미니배치의 예제에 걸쳐 가로로 평균 내므로 유닛마다 $\mu_i,\sigma_i$가 하나씩 나옵니다. 오른쪽 층 정규화는 한 열, 곧 한 예제의 값들을 은닉 유닛에 걸쳐 세로로 평균 내므로 예제마다 $\mu_n,\sigma_n$이 하나씩 나옵니다. 칠한 칸이 칠한 통계 하나를 계산하는 데 쓰이는 값들입니다. 층 정규화는 다른 예제를 보지 않으므로 배치 크기가 1이어도 그대로 계산됩니다.`);
+    },
     // 7.4.2 running averages used at inference
     bnrunning() {
       const r = MF.rng(2), alpha = 0.9, T0 = 60;

@@ -85,6 +85,21 @@
       return G2(560, 380, '은닉 유닛 세 개로 네 함수를 근사', ps,
         R`$(-1,1)$에서 고르게 뽑은 50개 점(그림에는 절반만 표시)에 tanh 은닉 유닛 3개와 선형 출력을 가진 2층망을 제곱오차로 학습했습니다. 굵은 선이 망의 출력, 점선 세 개가 은닉 유닛의 출력 $z_j=\tanh(a_j)$입니다. 망은 이 셋에 가중치 $w_{kj}^{(2)}$를 곱해 더하고 편향을 더합니다. 매끄러운 함수는 거의 완벽히, 꺾인 점과 계단은 둥글게 근사합니다.`);
     },
+    // 6.2.3 logistic sigmoid and its inverse, the logit (slide 6); dashed: the scaled probit drawn on the slide's plot
+    sigmoidlogit() {
+      // erf by Abramowitz–Stegun 7.1.26 (error < 1.5e-7), enough for a plot
+      const erf = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); return Math.sign(x) * (1 - t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-x * x)); };
+      const lam = Math.sqrt(Math.PI / 8), probit = (a) => 0.5 * (1 + erf((lam * a) / Math.SQRT2));
+      return G2(560, 220, '로지스틱 시그모이드와 그 역함수인 로짓', [
+        { w: 280, h: 220, x: [-8, 8], y: [-0.06, 1.12], xl: 'a', title: 'σ(a) = 1/(1 + exp(−a))', m: [22, 10, 22, 30],
+          xt: [[-5, '−5'], [5, '5']], yt: [[0.5, '0.5'], [1, '1']], hg: [0.5, 1],
+          c: [{ f: sg, c: 'ld' }, { f: probit, c: 'rx ds' }],
+          extra: (X, Y) => legend(X(-7.4), Y(0.9), [['ld', 'σ(a)'], ['rx ds', 'Φ(λa), λ² = π/8']]) },
+        { w: 280, h: 220, ox: 280, x: [0, 1], y: [-6.5, 6.5], xl: 'σ', title: '로짓 a = ln(σ/(1 − σ))', m: [22, 10, 22, 30],
+          xt: [[0.5, '½'], [1, '1']], yt: [[-5, '−5'], [5, '5']], vg: [0.5, 1],
+          c: [{ f: (p) => Math.log(p / (1 - p)), a: 0.0015, b: 0.9985, c: 'ld' }] },
+      ], R`왼쪽: 시그모이드는 실수 전체를 $(0,1)$로 눌러 보냅니다. $\sigma(0)=\tfrac12$이고 $\sigma(-a)=1-\sigma(a)$라 점 $(0,\tfrac12)$에 대해 대칭이며, $\lvert a\rvert$가 5를 넘으면 거의 0이나 1에 붙어 평평해집니다(포화). 점선은 비교하려고 함께 그린, 척도를 맞춘 프로빗 함수 $\Phi(\lambda a)$(표준정규분포의 누적분포함수, $\lambda^2=\pi/8$)로, 시그모이드와 거의 겹칩니다. 오른쪽: 축을 바꾸어 그린 역함수 로짓은 확률 $\sigma\in(0,1)$을 실수로 되돌리며 $\sigma\to0$, $\sigma\to1$에서 $\mp\infty$로 갑니다.`);
+    },
     // 6.2.3 hidden-unit activation functions (Bishop Fig. 6.12)
     acts() {
       const al = 0.1;
@@ -194,6 +209,35 @@
       s += FK.T(tx, 190, '음성 쌍: 짝이 아닌 나머지', { a: 'start', c: 'em' });
       return FK.fig(560, 240, '대조 학습의 임베딩', s,
         R`표현을 $\lVert\mathbf f_{\mathbf w}(\mathbf x)\rVert=1$로 정규화하면 모든 점이 단위 (초)구 위에 놓이고 내적이 코사인 유사도가 됩니다. InfoNCE 손실은 기준과 양성 예를 서로 끌어당기고(가운데 두 화살표), 음성 예를 기준에서 밀어냅니다(바깥 화살표).`);
+    },
+    // 6.3.5 how the pairs are chosen (slides 22–23): instance discrimination, supervised CL, CLIP
+    cltypes() {
+      const panels = [
+        ['(a) 인스턴스 판별', ['f(x)', 'f(x⁺)', 'f(x⁻)'], [['사진', '고양이 A'], ['A를 회전', '색 변화'], ['사진', '자전거']], ['x', 'x⁺', 'x⁻'], '양성 = 같은 영상의 증강'],
+        ['(b) 지도 대조 학습', ['f(x)', 'f(x⁺)', 'f(x⁻)'], [['사진', '고양이 A'], ['사진', '고양이 B'], ['사진', '자전거']], ['x', 'x⁺', 'x⁻'], '양성 = 같은 클래스'],
+        ['(c) CLIP', ['f(x⁺)', 'g(y⁺)', 'g(y⁻)'], [['사진', '고양이'], ['캡션', '“고양이”'], ['캡션', '“자전거”']], ['x⁺', 'y⁺', 'y⁻'], '양성 = 영상과 그 캡션'],
+      ];
+      let s = '';
+      panels.forEach(([title, pl, boxes, names, note], i) => {
+        const ox = i * 187, cx = ox + 93, cy = 90, r = 54;
+        const [A, P, N] = [[cx - 24, cy - 20], [cx - 2, cy + 16], [cx + 30, cy - 6]];
+        s += FK.T(cx, 16, title, { c: 'em' }) + FK.C(cx, cy, r, 'sv');
+        boxes.forEach((lines, k) => {
+          const bx = ox + 5 + k * 60, mid = bx + 28, [px, py] = [A, P, N][k];
+          s += FK.R(bx, 170, 56, 38, 'sp') + lines.map((t, j) => FK.T(mid, 185 + j * 14, t, { s: 10 })).join('');
+          s += MF.link(mid, 168, px, py, 0, 7, 'ax', 6) + FK.T(mid, 224, names[k], { c: 'em' });
+        });
+        // pull the positive pair together, push the negative away
+        const m = [(A[0] + P[0]) / 2, (A[1] + P[1]) / 2];
+        s += MF.link(A[0], A[1], m[0], m[1], 7, 1, 'ld', 6) + MF.link(P[0], P[1], m[0], m[1], 7, 1, 'ld', 6);
+        const dx = N[0] - A[0], dy = N[1] - A[1], d = Math.hypot(dx, dy);
+        s += FK.A(N[0] + (7 * dx) / d, N[1] + (7 * dy) / d, N[0] + (20 * dx) / d, N[1] + (20 * dy) / d, 'rx', 6);
+        s += FK.C(A[0], A[1], 5, 'vlh') + FK.C(P[0], P[1], 5, 'ldh') + FK.C(N[0], N[1], 5, 'rxh');
+        s += FK.T(A[0] - 7, A[1] - 8, pl[0], { a: 'end', s: 10 }) + FK.T(P[0] + 9, P[1] + 12, pl[1], { a: 'start', s: 10, c: 'lb' }) + FK.T(N[0] - 2, N[1] - 11, pl[2], { s: 10, c: 'rl' });
+        s += FK.T(cx, 243, note, { s: 10 });
+      });
+      return FK.fig(562, 252, '양성·음성 쌍을 고르는 세 가지 방법', s,
+        R`세 방법 모두 InfoNCE 꼴의 손실로 기준과 양성 예를 끌어당기고(가운데로 모이는 화살표) 음성 예를 밀어냅니다(바깥으로 향하는 화살표). 다른 점은 무엇을 양성 쌍으로 삼는가입니다. (a) 같은 사진을 돌리거나 색을 바꾼 것끼리 양성이므로 레이블이 필요 없습니다(자기지도). (b) 클래스 레이블을 써서 같은 클래스의 다른 사진도 양성으로 삼습니다. 의미가 같은 두 사진을 음성으로 밀어내는 일이 없어집니다. (c) 영상망 $\mathbf f_{\mathbf w}$와 텍스트망 $\mathbf g_{\boldsymbol\theta}$ 두 망이 서로 다른 양식의 입력을 같은 임베딩 공간으로 보내고, 사진과 그 사진을 설명하는 캡션이 양성 쌍, 짝이 맞지 않는 캡션이 음성 쌍입니다.`);
     },
     // 6.3.6 general feed-forward topology (Bishop Fig. 6.15)
     dag() {

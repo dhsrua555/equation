@@ -18,8 +18,9 @@
         inner: MF.contour(E, [-2.8, 2.8], [-1.9, 1.9], [0.25, 0.4, 0.55, 0.7, 0.85, 1.0, 1.15, 1.3, 1.5], 80, 'dm'),
         extra: (X, Y) => FK.dot(X, Y, -1.2, 0.2) + FK.dot(X, Y, 1.1, -0.3) + FK.dot(X, Y, ...wc, true)
           + FK.A(X(wc[0]), Y(wc[1]), X(wc[0] + 0.7 * g[0] / gl), Y(wc[1] + 0.7 * g[1] / gl), 'rx', 8) + FK.A(X(wc[0]), Y(wc[1]), X(wc[0] - 0.7 * g[0] / gl), Y(wc[1] - 0.7 * g[1] / gl), 'ld', 8)
-          + T(X(-1.2), Y(0.2) - 10, 'w_A (국소 최소)', { s: 11 }) + T(X(1.1), Y(-0.3) + 18, 'w_B (전역 최소)', { s: 11 }) + T(X(wc[0] + 0.75 * g[0] / gl) + 4, Y(wc[1] + 0.75 * g[1] / gl), '∇E', { a: 'start', c: 'rl' }) + T(X(wc[0] - 0.75 * g[0] / gl) - 4, Y(wc[1] - 0.75 * g[1] / gl) + 12, '−∇E', { a: 'end', c: 'lb' }),
-        cap: R`등고선은 오차 $E(\mathbf w)$가 같은 점들입니다. 두 정류점($\nabla E=0$) 중 $\mathbf w_A$는 국소 최소, $\mathbf w_B$는 전역 최소입니다. 빈 점에서 기울기 $\nabla E$는 오차가 가장 빨리 커지는 방향(등고선에 수직)이므로 $-\nabla E$ 방향으로 조금 움직이면 $\delta E\simeq\delta\mathbf w^T\nabla E\lt0$입니다.` });
+          + T(X(-1.2), Y(0.2) - 10, 'w_A (국소 최소)', { s: 11 }) + T(X(1.1), Y(-0.3) + 18, 'w_B (전역 최소)', { s: 11 }) + T(X(wc[0]) + 9, Y(wc[1]) + 4, 'w_C', { a: 'start', s: 11 })
+          + T(X(wc[0] + 0.75 * g[0] / gl) + 4, Y(wc[1] + 0.75 * g[1] / gl), '∇E', { a: 'start', c: 'rl' }) + T(X(wc[0] - 0.75 * g[0] / gl) - 4, Y(wc[1] - 0.75 * g[1] / gl) + 12, '−∇E', { a: 'end', c: 'lb' }),
+        cap: R`등고선은 오차 $E(\mathbf w)$가 같은 점들입니다. 두 정류점($\nabla E=0$) 중 $\mathbf w_A$는 국소 최소, $\mathbf w_B$는 전역 최소입니다. 정류점이 아닌 점 $\mathbf w_C$(빈 점)에서 기울기 $\nabla E$는 오차가 가장 빨리 커지는 방향(등고선에 수직)이므로 $-\nabla E$ 방향으로 조금 움직이면 $\delta E\simeq\delta\mathbf w^T\nabla E\lt0$입니다.` });
     },
     // 7.2 batch, stochastic, mini-batch paths on the same quadratic
     sgdpaths() {
@@ -94,6 +95,16 @@
         c: [{ f: lin, c: 'ld' }, { f: pw, c: 'rx' }, { f: ex, c: 'vl ds' }],
         extra: (X, Y) => legend(X(52), Y(0.098), [['ld', '선형: η⁽⁰⁾ = 0.1 → η⁽ᴷ⁾ = 0.01'], ['rx', '거듭제곱: (1 + τ/10)^(−0.8)'], ['vl ds', '지수: 0.5^(τ/20)']]),
         cap: R`세 스케줄 모두 처음에는 큰 학습률로 빨리 내려가고 점점 줄여 최소점 근처에서 안정적으로 수렴하게 합니다. 선형 스케줄은 $K$단계 뒤 $\eta^{(K)}$로 고정되고, 거듭제곱($c\lt0$)과 지수($0\lt c\lt1$)는 계속 줄어듭니다.` });
+    },
+    // 7.3.2 learning curve: training and validation error per epoch (shape of the plot on slide 17)
+    lrcurve() {
+      const r = MF.rng(17), ep = Array.from({ length: 101 }, (_, t) => t);
+      const tr = ep.map((t) => [t, 0.42 + 0.6 * Math.exp(-t / 45) + 1.9 * Math.exp(-t / 3) + 0.12 * Math.exp(-t / 12) * Math.sin(0.9 * t) + 0.015 * MF.normal(r)]);
+      const va = ep.map((t) => [t, 1.0 + 1.6 * Math.exp(-t / 4) + 0.4 * Math.exp(-t / 14) * Math.sin(0.75 * t) + 1.1 * Math.exp(-((t - 2.5) ** 2) / 1.5) + 0.02 * MF.normal(r)]);
+      return G({ w: 560, h: 230, x: [0, 100], y: [0, 3.6], xl: '에폭', yl: '오차', label: '학습 곡선', m: [14, 16, 22, 34], xt: [0, 20, 40, 60, 80, 100].map((v) => [v, String(v)]), yt: [[0.5, '0.5'], [1, '1'], [2, '2'], [3, '3']],
+        c: [{ pts: tr, c: 'ld' }, { pts: va, c: 'rx' }],
+        extra: (X, Y) => legend(X(62), Y(3.25), [['ld', '훈련 오차'], ['rx', '검증 오차']]) + T(X(7), Y(3.0), '← 초반의 출렁임', { a: 'start', s: 11, c: 'rl' }) + T(X(98), Y(1.0) - 10, '검증 오차는 약 1에서 멈춤', { a: 'end', s: 11, c: 'rl' }) + T(X(98), Y(0.66), '훈련 오차는 계속 감소', { a: 'end', s: 11, c: 'lb' }),
+        cap: R`학습 곡선은 학습이 진행되는 동안(가로축: 에폭) 오차함수 값이 어떻게 변하는지 그린 것입니다(강의 슬라이드의 곡선 모양을 본떠 그렸습니다). 처음 몇 에폭은 오차가 빠르게 떨어지지만 큰 학습률 때문에 검증 오차가 튀어 오르며 출렁입니다. 그 뒤 훈련 오차는 천천히 계속 줄지만 검증 오차는 약 1에서 더 내려가지 않습니다. 이 곡선을 보며 오차가 적당한 속도로 줄고 있는지, 학습률을 언제 줄일지, 학습을 언제 멈출지를 판단합니다.` });
     },
     // 7.3.3 adaptive optimizers on an ill-conditioned quadratic with badly scaled axes
     adaptive() {

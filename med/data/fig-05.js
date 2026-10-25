@@ -14,14 +14,18 @@
       const py = (y) => px(g(y)) / (y * (1 - y));                  // |dg/dy| = 1/(y(1−y))
       let ym = 0.5, best = 0; for (let k = 1; k < 2000; k++) { const y = k / 2000; if (py(y) > best) { best = py(y); ym = y; } }
       const yOfMode = sg(6 - 5);
+      // histogram of transformed samples y = g⁻¹(x), x ~ N(6, 1): it follows p_y, not the naive substitution
+      const r = MF.rng(21), NS = 20000, NB = 40, hist = Array(NB).fill(0);
+      for (let n = 0; n < NS; n++) { const y = sg(6 + MF.normal(r) - 5); hist[Math.min(NB - 1, Math.floor(y * NB))]++; }
+      const bars = (X, Y) => hist.map((c, i) => { const h = (c * NB) / NS / best; return FK.R(X(i / NB), Y(h), X(1 / NB) - X(0), Y(0) - Y(h), 'ldh'); }).join('');
       return G2(560, 230, '밀도의 최빈값은 대응점으로 옮겨가지 않는다', [
         { w: 300, h: 230, x: [0, 10], y: [0, 1.05], xl: 'x', title: 'y = g⁻¹(x) = σ(x − 5)와 pₓ(x)', m: [22, 10, 22, 48], xt: [[5, '5'], [6, '6'], [10, '10']], yt: [[yOfMode, 'g⁻¹(6)'], [1, '1']], vg: [6], hg: [yOfMode],
           c: [{ f: (x) => sg(x - 5), c: 'ld' }, { f: (x) => 0.9 * px(x) / px(6), c: 'rx' }],
           extra: (X, Y) => T(X(8.7), Y(0.92), 'g⁻¹', { c: 'lb' }) + T(X(7.6), Y(0.5), 'pₓ', { c: 'rl' }) },
-        { w: 260, h: 230, ox: 300, x: [0, 1], y: [0, 1.1], xl: 'y', title: 'p_y(y) = pₓ(g(y)) |g′(y)|', m: [22, 10, 22, 16], xt: [[ym, ym.toFixed(2)], [yOfMode, yOfMode.toFixed(2)]], yt: [], vg: [ym, yOfMode],
-          c: [{ f: (y) => py(y) / best, c: 'rx' }, { f: (y) => px(g(y)) / px(6), c: 'dm ds' }],
-          extra: (X, Y) => T(X(0.2), Y(0.95), '야코비안 포함', { c: 'rl', a: 'start' }) + T(X(0.2), Y(0.83), '(점선: 단순 대입)', { a: 'start', s: 11 }) },
-      ], R`$p_x=\N(6,1)$을 $x=g(y)=\ln\frac y{1-y}+5$로 바꿉니다. 단순 대입 $p_x(g(y))$(점선)이면 최빈값이 $g^{-1}(6)=\sigma(1)\approx0.73$으로 옮겨가지만, 야코비안 $\lvert g'(y)\rvert=\frac1{y(1-y)}$을 곱한 실제 밀도 $p_y$의 최빈값은 약 $${ym.toFixed(2)}$입니다. 밀도는 보통 함수와 달리 변수를 바꾸면 모양 자체가 바뀝니다.`);
+        { w: 260, h: 230, ox: 300, x: [0, 1], y: [0, 1.1], xl: 'y', title: 'p_{y}(y) = pₓ(g(y)) |g′(y)|', m: [22, 10, 22, 16], xt: [[ym, ym.toFixed(2)], [yOfMode, yOfMode.toFixed(2)]], yt: [], vg: [ym, yOfMode],
+          inner: (X, Y) => bars(X, Y) + MF.poly(X, Y, Array.from({ length: 400 }, (_, k) => { const y = (k + 0.5) / 400; return [y, px(g(y)) / px(6)]; }), 'dm ds') + MF.poly(X, Y, Array.from({ length: 400 }, (_, k) => { const y = (k + 0.5) / 400; return [y, py(y) / best]; }), 'rx'),
+          extra: (X, Y) => T(X(0.2), Y(0.95), '야코비안 포함', { c: 'rl', a: 'start' }) + T(X(0.2), Y(0.83), '(점선: 단순 대입)', { a: 'start', s: 11 }) + T(X(0.2), Y(0.71), '(막대: 변환한 표본)', { a: 'start', s: 11 }) },
+      ], R`$p_x=\N(6,1)$을 $x=g(y)=\ln\frac y{1-y}+5$로 바꿉니다. 단순 대입 $p_x(g(y))$(점선)이면 최빈값이 $g^{-1}(6)=\sigma(1)\approx0.73$으로 옮겨가지만, 야코비안 $\lvert g'(y)\rvert=\frac1{y(1-y)}$을 곱한 실제 밀도 $p_y$의 최빈값은 약 $${ym.toFixed(2)}$입니다. 막대는 $p_x$에서 뽑은 표본 2만 개를 하나하나 $y=g^{-1}(x)$로 옮겨 만든 히스토그램인데, 점선이 아니라 야코비안을 곱한 곡선과 겹칩니다. 밀도는 보통 함수와 달리 변수를 바꾸면 모양 자체가 바뀝니다.`);
     },
     // 2.4.1 a 2-D nonlinear transformation of a grid and of Gaussian samples (slide 31)
     flow2d() {
@@ -42,6 +46,19 @@
         inner: (X, Y) => grid(map)(X, Y) + MF.dots(X, Y, pts.map(map).filter((p) => Math.abs(p[0]) < lim && Math.abs(p[1]) < lim)) });
       return G2(560, 240, '2차원 비선형 변환', [P(id, 'x: 격자와 가우시안 표본', 0, 1.6), P(f, 'y₁ = x₁ + tanh 5x₁,  y₂ = x₂ + tanh 5x₂ + x₁³/3', 280, 2.6)],
         R`왼쪽의 곧은 격자와 가우시안 표본이 변환 뒤(오른쪽)에는 가운데가 벌어진 네 덩어리로 갈라집니다. 격자 칸의 넓이가 변한 비율이 $\lvert\det\mathbf J\rvert$이고, 칸이 늘어난 곳은 밀도가 그만큼 낮아집니다. 이런 가역 변환을 여러 번 쌓는 것이 정규화 흐름입니다.`);
+    },
+    // 2.4.1 the same map acting on the density itself (slide 31, middle column): p_y = p_x / |det ∂y/∂x|
+    flowdens() {
+      const s2 = 0.25, px = (a, b) => Math.exp(-(a * a + b * b) / (2 * s2)) / (2 * Math.PI * s2);
+      const d = (u) => 1 + 5 * (1 - Math.tanh(5 * u) ** 2);            // d/du (u + tanh 5u)
+      const inv = (v) => { let lo = -6, hi = 6; for (let k = 0; k < 50; k++) { const m = (lo + hi) / 2; if (m + Math.tanh(5 * m) < v) lo = m; else hi = m; } return (lo + hi) / 2; };
+      const py = (y1, y2) => { const x1 = inv(y1), x2 = inv(y2 - x1 ** 3 / 3); return px(x1, x2) / (d(x1) * d(x2)); };
+      let top = 0; for (let i = 0; i <= 80; i++) for (let j = 0; j <= 80; j++) top = Math.max(top, py(-2.6 + (5.2 * i) / 80, -2.6 + (5.2 * j) / 80));
+      const lv = [0.06, 0.25, 0.5, 0.8];
+      const P = (f, mx, lab, ox, lim) => ({ w: 280, h: 240, ox, x: [-lim, lim], y: [-lim, lim], title: lab, m: [22, 10, 10, 10], xt: [], yt: [], axes: false,
+        inner: (X, Y) => FK.R(X(-lim), Y(lim), X(lim) - X(-lim), Y(-lim) - Y(lim), 'dm') + MF.contour(f, [-lim, lim], [-lim, lim], lv.map((v) => v * mx), 70, 'rx')(X, Y) });
+      return G2(560, 240, '같은 변환을 밀도에 적용하면', [P(px, px(0, 0), 'pₓ(x): 가우시안 밀도의 등고선', 0, 1.6), P(py, top, 'p_{y}(y) = pₓ(x) / |det(∂y/∂x)|', 280, 2.6)],
+        R`왼쪽은 $\mathbf x\sim\N(\mathbf 0,\,0.25\mathbf I)$의 등고선(동심원), 오른쪽은 변환 뒤의 밀도입니다. $\partial y_i/\partial x_i=1+5\,\mathrm{sech}^2(5x_i)$는 원점에서 6까지 커지므로 원점 근처의 공간이 크게 늘어나고, 그만큼 밀도가 낮아져 가운데가 비고 네 귀퉁이에 봉우리가 생깁니다. 앞 그림에서 변환한 표본이 모인 네 덩어리와 같은 자리입니다. 슬라이드의 식 $p_{\mathbf y}=p_{\mathbf x}\lvert\det\mathbf J\rvert$에서 $\mathbf J=\partial\mathbf x/\partial\mathbf y$이므로 $\lvert\det\mathbf J\rvert=1/\lvert\det(\partial\mathbf y/\partial\mathbf x)\rvert$입니다.`);
     },
     // 2.5.1 entropy of a peaked and a broad histogram (slide 34)
     entropyhist() {

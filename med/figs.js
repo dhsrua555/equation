@@ -45,22 +45,6 @@
     <text x="470" y="115" text-anchor="middle">⋮</text>
   </svg><figcaption>검은 화살표는 순전파($a_j=\\sum_iw_{ji}z_i$), 색 화살표는 오차의 역전파입니다. 은닉 유닛의 오차는 다음 층 오차의 가중합에 활성화 함수의 기울기를 곱한 것입니다.</figcaption></figure>`;
 
-  // batch normalization vs layer normalization axes
-  F.bnln = () => {
-    const grid = (x0, y0, hl) => {
-      let s = '';
-      for (let i = 0; i < 5; i++) for (let j = 0; j < 4; j++) s += `<rect class="${hl(i, j) ? 'rg hl' : 'rg'}" x="${x0 + j * 30}" y="${y0 + i * 26}" width="28" height="24"/>`;
-      return s;
-    };
-    return `<figure class="fig"><svg viewBox="0 0 560 230" role="img" aria-label="배치 정규화와 층 정규화가 평균을 내는 방향">
-      ${grid(60, 50, (i) => i === 1)}${grid(340, 50, (i, j) => j === 2)}
-      <text x="120" y="36" text-anchor="middle">미니배치 →</text><text x="400" y="36" text-anchor="middle">미니배치 →</text>
-      <text x="50" y="118" text-anchor="end">은닉 유닛</text><text x="330" y="118" text-anchor="end">은닉 유닛</text>
-      <text class="em" x="120" y="205" text-anchor="middle">BatchNorm: 유닛마다 배치 전체로</text>
-      <text class="em" x="400" y="205" text-anchor="middle">LayerNorm: 샘플마다 유닛 전체로</text>
-    </svg><figcaption>칠한 칸이 평균·분산 하나를 계산하는 데 쓰이는 값들입니다. BN은 은닉 유닛마다 미니배치에 걸쳐, LN은 샘플마다 은닉 유닛에 걸쳐 통계량을 구합니다.</figcaption></figure>`;
-  };
-
   // chain of residual blocks
   F.residual = () => {
     const block = (x, lab) => `<rect class="rg hl" x="${x}" y="95" width="80" height="44" rx="8"/><text class="em" x="${x + 40}" y="122" text-anchor="middle">${lab}</text>`;

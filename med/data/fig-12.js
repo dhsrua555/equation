@@ -43,6 +43,68 @@
           extra: (X, Y) => T(X(0.95), Y(3.6), '가중치 감쇠', { s: 10.5, a: 'end' }) },
       ], R`왼쪽: 세 군집($\mu_1,\mu_2,\mu_3$)으로 된 혼합 가우시안 사전분포와, 이 규제로 학습한 가중치들(아래 짧은 선)이 군집 중심 근처로 모인 모습. 오른쪽: 규제항 $\Omega(w)=-\ln p(w)$는 골짜기가 셋이라 각 가중치를 **가장 가까운 군집 중심** 쪽으로 끌어당깁니다. 가중치 감쇠(점선)는 모든 가중치를 0 하나로만 끌어당깁니다.`);
     },
+    // 9.4 weight sharing in a small CNN: 6×6 input, 3×3 convolution, 2×2 pooling, fully connected
+    share2d() {
+      const c = 20;
+      const grid = (x, y, n, hl) => { let o = ''; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) o += FK.R(x + j * c, y + i * c, c - 2, c - 2, hl(i, j) ? 'rg hl' : 'rg'); return o; };
+      const cam = (x, y, w, h) => `<rect class="rxh" x="${x}" y="${y}" width="${w}" height="${h}" style="fill-opacity:0.42"/>`;
+      const ix = 20, iy = 40, fx = 200, fy = 60, px = 320, py = 80;
+      // input: patch A (rows 0–2, cols 0–2) and patch B (rows 2–4, cols 3–5) go through the same 3×3 filter
+      let s = grid(ix, iy, 6, (i, j) => i < 3 && j < 3) + cam(ix + 3 * c, iy + 2 * c, 3 * c - 2, 3 * c - 2);
+      s += FK.R(ix, iy, 3 * c - 2, 3 * c - 2, 'sv') + FK.R(ix + 3 * c, iy + 2 * c, 3 * c - 2, 3 * c - 2, 'sv');
+      // feature map 4×4: unit (0,0) from patch A, unit (2,3) from patch B
+      s += FK.L(ix + 3 * c - 2, iy, fx, fy, 'dm') + FK.L(ix + 3 * c - 2, iy + 3 * c - 2, fx, fy + c - 2, 'dm');
+      s += FK.L(ix + 6 * c - 2, iy + 2 * c, fx + 3 * c, fy + 2 * c, 'rx') + FK.L(ix + 6 * c - 2, iy + 5 * c - 2, fx + 3 * c, fy + 3 * c - 2, 'rx');
+      s += grid(fx, fy, 4, (i, j) => i === 0 && j === 0) + cam(fx + 3 * c, fy + 2 * c, c - 2, c - 2);
+      // 2×2 max pooling: each output takes the largest of a 2×2 block
+      s += FK.L(fx + 2 * c - 2, fy, px, py, 'dm') + FK.L(fx + 2 * c - 2, fy + 2 * c - 2, px, py + c - 2, 'dm');
+      s += grid(px, py, 2, (i, j) => i === 0 && j === 0) + cam(px + c, py + c, c - 2, c - 2);
+      // fully connected output
+      [[0, 0], [0, 1], [1, 0], [1, 1]].forEach(([i, j]) => { s += FK.L(px + j * c + 9, py + i * c + 9, 440, 99, 'ax'); });
+      s += FK.C(440, 99, 11, 'nd');
+      s += T(ix + 3 * c, 182, '입력 6×6', { c: 'em' }) + T(fx + 2 * c, 182, '특징 맵 4×4', { c: 'em' }) + T(px + c, 182, '풀링 2×2', { c: 'em' }) + T(440, 182, '완전연결', { c: 'em' });
+      s += T(ix + 3 * c, 198, '3×3 패치 두 개', { s: 10.5 }) + T(fx + 2 * c, 198, '같은 3×3 필터', { s: 10.5 }) + T(px + c, 198, '2×2 최대 풀링', { s: 10.5 }) + T(440, 198, '출력', { s: 10.5 });
+      s += T(280, 226, '독립 모수: 공유하면 10개 (가중치 9 + 편향 1), 공유하지 않으면 16 × 10 = 160개', { s: 11 });
+      return FK.fig(560, 236, 'CNN의 가중치 공유', s,
+        R`$6\times6$ 영상에 $3\times3$ 필터를 한 칸씩 미끄러뜨리면 $6-3+1=4$이므로 $4\times4$ 특징 맵이 나옵니다. 파란 패치와 주황 패치는 위치가 다르지만 **같은 9개 가중치**로 가중합되어 각각 특징 맵의 파란·주황 유닛이 됩니다. 그래서 이 층의 독립 모수는 가중치 9개와 편향 1개뿐입니다. 이어서 $2\times2$ 최대 풀링이 블록마다 가장 큰 값을 골라 $2\times2$로 줄이고, 완전연결층이 넷을 모아 출력을 냅니다.`);
+    },
+    // 9.5 error surfaces without and with residual connections (contour sketch after Li et al. 2017, Bishop Fig. 9.14)
+    losssurf() {
+      const rough = (x, y) => 0.3 * (x * x + y * y) + 0.35 * Math.sin(3.1 * x + 0.4) * Math.cos(2.7 * y) + 0.25 * Math.sin(5.3 * x - 2.1 * y) + 0.2 * Math.cos(4.6 * y + 1.7 * x) + 0.12 * Math.sin(7 * x) * Math.sin(6 * y);
+      const smooth = (x, y) => 0.3 * (x * x + y * y) + 0.04 * x * (x * x + y * y);
+      const cls = (li) => (li < 3 ? 'ld' : 'dm');
+      const P = (f, lv, t, ox, extra) => ({ w: 280, h: 240, ox, x: [-2, 2], y: [-2, 2], title: t, m: [22, 36, 10, 36], xt: [], yt: [], axes: false,
+        inner: MF.contour(f, [-2, 2], [-2, 2], lv, 80, cls), extra: (X, Y) => FK.R(X(-2), Y(2), X(2) - X(-2), Y(-2) - Y(2), 'dm') + (extra ? extra(X, Y) : '') });
+      return G2(560, 240, '잔차 연결과 오차 곡면', [
+        P(rough, [-0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.8, 1.1, 1.5, 2], '잔차 연결 없음 (56층)', 0),
+        P(smooth, [0.04, 0.12, 0.25, 0.42, 0.62, 0.86, 1.15, 1.5, 1.9], '잔차 연결 있음', 280, (X, Y) => FK.dot(X, Y, 0, 0)),
+      ], R`교재 그림 9.14는 56층 망의 오차 곡면을 매개변수 공간의 두 방향으로 자른 단면을 입체로 그린 것입니다(Li et al., 2017). 여기서는 같은 모양을 등고선 개념도로 다시 그렸습니다(진한 선일수록 낮은 오차). 잔차 연결이 없으면(왼쪽) 작은 골짜기와 봉우리가 어지럽게 흩어져 기울기가 자리마다 크게 달라지고, 경사하강이 엉뚱한 골짜기에 갇히거나 튀기 쉽습니다. 같은 망에 잔차 연결을 넣으면(오른쪽) 곡면이 바닥(점) 하나인 매끄러운 그릇 모양이 되어 기울기를 따라 내려가기만 하면 됩니다.`);
+    },
+    // 9.5 residual network unravelled into parallel paths (Bishop Fig. 9.15)
+    resunroll() {
+      const r1 = 30, r2 = 78, rx = 120, r4 = 162, r5 = 208, bot = 228, bus = 56;
+      const blk = (x, y, t) => FK.R(x, y - 12, 54, 24, 'bm2') + FK.R(x, y - 12, 54, 24, 'sv') + T(x + 27, y + 4, t, { s: 11, c: 'em' });
+      const plus = (x, y) => FK.C(x, y, 8, 'sp') + T(x, y + 4, '+', { s: 11, c: 'em' });
+      const lab = (x, y, t) => T(x + 10, y - 10, t, { a: 'start', s: 10.5 });
+      let s = T(20, rx + 4, 'x', { c: 'em' }) + FK.L(28, rx, bus, rx, 'ax') + FK.L(bus, r1, bus, bot, 'ax');
+      [r1, r2, r4, r5].forEach((y) => { s += FK.A(bus, y, 80, y, 'ax', 6) + blk(80, y, 'F₁'); });
+      // rows 1 and 4: F₁(x) + x = z₁ → F₂ → + z₁ = z₂
+      [r1, r4].forEach((y) => {
+        s += FK.A(134, y, 152, y, 'ax', 6) + plus(160, y) + FK.L(bus, y + 20, 160, y + 20, 'ax') + FK.A(160, y + 20, 160, y + 8, 'ax', 6) + lab(160, y, 'z₁');
+        s += FK.A(168, y, 182, y, 'ax', 6) + blk(182, y, 'F₂') + FK.A(236, y, 256, y, 'ax', 6) + plus(264, y) + lab(264, y, 'z₂');
+      });
+      // rows 2 and 5: F₁(x) + x = z₁, fed up into the plus above
+      [[r2, r1, rx], [r5, r4, bot]].forEach(([y, yu, yd]) => {
+        s += FK.A(134, y, 256, y, 'ax', 6) + plus(264, y) + lab(264, y, 'z₁') + FK.A(264, y - 8, 264, yu + 8, 'ax', 6);
+        s += FK.L(bus, yd, 264, yd, 'ax') + FK.A(264, yd, 264, y + 8, 'ax', 6);
+      });
+      // top branch F₃(z₂), lower branch z₂, summed into y
+      s += FK.A(272, r1, 288, r1, 'ax', 6) + blk(288, r1, 'F₃') + FK.L(342, r1, 400, r1, 'ax') + FK.A(400, r1, 400, rx - 8, 'ax', 6) + T(371, r1 - 6, 'F₃(z₂)', { s: 10.5 });
+      s += FK.L(272, r4, 400, r4, 'ax') + FK.A(400, r4, 400, rx + 8, 'ax', 6);
+      s += plus(400, rx) + FK.A(408, rx, 440, rx, 'ax', 6) + T(448, rx + 4, 'y', { a: 'start', c: 'em' }) + T(540, rx + 28, 'y = F₃(z₂) + z₂', { a: 'end', s: 10.5 });
+      return FK.fig(560, 240, '펼친 잔차망', s,
+        R`세 블록짜리 잔차망을 펼친 그림(교재 그림 9.15)입니다. 맨 위 줄은 $F_3(\mathbf z_2)$를, 아래 두 줄은 $\mathbf z_2=F_2(\mathbf z_1)+\mathbf z_1$을 계산하고, 오른쪽 덧셈이 $\mathbf y=F_3(\mathbf z_2)+\mathbf z_2$를 만듭니다. 이름이 같은 블록은 같은 함수(같은 가중치)라 실제 계산량이 늘지는 않으며, 펼친 그림은 입력에서 출력까지 블록을 0개부터 3개까지 지나는 여러 경로가 **나란히 계산되어 더해지는** 구조를 보여 줍니다. 깊은 경로는 표현력을, 얕은 경로(맨 아래 $\mathbf x$ 직통까지)는 쉬운 기울기 전파를 맡습니다.`);
+    },
     // 9.5 shattered gradients: derivative of the network output w.r.t. its input
     shattered() {
       const xs = Array.from({ length: 241 }, (_, k) => -2 + (4 * k) / 240);

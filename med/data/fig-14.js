@@ -95,6 +95,26 @@
       return FK.fig(560, 196, '비최대 억제', s,
         R`예제 5의 상자들입니다. 점수 0.40인 상자는 문턱에서 버리고, 최고 점수 0.95를 확정한 뒤 그것과 IoU가 0.5를 넘는 0.91·0.75 상자를 버립니다. 다른 사람을 가리키는 0.81 상자는 겹치지 않으므로 두 번째 검출로 남습니다.`);
     },
+    // 10.4.4 detection across scales: rescale the image, keep the window fixed
+    multiscale() {
+      const win = 32;
+      // one copy of the scene (frame 120×80, person 16×48 at (20,14), cat 48×16 at (60,56)) scaled by sx, sy
+      const scene = (x0, y0, sx, sy, fit) => {
+        const P = [x0 + 20 * sx, y0 + 14 * sy, 16 * sx, 48 * sy], Cc = [x0 + 60 * sx, y0 + 56 * sy, 48 * sx, 16 * sy];
+        let o = FK.R(x0, y0, 120 * sx, 80 * sy, 'sv') + FK.R(...P, 'rg hl') + FK.R(...Cc, 'bm');
+        // person label above it in the original, beside it in the stretched copies (where above would hit the frame)
+        o += fit ? T(P[0] + P[2] + 4, P[1] + P[3] / 2 + 4, '사람', { a: 'start', s: 10.5 }) : T(P[0] + P[2] / 2, P[1] - 4, '사람', { s: 10.5 });
+        o += T(Cc[0] + Cc[2] / 2, Cc[1] - 4, '고양이', { s: 10.5 });
+        const t = fit === 'p' ? P : fit === 'c' ? Cc : [P[0] + P[2] / 2 - win / 2, P[1] + P[3] / 2 - win / 2];
+        return o + FK.R(t[0] - 1, t[1] - 1, win + 2, win + 2, 'rx ds');
+      };
+      let s = scene(16, 50, 1, 1, '') + scene(160, 50, 2, 2 / 3, 'p') + scene(424, 50, 2 / 3, 2, 'c');
+      s += T(76, 30, '원래 영상', { c: 'em' }) + T(280, 30, '가로 ×2, 세로 ×2/3', { c: 'em' }) + T(464, 30, '가로 ×2/3, 세로 ×2', { c: 'em' });
+      s += T(76, 154, '창이 맞는 물체가 없음', { s: 11 }) + T(280, 124, '사람이 창에 꼭 맞음', { s: 11, c: 'lb' }) + T(464, 226, '고양이가 창에 꼭 맞음', { s: 11, c: 'rl' });
+      s += FK.legend(16, 196, [['rx ds', '고정된 검출 창(세 영상 모두 같은 크기)']]);
+      return FK.fig(560, 236, '척도에 걸친 검출', s,
+        R`세로로 긴 사람과 가로로 긴 고양이를 정사각형 창 하나(점선)로 찾으려면 창을 바꾸는 대신 **영상을** 바꿉니다. 가로로 늘이고 세로로 줄이면 사람이, 반대로 하면 고양이가 창에 꼭 맞습니다. 찾은 상자는 배율을 거꾸로 적용해 원래 영상의 좌표로 되돌립니다.`);
+    },
     // 10.5 encoder–decoder for segmentation
     encdec() {
       const hs = [150, 110, 76, 50, 76, 110, 150], ws = [14, 18, 22, 26, 22, 18, 14];
@@ -137,6 +157,22 @@
       s += T(282, 214, '패딩', { s: 10.5 }) + T(502, 214, '패딩', { s: 10.5 });
       return FK.fig(560, 226, '1차원 전치 합성곱', s,
         R`필터 $(1,2,3)$을 입력 한 칸마다 곱해 출력에 뿌리고, 입력이 한 칸 갈 때 출력은 두 칸 갑니다. 셋째 칸(칠한 칸)에서 두 무늬가 겹쳐 $6+1=7$이 됩니다. 결과 $(2,4,7,2,3,0)=\mathbf A^T\mathbf z$이고, 양 끝은 원래 합성곱의 패딩 자리입니다.`);
+    },
+    // 10.5.3 transpose convolution in 2-D: 2×2 input, 3×3 filter, output stride 2 → 5×5 (number = patterns added in that cell)
+    tconv2d() {
+      const c = 34, x0 = 196, y0 = 30, cnt = (i) => (i === 2 ? 2 : 1);
+      let s = MF.numgrid(30, 82, 40, [['z₁₁', 'z₁₂'], ['z₂₁', 'z₂₂']], { hl: () => true, s: 11 }) + T(69, 70, '입력 2×2', { c: 'em' });
+      s += FK.A(120, 120, 180, 120, 'ax', 8) + T(150, 110, '보폭 2', { s: 10.5 });
+      s += MF.numgrid(x0, y0, c, Array.from({ length: 5 }, (_, i) => Array.from({ length: 5 }, (_, j) => String(cnt(i) * cnt(j)))), { hl: (i, j) => i === 2 || j === 2, s: 11 });
+      // the 3×3 footprint of each input cell, inset a little so the four outlines stay apart
+      [[0, 0, 'ld', 2], [0, 1, 'rx', 4], [1, 0, 'vl ds', 4], [1, 1, 'ld ds', 2]].forEach(([p, q, cl, d]) => { s += FK.R(x0 + 2 * q * c + d, y0 + 2 * p * c + d, 3 * c - 2 - 2 * d, 3 * c - 2 - 2 * d, cl); });
+      s += T(x0 + 1.5 * c, y0 - 6, 'z₁₁의 무늬', { s: 10.5, c: 'lb' }) + T(x0 + 3.5 * c, y0 - 6, 'z₁₂의 무늬', { s: 10.5, c: 'rl' });
+      s += T(x0 + 1.5 * c, y0 + 5 * c + 14, 'z₂₁의 무늬', { s: 10.5, c: 'em' }) + T(x0 + 3.5 * c, y0 + 5 * c + 14, 'z₂₂의 무늬', { s: 10.5, c: 'lb' });
+      const tx = 390;
+      s += T(tx, 56, '출력 5×5', { a: 'start', c: 'em' }) + T(tx, 80, '(J − 1)S + M', { a: 'start', s: 11 }) + T(tx, 98, '= (2 − 1)·2 + 3 = 5', { a: 'start', s: 11 });
+      s += T(tx, 130, '숫자 = 겹친 무늬 수', { a: 'start', s: 11 }) + T(tx, 150, '1: 한 무늬의 값', { a: 'start', s: 11 }) + T(tx, 170, '2, 4: 더하거나 평균', { a: 'start', s: 11 });
+      return FK.fig(560, 226, '2차원 전치 합성곱', s,
+        R`입력 네 칸이 저마다 $3\times3$ 필터 무늬에 자기 값을 곱해 출력에 찍습니다. 입력이 한 칸 갈 때 출력은 두 칸 가므로 무늬들은 가운데 행과 열(칠한 칸)에서 겹치고, 한가운데 칸에는 무늬 네 개가 모입니다. 겹친 칸은 기여를 더하거나 평균합니다. 필터 값은 학습되므로 어떻게 해상도를 되살릴지를 자료에서 배웁니다.`);
     },
     // 10.5.4 U-net
     unet() {
