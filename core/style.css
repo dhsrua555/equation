@@ -382,6 +382,12 @@ body[data-view="home"] main { padding-top: 0; }
 .band .section-head .caps { color: var(--camel); }
 .band .lede { color: var(--band-ink-2); }
 .exam-rows { border-top: 1px solid var(--band-rule); }
+.exam-group { margin: 34px 0 14px; }
+.exam-group:first-child { margin-top: 0; }
+.exam-group h3 { font-family: var(--f-serif); font-size: 1.25rem; font-weight: 600; }
+.exam-group p { margin-top: 4px; font-size: 0.92rem; color: var(--ink-2); max-width: 70ch; }
+.band .exam-group p { color: var(--band-ink-2); }
+.quiz-more-group { margin: 22px 0 8px; font-family: var(--f-serif); font-size: 1.05rem; font-weight: 600; }
 .exam-row {
   display: grid; grid-template-columns: 90px 1fr auto auto; gap: 20px; align-items: center;
   width: 100%; padding: 22px 0; border: 0; border-bottom: 1px solid var(--band-rule);

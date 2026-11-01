@@ -4,7 +4,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
   const R = String.raw;
   EM.exams.push(
   {
-    id: 'x1', roman: 'I', kind: '1–2주차 범위', title: '회귀, 확률, 정보이론, 커널', scopeText: '01–04 단원',
+    id: 'x1', roman: 'I', group: '1–5주차 범위', kind: '1–2주차 범위', title: '회귀, 확률, 정보이론, 커널', scopeText: '01–04 단원',
     desc: '정규방정식, MLE·MAP·베이즈 사후분포, KL과 상호정보량, 릿지와 커널 릿지. 필기 증명을 재현할 수 있는지 봅니다.',
     minutes: 90, plot: 'beta',
     problems: [
@@ -60,7 +60,7 @@ $\hat\theta_{\text{MAP}}=\argmin[-\log p(D\mid\theta)-\log p(\theta)]$: 첫 항�
     ],
   },
   {
-    id: 'x2', roman: 'II', kind: '3주차 범위', title: '로지스틱, 소프트맥스, SVM, 신경망', scopeText: '05–08 단원',
+    id: 'x2', roman: 'II', group: '1–5주차 범위', kind: '3주차 범위', title: '로지스틱, 소프트맥스, SVM, 신경망', scopeText: '05–08 단원',
     desc: '선형 분류기의 손실·기울기·볼록성, SVM의 마진과 쌍대 문제, 신경망의 구조. 3주차 필기 증명 위주입니다.',
     minutes: 90, plot: 'margin',
     problems: [
@@ -114,7 +114,7 @@ $C=2$: $p_1=\frac1{1+e^{-(z_1-z_2)}}=\sigma((w_1-w_2)^Tx)$.` },
     ],
   },
   {
-    id: 'x3', roman: 'III', kind: '중간고사형 · 1–4주차 종합', title: '유도와 증명 종합', scopeText: '01–13 단원',
+    id: 'x3', roman: 'III', group: '1–5주차 범위', kind: '중간고사형 · 1–4주차 종합', title: '유도와 증명 종합', scopeText: '01–13 단원',
     desc: '1–4주차 전 범위. 필기로 증명한 정리(정규방정식, KL, 푸시스루, SVM, Xavier/He, 하강 보조정리)를 처음부터 쓸 수 있는지 봅니다.',
     minutes: 120, plot: 'descent',
     problems: [

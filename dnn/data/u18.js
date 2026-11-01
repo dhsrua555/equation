@@ -382,7 +382,7 @@ $$|f(x)-f(y)|\le\int|\hat f(\xi)|\,2\pi|\xi||x-y|\,d\xi=|x-y|\int|2\pi\xi||\hat 
         sol: R`정리는 근사 오차의 **존재** 결과이고 $d$는 상수 $C$ 안에 숨을 수 있습니다(가우시안의 $C\approx\sqrt{2\pi d}$). 최적화나 일반화에 대해서는 말하지 않습니다.` },
       { sec: '18.3', type: 'num', lv: 2, q: R`$H=\mathbb R^2$, $G=\{(1,0),(0,1)\}$, $f^*=(\frac12,\frac12)$이고 $X_1,\dots,X_N$이 $G$에서 각각 확률 $\frac12$로 독립으로 뽑힐 때, $N=10$이면 $\E\lVert f^*-\frac1N\sum_jX_j\rVert^2$은?`, ans: '1/20', ansTex: R`\frac1{20}`,
         sol: R`$\frac1N(\E\lVert X_1\rVert^2-\lVert f^*\rVert^2)=\frac1{10}(1-\frac12)=\frac1{20}$. 직접 계산해도 $2\Var(K/N)=2\cdot\frac1{4N}=\frac1{20}$ ($K\sim\operatorname{Bin}(10,\frac12)$).` },
-      { sec: '18.3', type: 'open', lv: 3, proof: true, q: R`Maurey 보조정리를 증명하세요: 힐베르트 공간 $H$의 부분집합 $G$의 원소가 모두 $\lVert g\rVert\le B$이고 $f\in\overline{\operatorname{co}}(G)$이면, 모든 $N$과 $c>B^2$에 대해 $\lVert f-\frac1N\sum_{i=1}^Ng_i\rVert^2\le\frac cN$인 $g_1,\dots,g_N\in G$가 있다.`,
+      { sec: '18.3', type: 'open', lv: 3, quiz: true, proof: true, q: R`Maurey 보조정리를 증명하세요: 힐베르트 공간 $H$의 부분집합 $G$의 원소가 모두 $\lVert g\rVert\le B$이고 $f\in\overline{\operatorname{co}}(G)$이면, 모든 $N$과 $c>B^2$에 대해 $\lVert f-\frac1N\sum_{i=1}^Ng_i\rVert^2\le\frac cN$인 $g_1,\dots,g_N\in G$가 있다.`,
         sol: R`**근사점.** $\varepsilon>0$에 대해 $f^*=\sum_{j=1}^m\alpha_jh_j$ ($h_j\in G$, $\alpha_j\ge0$, $\sum\alpha_j=1$), $\lVert f-f^*\rVert<\varepsilon$.
 **무작위 뽑기.** $X_1,\dots,X_N$ i.i.d., $\mathbb P(X_i=h_j)=\alpha_j$. 그러면 $\E X_i=f^*$.
 **분산 계산.** $\E\lVert f^*-\frac1N\sum_jX_j\rVert^2=\frac1{N^2}\big[\sum_j\E\lVert f^*-X_j\rVert^2+\sum_{i\ne j}\E\langle f^*-X_i,f^*-X_j\rangle\big]$. 독립이라 $\E\langle X_i,X_j\rangle=\lVert f^*\rVert^2$이고 교차항은 $\lVert f^*\rVert^2-\lVert f^*\rVert^2-\lVert f^*\rVert^2+\lVert f^*\rVert^2=0$. 남은 것은 $\frac1N\E\lVert f^*-X_1\rVert^2=\frac1N(\E\lVert X_1\rVert^2-\lVert f^*\rVert^2)\le\frac{B^2}N$.
@@ -423,7 +423,7 @@ $$|f(x)-f(y)|\le\int|\hat f(\xi)|\,2\pi|\xi||x-y|\,d\xi=|x-y|\int|2\pi\xi||\hat 
         sol: R`점별 수렴이 부피 0인 집합 밖에서 성립하고 차가 유계이므로 지배수렴정리에서 $L^2$ 수렴합니다. 초평면 근처에서는 균등하지 않습니다.` },
       { sec: '18.5', type: 'num', lv: 2, q: R`$C=\frac12$인 바론 함수를 평균 제곱 오차 $0.001$ 이하로 근사할 때, 정리 1이 보장하는 최소 뉴런 수는?`, ans: '1001', ansTex: R`1001`,
         sol: R`$4C^2=1$, $c>1$, $N\ge1000c$. $c$를 1보다 조금 크게 잡으면 $N=1001$.` },
-      { sec: '18.5', type: 'open', lv: 2, q: R`필기의 식 $\int_{B_1^d}\big|f(x)-f(0)-\sum_{i=1}^Nr_i\mathbf 1_{\mathbb R_+}(\langle a_i,x\rangle+b_i)\big|^2\le\frac{4C_1^2}N$ ($|r_i|<2C_1$)을 보조정리 1의 결론과 맞게 바로잡고, 최종 신경망 $\Phi_N$을 쓰세요. 출력 가중치의 절댓값의 합은 얼마 이하인가요?`,
+      { sec: '18.5', type: 'open', lv: 2, quiz: true, q: R`필기의 식 $\int_{B_1^d}\big|f(x)-f(0)-\sum_{i=1}^Nr_i\mathbf 1_{\mathbb R_+}(\langle a_i,x\rangle+b_i)\big|^2\le\frac{4C_1^2}N$ ($|r_i|<2C_1$)을 보조정리 1의 결론과 맞게 바로잡고, 최종 신경망 $\Phi_N$을 쓰세요. 출력 가중치의 절댓값의 합은 얼마 이하인가요?`,
         sol: R`보조정리 1은 $g_i=\gamma_i\mathbf 1_{\mathbb R_+}(\langle a_i,\cdot\rangle+b_i)\in G_C$의 **평균**을 주므로 $r_i=\frac{\gamma_i}N$, $|\gamma_i|\le2C$입니다. 오른쪽은 임의의 $c>4C^2$에 대해 $\frac cN$이고, 왼쪽은 $\frac1{|B_1^d|}$로 정규화된 평균입니다:
 $$\frac1{|B_1^d|}\int_{B_1^d}\Big|f(x)-f(0)-\frac1N\sum_{i=1}^N\gamma_i\mathbf 1_{\mathbb R_+}(\langle a_i,x\rangle+b_i)\Big|^2dx\le\frac cN.$$
 헤비사이드를 $\sigma(\lambda\,\cdot)$로 바꾸면 $\Phi_N(x)=f(0)+\sum_i\frac{\gamma_i}N\sigma(\lambda\langle a_i,x\rangle+\lambda b_i)$. 출력 가중치의 절댓값의 합은 $\sum_i\frac{|\gamma_i|}N\le2C$.`,
@@ -432,7 +432,7 @@ $$\frac1{|B_1^d|}\int_{B_1^d}\Big|f(x)-f(0)-\frac1N\sum_{i=1}^N\gamma_i\mathbf 1
 - $\Phi_N$과 출력 가중치 합 $\le2C$ — 2점` },
       { sec: '18.6', type: 'num', lv: 1, q: R`제곱 손실, 자료 $(0,1),(1,1),(2,5)$에서 $f(x)=2x$의 경험적 위험 $\hat R_3(f)$는?`, ans: '1', ansTex: R`1`,
         sol: R`예측값 $0,2,4$, 오차 $1,-1,1$이므로 $\frac{1+1+1}3=1$.` },
-      { sec: '18.6', type: 'open', lv: 3, proof: true, q: R`$f_{\mathcal F}=\argmin_{\mathcal F}R$, $\hat f=\argmin_{\mathcal F}\hat R_n$, $\tilde f\in\mathcal F$, $R^*=\inf_fR(f)$일 때
+      { sec: '18.6', type: 'open', lv: 3, quiz: true, proof: true, q: R`$f_{\mathcal F}=\argmin_{\mathcal F}R$, $\hat f=\argmin_{\mathcal F}\hat R_n$, $\tilde f\in\mathcal F$, $R^*=\inf_fR(f)$일 때
 $$R(\tilde f)-R^*\le\big[\hat R_n(\tilde f)-\hat R_n(\hat f)\big]+2\sup_{f\in\mathcal F}|R(f)-\hat R_n(f)|+\big[R(f_{\mathcal F})-R^*\big]$$
 임을 증명하고, 세 항의 이름과 이를 다루는 단원을 말하세요.`,
         sol: R`$R(\tilde f)-R^*=[R(\tilde f)-\hat R_n(\tilde f)]+[\hat R_n(\tilde f)-\hat R_n(\hat f)]+[\hat R_n(\hat f)-\hat R_n(f_{\mathcal F})]+[\hat R_n(f_{\mathcal F})-R(f_{\mathcal F})]+[R(f_{\mathcal F})-R^*]$ (가운데 항들이 상쇄되는 항등식).
@@ -449,14 +449,14 @@ $$R(\tilde f)-R^*\le\big[\hat R_n(\tilde f)-\hat R_n(\hat f)\big]+2\sup_{f\in\ma
       { sec: '18.7', type: 'mc', lv: 1, q: R`(가) 함수 하나뿐인 클래스 $\{f\}$와 (나) 서로 다른 $n$개 점에서 모든 부호 패턴 $\pm1$을 만드는 클래스의 라데마허 복잡도는?`,
         choices: [R`(가) 0, (나) 1`, R`(가) 1, (나) 0`, R`(가) $\frac12$, (나) 1`, R`(가) 0, (나) $\frac12$`], ans: 0,
         sol: R`(가) $\E\sum\xi_if(z_i)=0$. (나) 어떤 $\xi$에도 $f(z_i)=\xi_i$를 골라 $\frac1n\sum\xi_i^2=1$.` },
-      { sec: '18.7', type: 'open', lv: 3, proof: true, q: R`대칭화로 $\E\big[\sup_{f\in\mathcal F}\big(\E f(z)-\frac1n\sum_{i=1}^nf(z_i)\big)\big]\le2\operatorname{Rad}_n(\mathcal F)$을 증명하세요. 유령 표본 $z_1',\dots,z_n'$을 쓰세요.`,
+      { sec: '18.7', type: 'open', lv: 3, quiz: true, proof: true, q: R`대칭화로 $\E\big[\sup_{f\in\mathcal F}\big(\E f(z)-\frac1n\sum_{i=1}^nf(z_i)\big)\big]\le2\operatorname{Rad}_n(\mathcal F)$을 증명하세요. 유령 표본 $z_1',\dots,z_n'$을 쓰세요.`,
         sol: R`**유령 표본.** $\E f(z)=\E'\frac1n\sum_if(z_i')$이므로 $\sup_f(\E f-\hat\E_nf)=\sup_f\E'\big[\frac1n\sum_i(f(z_i')-f(z_i))\big]\le\E'\sup_f\frac1n\sum_i(f(z_i')-f(z_i))$ ($\sup\E\le\E\sup$). 양변에 $\E$를 취합니다.
 **부호 넣기.** $z_i\leftrightarrow z_i'$를 맞바꾸어도 결합 분포가 같으므로 $(f(z_i')-f(z_i))_i$와 $(\xi_i(f(z_i')-f(z_i)))_i$는 (어떤 고정된 $\xi$에 대해서도) 같은 분포입니다. 따라서 기댓값에 $\xi$를 넣어도 됩니다.
 **나누기.** $\sup_f\sum_i\xi_i(f(z_i')-f(z_i))\le\sup_f\sum_i\xi_if(z_i')+\sup_f\sum_i(-\xi_i)f(z_i)$. $-\xi$도 라데마허이므로 두 기댓값이 모두 $\operatorname{Rad}_n(\mathcal F)$. 합해서 $2\operatorname{Rad}_n(\mathcal F)$.`,
         rubric: R`- 유령 표본으로 $\E f$를 쓰고 $\sup\E\le\E\sup$ — 3점
 - 맞바꿈 대칭으로 부호 $\xi_i$ 넣기 — 3점
 - $\sup$을 둘로 나누고 $-\xi$의 대칭성 — 2점` },
-      { sec: '18.7', type: 'open', lv: 3, proof: true, q: R`$\lVert x_i\rVert\le1$이고 $\mathcal F_Q=\{x\mapsto\langle w,x\rangle:\lVert w\rVert\le Q\}$일 때 $\widehat{\operatorname{Rad}}_S(\mathcal F_Q)\le Q/\sqrt n$임을 증명하세요.`,
+      { sec: '18.7', type: 'open', lv: 3, quiz: true, proof: true, q: R`$\lVert x_i\rVert\le1$이고 $\mathcal F_Q=\{x\mapsto\langle w,x\rangle:\lVert w\rVert\le Q\}$일 때 $\widehat{\operatorname{Rad}}_S(\mathcal F_Q)\le Q/\sqrt n$임을 증명하세요.`,
         sol: R`$\sup_{\lVert w\rVert\le Q}\frac1n\sum_i\xi_i\langle w,x_i\rangle=\frac1n\sup_{\lVert w\rVert\le Q}\langle w,v\rangle$, $v=\sum_i\xi_ix_i$. 코시-슈바르츠로 이 값은 $\frac Qn\lVert v\rVert$ ($w=Qv/\lVert v\rVert$에서 등호).
 젠센(제곱근은 오목): $\E\lVert v\rVert\le\sqrt{\E\lVert v\rVert^2}$. $\E\lVert v\rVert^2=\sum_{i,j}\E[\xi_i\xi_j]\langle x_i,x_j\rangle=\sum_i\lVert x_i\rVert^2\le n$ ($\E\xi_i\xi_j=0$, $i\ne j$).
 따라서 $\widehat{\operatorname{Rad}}_S\le\frac Qn\sqrt n=\frac Q{\sqrt n}$.`,

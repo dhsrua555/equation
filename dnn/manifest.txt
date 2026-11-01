@@ -32,6 +32,7 @@ proofs-k.js
 proofs-l.js
 proofs-m.js
 proofs-n.js
+exams-3.js
 exams.js
 exams-2.js
 quiz-1.js
@@ -120,6 +121,7 @@ en-proofs-l.js
 en-proofs-m.js
 en-proofs-n.js
 en-exams.js
+en-exams-3.js
 en-quiz.js
 map-01.js
 map-02.js

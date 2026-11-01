@@ -340,7 +340,7 @@ $$\lVert(au_k+bv_k)-(af+bg)\rVert\le\lvert a\rvert\lVert u_k-f\rVert+\lvert b\rv
         rubric: R`- 적분을 두 함숫값의 차로 계산 — 1점
 - 순증가로 $0$이 아님을 보임 — 2점
 - 판별성의 대우와 연결 — 1점` },
-      { sec: '17.4', type: 'open', lv: 3, proof: true, q: R`$\sigma$가 연속 시그모이드일 때, $\lambda\to\infty$이면 $\sigma(\lambda t)$가 $t>0$에서 $1$, $t<0$에서 $0$, $t=0$에서 $\sigma(0)$으로 수렴함을 보이고, 이 수렴이 $t=0$ 근처에서 균등하지 않은 이유를 설명하세요. 이 극한이 판별성의 증명에서 하는 역할은?`,
+      { sec: '17.4', type: 'open', lv: 3, quiz: true, proof: true, q: R`$\sigma$가 연속 시그모이드일 때, $\lambda\to\infty$이면 $\sigma(\lambda t)$가 $t>0$에서 $1$, $t<0$에서 $0$, $t=0$에서 $\sigma(0)$으로 수렴함을 보이고, 이 수렴이 $t=0$ 근처에서 균등하지 않은 이유를 설명하세요. 이 극한이 판별성의 증명에서 하는 역할은?`,
         sol: R`$t>0$이면 $\lambda t\to\infty$이므로 $\sigma(\lambda t)\to1$, $t<0$이면 $\lambda t\to-\infty$이므로 $\to0$, $t=0$이면 $\sigma(0)$ 그대로입니다. 극한 함수가 $t=0$에서 불연속인데 각 $\sigma(\lambda\cdot)$는 연속이므로, 연속 함수의 균등 극한은 연속이라는 사실에 비추어 수렴이 균등할 수 없습니다(실제로 $t=\frac1\lambda$에서 $\sigma(1)$이 남음).
 역할: $\sigma\big(\lambda(w^Tx+\theta)+\varphi\big)$의 적분이 모두 $0$이라는 가정에서, 유계 수렴 정리로 극한을 적분 안으로 넣어 반공간 $\{w^Tx+\theta>0\}$과 초평면의 측도에 관한 식 $\mu(H^+)+\sigma(\varphi)\mu(\Pi)=0$을 얻습니다. 이로부터 모든 반공간·초평면의 측도가 $0$임을 끌어냅니다.`,
         rubric: R`- 세 경우의 극한 — 2점
@@ -354,7 +354,7 @@ $$\lVert(au_k+bv_k)-(af+bg)\rVert\le\lvert a\rvert\lVert u_k-f\rVert+\lvert b\rv
       { sec: '17.5', type: 'mc', lv: 2, q: R`다항식 전체 $P$는 $C([0,1])$의 진부분공간이다. 보조정리 3에 대해 옳은 것은?`,
         choices: [R`$P\ne C([0,1])$이므로 $P$에서 $0$이고 $L\ne0$인 유계 $L$이 있다`, R`$P$는 조밀하므로 $P$에서 $0$인 유계 선형 범함수는 $L=0$뿐이다`, R`$P$는 닫혀 있으므로 보조정리 3을 그대로 쓸 수 있다`, R`보조정리 3은 무한차원 공간에서는 성립하지 않는다`], ans: 1,
         sol: R`유계 $L$은 연속이라, 조밀한 $P$에서 $0$이면 극한을 취해 $\overline P=C([0,1])$ 전체에서 $0$입니다. 보조정리 3은 “진부분공간”이 아니라 “조밀하지 않음”을 가정해야 합니다.` },
-      { sec: '17.5', type: 'open', lv: 3, proof: true, q: R`보조정리 3과 리스 표현 정리를 써서 보조정리 4 — $U$가 $C(I_n)$의 조밀하지 않은 선형 부분공간이면 $\int_{I_n}h\,d\mu=0$ ($\forall h\in U$)인 $\mu\ne0$, $\mu\in M(I_n)$가 있다 — 를 증명하세요.`,
+      { sec: '17.5', type: 'open', lv: 3, quiz: true, proof: true, q: R`보조정리 3과 리스 표현 정리를 써서 보조정리 4 — $U$가 $C(I_n)$의 조밀하지 않은 선형 부분공간이면 $\int_{I_n}h\,d\mu=0$ ($\forall h\in U$)인 $\mu\ne0$, $\mu\in M(I_n)$가 있다 — 를 증명하세요.`,
         sol: R`**1단계.** $X=C(I_n)$ (최대 노름)에 보조정리 3을 쓰면 $L\ne0$, $L|_U=0$인 유계 선형 범함수 $L$이 있습니다.
 **2단계.** $I_n$은 컴팩트이므로 리스 표현 정리에 의해 $L(f)=\int_{I_n}f\,d\mu$ ($\forall f\in C(I_n)$)인 유한 부호 측도 $\mu\in M(I_n)$가 있습니다.
 **3단계.** $h\in U$이면 $\int h\,d\mu=L(h)=0$.
@@ -376,7 +376,7 @@ $$\lVert(au_k+bv_k)-(af+bg)\rVert\le\lvert a\rvert\lVert u_k-f\rVert+\lvert b\rv
         sol: R`보조정리 4는 $C(I_n)$의 부분공간에 대한 정리이므로 각 $G$가 연속이어야 합니다. 판별성은 별도의 가정입니다.` },
       { sec: '17.6', type: 'num', lv: 2, q: R`$[0,1]$에서 $f(x)=x$를 계단 함수 뉴런 $N$개의 계단 $G_N$으로 근사하면 최대 오차가 $\frac1{2N}$이다. 최대 오차를 $0.01$ 이하로 하는 가장 작은 $N$은?`, ans: '50', ansTex: R`50`,
         sol: R`$\frac1{2N}\le0.01\iff N\ge50$. 같은 격자를 $n$차원에 쓰면 $50^n$개가 필요해 차원이 커질수록 뉴런 수가 지수적으로 늘어납니다.` },
-      { sec: '17.6', type: 'open', lv: 3, proof: true, q: R`보조정리 4와 판별성을 써서 보조정리 5 — $\sigma$가 연속 판별 함수이면 $\sum_{j=1}^N\alpha_j\sigma(w_j^Tx+\theta_j)$들이 $C(I_n)$에서 조밀하다 — 를 귀류법으로 증명하세요. 무엇을 부정하는지 정확히 쓰세요.`,
+      { sec: '17.6', type: 'open', lv: 3, quiz: true, proof: true, q: R`보조정리 4와 판별성을 써서 보조정리 5 — $\sigma$가 연속 판별 함수이면 $\sum_{j=1}^N\alpha_j\sigma(w_j^Tx+\theta_j)$들이 $C(I_n)$에서 조밀하다 — 를 귀류법으로 증명하세요. 무엇을 부정하는지 정확히 쓰세요.`,
         sol: R`**부분공간.** $U$를 그런 유한합 전체라 하면 합과 실수배에 닫혀 있고($N$을 늘려 이어 붙임), $\sigma$가 연속이므로 $U\subseteq C(I_n)$인 선형 부분공간입니다.
 **가정(부정).** $U$가 조밀하지 않다, 곧 $\overline U\ne C(I_n)$. ($U\ne C(I_n)$이 아님에 주의.)
 **보조정리 4.** $\mu\ne0$, $\mu\in M(I_n)$가 있어 $\int h\,d\mu=0$ ($\forall h\in U$).
@@ -387,7 +387,7 @@ $$\lVert(au_k+bv_k)-(af+bg)\rVert\le\lvert a\rvert\lVert u_k-f\rVert+\lvert b\rv
 - 보조정리 4로 $\mu\ne0$ — 1점
 - 뉴런 하나로 줄이기 — 1점
 - 판별성으로 모순 — 1점` },
-      { sec: '17.6', type: 'open', lv: 2, q: R`보편 근사 정리가 있는데도 실제 신경망 학습이 실패할 수 있는 이유를 17.1절의 오차 분해를 써서 세 가지로 설명하세요.`,
+      { sec: '17.6', type: 'open', lv: 2, quiz: true, q: R`보편 근사 정리가 있는데도 실제 신경망 학습이 실패할 수 있는 이유를 17.1절의 오차 분해를 써서 세 가지로 설명하세요.`,
         sol: R`(1) **근사**: 정리는 어떤 유한 $N$이 존재한다고만 말하므로, 실제로 쓴 $N$이 부족하면 근사 오차가 남습니다(필요한 $N$은 차원에 따라 매우 클 수 있음). (2) **일반화**: 충분히 큰 망이라도 유한한 자료로 고른 $\hat f_n$은 모집단에서 나쁠 수 있습니다(과적합). (3) **최적화**: 손실이 볼록하지 않아 SGD가 $\hat f_n$에 닿지 못하고 국소 최소·안장점에 머물 수 있습니다. 정리는 이 세 가지 중 첫째의 “가능성”만 보장합니다.`,
         rubric: R`- 근사: 존재만, $N$ 미지 — 1점
 - 일반화 — 1점

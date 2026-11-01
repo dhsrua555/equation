@@ -100,6 +100,18 @@
     });
   });
   const examById = new Map(EXAMS.map((x) => [x.id, x]));
+  // mock exams may come in groups (x.group, e.g. a quiz's range apart from the midterm's): groups keep the order of their first exam
+  const examGroups = () => {
+    const G = [];
+    EXAMS.forEach((x) => {
+      const k = x.group || '';
+      let g = G.find((y) => y.k === k);
+      if (!g) G.push((g = { k, x0: x, xs: [] }));
+      g.xs.push(x);
+    });
+    return G;
+  };
+  const examGroupHead = (g, cls) => (g.k ? `<div class="${cls}"><h3>${esc(g.k)}${g.x0.groupKo ? koT(g.x0.groupKo) : ''}</h3>${g.x0.groupDesc ? `<p>${esc(g.x0.groupDesc)}</p>` : ''}</div>` : '');
   // proofs: searchable, linked from the key-formula boxes they prove
   const PROOFS = (EM.proofs || []).filter((p) => chById.has(p.ch));
   PROOFS.forEach((p) => { p.pid = `${p.ch}-${p.id}`; });
@@ -149,7 +161,7 @@
       const xe = (EN.ex || {})[x.id];
       if (!xe) return;
       x.enData = xe;
-      ['title', 'kind', 'desc', 'scopeText'].forEach((f) => { if (xe[f]) { x[f + 'Ko'] = x[f]; x[f] = xe[f]; } });
+      ['title', 'kind', 'desc', 'scopeText', 'group', 'groupDesc'].forEach((f) => { if (xe[f]) { x[f + 'Ko'] = x[f]; x[f] = xe[f]; } });
       x.problems.forEach((p, k) => { const pe = (xe.probs || [])[k]; if (pe) p.enData = pe; });
     });
     QUIZ.forEach((q) => {
@@ -1150,6 +1162,15 @@
   function quizPractice(id) {
     return CH.map((c) => ({ c, n: c.problems.filter((p) => (id ? p.quiz === id : p.quiz)).length })).filter((x) => x.n);
   }
+  // SITE.quizGroups = [{ title, en, units: [n, …] }] splits the quiz-prep list by the quiz whose range a unit belongs to
+  function quizMoreGroups(more) {
+    const QG = SITE.quizGroups || [];
+    if (!QG.length) return [{ title: '', items: more }];
+    const out = QG.map((g) => ({ title: BI && g.en ? g.en : g.title, ko: BI && g.en ? g.title : '', items: more.filter(({ c }) => g.units.includes(c.n)) }));
+    const rest = more.filter(({ c }) => !QG.some((g) => g.units.includes(c.n)));
+    if (rest.length) out.push({ title: '', items: rest });
+    return out.filter((g) => g.items.length);
+  }
   const quizPracticeLink = (c, n, label) => `<a class="pf-chip" href="#${c.id}-practice" data-act="quiz-practice" data-ch="${c.id}">${label || `${pad(c.n)}단원`} · ${n}문제 →</a>`;
   function probHTML(p, o) {
     const ctx = o.ctx;
@@ -1376,14 +1397,14 @@
       <div class="wrap">
         <div class="section-head"><div><span class="caps">Mock examinations</span><h2>실전 모의고사</h2></div>
           ${proseP('examLede', '시험 범위에 맞춘 시간 제한 시험입니다. 제출하면 자동 채점과 단원별 분석을 보여줍니다.', 'lede')}</div>
-        <div class="exam-rows">
-          ${EXAMS.map((x) => `<button class="exam-row" data-act="exam-start" data-exam="${x.id}">
+        ${examGroups().map((g) => `${examGroupHead(g, 'exam-group band-group')}<div class="exam-rows">
+          ${g.xs.map((x) => `<button class="exam-row" data-act="exam-start" data-exam="${x.id}">
               <span class="roman">${x.roman}</span>
               <span class="exam-row-text"><span class="t">${esc(x.title)}</span><small>${esc(x.scopeText)}</small></span>
               <span class="meta">${x.minutes} min · ${x.problems.length} Q${bestOf(x.id) !== null ? ` · best ${bestOf(x.id)}` : ''}</span>
               <span class="go" aria-hidden="true">→</span>
             </button>`).join('')}
-        </div>
+        </div>`).join('')}
         <div class="btn-row" style="margin-top:32px"><a class="btn" href="#exams" data-route="exams">맞춤 모의고사 만들기</a></div>
       </div>
     </section>
@@ -1676,7 +1697,7 @@
           ${more.length ? `<article class="prose"><section class="sec quiz-more" id="${P}-more">
             <div class="sec-title"><span>→</span><h2>${esc(QUIZ_MORE)}</h2></div>
             <p>위 문제들과 같은 모양(정의 → 유도·증명 → 작은 계산 → 해석)의 문제를 단원마다 더 만들어 두었습니다. 누르면 그 단원의 연습문제가 <b>퀴즈형</b>만 걸러진 채로 열립니다. 서술형이라 풀이를 펼친 뒤 채점 기준으로 스스로 채점하세요.</p>
-            <nav class="quiz-links" aria-label="${esc(QUIZ_MORE)}">${more.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>
+            ${quizMoreGroups(more).map((g) => `${g.title ? `<h3 class="quiz-more-group">${esc(g.title)}${g.ko ? koT(g.ko) : ''}</h3>` : ''}<nav class="quiz-links" aria-label="${esc(g.title || QUIZ_MORE)}">${g.items.map(({ c, n }) => quizPracticeLink(c, n, `${pad(c.n)} ${c.title}`)).join('')}</nav>`).join('')}
           </section></article>` : ''}
         </div>
       </div>
@@ -1808,8 +1829,8 @@
           <div class="btn-row"><a class="btn" href="#exam-live" data-route="exam-live">이어서 풀기</a><button class="linkbtn" data-act="exam-abandon">응시 취소</button></div></div>` : ''}
       </header>
       <section class="section tight">
-        <div class="exam-cards">
-          ${EXAMS.map((x) => {
+        ${examGroups().map((g) => `${examGroupHead(g, 'exam-group')}<div class="exam-cards">
+          ${g.xs.map((x) => {
             const b = bestOf(x.id);
             const n = S.hist.filter((h) => h.exam === x.id).length;
             return `<div class="exam-card">
@@ -1823,7 +1844,7 @@
               </div>
             </div>`;
           }).join('')}
-        </div>
+        </div>`).join('')}
       </section>
       <section class="section" id="builder">
         <div class="section-head"><div><span class="caps">Build your own</span><h2>맞춤 모의고사</h2></div>
