@@ -126,7 +126,7 @@
       if (!e) return;
       c.enData = e;
       // “W3 월 · s.3–13, W4 수 필기” → “W3 Mon · s.3–13, W4 Wed notes”
-      if (c.ref) { c.refKo = c.ref; c.ref = c.ref.replace(/월/g, 'Mon').replace(/수/g, 'Wed').replace(/필기/g, 'notes'); }
+      if (c.ref) { c.refKo = c.ref; c.ref = c.ref.replace(/월/g, 'Mon').replace(/수/g, 'Wed').replace(/필기/g, 'notes').replace(/슬라이드/g, 'slides'); }
       if (e.title) { const ko = c.title; c.title = e.title; c.en = ko; c.titleKo = ko; }
       if (e.secTitles) { c.secTitlesKo = c.secTitles; c.secTitles = Object.assign({}, c.secTitles, e.secTitles); }
       c.sections.forEach((s) => {

@@ -26,7 +26,7 @@
     secSource: (sec) => {
       if (!sec.src) return "";
       // bilingual: "W1 수 · 슬라이드 3–5, W2 월 필기" → "Lecture W1 Wed · slides 3–5, W2 Mon notes"
-      const s = sec.src.replace(/실습 코드/g, "Practice code").replace(/문제 (\d)/g, "Problem $1").replace(/월/g, "Mon").replace(/수/g, "Wed").replace(/슬라이드/g, "slides").replace(/필기/g, "notes").replace(/보충/g, "supplement").replace(/종합/g, "combined");
+      const s = sec.src.replace(/(\d[\d–]*)쪽/g, "p. $1").replace(/실습 코드/g, "Practice code").replace(/문제 (\d)/g, "Problem $1").replace(/월/g, "Mon").replace(/수/g, "Wed").replace(/슬라이드/g, "slides").replace(/필기/g, "notes").replace(/보충/g, "supplement").replace(/종합/g, "combined");
       return /^(Problem Set|Practice code)/.test(s) ? s : `Lecture ${s}`;
     },
     about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–9주차 강의 슬라이드와 수업 중 필기, 실습 코드, 그리고 Problem Set 1·Quiz 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
