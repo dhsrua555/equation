@@ -253,6 +253,52 @@
       E.forEach((e, k) => (k ? ctx.lineTo(T.X(k + 0.45), T.Y(e)) : ctx.moveTo(T.X(k + 0.45), T.Y(e)))); ctx.stroke();
       ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -0.6, 0, 7, 0);
     },
+    // 17 — universal approximation: a bump and its staircase of steep sigmoids with N = 4, 8, 16 terms
+    uat(ctx, w, h, c) {
+      const T = frame(w, h, -3.2, 3.2, -0.25, 1.25);
+      const f = (x) => Math.exp(-x * x) * (1 + 0.35 * Math.sin(2.2 * x));
+      const sig = (z) => 1 / (1 + Math.exp(-z));
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, -3.2, 0, 3.2, 0);
+      [4, 8, 16].forEach((N, i) => {
+        const xs = Array.from({ length: N + 1 }, (_, j) => -3 + (6 * j) / N);
+        const G = (x) => xs.reduce((s, xj, j) => s + (j ? (f(xj) - f(xs[j - 1])) * sig((7 * N / 6) * (x - (xj + xs[j - 1]) / 2)) : f(xs[0])), 0);
+        ctx.strokeStyle = i === 2 ? c.a : c.faint; ctx.globalAlpha = 0.55 + 0.2 * i; ctx.lineWidth = 1.1;
+        curve(ctx, G, -3.2, 3.2, 400, T);
+      });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.2; curve(ctx, f, -3.2, 3.2, 400, T);
+    },
+    // 18 — Maurey's lemma: squared errors of random N-term averages scatter around the bound B²/N
+    barron(ctx, w, h, c) {
+      const T = frame(w, h, -1, 41, -0.08, 1.15);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, 0, 0, 41, 0);
+      ctx.fillStyle = c.a; ctx.globalAlpha = 0.55;
+      for (let N = 1; N <= 40; N++) for (let r = 0; r < 4; r++) {
+        const e = (0.85 / N) * (1 + 0.7 * noise(N * 7 + r * 13)) * (0.6 + 0.4 * Math.abs(noise(N + r * 31)));
+        dot(ctx, T, N, e, 1.7);
+      }
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.2; curve(ctx, (N) => 1 / N, 0.9, 41, 300, T);
+    },
+    // 19 — products of many Jacobian factors: log of γ^k for γ around 1 fans out (exploding above, vanishing below); clipping caps the top
+    rnngrad(ctx, w, h, c) {
+      const T = frame(w, h, -1, 41, -3.4, 3.4);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, 0, 0, 41, 0);
+      [0.75, 0.85, 0.95, 1.05, 1.15, 1.3].forEach((g, i) => {
+        ctx.strokeStyle = g > 1 ? c.a : c.b; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.5 + 0.08 * i;
+        curve(ctx, (k) => Math.max(-3.3, Math.min(3.3, k * Math.log10(g) + 0.06 * noise(k * 3 + i))), 0, 40, 200, T);
+      });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.faint; ctx.lineWidth = 1; ctx.setLineDash([5, 4]); line(ctx, T, 0, 1.5, 41, 1.5); ctx.setLineDash([]);
+    },
+    // 20 — what survives k steps: the LSTM cell path ∏ f_t with f ≈ 0.98 against the RNN path ∏ (1 − h²)w
+    lstm(ctx, w, h, c) {
+      const T = frame(w, h, -1, 61, -0.08, 1.12);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, 0, 0, 61, 0);
+      const run = (m, amp, seed) => { let v = 1; const P = [[0, 1]]; for (let k = 1; k <= 60; k++) { v *= Math.min(1, m + amp * noise(k * 5 + seed)); P.push([k, v]); } return P; };
+      const draw = (P) => { ctx.beginPath(); P.forEach(([x, y], k) => (k ? ctx.lineTo(T.X(x), T.Y(y)) : ctx.moveTo(T.X(x), T.Y(y)))); ctx.stroke(); };
+      ctx.lineWidth = 1.2;
+      [1, 2, 3].forEach((s) => { ctx.strokeStyle = c.a; ctx.globalAlpha = 0.6; draw(run(0.86, 0.06, s * 11)); });
+      [1, 2, 3].forEach((s) => { ctx.strokeStyle = c.b; ctx.globalAlpha = 0.45; draw(run(0.985, 0.012, s * 17)); });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.2; draw(run(0.985, 0, 0));
+    },
     // exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);

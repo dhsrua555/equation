@@ -128,6 +128,28 @@
         R`$4\times4$ 입력을 같은 색의 $2\times2$ 창 네 개로 나누고(겹치지 않게 보폭 2), 창마다 수 하나만 남깁니다. 최대 풀링은 창에서 가장 큰 값(색을 넣은 수)을, 평균 풀링은 네 수의 평균을 남깁니다. 가로·세로가 절반이 되고 채널 수는 그대로입니다(슬라이드 56–58).`);
     },
     // 15.5 a fully connected layer on an image: stretch 32×32×3 to 3072×1, then W (10×3072) gives 10 numbers (slides 60–61)
+    // 15.7 tensor sizes of the MNIST CNN in practice 8-2 (box height ∝ width/height, box width ∝ channels)
+    mnistcnn() {
+      const st = [[28, 1, '입력', '28×28×1'], [28, 32, 'conv1', '28×28×32'], [14, 32, 'pool', '14×14×32'], [14, 64, 'conv2', '14×14×64'], [7, 64, 'pool', '7×7×64']];
+      const ops = [['conv 3×3', 'P=1'], ['풀링 2', ''], ['conv 3×3', 'P=1'], ['풀링 2', '']];
+      const yb = 170, gap = 62, ya = yb - 28;
+      const arrow = (x1, x2, l1, l2) => FK.A(x1 + 4, ya, x2 - 6, ya, 'ax', 7) + FK.T((x1 + x2) / 2, ya - (l2 ? 22 : 8), l1, { s: 10 }) + (l2 ? FK.T((x1 + x2) / 2, ya - 8, l2, { s: 10 }) : '');
+      let x = 34, body = '', prev = null;
+      st.forEach(([n, ch, name, size], i) => {
+        const h = n * 3.2, w = 3 + ch * 0.42, k = h * 0.3, y = yb - h;
+        if (prev) body += arrow(prev, x, ops[i - 1][0], ops[i - 1][1]);
+        body += box3(x, y, w, h, k, i % 2 ? 'bm2' : 'bm') + FK.T(x + w / 2 + 4, yb + 16, size, { s: 10 }) + FK.T(x + w / 2 + 4, yb + 30, name, { s: 10, c: 'em' });
+        prev = x + w + k * 0.7;
+        x = prev + gap;
+      });
+      body += arrow(prev, x, '펴기', '');
+      body += FK.R(x, 30, 12, 140, 'bm') + FK.T(x + 6, yb + 16, '3136', { s: 10 }) + FK.T(x + 6, yb + 30, '벡터', { s: 10, c: 'em' });
+      const x2 = x + 12 + gap;
+      body += arrow(x + 12, x2, 'fc', '');
+      body += FK.R(x2, 120, 12, 50, 'bm2') + FK.T(x2 + 6, yb + 16, '10', { s: 10 }) + FK.T(x2 + 6, yb + 30, '로짓', { s: 10, c: 'em' });
+      return FK.fig(600, 214, 'MNIST CNN(실습 8-2)의 텐서 크기', body,
+        R`실습 8-2의 CNN에서 이미지 한 장의 텐서 크기. 상자의 높이는 가로·세로 크기, 폭은 채널 수를 대략 나타냅니다. $3\times3$ 합성곱(패딩 1)은 가로·세로를 보존하고 채널을 늘리며, $2\times2$ 최대 풀링은 채널은 그대로 두고 가로·세로를 절반으로 줄입니다. 마지막 $7\times7\times64$를 3136차원으로 펴서 완전연결층이 로짓 10개를 냅니다.`);
+    },
     fcstretch() {
       const img = box3(20, 96, 72, 72, 14);
       let rows = '';

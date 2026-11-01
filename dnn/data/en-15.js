@@ -4,6 +4,8 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '입력': 'input', '풀링 2': 'pool 2', '벡터': 'vector', '로짓': 'logits',
+    'MNIST CNN(실습 8-2)의 텐서 크기': 'Tensor sizes in the MNIST CNN (practice 8-2)',
     '필터 5×5×3 (채운 상자)': 'filter 5×5×3 (filled box)',
     '입력 32×32×3': 'input 32×32×3',
     '깊이 3 = RGB': 'depth 3 = RGB',
@@ -46,6 +48,7 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '완전연결층과 합성곱층의 연결': 'Connections of a fully connected layer and a convolution layer',
   });
   Object.assign(EM.en.fig, {
+    mnistcnn: R`Tensor sizes for one image in the CNN of practice 8-2. Box height roughly shows the width and height, box width the number of channels. A $3\times3$ convolution (padding 1) keeps the width and height and adds channels, and $2\times2$ max pooling halves the width and height and keeps the channels. The final $7\times7\times64$ is flattened to 3136 dimensions, and the fully connected layer outputs 10 logits.`,
     convvol: R`The filter is a $5\times5\times3$ box that extends through the **full depth** (3 channels) of the input. Sliding it only across width and height, each position gives a 75-dimensional dot product plus a bias (dashed lines), i.e. one cell of the activation map; filling every position gives one $28\times28\times1$ map. With 6 filters the 6 maps stack into a $28\times28\times6$ output (slides 15–20, 37).`,
     stridepad: R`A $3\times3$ filter on a $7\times7$ input. The bold outlines in different colors are the filter's first, second and third positions, and the thick black frame on the right is the original $7\times7$ input. (Left) Moving one cell at a time gives five positions across; (middle) moving two cells gives three positions at cells 0, 2, 4; (right) padding the border with one ring of zeros gives seven positions on the $9\times9$ grid, so the size is kept. Every output size is $\frac{N-K+2P}{S}+1$.`,
     pooling: R`Split the $4\times4$ input into four $2\times2$ windows of the same shade (stride 2, no overlap) and keep one number per window. Max pooling keeps the largest value of each window (the highlighted numbers), average pooling the mean of the four numbers. Width and height halve and the number of channels stays the same (slides 56–58).`,
@@ -58,7 +61,7 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     title: 'Convolutional Neural Networks: The Basics',
     fig: R`Sliding a moving-average filter of length 5 over a noisy step signal (thin line) gives a smooth curve (bold line). Using the same weights at every position is convolution`,
     tagline: R`Flattening an image into a fully connected layer makes the parameters explode and destroys the spatial structure. A convolution layer slides one small filter over every position (local connectivity + weight sharing), cutting the parameters and gaining translation equivariance: when the object moves, the output moves with it.`,
-    summary: R`The networks so far were **fully connected layers** taking vectors as input. For images this is bad for two reasons: there are too many parameters, and the structure does not encode **translation equivariance/invariance** — that a cat is a cat whether it is on the left or on the right. This unit computes the parts of the remedy, the **convolutional neural network (CNN)**, one at a time. Starting from a moving average, it defines convolution with a filter, then covers the activation maps and parameter count of a convolution layer, the output size $N'=(N-K+2P)/S+1$ set by stride and padding, the pooling layer, and finally the comparison with fully connected layers and the definition of translation equivariance.`,
+    summary: R`The networks so far were **fully connected layers** taking vectors as input. For images this is bad for two reasons: there are too many parameters, and the structure does not encode **translation equivariance/invariance** — that a cat is a cat whether it is on the left or on the right. This unit computes the parts of the remedy, the **convolutional neural network (CNN)**, one at a time. Starting from a moving average, it defines convolution with a filter, then covers the activation maps and parameter count of a convolution layer, the output size $N'=(N-K+2P)/S+1$ set by stride and padding, the pooling layer, and finally the comparison with fully connected layers and the definition of translation equivariance. The last section checks these formulas in code, classifying MNIST with a linear softmax classifier and a CNN in three practice notebooks (7-2, 8-1, 8-2).`,
     goals: [
       R`Explain the advantages and disadvantages of fully connected layers (parameter count, no spatial structure or translation equivariance) and count their parameters`,
       R`Write a 2D moving average and filtering as formulas, and compute a feature map by applying a filter to a small image by hand`,
@@ -66,8 +69,9 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
       R`Derive the output size formula with stride and padding $N'=(N-K+2P)/S+1$, and choose the size-preserving padding $P=(K-1)/2$`,
       R`Compute max and average pooling and global average pooling, and explain that pooling has no parameters to learn`,
       R`Compare convolution layers with fully connected layers through local connectivity and weight sharing, distinguish translation equivariance $f(g\cdot x)=g\cdot f(x)$ from invariance $f(g\cdot x)=f(x)$, and prove that convolution is equivariant`,
+      R`Read the tensor sizes and parameter counts in the PyTorch practice code (a linear softmax classifier and a CNN for MNIST), and explain the cross-entropy loss and the pitfall in handling the test input`,
     ],
-    secTitles: { '15.1': 'Limits of FC layers', '15.2': '2D convolution', '15.3': 'Convolution layer', '15.4': 'Output size', '15.5': 'Pooling', '15.6': 'Equivariance' },
+    secTitles: { '15.1': 'Limits of FC layers', '15.2': '2D convolution', '15.3': 'Convolution layer', '15.4': 'Output size', '15.5': 'Pooling', '15.6': 'Equivariance', '15.7': 'PyTorch practice' },
     secs: {
       '15.1': { title: 'Fully Connected Layers: Advantages and Limits', body: R`
 :::idea In plain words
@@ -314,6 +318,76 @@ $f(x)=(0-0,\ 0-1,\ 1-2,\ 2-0,\ 0-0)=(0,-1,-1,2,0)$ and $f(x')=(0,0,-1,-1,2)$. $f
 
 With zero padding at the border, equivariance does not hold exactly near the edges of the image, and with stride $S>1$ it holds only for shifts by multiples of $S$. The invariance of max pooling is also an approximate property for small shifts inside a window. Despite these limits, the equivariance gained from weight sharing is the key reason CNNs generalize on images with far less data than fully connected networks[[@med:ch12:9.4|Parameter sharing viewed as regularization (Medical AI).]].
 ` },
+      '15.7': { title: 'Practice: Classifying MNIST with PyTorch', body: R`
+:::idea In plain words
+Three PyTorch notebooks run exactly what we have computed by hand so far: softmax and cross-entropy, the output-size formula, flattening, and parameter counts. They classify the handwritten digits of MNIST ($28\times28$ grayscale, 10 classes) first with a **linear softmax classifier** and then with a CNN of **two convolution layers and one fully connected layer**, and the test accuracy climbs from the 89% range to nearly 99%.
+:::
+
+**The skeleton shared by the three notebooks.**
+- **Data**: $\texttt{dsets.MNIST(..., transform=transforms.ToTensor())}$ loads 60,000 training and 10,000 test images. $\texttt{ToTensor}$ turns the integer pixels 0–255 into reals in $[0,1]$ and makes each image a (channel, height, width) $=1\times28\times28$ tensor.
+- **Minibatches**: $\texttt{DataLoader(batch\_size=B, shuffle=True, drop\_last=True)}$ shuffles the order every epoch and drops a last batch smaller than $B$[[ch10:10.3|The minibatch SGD algorithm.]].
+- **One training step**: $\texttt{zero\_grad()}$ clears the old gradients, the forward pass produces the logits, the loss is computed and backpropagated with $\texttt{backward()}$, and $\texttt{step()}$ updates the parameters[[ch09:9.6|Backpropagation for multilayer perceptrons.]].
+
+:::key Cross-entropy loss in PyTorch
+For the logits $z\in\mathbb R^{10}$ produced by the model and the correct label $y\in\{0,\dots,9\}$,
+$$\texttt{CrossEntropyLoss}(z,y)=-\log\frac{e^{z_y}}{\sum_{k}e^{z_k}}=-z_y+\log\sum_ke^{z_k}$$
+The softmax is computed inside the loss, so the model does not end with a softmax, and the label is given as an index, not one-hot. On a minibatch the loss is the mean over the samples.
+:::
+
+**Practice 7-2: linear softmax classification.** The whole model is one $\texttt{nn.Linear(784, 10)}$. It flattens an image to 784 dimensions with $\texttt{X.view(-1, 28*28)}$ and outputs the logits $z=Wx+b$ ($W\in\mathbb R^{10\times784}$), so it is exactly the softmax regression of Unit 6[[ch06:6.1|The multiclass model of softmax regression.]]. It has $784\cdot10+10=7850$ parameters. Trained by SGD with batch 200 ($60000/200=300$ steps per epoch) and learning rate 0.1, the epoch-average loss fell from 0.657 (epoch 1) to 0.282 (epoch 20) (the saved output was stopped by hand during epoch 21), and the test accuracy was **89.35%**.
+
+**Practice 8-1: following the sizes.** Pass an arbitrary tensor $\texttt{torch.Tensor(1, 1, 28, 28)}$, that is (batch, channel, height, width), through the layers one at a time and print the shapes. The formula $N'=\frac{N-K+2P}{S}+1$ of Section 15.4 fits exactly.
+
+| Layer | Code | Output shape | Computation |
+|---|---|---|---|
+| input | | $1\times1\times28\times28$ | |
+| conv1 | $\texttt{Conv2d(1, 32, 3, padding=1)}$ | $1\times32\times28\times28$ | $\frac{28-3+2}{1}+1=28$ |
+| pool | $\texttt{MaxPool2d(2)}$ | $1\times32\times14\times14$ | $\frac{28-2}{2}+1=14$ |
+| conv2 | $\texttt{Conv2d(32, 64, 3, padding=1)}$ | $1\times64\times14\times14$ | $\frac{14-3+2}{1}+1=14$ |
+| pool | $\texttt{MaxPool2d(2)}$ | $1\times64\times7\times7$ | $\frac{14-2}{2}+1=7$ |
+| flatten | $\texttt{out.view(out.size(0), -1)}$ | $1\times3136$ | $64\cdot7\cdot7=3136$ |
+| fc | $\texttt{Linear(3136, 10)}$ | $1\times10$ | |
+
+A $3\times3$ filter with padding 1 preserves the size ($P=\frac{K-1}2$), and $\texttt{MaxPool2d(2)}$, given a single integer, has kernel and stride both 2, halving the width and height. The $-1$ in $\texttt{view(out.size(0), -1)}$ means "merge all remaining dimensions into one", so everything but the batch dimension is flattened[[ch15:15.5|Pooling and fully connected layers: flattening.]].
+
+:::fig mnistcnn
+:::
+
+**Practice 8-2: training the CNN.** The structure above is wrapped in an $\texttt{nn.Module}$ class. layer1 is convolution (1→32), ReLU, max pooling; layer2 is convolution (32→64), ReLU, max pooling; and the last layer is $\texttt{Linear(3136, 10)}$. Only the weights of the fully connected layer are initialized with $\texttt{xavier\_uniform\_}$[[ch11:11.2|Xavier (Glorot) initialization.]], and the network was trained with Adam (learning rate 0.001)[[ch14:14.4|Adam.]], batch 100 (600 steps per epoch), for 15 epochs. The epoch-average loss fell from 0.2256 to 0.0075 and the test accuracy was **98.70%**: compared with the linear classifier, the error dropped from 10.65% to 1.30%, about one eighth.
+
+**Counting parameters.** Use $K^2C_{\text{in}}C_{\text{out}}+C_{\text{out}}$ from Section 15.3 and $d_{\text{in}}d_{\text{out}}+d_{\text{out}}$ for a fully connected layer.
+
+| Layer | Parameters |
+|---|---|
+| conv1 | $3^2\cdot1\cdot32+32=320$ |
+| conv2 | $3^2\cdot32\cdot64+64=18{,}496$ |
+| fc | $3136\cdot10+10=31{,}370$ |
+| total | $50{,}186$ |
+
+That is about 6.4 times the linear classifier (7,850), and about 63% of it sits in the last fully connected layer, the same shape as AlexNet in Unit 16, where most parameters were in the fully connected layers[[ch16:16.2|AlexNet's sizes and parameters by layer.]].
+
+:::key Sizes and parameters of the MNIST CNN (practice 8-2)
+$$28\xrightarrow{\text{conv }3\times3,\ P=1}28\xrightarrow{\text{pool }2}14\xrightarrow{\text{conv}}14\xrightarrow{\text{pool}}7,\qquad 64\cdot7\cdot7=3136\to10$$
+It has $320+18{,}496+31{,}370=50{,}186$ parameters (the linear softmax classifier has $7{,}850$).
+:::
+
+:::warn Things to watch when reading the code
+- **Range of the test input.** Both 7-2 and 8-2 feed $\texttt{mnist\_test.test\_data}$ (integers 0–255) at test time after only $\texttt{.float()}$. The training input went through $\texttt{ToTensor}$ into $[0,1]$, so the test input is 255 times larger. For a linear model the logits become $W(255x)+b=255\big(Wx+\frac{b}{255}\big)$, which grades a model whose bias has been shrunk to $\frac1{255}$. The test input should also be divided by 255, or a test $\texttt{DataLoader}$ should be used; 89.35% and 98.70% were measured with this mismatch.
+- **Order of dimensions.** A PyTorch image tensor is (batch, channel, height, width). The comment "(?, 28, 28, 1)" in 8-2 is TensorFlow-style (batch, height, width, channel), a different order from the actual tensor.
+- **Softmax.** The description in 8-1 says "fully connected layer + softmax activation", but the code has no softmax. $\texttt{CrossEntropyLoss}$ computes it internally, and adding another softmax at the end of the model would apply it twice and hurt training. For prediction the $\texttt{argmax}$ of the logits suffices (softmax does not change the order).
+- **Old names.** $\texttt{train\_data}$, $\texttt{test\_data}$, $\texttt{test\_labels}$ are now $\texttt{data}$ and $\texttt{targets}$ in current torchvision.
+:::
+
+:::ex Example 1 — removing the padding
+If both convolutions in practice 8-1 use padding 0, what are the sizes at each stage and the length of the flattened vector?
+---
+$28\to\frac{28-3}{1}+1=26\to\frac{26-2}{2}+1=13\to\frac{13-3}{1}+1=11\to\Big\lfloor\frac{11-2}{2}\Big\rfloor+1=5$. Flattening gives $64\cdot5\cdot5=1600$, so the last layer must be $\texttt{Linear(1600, 10)}$. Pooling an odd size like 11 by 2 drops the last row (the default of $\texttt{MaxPool2d}$ is $\texttt{ceil\_mode=False}$).
+:::
+
+### Going deeper
+
+$\texttt{CrossEntropyLoss}$ takes logits rather than probabilities for numerical stability. Computing $-z_y+\log\sum_ke^{z_k}$ in one go with log-sum-exp avoids $\log0$ when a softmax probability is close to 0[[ch06:6.4|Properties of softmax and numerical computation.]]. The gradient with respect to the logits also becomes simply $p-e_y$ (probabilities − one-hot), which is where backpropagation starts[[ch06:6.3|The gradient of softmax regression.]].
+` },
     },
     probs: [
       { q: R`How many parameters (including biases) does a fully connected layer with 10 outputs have when a $32\times32\times3$ image is flattened into it?`,
@@ -368,6 +442,33 @@ With zero padding at the border, equivariance does not hold exactly near the edg
 **Counterexample.** $K=1$, $w_0[0]=1$, $w_t[0]=0$ ($t\ne0$), that is, $h(x)[t]=x[t]$ for $t=0$ and 0 elsewhere. If $x=\delta_0$ (1 only at 0), then $h(x)=\delta_0$ and $g_1\cdot h(x)=\delta_1$. But $g_1\cdot x=\delta_1$ and $h(\delta_1)[1]=w_1[0]\cdot1=0$, so $h(g_1\cdot x)=0\ne\delta_1$. Equivariance is guaranteed only when the weights do not depend on the position (sharing).`,
         rubric: R`- The equivariance identity via the substitution $t+i-a$ — 3 pts
 - Constructing and checking the counterexample — 2 pts` },
+      { q: R`How many parameters (including biases) does the model of practice 7-2, $\texttt{nn.Linear(784, 10)}$, have?`,
+        sol: R`The weights $W\in\mathbb R^{10\times784}$ give $7840$ and the biases 10, for $7850$ in total. This is the $C(d+1)$ ($C=10$, $d=784$) of softmax regression in Unit 6.` },
+      { q: R`Splitting the 60,000 training images with $\texttt{DataLoader(batch\_size=200, drop\_last=True)}$, how many steps (minibatches) are in one epoch?`,
+        sol: R`$60000/200=300$ exactly, so no batch is dropped. With batch 100 as in practice 8-2 there are 600 steps.` },
+      { q: R`How many parameters (including biases) does the second convolution of practice 8-2, $\texttt{Conv2d(32, 64, kernel\_size=3, padding=1)}$, have?`,
+        sol: R`One filter has $3\times3\times32=288$ weights and 1 bias, and there are 64 filters, so $64\cdot289=18{,}496$. It does not depend on the width and height of the input (14).` },
+      { q: R`In practice 8-1, flattening the tensor $1\times64\times7\times7$ after the second max pooling with $\texttt{view(out.size(0), -1)}$ gives what length?`,
+        sol: R`Only the batch dimension 1 is kept and the remaining $64\cdot7\cdot7=3136$ are merged into one dimension. That is why the last layer is $\texttt{Linear(3136, 10)}$.` },
+      { q: R`In practice 8-1, if both convolutions use padding 0 (everything else unchanged), what is the length of the flattened vector?`,
+        sol: R`$28\to26\to13\to11\to\lfloor9/2\rfloor+1=5$, so $64\cdot5\cdot5=1600$. The last layer must also change to $\texttt{Linear(1600, 10)}$.` },
+      { q: R`How many parameters in total does the CNN of practice 8-2 have (convolutions 1→32 and 32→64, both $3\times3$; fully connected 3136→10)?`,
+        sol: R`conv1 $9\cdot1\cdot32+32=320$, conv2 $9\cdot32\cdot64+64=18{,}496$, fc $3136\cdot10+10=31{,}370$. The total is $50{,}186$, about 63% of it in the fully connected layer. ReLU and pooling have no parameters.` },
+      { q: R`When the loss is $\texttt{CrossEntropyLoss}$, what should the last layer of the model output?`,
+        choices: [R`Probabilities after a softmax`, R`The logits before the softmax`, R`Values after a sigmoid`, R`A one-hot vector`],
+        sol: R`$\texttt{CrossEntropyLoss}$ computes $-z_y+\log\sum_ke^{z_k}$ internally, so pass the logits as they are. Another softmax would be applied twice.` },
+      { q: R`What are the four dimensions of $\texttt{torch.Tensor(1, 1, 28, 28)}$, in order?`,
+        choices: [R`batch, height, width, channel`, R`batch, channel, height, width`, R`channel, batch, height, width`, R`height, width, channel, batch`],
+        sol: R`A PyTorch image tensor is (batch, channel, height, width). (batch, height, width, channel) is TensorFlow's default order, and the comment "(?, 28, 28, 1)" in practice 8-2 is written in that order.` },
+      { q: R`(1) For a linear classifier $z=Wx+b$, show that feeding the test input as $\alpha x$ ($\alpha>0$) gives the same prediction $\argmax_kz_k$ as the classifier $Wx+b/\alpha$ with bias $b/\alpha$. (2) Show that a network $f$ chaining convolutions, ReLU, max pooling, and fully connected layers **without** biases satisfies $f(\alpha x)=\alpha f(x)$ ($\alpha>0$), and explain why the prediction then does not change even if the test input is 255 times larger. (3) Why does this argument not carry over as is to practices 7-2 and 8-2?`,
+        sol: R`
+**(1)** $W(\alpha x)+b=\alpha\big(Wx+\frac b\alpha\big)$, and multiplying by $\alpha>0$ keeps the order of the components, so $\argmax_k\big(W(\alpha x)+b\big)_k=\argmax_k\big(Wx+\frac b\alpha\big)_k$.
+**(2)** Convolutions and fully connected layers without biases are linear, so $L(\alpha x)=\alpha L(x)$. $\ReLU(\alpha t)=\max(0,\alpha t)=\alpha\max(0,t)$ ($\alpha>0$). Max pooling too: $\max_i\alpha x_i=\alpha\max_ix_i$. A composition of positively homogeneous functions is positively homogeneous, so $f(\alpha x)=\alpha f(x)$. All the logits are just multiplied by $\alpha$, so the $\argmax$ is the same.
+**(3)** Every layer in the two practices has a bias ($\texttt{bias=True}$ is the default). The bias is not multiplied by $\alpha$, so $f(255x)\ne255f(x)$, and in 7-2 the grading is effectively done with the model whose bias is shrunk to $\frac1{255}$, as in (1). Dividing the test input by 255 evaluates the same model as in training.`,
+        rubric: R`
+- (1) Argument that a positive multiple preserves the order — 2 points
+- (2) Positive homogeneity of linear layers, ReLU, and max pooling, and of the composition — 3 points
+- (3) Explanation that the biases break homogeneity, and the correct fix — 2 points` },
     ],
   };
 })();

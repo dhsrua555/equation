@@ -53,8 +53,11 @@ The reward for weight sharing is **translation equivariance**. Shifting the inpu
       { id: 'whole', role: 'app', k: '15.6', at: '**정리하면**', t: R`등변 + 불변 = CNN`, en: R`Equivariant + invariant = CNN`,
         d: R`합성곱은 등변(“어디인가”), 풀링은 불변에 가깝게(“무엇인가”) 만들어 검출과 분류에 모두 맞습니다. 다음 단원은 이 부품으로 지은 실제 망입니다.`,
         dEn: R`Convolution is equivariant (“where is it?”) and pooling makes things nearly invariant (“what is it?”), which suits both detection and classification. The next unit builds real networks from these parts.` },
+      { id: 'code', role: 'app', k: '15.7', t: R`실습: PyTorch로 MNIST`, en: R`Practice: MNIST in PyTorch`,
+        d: R`선형 소프트맥스 분류기(매개변수 7,850개, 89.35%)에서 합성곱 2층 CNN(50,186개, 98.70%)으로 바꿉니다. 크기 $28\to14\to7$, 펴기 3136은 이 단원의 공식 그대로입니다.`,
+        dEn: R`Go from a linear softmax classifier (7,850 parameters, 89.35%) to a CNN with two convolution layers (50,186, 98.70%). The sizes $28\to14\to7$ and the flattened 3136 follow this unit's formulas exactly.` },
     ],
-    rows: [['fc'], ['local', 'movavg'], ['filter'], ['layer'], ['size', 'compare'], ['pool', 'equi'], ['whole']],
+    rows: [['fc'], ['local', 'movavg'], ['filter'], ['layer'], ['size', 'compare'], ['pool', 'equi'], ['whole'], ['code']],
     edges: [
       ['fc', 'local', R`공간 구조를 쓰면`, R`use spatial structure`],
       ['local', 'filter', R`모든 조각에 같은 $w$`, R`same $w$ for every patch`],
@@ -66,6 +69,7 @@ The reward for weight sharing is **translation equivariance**. Shifting the inpu
       ['compare', 'equi', R`공유하면 등변`, R`sharing ⇒ equivariance`],
       ['pool', 'whole', R`거의 불변`, R`nearly invariant`],
       ['equi', 'whole', R`등변`, R`equivariant`],
+      ['whole', 'code', R`코드로 확인`, R`check it in code`],
     ],
   });
 })();
