@@ -3,11 +3,11 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
-  const G = 'Quiz 2 prep · Week 8 Wed – Week 9 Wed';
+  const G = 'Quiz 2 prep · Week 8 Wed – Week 10 Mon';
   Object.assign(EM.en.ex, {
   q2a: {
     group: G,
-    groupDesc: 'Covers Units 17–20 (the universal approximation theorem, Barron’s theorem and generalization, RNNs and backpropagation through time, LSTM and applications). The two-step RNN gradient, marked “Quiz 2 (11/04)” in the Week 9 Wednesday notes, is in A; the handwritten proofs on approximation and generalization are in B; short questions and derivations over the whole range are in C.',
+    groupDesc: 'Covers Units 17–21 (the universal approximation theorem, Barron’s theorem and generalization, RNNs and backpropagation through time, LSTM and applications, attention and Transformers). The two-step RNN gradient, marked “Quiz 2 (11/04)” in the Week 9 Wednesday notes, is in A; the handwritten proofs on approximation and generalization are in B; short questions and derivations over the whole range are in C; the Week 10 Monday attention material is in D.',
     kind: 'Quiz 2 style · RNN', title: 'RNN Gradients and the LSTM', scopeText: 'Units 19–20',
     desc: 'Write the two-step RNN gradient marked for Quiz 2 in the notes from scratch, and prove vanishing/exploding in vector BPTT, gradient clipping, and the LSTM cell path.',
     probs: [
@@ -169,5 +169,45 @@ $$\frac{\partial L}{\partial W}=\sum_{t=1}^T\delta_th_{t-1},\qquad\frac{\partial
 - 3. The Rademacher bound and the meaning of $1/\sqrt n$ — 4 points` },
     ],
   },
+  q2d: {
+    group: G,
+    kind: 'Quiz 2 style · Attention', title: 'Derivatives of Scaled Dot-Product Attention, Masks, and Layer Normalization', scopeText: 'Unit 21',
+    desc: 'Derive the Jacobian of the softmax and the gradient of the attention output with respect to the query, a bound under saturation, why masked attention is not permutation equivariant, and the Jacobian of layer normalization.',
+    probs: [
+      { q: R`Consider scaled dot-product attention with a query $\mathbf q\in\mathbb R^D$, keys $\mathbf k_1,\dots,\mathbf k_N\in\mathbb R^D$, and values $\mathbf v_1,\dots,\mathbf v_N\in\mathbb R^{d_v}$: $e_i=\mathbf q\cdot\mathbf k_i/\sqrt D$, $\mathbf a=\mathrm{softmax}(\mathbf e)$, $\mathbf c=\sum_ia_i\mathbf v_i$.
+1. Show that the Jacobian of the softmax is $J=\diag(\mathbf a)-\mathbf a\mathbf a^T$, and show (i) $\mathrm{softmax}(\mathbf e+t\mathbf 1)=\mathrm{softmax}(\mathbf e)$, (ii) $J\mathbf 1=\mathbf 0$, (iii) $\mathbf u^TJ\mathbf u\ge0$ for every $\mathbf u$ (when all $a_i>0$, with equality only for $\mathbf u\parallel\mathbf 1$).
+2. Derive $\dfrac{\partial\mathbf c}{\partial\mathbf q}=\dfrac1{\sqrt D}\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T$.
+3. Show that if $\lVert\mathbf v_i\rVert\le V$ and $\lVert\mathbf k_i\rVert\le K$ for all $i$ and $\max_ia_i\ge1-\varepsilon$, then $\big\lVert\partial\mathbf c/\partial\mathbf q\big\rVert_2\le4VK\varepsilon/\sqrt D$, and explain why, without dividing by $\sqrt D$, the query is hardly trained.`,
+        sol: R`
+**1.** From $a_i=e^{e_i}/Z$, $Z=\sum_je^{e_j}$, $\frac{\partial a_i}{\partial e_m}=\frac{\delta_{im}e^{e_i}}Z-\frac{e^{e_i}e^{e_m}}{Z^2}=a_i\delta_{im}-a_ia_m$, that is, $J=\diag(\mathbf a)-\mathbf a\mathbf a^T$. (i) The factor $e^t$ multiplies the numerator and the denominator alike and cancels. (ii) $(J\mathbf 1)_i=a_i-a_i\sum_ma_m=0$. (iii) $\mathbf u^TJ\mathbf u=\sum_ia_iu_i^2-\big(\sum_ia_iu_i\big)^2=\mathrm{Var}_{\mathbf a}(\mathbf u)\ge0$, and when all $a_i>0$ the variance is $0$ only if $\mathbf u$ is constant.
+**2.** $\dfrac{\partial\mathbf c}{\partial e_m}=\sum_i\dfrac{\partial a_i}{\partial e_m}\mathbf v_i=a_m\mathbf v_m-a_m\sum_ia_i\mathbf v_i=a_m(\mathbf v_m-\mathbf c)$ and $\dfrac{\partial e_m}{\partial\mathbf q}=\dfrac{\mathbf k_m^T}{\sqrt D}$. By the chain rule $\dfrac{\partial\mathbf c}{\partial\mathbf q}=\sum_m\dfrac{\partial\mathbf c}{\partial e_m}\dfrac{\partial e_m}{\partial\mathbf q}=\dfrac1{\sqrt D}\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T$.
+**3.** By $\lVert\mathbf u\mathbf k^T\rVert_2=\lVert\mathbf u\rVert\lVert\mathbf k\rVert$ and the triangle inequality, $\big\lVert\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T\big\rVert_2\le K\sum_ma_m\lVert\mathbf v_m-\mathbf c\rVert$. Since $\mathbf c$ is a convex combination of the $\mathbf v_i$, $\lVert\mathbf c\rVert\le V$, so $\lVert\mathbf v_m-\mathbf c\rVert\le2V$. Let $i^*$ be the index with $a_{i^*}\ge1-\varepsilon$; then $\sum_{m\ne i^*}a_m\le\varepsilon$, so the terms with $m\ne i^*$ add up to $\le2V\varepsilon$. For the term $m=i^*$, $\mathbf c-\mathbf v_{i^*}=\sum_{i\ne i^*}a_i(\mathbf v_i-\mathbf v_{i^*})$ gives $\lVert\mathbf v_{i^*}-\mathbf c\rVert\le2V\varepsilon$, and with $a_{i^*}\le1$ this term is also $\le2V\varepsilon$. The sum is $\le K\cdot4V\varepsilon$, that is, $\le4VK\varepsilon/\sqrt D$.
+Explanation: if the components of $\mathbf q,\mathbf k$ are independent with mean $0$ and variance $1$, the variance of $\mathbf q\cdot\mathbf k$ is $D$, so the spread of the scores grows like $\sqrt D$; without the division the softmax piles onto one key ($\varepsilon\approx0$), the bound above is close to $0$, and the gradient to $\mathbf q$ vanishes. Dividing by $\sqrt D$ makes the score variance $1$ and avoids the saturation.`,
+        rubric: R`
+- 1. The Jacobian $\diag(\mathbf a)-\mathbf a\mathbf a^T$ — 4 points
+- 1. (i), (ii), (iii), 3 points each, 9 points (including the variance form) 
+- 2. $\partial\mathbf c/\partial e_m=a_m(\mathbf v_m-\mathbf c)$ and the chain rule — 13 points
+- 3. $\lVert\mathbf v_m-\mathbf c\rVert\le2V$ and the bound on the terms other than the dominant key — 8 points
+- 3. The dominant key's term $\lVert\mathbf v_{i^*}-\mathbf c\rVert\le2V\varepsilon$ — 8 points
+- 3. The explanation of what happens without dividing by $\sqrt D$ — 8 points` },
+      { q: R`The two parts below are independent, and the input matrix is $X\in\mathbb R^{N\times d}$.
+1. For masked self-attention $\mathrm{Attn}_M(X)=\mathrm{softmax}\big(QK^T/\sqrt{D_k}+M\big)V$ ($M_{ji}=0$ for $i\le j$, $-\infty$ for $i>j$), show that the first row is $\mathbf y_1=\mathbf v_1$. For $N=2$, $d_v=1$, all scores $0$ (that is, $W_q=0$), and $v_1=1$, $v_2=3$, find $Y=\mathrm{Attn}_M(X)$ and the output $\mathrm{Attn}_M(PX)$ for the input $PX$ with the two rows swapped, and show that $\mathrm{Attn}_M(PX)\ne P\,\mathrm{Attn}_M(X)$. State which equality in the proof of the permutation equivariance of self-attention breaks because of the mask.
+2. Derive that the Jacobian of layer normalization $\mathbf y=\mathrm{LN}(\mathbf h)=(\mathbf h-\mu\mathbf 1)/\sigma$ ($\varepsilon=0$, $\boldsymbol\gamma=\mathbf 1$, $\boldsymbol\beta=\mathbf 0$) is $\dfrac{\partial\mathbf y}{\partial\mathbf h}=\dfrac1\sigma\Big(I-\dfrac1d\mathbf 1\mathbf 1^T-\dfrac1d\mathbf y\mathbf y^T\Big)$, show that multiplying this matrix by $\mathbf 1$ and by $\mathbf y$ gives $\mathbf 0$, and explain the relation to shift and scale invariance.`,
+        sol: R`
+**1.** The mask of the first row is $(0,-\infty,\dots,-\infty)$, so $A_{1i}=0$ for $i>1$, and since the row sums to $1$, $A_{11}=1$, that is, $\mathbf y_1=\mathbf v_1$. With all scores $0$ the second row is $(\frac12,\frac12)$, so $A=\begin{pmatrix}1&0\\\frac12&\frac12\end{pmatrix}$ and $V=(1,3)^T$, giving $Y=(1,\,2)^T$. For the swapped input $V'=(3,1)^T$ and the scores are still $0$, so the same $A$ gives $\mathrm{Attn}_M(PX)=(3,\,2)^T$. On the other hand $P\,\mathrm{Attn}_M(X)=(2,\,1)^T$, so $\mathrm{Attn}_M(PX)\ne P\,\mathrm{Attn}_M(X)$.
+Where it breaks: in the equivariance proof, $\sigma(PEP^T)=P\sigma(E)P^T$, but with the mask added, $PEP^T+M$ differs from $P(E+M)P^T=PEP^T+PMP^T$, because $PMP^T\ne M$ (the mask has a lower-triangular structure that fixes positions and does not commute with permutations). That is why masked attention can tell the order even without a positional encoding.
+**2.** $\partial\mu/\partial h_j=1/d$, and in $\sigma^2=\frac1d\sum_i(h_i-\mu)^2$ the derivative through $\mu$ drops out because $\sum_i(h_i-\mu)=0$, so $\frac{\partial\sigma^2}{\partial h_j}=\frac2d(h_j-\mu)$, that is, $\frac{\partial\sigma}{\partial h_j}=\frac{h_j-\mu}{d\sigma}$. Differentiating $y_i=(h_i-\mu)/\sigma$ by the quotient rule,
+$$\frac{\partial y_i}{\partial h_j}=\frac{\delta_{ij}-1/d}\sigma-\frac{(h_i-\mu)}{\sigma^2}\cdot\frac{h_j-\mu}{d\sigma}=\frac1\sigma\Big(\delta_{ij}-\frac1d-\frac{y_iy_j}d\Big).$$
+This is the given matrix. Using $\mathbf 1^T\mathbf y=0$ and $\lVert\mathbf y\rVert^2=d$, multiplying by $\mathbf 1$ gives $\frac1\sigma\big(\mathbf 1-\mathbf 1-\frac1d\mathbf y(\mathbf y^T\mathbf 1)\big)=\mathbf 0$, and multiplying by $\mathbf y$ gives $\frac1\sigma\big(\mathbf y-\mathbf 0-\frac1d\mathbf y\cdot d\big)=\mathbf 0$.
+Interpretation: moving $\mathbf h$ in the direction of $\mathbf 1$ (a shift) or of $\mathbf y$ (a scaling, the direction of $\mathbf h-\mu\mathbf 1$) does not change the output; this is the differential form of $\mathrm{LN}(a\mathbf h+b\mathbf 1)=\mathrm{LN}(\mathbf h)$. Since $\mathbf 1/\sqrt d$ and $\mathbf y/\sqrt d$ are orthogonal unit vectors, this matrix is an orthogonal projection multiplied by $1/\sigma$.`,
+        rubric: R`
+- 1. $A_{11}=1$ and $\mathbf y_1=\mathbf v_1$ for the first row — 5 points
+- 1. Computing $\mathrm{Attn}_M(X)$, $\mathrm{Attn}_M(PX)$, and $P\,\mathrm{Attn}_M(X)$ and comparing them — 10 points
+- 1. Pointing out the equality that breaks ($PMP^T\ne M$) — 10 points
+- 2. The Jacobian via $\partial\mu$, $\partial\sigma$, and the quotient rule — 13 points
+- 2. Multiplying by $\mathbf 1$ and $\mathbf y$ to get $\mathbf 0$ — 6 points
+- 2. The relation to shift and scale invariance — 6 points` },
+    ],
+  }
   });
 })();
