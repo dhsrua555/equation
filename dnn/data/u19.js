@@ -38,6 +38,9 @@ window.EM = window.EM || { chapters: [], exams: [] };
 RNN은 순서열 $x_1,\dots,x_T$를 한 원소씩 읽으며 시점마다 은닉 상태 $h_t$를 갱신한다. 출력을 언제 내느냐에 따라 one to many, many to one, many to many(입력을 다 읽은 뒤 내는 지연형, 시점마다 내는 동기형)로 나뉘고, one to one은 순환이 없는 보통의 신경망이다.
 :::
 
+:::fig rnnshapes
+:::
+
 **필기의 시점 표시** (슬라이드 2). many to one에는 입력 칸 아래에 $t=1,2,3$을 적고 출력은 $t=3$에만 있습니다. 지연형 many to many에는 입력에 $t=1,2,3$, 출력에 $t=4,5,6$을 적었습니다. 번역에서 문장을 끝까지 읽어야 첫 단어를 정할 수 있는 것과 같습니다.
 
 **왜 MLP로는 안 되는가.** MLP의 입력 크기는 고정되어 있어 길이가 다른 문장을 그대로 넣을 수 없고, 가장 긴 길이에 맞춰 0을 채우면 매개변수가 길이에 비례해 늘어납니다. 더 큰 문제는 위치마다 다른 가중치를 쓰므로 3번째 자리에서 배운 패턴(예: “not good”)을 10번째 자리에서 다시 배워야 한다는 점입니다. RNN은 **모든 시점에 같은 가중치**를 써서 두 문제를 함께 풉니다(19.2).
@@ -223,6 +226,9 @@ $t-s$가 큰 항, 곧 먼 과거로 가는 경로에는 $(1-h_k^2)W$가 $t-s$번
 $$h_0=0,\qquad h_\ell=q_{\tilde\theta}(h_{\ell-1},u_\ell)\quad(\ell=1,\dots,L),\qquad f_\theta(X)=Ah_L+b,$$
 $q_{\tilde\theta}:\mathbb R^n\times\mathbb R^m\to\mathbb R^n$, 예를 들어 $q(h,u)=\phi(Wh+Uu+c)$로 둡니다. $\theta=(A,b,\tilde\theta)$, $A\in\mathbb R^{1\times n}$, $b\in\mathbb R$, $\tilde\theta\in\mathbb R^p$이고 $f_\theta(X)\in\mathbb R$입니다. 출력이 마지막에 하나뿐인 many to one 모형입니다.
 
+:::fig rnnchain
+:::
+
 **바깥 매개변수** (슬라이드 10). 손실 $\mathcal L(f_\theta(X),Y)$에 연쇄법칙을 쓰면
 $$\frac{\partial\mathcal L(f_\theta(X),Y)}{\partial\theta}=\Big(\frac{\partial\mathcal L}{\partial f}(f_\theta(X),Y)\Big)\frac{\partial f_\theta(X)}{\partial\theta},\qquad\frac{\partial f_\theta(X)}{\partial A}=h_L,\quad\frac{\partial f_\theta(X)}{\partial b}=1,\quad\frac{\partial f_\theta(X)}{\partial\tilde\theta}=A\frac{\partial h_L}{\partial\tilde\theta}.$$
 ($\partial f/\partial A=h_L$을 $A$와 같은 모양 $1\times n$으로 놓으면 $h_L^T$입니다.)
@@ -308,6 +314,9 @@ $$\mathbf g\leftarrow\min\Big(1,\frac{v}{\lVert\mathbf g\rVert}\Big)\mathbf g=\b
 $\mathbf g=(3,4)$, $v=2$이면 잘라낸 기울기는? $v=10$이면?
 ---
 $\lVert\mathbf g\rVert=5>2$이므로 $\frac25(3,4)=(1.2,1.6)$이고 크기는 2입니다. $v=10$이면 $5\le10$이라 그대로 $(3,4)$. 슬라이드의 max를 쓰면 $v=10$에서 $\max(1,2)\mathbf g=(6,8)$로 오히려 커집니다.
+:::
+
+:::fig clipfig
 :::
 
 **기울기 소실** (슬라이드 16). 직관적으로 기울기 소실은 기울기 신호가 앞쪽 층(먼 과거의 시점)에 닿지 않는 것입니다. RNN에서 $\partial\mathcal L/\partial h_L$은 작지 않아도

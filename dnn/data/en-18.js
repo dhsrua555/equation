@@ -7,8 +7,17 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     'Maurey 보조정리: 무작위 꼭짓점의 평균': 'Maurey’s lemma: averages of random vertices',
     '코사인 능선과 헤비사이드 계단': 'A cosine ridge and its Heaviside staircase',
     '계단 근사, K = 5': 'staircase, K = 5',
+    'Ω 밖으로 연장하기': 'Extending f beyond Ω',
+    'Ω (f가 정의된 곳)': 'Ω (where f is defined)',
+    'f (Ω 안)': 'f (inside Ω)',
+    '부드러운 연장': 'smooth extension',
+    '급하게 이은 연장': 'abrupt extension',
+    '격자 근사': 'Lattice approximation',
+    '밀도 dΛ/dξ와 칸의 질량 Λ(I': 'density dΛ/dξ and cell masses Λ(I',
   });
   Object.assign(EM.en.fig, {
+    extend: R`$f$ is defined only on $\Omega=[-1,1]$ (light band). There are infinitely many ways to continue it beyond $\Omega$, all with $f_e|_\Omega=f$. A smooth extension that decays to $0$ (black) has almost no high frequencies, so $\int(1+|\xi|)^s|\hat f_e|d\xi$ is small; one that oscillates wildly outside (red) has a large integral because of its high frequencies. The norm of $B^s(\Omega)$ is the value for the extension with the **smallest integral** (the infimum).`,
+    lattice: R`Top: one component $q_x(\xi)$ of the cosine ridge (for fixed $x$; the phase $\kappa(\xi)$ is odd). Open dots are its values $q_x(\theta)$ at lattice points $\theta\in\frac1n\mathbb Z$ ($n=2$). Bottom: the density of the probability measure $\Lambda$ (red curve) and the mass $\Lambda(I_\theta)$ in each cell $I_\theta$ around a lattice point (bar areas). The areas are all $\ge0$ and sum to $1$. So replacing $f(x)-f(0)=C\int q_x\,d\Lambda$ by the lattice sum $C\sum_\theta q_x(\theta)\Lambda(I_\theta)$ gives a **convex combination** of the functions $x\mapsto Cq_x(\theta)$, and finer cells ($n\to\infty$) bring it closer to the original value.`,
     maurey: R`The vertices $h_1,\dots,h_5$ are drawn $N$ times with probabilities $\alpha=(0.1,0.3,0.15,0.25,0.2)$ and averaged; each cloud has 40 such averages. Every average lies in the convex hull (shaded region), and its expectation is $f^*=\sum_j\alpha_jh_j$. With $N=32$ (filled dots) the averages gather much more tightly around $f^*$ than with $N=4$ (open dots), because the mean squared distance $\frac1N(\E\lVert X_1\rVert^2-\lVert f^*\rVert^2)$ is inversely proportional to $N$.`,
     barronstep: R`The cosine ridge $\varphi(t)=\frac{\cos(2\pi|\xi|t+\kappa)-\cos\kappa}{2\pi|\xi|}$ with $|\xi|=0.6$, $\kappa=0.9$, and the Heaviside staircase that jumps by $\varphi(t_k)-\varphi(t_{k-1})$ at $t_k=\pm\frac k5$. Since $\varphi(0)=0$ and $|\varphi'|\le1$, the error is at most $\frac15$ everywhere, and the absolute step heights add up to at most the total variation $\int_{-1}^1|\varphi'|dt\le2$. This is where the height bound $2C$ of $G_C$ comes from.`,
   });
@@ -62,6 +71,9 @@ By symmetry, $\int_{-\infty}^{\infty}2\pi|\xi|e^{-\pi\xi^2}d\xi=2\int_0^\infty2\
 **When the domain is a ball** (W8 Wed notes p. 8). Networks are actually used on a bounded region $\Omega$ such as the unit ball. A function $f$ defined only on $\Omega$ has no Fourier transform, so we use the transform of an **extension** $f_e$ to all of $\mathbb R^d$ ($f_e|_\Omega=f$). There are infinitely many extensions, so we take the best one:
 $$B^s(\Omega)=\Big\{f:\Omega\to\mathbb C\ :\ \lVert f\rVert_{B^s(\Omega)}:=\inf_{f_e|_\Omega=f}\int_{\mathbb R^d}(1+|\xi|)^s|\hat f_e(\xi)|\,d\xi<\infty\Big\}.$$
 In the picture of the notes, the blue interval is $\Omega$, the red curve on it is $f$, and the green lines outside are the extension ("among the extensions of $f$, those equal to $f$ on $\Omega$"). Bending sharply outside creates high frequencies and enlarges the integral, so the infimum is set by the smoothest way of continuing. Since $|2\pi\xi|\le2\pi(1+|\xi|)$, a small $\lVert f\rVert_{B^1(\Omega)}$ means a small Barron constant (for a good extension).
+
+:::fig extend
+:::
 
 :::warn Notation in the notes
 The notes write the subscript on and off, as in $\Gamma_{C_1}$ and $C_1$. It is the same constant, and this unit always writes $C$. $|\xi|$ is the Euclidean norm $\lVert\xi\rVert_2$.
@@ -203,6 +215,9 @@ $$\begin{aligned}f(x)-f(0)&=\int_{\mathbb R^d}|\hat f(\xi)|\big(\cos(2\pi\langle
 Defining a new measure $\Lambda$ by the density $d\Lambda(\xi)=\frac1C|2\pi\xi||\hat f(\xi)|\,d\xi$, $\Lambda$ is a probability measure on $\mathbb R^d$ (see the caution below), and
 $$f(x)-f(0)=C\int_{\mathbb R^d}q_x(\xi)\,d\Lambda(\xi),\qquad q_x(\xi):=\frac{\cos(2\pi\langle x,\xi\rangle+\kappa(\xi))-\cos\kappa(\xi)}{|2\pi\xi|}.\qquad(5)$$
 This integral is approximated by the sum $C\sum_\theta q_x(\theta)\Lambda(I_\theta)$ over the grid $\theta\in\frac1n\mathbb Z^d$ ($I_\theta$ a small cube containing $\theta$). Since $\Lambda(I_\theta)\ge0$ and they sum to 1, the sum is a **convex combination** of the functions $x\mapsto Cq_x(\theta)$. The picture in the notes: the original integral $f(x)-f(0)$ ← approximation → a convex combination.
+:::
+
+:::fig lattice
 :::
 
 :::warn The notes' Λ and "conti. even"

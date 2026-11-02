@@ -18,6 +18,29 @@
       return FK.fig(560, 250, '근사·일반화·최적화 오차', body,
         R`필기 첫 쪽의 그림을 다시 그린 것입니다. 상자는 우리가 고른 망 구조로 만들 수 있는 함수 전체(가설 클래스 $\mathcal F$)이고, 정말 원하는 함수 $f^*$(이상적 목표)는 보통 상자 밖에 있습니다. 실제로 얻는 함수 $f_{\mathrm{alg}}$에서 $f^*$까지의 거리는 세 조각입니다: 경사하강법이 경험적 위험의 최소점 $\hat f_n$에 못 미친 만큼(최적화), 유한한 자료로 고른 $\hat f_n$이 클래스 안의 최선 $f_{\mathcal F}$보다 나쁜 만큼(일반화), 클래스의 최선조차 목표에 못 미치는 만큼(근사). 이 단원은 마지막 화살표를 다룹니다.`);
     },
+    // 17.3 dense vs not dense (W8 Wed notes p.2: a closed curve, a red dotted curve around it, a blue point)
+    dense() {
+      const blob = (cx, cy) => { let d = ''; for (let k = 0; k <= 60; k++) { const t = (2 * Math.PI * k) / 60, r = 92 + 9 * Math.sin(3 * t + 0.5) + 6 * Math.cos(2 * t); d += (k ? 'L' : 'M') + FK.f1(cx + 1.15 * r * Math.cos(t)) + ',' + FK.f1(cy + 0.85 * r * Math.sin(t)); } return d + 'Z'; };
+      const inb = (x, y, cx, cy) => { const a = Math.atan2((y - cy) / 0.85, (x - cx) / 1.15), t = a, r = 92 + 9 * Math.sin(3 * t + 0.5) + 6 * Math.cos(2 * t); return Math.hypot((x - cx) / 1.15, (y - cy) / 0.85) < r - 6; };
+      const [lx, ly] = [140, 128], [rx, ry] = [420, 128];
+      let s = FK.P(blob(lx, ly), 'bm') + FK.P(blob(rx, ry), 'bm');
+      // left: a grid of points of D fills X (every disc of radius 20 holds one)
+      const fx = 168, fy = 104;
+      for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) {
+        const x = lx + i * 17 + (j % 2 ? 8 : 0) + 3 * Math.sin(5 * i + j), y = ly + j * 15 + 3 * Math.cos(3 * j + i);
+        if (inb(x, y, lx, ly)) s += FK.C(FK.f1(x), FK.f1(y), 1.8, 'dotf');
+      }
+      s += FK.C(fx, fy, 22, 'rx') + FK.C(fx, fy, 3.5, 'jt') + FK.T(fx + 6, fy - 26, 'f', { c: 'it', a: 'start' }) + FK.T(fx + 27, fy + 4, 'ε', { c: 'rl', a: 'start' });
+      s += FK.T(lx, 244, '조밀한 D: 어느 f의 둘레에도 D의 원소가 있다', { c: 'em' });
+      // right: D' is a line (a closed subspace); a disc around f misses it
+      s += FK.L(rx - 90, ry + 70, rx + 90, ry - 50, 'vl') + FK.T(rx + 70, ry - 62, "D′", { c: 'it' });
+      const px = rx - 30, py = ry - 40;
+      s += FK.C(px, py, 22, 'rx') + FK.C(px, py, 3.5, 'jt') + FK.T(px + 6, py - 26, 'f', { c: 'it', a: 'start' }) + FK.T(px + 27, py + 4, 'ε', { c: 'rl', a: 'start' });
+      s += FK.T(rx, 244, '조밀하지 않은 D′: 원판이 D′에 닿지 않는다', { c: 'em' });
+      s += FK.T(lx, 22, '공간 X', { c: 'em' }) + FK.T(rx, 22, '공간 X', { c: 'em' });
+      return FK.fig(560, 256, '조밀한 집합과 조밀하지 않은 집합', s,
+        R`왼쪽은 필기 그림을 다시 그린 것입니다: 닫힌 곡선 안이 공간 $X$이고, 점들이 부분집합 $D$입니다. $f$를 중심으로 반지름 $\varepsilon$인 원판(붉은 원)을 아무리 작게 잡아도 $D$의 점이 들어 있으면 $D$는 $X$에서 조밀합니다. 오른쪽의 직선 $D'$은 이 조건을 만족하지 못합니다. $f$에서 $D'$까지의 거리보다 작은 $\varepsilon$을 고르면 원판 안에 $D'$의 점이 없기 때문입니다. 직선은 닫혀 있어서 $\overline{D'}=D'\ne X$입니다.`);
+    },
     // 17.6 a continuous function and staircases of steep logistic sigmoids, N = 6 and N = 24
     stair() {
       const f = (x) => 0.2 + 0.6 * x + 0.15 * Math.sin(7 * x);

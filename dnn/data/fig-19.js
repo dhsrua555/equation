@@ -70,5 +70,58 @@
       return FK.fig(560, 200, '잘린 시간 역전파', body,
         R`잘린 BPTT(슬라이드 9). 은닉 상태는 순서열 처음부터 끝까지 앞으로 넘기지만(아래 화살표), 손실과 역전파는 최근 $k$걸음의 덩어리(점선 상자) 안에서만 계산합니다. 덩어리의 첫 상태 $h_{t_0}$은 앞 덩어리에서 넘겨받은 상수로 다루므로, 그보다 앞으로 가는 기울기 경로는 잘립니다.`);
     },
+    // 19.1 the five input/output structures (slides 2–3)
+    rnnshapes() {
+      const P = [[[0], 1, [0], 'one to one', '보통의 망'], [[0], 3, [0, 1, 2], 'one to many', '이미지 → 설명문'], [[0, 1, 2], 3, [2], 'many to one', '동영상 분류'],
+        [[0, 1, 2], 5, [2, 3, 4], 'many to many', '번역 (지연형)'], [[0, 1, 2], 3, [0, 1, 2], 'many to many', '동영상 분할 (동기형)']];
+      const sp = 26, gap = 40;
+      let x0 = 38, s = '';
+      P.forEach(([ins, nh, outs, name, ex]) => {
+        const cx = (k) => x0 + k * sp + 10;
+        for (let k = 0; k < nh; k++) {
+          s += FK.R(cx(k) - 10, 88, 20, 18, 'bm2');
+          if (k) s += FK.A(cx(k - 1) + 10, 97, cx(k) - 10, 97, 'ld', 5);
+        }
+        ins.forEach((k) => { s += FK.R(cx(k) - 10, 150, 20, 18, 'bm') + FK.A(cx(k), 150, cx(k), 108, 'ax', 5); });
+        outs.forEach((k) => { s += FK.R(cx(k) - 10, 28, 20, 18, 'bm') + FK.A(cx(k), 88, cx(k), 48, 'ax', 5); });
+        const mid = x0 + (nh * sp - 6) / 2;
+        s += FK.T(mid, 192, name, { s: 11, c: 'em' }) + FK.T(mid, 207, ex, { s: 10 });
+        x0 += nh * sp + gap;
+      });
+      s += FK.T(4, 20, '출력', { s: 10, a: 'start' }) + FK.T(4, 82, '은닉', { s: 10, a: 'start' }) + FK.T(4, 144, '입력', { s: 10, a: 'start' });
+      return FK.fig(620, 220, 'RNN의 다섯 가지 입출력 구조', s,
+        R`슬라이드 2–3의 다섯 구조. 아래 칸이 입력, 가운데가 은닉 상태(오른쪽 화살표로 이어져 상태가 시간을 따라 넘어갑니다), 위 칸이 출력입니다. 지연형 many to many는 입력을 다 읽은 뒤(시점 $1\text{–}3$) 출력을 내기 시작합니다(시점 $4\text{–}6$). 동기형은 시점마다 입력 하나에 출력 하나입니다.`);
+    },
+    // 19.5 the multi-cell RNN with one output at the end (slides 10, 13 and notes)
+    rnnchain() {
+      const X = [60, 160, 260, 400], L = ['h_0', 'h_1', 'h_2', 'h_{L−1}'];
+      let s = '';
+      X.forEach((x, k) => { s += FK.C(x, 80, 18, 'nd') + FK.T(x, 84, L[k], { c: 'em', s: 11 }); });
+      s += FK.C(500, 80, 18, 'nd') + FK.T(500, 84, 'h_L', { c: 'em' }) + FK.T(330, 84, '· · ·', { s: 16 });
+      [[60, 160, 'u_1'], [160, 260, 'u_2'], [400, 500, 'u_L']].forEach(([a, b, u]) => {
+        const m = (a + b) / 2;
+        s += FK.A(a + 18, 80, b - 18, 80, 'ld', 7) + FK.T(m, 70, 'q', { c: 'lb' }) + FK.A(m, 160, m, 92, 'ax', 7) + FK.T(m, 176, u, { c: 'it' });
+      });
+      s += FK.A(260 + 18, 80, 300, 80, 'ld', 7) + FK.A(360, 80, 400 - 18, 80, 'ld', 7);
+      s += FK.A(500, 62, 500, 30, 'ax', 7) + FK.T(500, 20, 'f_θ(X) = A h_L + b', { c: 'em' })
+        + FK.T(280, 130, '같은 q가 매 걸음 쓰인다', { s: 11, c: 'rl' }) + FK.T(60, 110, '= 0', { s: 11 });
+      return FK.fig(560, 190, '여러 단계 RNN', s,
+        R`여러 셀 RNN(슬라이드 10, 13과 필기). $h_0=0$에서 시작해 $h_\ell=q_{\tilde\theta}(h_{\ell-1},u_\ell)$를 되풀이하고, 마지막 상태 $h_L$에서 $f_\theta(X)=Ah_L+b$를 냅니다. 순환 매개변수 $\tilde\theta$는 모든 $q$에 같이 들어가므로 $\partial\mathcal L/\partial\tilde\theta=\sum_\ell\frac{\partial\mathcal L}{\partial h_\ell}\frac{\partial h_\ell}{\partial\tilde\theta}$처럼 걸음마다의 기여를 더합니다.`);
+    },
+    // 19.6 gradient clipping on a cliff (slide 15)
+    clipfig() {
+      const curve = (x) => `M${x},44 C${x + 18},96 ${x + 32},120 ${x + 70},120 L${x + 108},120 C${x + 124},120 ${x + 128},60 ${x + 140},30 L${x + 230},30`;
+      let s = FK.P(curve(20), 'ax') + FK.P(curve(300), 'ax');
+      // left panel: start on the wall, one huge step leaves the valley
+      s += FK.C(148, 68, 4, 'sp') + FK.A(144, 66, 30, 50, 'rx', 8) + FK.T(150, 162, '‖g‖이 너무 커서', { s: 11, c: 'rl' }) + FK.T(150, 177, '계곡 밖으로 튄다', { s: 11, c: 'rl' })
+        + FK.T(150, 205, '클리핑 없음', { c: 'em' });
+      // right panel: same gradient direction, length capped at v
+      s += FK.C(428, 68, 4, 'sp') + FK.A(426, 69, 400, 110, 'gd', 8) + FK.T(430, 162, '길이를 v로 줄여', { s: 11, c: 'lb' }) + FK.T(430, 177, '방향만 따른다', { s: 11, c: 'lb' })
+        + FK.T(430, 205, '클리핑 있음', { c: 'em' });
+      s += FK.T(150, 24, 'J(w)', { s: 11, c: 'it' }) + FK.T(430, 24, 'J(w)', { s: 11, c: 'it' })
+        + FK.T(250, 135, 'w', { s: 11, c: 'it' }) + FK.T(530, 135, 'w', { s: 11, c: 'it' });
+      return FK.fig(560, 220, '기울기 잘라내기의 효과', s,
+        R`슬라이드 15의 손실면 그림을 1차원 단면으로 다시 그린 것입니다. 계곡 옆의 가파른 절벽에서는 $\lVert g\rVert$가 아주 커서(왼쪽) 한 걸음에 계곡 밖으로 튀어 나가 학습이 망가집니다. 오른쪽은 $g\leftarrow\min(1,v/\lVert g\rVert)g$로 걸음 길이를 문턱 $v$ 이하로 줄입니다. 방향은 그대로이므로 계곡 쪽으로 내려가되 걸음이 짧습니다.`);
+    },
   });
 })();
