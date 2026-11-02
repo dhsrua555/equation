@@ -299,6 +299,17 @@
       [1, 2, 3].forEach((s) => { ctx.strokeStyle = c.b; ctx.globalAlpha = 0.45; draw(run(0.985, 0.012, s * 17)); });
       ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.2; draw(run(0.985, 0, 0));
     },
+    // 21 — softmax weights of 16 keys sorted by size: logits √D·g without the 1/√D scaling pile onto one key as D grows, g itself (scaled) stays spread
+    attn(ctx, w, h, c) {
+      const T = frame(w, h, 0, 16, -0.04, 1.08);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, 0, 0, 16, 0);
+      const g = Array.from({ length: 16 }, (_, i) => 1.3 * noise(i * 5 + 3));
+      const soft = (s) => { const e = g.map((v) => Math.exp(s * v - s * Math.max(...g))); const z = e.reduce((a, b) => a + b, 0); return e.map((v) => v / z).sort((a, b) => b - a); };
+      const draw = (P) => { ctx.beginPath(); P.forEach((y, k) => (k ? ctx.lineTo(T.X(k + 0.5), T.Y(y)) : ctx.moveTo(T.X(k + 0.5), T.Y(y)))); ctx.stroke(); };
+      ctx.lineWidth = 1.2;
+      [4, 16, 64, 256].forEach((D, i) => { ctx.strokeStyle = c.a; ctx.globalAlpha = 0.4 + 0.18 * i; draw(soft(Math.sqrt(D))); });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.4; draw(soft(1));
+    },
     // exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);

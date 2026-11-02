@@ -309,7 +309,7 @@ $$\operatorname{Rad}_n(\mathcal F):=\E\Big[\sup_{f\in\mathcal F}\frac1n\sum_{i=1
 The expectation is over $\xi$ and (when the sample is random) over $z$. Fixing the sample $S$ and taking the expectation over $\xi$ only gives the empirical Rademacher complexity $\widehat{\operatorname{Rad}}_S(\mathcal F)$.
 :::
 
-**Two extremes.** For a single function ($\mathcal F=\{f\}$), $\E\sum_i\xi_if(z_i)=0$, so the complexity is 0. If the class can produce every sign pattern $\pm1$ on $n$ distinct points, then for any $\xi$ we can choose $f$ with $f(z_i)=\xi_i$ and get $\frac1n\sum_i\xi_i^2=1$, the largest possible value. Real classes lie in between, and the complexity usually shrinks as $n$ grows.
+**Two extremes.** For a single function ($\mathcal F=\{f\}$), $\E\sum_i\xi_if(z_i)=0$, so the complexity is 0. If the class can produce every sign pattern $\pm1$ on $n$ distinct points, then for any $\xi$ we can choose $f$ with $f(z_i)=\xi_i$ and get $\frac1n\sum_i\xi_i^2=1$, the largest possible value for classes with $|f|\le1$ (the generalization bound below is stated for $[0,1]$-valued functions, so this extreme is about classes that output signs $\pm1$). Real classes lie in between, and the complexity usually shrinks as $n$ grows.
 
 :::key Rademacher generalization bound
 If the functions of $\mathcal F$ take values in $[0,1]$ and $z_1,\dots,z_n$ are i.i.d., then

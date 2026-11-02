@@ -1,13 +1,13 @@
-/* Quiz 2 대비 모의고사 A·B·C — 8주차 수요일–9주차 수요일(17–20단원)과 실습 코드(15.7절). 연습문제와 겹치지 않는 별도 문항이고,
+/* Quiz 2 대비 모의고사 A·B·C·D — 8주차 수요일–10주차 월요일(17–21단원)과 실습 코드(15.7절). 연습문제와 겹치지 않는 별도 문항이고,
    서술형에는 채점 기준을 붙였습니다. manifest에서 exams.js 앞에 두어 모의고사 페이지에서 Quiz 2 묶음이 먼저 보이게 합니다. */
 window.EM = window.EM || { chapters: [], exams: [] };
 (function () {
   const R = String.raw;
-  const G = 'Quiz 2 대비 · 8주차 수–9주차 수';
+  const G = 'Quiz 2 대비 · 8주차 수–10주차 월';
   EM.exams.push(
   {
     id: 'q2a', roman: 'A', group: G,
-    groupDesc: '17–20단원(보편 근사 정리, 바론 정리와 일반화, RNN과 시간 역전파, LSTM과 응용) 범위입니다. 9주차 수요일 필기에 ‘Quiz 2 (11/04)’ 표시가 있던 두 단계 RNN의 기울기는 A에, 근사·일반화의 필기 증명은 B에, 전 범위의 짧은 문항과 유도는 C에 모았습니다.',
+    groupDesc: '17–21단원(보편 근사 정리, 바론 정리와 일반화, RNN과 시간 역전파, LSTM과 응용, 어텐션과 트랜스포머) 범위입니다. 9주차 수요일 필기에 ‘Quiz 2 (11/04)’ 표시가 있던 두 단계 RNN의 기울기는 A에, 근사·일반화의 필기 증명은 B에, 전 범위의 짧은 문항과 유도는 C에, 10주차 월요일의 어텐션은 D에 모았습니다.',
     kind: 'Quiz 2 실전형 · RNN', title: 'RNN의 기울기와 LSTM', scopeText: '19–20 단원',
     desc: '필기에 Quiz 2 표시가 있던 두 단계 RNN의 기울기를 처음부터 쓰고, 벡터 BPTT의 소실·폭발, 기울기 잘라내기, LSTM 셀 경로를 증명합니다.',
     minutes: 50, plot: 'rnngrad',
@@ -170,6 +170,47 @@ $$\frac{\partial L}{\partial W}=\sum_{t=1}^T\delta_th_{t-1},\qquad\frac{\partial
 - 1. 두 위험의 정의 — 4점
 - 2. 세 항 분해와 가운데 항의 부호 — 8점
 - 3. 라데마허 한계와 $1/\sqrt n$의 해석 — 4점` },
+    ],
+  },
+  {
+    id: 'q2d', roman: 'D', group: G,
+    kind: 'Quiz 2 실전형 · 어텐션', title: '스케일 점곱 어텐션, 마스크, 층 정규화의 미분', scopeText: '21 단원',
+    desc: '소프트맥스의 야코비안과 어텐션 출력의 질의 기울기, 포화일 때의 상계, 마스크 어텐션이 순열 등변이 아닌 이유, 층 정규화의 야코비안을 유도합니다.',
+    minutes: 50, plot: 'attn',
+    problems: [
+      { ch: 'ch21', type: 'open', lv: 3, pts: 50, q: R`질의 $\mathbf q\in\mathbb R^D$, 키 $\mathbf k_1,\dots,\mathbf k_N\in\mathbb R^D$, 값 $\mathbf v_1,\dots,\mathbf v_N\in\mathbb R^{d_v}$인 스케일 점곱 어텐션 $e_i=\mathbf q\cdot\mathbf k_i/\sqrt D$, $\mathbf a=\mathrm{softmax}(\mathbf e)$, $\mathbf c=\sum_ia_i\mathbf v_i$를 생각하자.
+1. 소프트맥스의 야코비안이 $J=\diag(\mathbf a)-\mathbf a\mathbf a^T$임을 보이고, (i) $\mathrm{softmax}(\mathbf e+t\mathbf 1)=\mathrm{softmax}(\mathbf e)$, (ii) $J\mathbf 1=\mathbf 0$, (iii) 모든 $\mathbf u$에 대해 $\mathbf u^TJ\mathbf u\ge0$ (모든 $a_i>0$일 때 등호는 $\mathbf u\parallel\mathbf 1$일 때만)임을 보이시오.
+2. $\dfrac{\partial\mathbf c}{\partial\mathbf q}=\dfrac1{\sqrt D}\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T$임을 유도하시오.
+3. 모든 $i$에 대해 $\lVert\mathbf v_i\rVert\le V$, $\lVert\mathbf k_i\rVert\le K$이고 $\max_ia_i\ge1-\varepsilon$이면 $\big\lVert\partial\mathbf c/\partial\mathbf q\big\rVert_2\le4VK\varepsilon/\sqrt D$임을 보이고, $\sqrt D$로 나누지 않으면 왜 질의가 거의 학습되지 않는지 설명하시오.`,
+        sol: R`
+**1.** $a_i=e^{e_i}/Z$, $Z=\sum_je^{e_j}$에서 $\frac{\partial a_i}{\partial e_m}=\frac{\delta_{im}e^{e_i}}Z-\frac{e^{e_i}e^{e_m}}{Z^2}=a_i\delta_{im}-a_ia_m$, 곧 $J=\diag(\mathbf a)-\mathbf a\mathbf a^T$입니다. (i) 분자와 분모에 $e^t$가 같이 곱해져 약분됩니다. (ii) $(J\mathbf 1)_i=a_i-a_i\sum_ma_m=0$. (iii) $\mathbf u^TJ\mathbf u=\sum_ia_iu_i^2-\big(\sum_ia_iu_i\big)^2=\mathrm{Var}_{\mathbf a}(\mathbf u)\ge0$이고 모든 $a_i>0$이면 분산이 $0$일 때는 $\mathbf u$가 상수일 때뿐입니다.
+**2.** $\dfrac{\partial\mathbf c}{\partial e_m}=\sum_i\dfrac{\partial a_i}{\partial e_m}\mathbf v_i=a_m\mathbf v_m-a_m\sum_ia_i\mathbf v_i=a_m(\mathbf v_m-\mathbf c)$이고 $\dfrac{\partial e_m}{\partial\mathbf q}=\dfrac{\mathbf k_m^T}{\sqrt D}$입니다. 연쇄법칙으로 $\dfrac{\partial\mathbf c}{\partial\mathbf q}=\sum_m\dfrac{\partial\mathbf c}{\partial e_m}\dfrac{\partial e_m}{\partial\mathbf q}=\dfrac1{\sqrt D}\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T$.
+**3.** $\lVert\mathbf u\mathbf k^T\rVert_2=\lVert\mathbf u\rVert\lVert\mathbf k\rVert$와 삼각 부등식으로 $\big\lVert\sum_ma_m(\mathbf v_m-\mathbf c)\mathbf k_m^T\big\rVert_2\le K\sum_ma_m\lVert\mathbf v_m-\mathbf c\rVert$. $\mathbf c$는 $\mathbf v_i$의 볼록 결합이라 $\lVert\mathbf c\rVert\le V$, 따라서 $\lVert\mathbf v_m-\mathbf c\rVert\le2V$. $i^*$를 $a_{i^*}\ge1-\varepsilon$인 인덱스라 하면 $\sum_{m\ne i^*}a_m\le\varepsilon$이므로 $m\ne i^*$ 항의 합은 $\le2V\varepsilon$입니다. $m=i^*$ 항은 $\mathbf c-\mathbf v_{i^*}=\sum_{i\ne i^*}a_i(\mathbf v_i-\mathbf v_{i^*})$에서 $\lVert\mathbf v_{i^*}-\mathbf c\rVert\le2V\varepsilon$이고 $a_{i^*}\le1$이라 이 항도 $\le2V\varepsilon$. 합하면 $\le K\cdot4V\varepsilon$, 곧 $\le4VK\varepsilon/\sqrt D$.
+설명: $\mathbf q,\mathbf k$의 성분이 독립이고 평균 $0$, 분산 $1$이면 $\mathbf q\cdot\mathbf k$의 분산이 $D$라 점수의 폭이 $\sqrt D$로 커지고, 나누지 않으면 소프트맥스가 한 키에 몰려($\varepsilon\approx0$) 위 상계가 $0$에 가까워 $\mathbf q$로 가는 기울기가 사라집니다. $\sqrt D$로 나누면 점수의 분산이 $1$이라 포화를 피합니다.`,
+        rubric: R`
+- 1. 야코비안 $\diag(\mathbf a)-\mathbf a\mathbf a^T$ — 4점
+- 1. (i), (ii), (iii) 각 — 3점씩 9점 (분산 표현 포함)
+- 2. $\partial\mathbf c/\partial e_m=a_m(\mathbf v_m-\mathbf c)$와 연쇄법칙 — 13점
+- 3. $\lVert\mathbf v_m-\mathbf c\rVert\le2V$와 지배 키가 아닌 항의 상계 — 8점
+- 3. 지배 키의 항 $\lVert\mathbf v_{i^*}-\mathbf c\rVert\le2V\varepsilon$ — 8점
+- 3. $\sqrt D$로 나누지 않을 때의 설명 — 8점` },
+      { ch: 'ch21', type: 'open', lv: 3, pts: 50, q: R`아래 두 부분은 서로 독립이고, 입력 행렬은 $X\in\mathbb R^{N\times d}$이다.
+1. 마스크 셀프 어텐션 $\mathrm{Attn}_M(X)=\mathrm{softmax}\big(QK^T/\sqrt{D_k}+M\big)V$ ($M_{ji}=0$ ($i\le j$), $-\infty$ ($i>j$))에서 첫 행이 $\mathbf y_1=\mathbf v_1$임을 보이시오. $N=2$, $d_v=1$, 모든 점수가 $0$(곧 $W_q=0$)이고 $v_1=1$, $v_2=3$일 때 $Y=\mathrm{Attn}_M(X)$와 두 행을 맞바꾼 입력 $PX$의 출력 $\mathrm{Attn}_M(PX)$를 구하고, $\mathrm{Attn}_M(PX)\ne P\,\mathrm{Attn}_M(X)$임을 보이시오. 셀프 어텐션의 순열 등변성 증명의 어느 등식이 마스크 때문에 깨지는지 쓰시오.
+2. 층 정규화 $\mathbf y=\mathrm{LN}(\mathbf h)=(\mathbf h-\mu\mathbf 1)/\sigma$ ($\varepsilon=0$, $\boldsymbol\gamma=\mathbf 1$, $\boldsymbol\beta=\mathbf 0$)의 야코비안이 $\dfrac{\partial\mathbf y}{\partial\mathbf h}=\dfrac1\sigma\Big(I-\dfrac1d\mathbf 1\mathbf 1^T-\dfrac1d\mathbf y\mathbf y^T\Big)$임을 유도하고, 이 행렬에 $\mathbf 1$과 $\mathbf y$를 곱하면 $\mathbf 0$임을 보여 이동·스케일 불변과의 관계를 설명하시오.`,
+        sol: R`
+**1.** 첫 행의 마스크는 $(0,-\infty,\dots,-\infty)$라 $A_{1i}=0$ ($i>1$)이고 합이 $1$이므로 $A_{11}=1$, 곧 $\mathbf y_1=\mathbf v_1$입니다. 점수가 모두 $0$이면 둘째 행은 $(\frac12,\frac12)$이고 $A=\begin{pmatrix}1&0\\\frac12&\frac12\end{pmatrix}$, $V=(1,3)^T$이므로 $Y=(1,\,2)^T$. 두 행을 바꾼 입력에서는 $V'=(3,1)^T$, 점수는 여전히 $0$이라 같은 $A$를 써서 $\mathrm{Attn}_M(PX)=(3,\,2)^T$. 한편 $P\,\mathrm{Attn}_M(X)=(2,\,1)^T$이므로 $\mathrm{Attn}_M(PX)\ne P\,\mathrm{Attn}_M(X)$입니다.
+깨지는 곳: 등변성 증명의 $\sigma(PEP^T)=P\sigma(E)P^T$에서 점수 행렬에 마스크를 더한 $PEP^T+M$은 $P(E+M)P^T=PEP^T+PMP^T$와 다릅니다. $PMP^T\ne M$이기 때문입니다(마스크가 위치를 정하는 아래삼각 구조라서 순열과 교환되지 않음). 그래서 마스크 어텐션은 위치 부호 없이도 순서를 구별합니다.
+**2.** $\partial\mu/\partial h_j=1/d$이고 $\sigma^2=\frac1d\sum_i(h_i-\mu)^2$에서 $\sum_i(h_i-\mu)=0$이라 $\mu$ 쪽 미분 항이 사라져 $\frac{\partial\sigma^2}{\partial h_j}=\frac2d(h_j-\mu)$, 곧 $\frac{\partial\sigma}{\partial h_j}=\frac{h_j-\mu}{d\sigma}$. $y_i=(h_i-\mu)/\sigma$를 몫의 미분으로 미분하면
+$$\frac{\partial y_i}{\partial h_j}=\frac{\delta_{ij}-1/d}\sigma-\frac{(h_i-\mu)}{\sigma^2}\cdot\frac{h_j-\mu}{d\sigma}=\frac1\sigma\Big(\delta_{ij}-\frac1d-\frac{y_iy_j}d\Big).$$
+이것이 주어진 행렬입니다. $\mathbf 1^T\mathbf y=0$, $\lVert\mathbf y\rVert^2=d$를 쓰면 $\mathbf 1$을 곱했을 때 $\frac1\sigma\big(\mathbf 1-\mathbf 1-\frac1d\mathbf y(\mathbf y^T\mathbf 1)\big)=\mathbf 0$이고, $\mathbf y$를 곱했을 때 $\frac1\sigma\big(\mathbf y-\mathbf 0-\frac1d\mathbf y\cdot d\big)=\mathbf 0$입니다.
+해석: $\mathbf h$를 $\mathbf 1$ 방향(이동)으로 움직이거나 $\mathbf y$ 방향(스케일, $\mathbf h-\mu\mathbf 1$ 방향)으로 움직여도 출력이 변하지 않는다는 뜻으로, $\mathrm{LN}(a\mathbf h+b\mathbf 1)=\mathrm{LN}(\mathbf h)$의 미분 형태입니다. $\mathbf 1/\sqrt d$와 $\mathbf y/\sqrt d$가 서로 직교하는 단위벡터라 이 행렬은 $1/\sigma$배한 직교 사영입니다.`,
+        rubric: R`
+- 1. 첫 행의 $A_{11}=1$과 $\mathbf y_1=\mathbf v_1$ — 5점
+- 1. $\mathrm{Attn}_M(X)$, $\mathrm{Attn}_M(PX)$, $P\,\mathrm{Attn}_M(X)$의 계산과 비교 — 10점
+- 1. 깨지는 등식($PMP^T\ne M$)의 지적 — 10점
+- 2. $\partial\mu,\partial\sigma$와 몫의 미분으로 야코비안 — 13점
+- 2. $\mathbf 1$과 $\mathbf y$를 곱해 $\mathbf 0$ — 6점
+- 2. 이동·스케일 불변과의 관계 — 6점` },
     ],
   }
   );

@@ -21,10 +21,12 @@
         descEn: 'Measures, normed spaces and density, discriminatory functions and Cybenko’s universal approximation theorem, the Barron class and the dimension-free rate C²/N (Maurey’s lemma), population and empirical risk and Rademacher complexity. Week 8 Wednesday – Week 9 Monday.' },
       G: { name: '순환 신경망', en: 'Recurrent Networks', desc: '순차 데이터와 바닐라 RNN, 시간 역전파(BPTT)와 두 단계 RNN의 기울기, 기울기 폭발·소실과 잘라내기, LSTM의 게이트와 기울기 흐름, 언어 모델·기계 번역·이미지 캡셔닝. 9주차 수요일.',
         descEn: 'Sequence data and the vanilla RNN, backpropagation through time (BPTT) and the gradients of a two-step RNN, exploding and vanishing gradients and clipping, the gates and gradient flow of the LSTM, language models, machine translation, and image captioning. Week 9 Wednesday.' },
+      H: { name: '어텐션과 트랜스포머', en: 'Attention & Transformers', desc: '이미지 캡셔닝의 조건화와 소프트·하드 어텐션, 채널 어텐션과 귀납 편향, 스케일 점곱과 √D, 키·값·질의의 교차·셀프 어텐션과 순열 등변성, 위치 부호화와 마스크, 멀티헤드와 인코더 블록, 층 정규화와 어텐션의 비용. 10주차 월요일.',
+        descEn: 'Conditioning of image captioning and soft and hard attention, channel attention and inductive bias, scaled dot products and √D, cross- and self-attention with keys, values, and queries and permutation equivariance, positional encoding and masking, multi-head attention and the encoder block, layer normalization and the cost of attention. Week 10 Monday.' },
     },
     // the quiz-prep list on the 퀴즈풀이 page, split by quiz range (core/app.js quizMoreGroups)
     quizGroups: [
-      { title: 'Quiz 2 범위 · 8주차 수–9주차 수 (17–20단원)', en: 'Quiz 2 range · Week 8 Wed – Week 9 Wed (Units 17–20)', units: [17, 18, 19, 20] },
+      { title: 'Quiz 2 범위 · 8주차 수–10주차 월 (17–21단원)', en: 'Quiz 2 range · Week 8 Wed – Week 10 Mon (Units 17–21)', units: [17, 18, 19, 20, 21] },
       { title: 'Quiz 1 · Problem Set 1 범위 (1–14단원)', en: 'Quiz 1 and Problem Set 1 range (Units 1–14)', units: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
     ],
     // what the "§" chip and the section headline say about the source of a section
@@ -34,8 +36,8 @@
       const s = sec.src.replace(/(\d[\d–]*)쪽/g, "p. $1").replace(/실습 코드/g, "Practice code").replace(/문제 (\d)/g, "Problem $1").replace(/월/g, "Mon").replace(/수/g, "Wed").replace(/슬라이드/g, "slides").replace(/필기/g, "notes").replace(/보충/g, "supplement").replace(/종합/g, "combined");
       return /^(Problem Set|Practice code)/.test(s) ? s : `Lecture ${s}`;
     },
-    about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–9주차 강의 슬라이드와 수업 중 필기, 실습 코드, 그리고 Problem Set 1·Quiz 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
-    aboutEn: 'Exam-prep notes following the Week 1–9 lecture slides, in-class notes, and practice code of Prof. Youngjoon Hong’s “Mathematical Foundations of Deep Neural Networks” (Fall 2026), together with Problem Set 1 and Quiz 1. Each section names its lecture (week, day, slide numbers), and the proofs worked out by hand in class appear with the “lecture notes” mark, with the missing steps filled in.',
+    about: '홍영준 교수님의 「심층 신경망의 수학적 기초」(2026년 2학기) 1–10주차 강의 슬라이드와 수업 중 필기, 실습 코드, 그리고 Problem Set 1·Quiz 1을 따라 정리한 시험 대비 노트입니다. 절마다 해당 강의(주차·요일·슬라이드 번호)를 적었고, 필기로 풀어 주신 증명은 ‘강의 필기’ 표시와 함께 빠진 단계를 채워 실었습니다.',
+    aboutEn: 'Exam-prep notes following the Week 1–10 lecture slides, in-class notes, and practice code of Prof. Youngjoon Hong’s “Mathematical Foundations of Deep Neural Networks” (Fall 2026), together with Problem Set 1 and Quiz 1. Each section names its lecture (week, day, slide numbers), and the proofs worked out by hand in class appear with the “lecture notes” mark, with the missing steps filled in.',
     text: {
       refLabel: '강의',
       secChip: '§',
@@ -46,9 +48,9 @@
       howLede: '이 과목은 유도와 증명이 곧 시험 문제입니다. 개념 정리의 필기 상자로 유도를 따라가고, 증명 페이지에서 같은 논리를 처음부터 다시 쓴 뒤, 증명형 서술 문제로 스스로 재현해 보세요.',
       howLearn: '강의 순서대로 정의·정리·유도를 정리했습니다. 필기로 푸신 증명은 빠진 단계까지 채웠고, 증명 {proofs}개는 따로 검색할 수 있습니다.',
       howPractice: '객관식·단답형은 바로 채점되고, 증명형 서술 문제는 모범 답안과 채점 기준을 보고 스스로 채점합니다. 단답형은 35/69, 1/(1+e^(-2)), ln(2)처럼 식으로 입력합니다.',
-      catLede: '그림은 단원을 대표하는 곡선입니다. 회귀선의 회전, 베타 사후분포, 이진 엔트로피, 릿지 적합, 시그모이드, 마진, 활성화 함수, 계산 그래프, SGD 경로, 초기화, 학습률 스케줄, 하강 보조정리의 이차 상한, 나쁜 조건수에서의 모멘텀 경로, 합성곱(이동 평균), ImageNet 오류율, 가파른 시그모이드의 계단 근사, 무작위 N항 평균의 오차와 B²/N, 야코비안 곱의 폭발과 소실, LSTM 셀 경로가 지키는 기울기를 그렸습니다.',
+      catLede: '그림은 단원을 대표하는 곡선입니다. 회귀선의 회전, 베타 사후분포, 이진 엔트로피, 릿지 적합, 시그모이드, 마진, 활성화 함수, 계산 그래프, SGD 경로, 초기화, 학습률 스케줄, 하강 보조정리의 이차 상한, 나쁜 조건수에서의 모멘텀 경로, 합성곱(이동 평균), ImageNet 오류율, 가파른 시그모이드의 계단 근사, 무작위 N항 평균의 오차와 B²/N, 야코비안 곱의 폭발과 소실, LSTM 셀 경로가 지키는 기울기, 점수 폭에 따라 퍼지거나 몰리는 어텐션 가중치를 그렸습니다.',
       examsPageLede: '시험 범위에 맞춘 모의고사 {exams}회를 범위별로 묶었습니다(Quiz 2 대비가 먼저, 그다음 1–5주차). 맞춤 모의고사도 만들 수 있습니다. 시작하면 타이머가 돌아가고, 시간이 끝나면 자동으로 제출됩니다. 서술형은 제출 뒤 모범 풀이와 채점 기준을 보고 직접 채점합니다.',
-      examLede: '시간 제한 시험을 범위별로 나누었습니다. Quiz 2 대비(8주차 수–9주차 수, 17–20단원) 모의고사 A·B·C가 먼저 나오고, 그 아래가 1–5주차 범위(Problem Set 1 유형의 증명 모의고사 포함)입니다. 유도·증명 문항은 채점 기준을 보고 직접 채점합니다.',
+      examLede: '시간 제한 시험을 범위별로 나누었습니다. Quiz 2 대비(8주차 수–10주차 월, 17–21단원) 모의고사 A·B·C·D가 먼저 나오고, 그 아래가 1–5주차 범위(Problem Set 1 유형의 증명 모의고사 포함)입니다. 유도·증명 문항은 채점 기준을 보고 직접 채점합니다.',
       proofLede: '강의에 나온 정리와 유도 {proofs}개의 증명을 모았습니다. ‘강의 필기’ 표시는 교수님이 수업 중에 손으로 풀어 주신 증명이고, ‘판서에 없는 증명’은 슬라이드에 결과만 나오거나 수업에서 증명하지 않은 공식을 시험 대비로 증명한 것입니다. 공식 이름이나 영어 용어로 검색할 수 있습니다. 예: KL, Jensen, descent lemma, Xavier, push-through.',
       proofPlaceholder: '찾을 정리나 유도 (예: 정규방정식, Hessian, dual)',
       quizNav: '퀴즈풀이',
@@ -61,8 +63,8 @@
       howLearn: 'Definitions, theorems, and derivations are organized in lecture order. Proofs worked out by hand in class are completed down to the missing steps, and the {proofs} proofs can be searched separately.',
       howPractice: 'Multiple-choice and short-answer problems are graded immediately; proof-type written problems are self-graded against a model answer and a rubric. Enter short answers as expressions, such as 35/69, 1/(1+e^(-2)), ln(2).',
       howExam: 'Check your exam readiness with {exams} timed mock exams and custom mock exams drawn from the units you choose.',
-      catLede: 'Each figure is a curve that represents its unit: the rotation of a regression line, a beta posterior, the binary entropy, a ridge fit, the sigmoid, the margin, activation functions, a computational graph, SGD paths, initialization, learning rate schedules, the quadratic upper bound of the descent lemma, momentum paths under a bad condition number, convolution as a moving average, the ImageNet error, a staircase of steep sigmoids, the error of random N-term averages against B²/N, products of Jacobians that explode or vanish, and the gradient kept by the LSTM cell path.',
-      examLede: 'Timed exams, split by range. The Quiz 2 prep mock exams A, B, C (Week 8 Wed – Week 9 Wed, Units 17–20) come first, followed by the Weeks 1–5 range (including a proof mock exam of the Problem Set 1 type). Derivation and proof problems are self-graded with the rubric.',
+      catLede: 'Each figure is a curve that represents its unit: the rotation of a regression line, a beta posterior, the binary entropy, a ridge fit, the sigmoid, the margin, activation functions, a computational graph, SGD paths, initialization, learning rate schedules, the quadratic upper bound of the descent lemma, momentum paths under a bad condition number, convolution as a moving average, the ImageNet error, a staircase of steep sigmoids, the error of random N-term averages against B²/N, products of Jacobians that explode or vanish, the gradient kept by the LSTM cell path, and attention weights that spread or concentrate with the score scale.',
+      examLede: 'Timed exams, split by range. The Quiz 2 prep mock exams A, B, C, D (Week 8 Wed – Week 10 Mon, Units 17–21) come first, followed by the Weeks 1–5 range (including a proof mock exam of the Problem Set 1 type). Derivation and proof problems are self-graded with the rubric.',
       examsPageLede: 'There are {exams} mock exams matched to the exam ranges, grouped by range (Quiz 2 prep first, then Weeks 1–5), plus custom mock exams. Once you start, the timer runs, and your answers are submitted automatically when time is up. Written problems are self-graded after submission, using the model solution and the rubric.',
       proofLede: 'The proofs of the {proofs} theorems and derivations from the lectures. The “lecture notes” mark indicates proofs the professor worked out by hand in class; “판서에 없는 증명” (not in the lecture notes) marks formulas the slides only state or the class did not prove, proved here for the exam. Search by formula name or English term, e.g., KL, Jensen, descent lemma, Xavier, push-through.',
       quizLede: 'The four problems of Problem Set 1 and the two problems of Quiz 1 (Sep. 30) from class, arranged as problem → **key points** → solution → common mistakes. The exam comes in this format, so read the key points, write your own answer, and then open the solution to compare. Each problem links above to the units with the concepts and below to practice problems of the same type, and the quiz-prep practice problems by unit are collected at the bottom. The two-step RNN gradient derivation in the Week 9 Wednesday notes is marked “Quiz 2 (11/04)”, so Unit 19 has its own quiz-prep problems of that type.',
