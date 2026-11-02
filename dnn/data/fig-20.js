@@ -69,5 +69,86 @@
       return FK.fig(560, 228, '인코더-디코더 번역', s,
         R`인코더-디코더 번역(슬라이드 32). 인코더 LSTM이 “He loved to eat .”를 끝까지 읽은 마지막 상태 $\mathbf s$를 디코더의 시작 상태로 넘기고, 디코더는 NULL에서 출발하는 언어 모델로 “Er liebte zu essen .”를 한 단어씩 냅니다. 인코더 자리에 CNN을 두고 $\mathbf s$ 대신 이미지 특성을 넘기면 이미지 캡셔닝이 됩니다.`);
     },
+    // 20.1 the stacked weight matrix W of an LSTM (slide 19)
+    lstmstack() {
+      const NM = ['i', 'f', 'o', 'g'], ACT = ['σ', 'σ', 'σ', 'tanh'];
+      let s = FK.R(30, 30, 160, 160, 'bm');
+      for (let k = 1; k < 4; k++) s += FK.L(30, 30 + 40 * k, 190, 30 + 40 * k, 'dm ds');
+      s += FK.L(120, 30, 120, 190, 'dm ds');
+      NM.forEach((n, k) => { s += FK.T(24, 54 + 40 * k, n, { a: 'end', c: 'it' }) + FK.T(75, 54 + 40 * k, 'U_' + n, { s: 11 }) + FK.T(155, 54 + 40 * k, 'W_' + n, { s: 11 }); });
+      s += FK.T(110, 22, 'W: 4h × (h+d)', { c: 'em' }) + FK.T(75, 206, '앞 상태에 곱함', { s: 10 }) + FK.T(155, 206, '입력에 곱함', { s: 10 });
+      s += FK.T(208, 114, '×', { s: 20, c: 'em' });
+      s += FK.R(226, 60, 26, 100, 'bm') + FK.L(226, 110, 252, 110, 'dm ds') + FK.T(239, 52, '(h_{t−1}; x_t)', { s: 10 })
+        + FK.T(239, 86, 'h', { s: 11 }) + FK.T(239, 140, 'x', { s: 11 }) + FK.T(239, 176, '(h+d)', { s: 10 });
+      s += FK.T(272, 114, '=', { s: 20, c: 'em' });
+      s += FK.R(292, 30, 26, 160, 'bm');
+      for (let k = 1; k < 4; k++) s += FK.L(292, 30 + 40 * k, 318, 30 + 40 * k, 'dm ds');
+      s += FK.T(305, 22, '4h', { s: 11 });
+      NM.forEach((n, k) => {
+        const y = 50 + 40 * k;
+        s += FK.A(320, y, 372, y, 'ld', 6) + FK.R(374, y - 14, 50, 28, ACT[k] === 'tanh' ? 'bm2' : 'bm') + FK.T(399, y + 4, ACT[k], { c: 'em' })
+          + FK.A(426, y, 468, y, 'ld', 6) + FK.T(478, y + 4, n, { a: 'start', c: 'it' });
+      });
+      s += FK.T(399, 206, '활성화', { s: 10 }) + FK.T(480, 206, '각 h개', { s: 10 });
+      return FK.fig(560, 220, 'LSTM의 W 행렬', s,
+        R`슬라이드 19의 그림. 행렬 $W\in\mathbb R^{4h\times(h+d)}$에 쌓은 벡터 $(h_{t-1};x_t)$를 한 번 곱하면 길이 $4h$의 벡터가 나옵니다. 위에서부터 $h$개씩 자른 네 토막에 $\sigma,\sigma,\sigma,\tanh$를 적용한 것이 $i,f,o,g$입니다. $W$의 각 토막은 왼쪽 $h$열($U$, $h_{t-1}$에 곱함)과 오른쪽 $d$열($W$, $x_t$에 곱함)로 나뉩니다.`);
+    },
+    // 20.3 one slot of the RNN language model (slides 26–27)
+    lmstep() {
+      const cells = (x, y, hot, n = 8) => { let c = ''; for (let k = 0; k < n; k++) c += FK.R(x + 16 * k, y, 16, 16, k === hot ? 'bm2' : 'bm'); return c; };
+      let s = FK.T(200, 330, '<SOS>', { c: 'em' }) + FK.A(200, 320, 200, 292, 'ax', 7)
+        + cells(136, 272, 2) + FK.T(290, 280, 'x_t ∈ R^n', { a: 'start', s: 11 }) + FK.T(290, 294, '원-핫 부호화', { a: 'start', s: 10 })
+        + FK.A(200, 270, 200, 238, 'ax', 7) + FK.T(188, 258, 'W_e', { a: 'end', c: 'lb' })
+        + FK.R(150, 218, 100, 18, 'bm') + FK.T(290, 228, 'z_t ∈ R^d', { a: 'start', s: 11 }) + FK.T(290, 242, '연속 단어 임베딩', { a: 'start', s: 10 })
+        + FK.A(200, 216, 200, 170, 'ax', 7)
+        + FK.R(150, 138, 100, 32, 'bm2') + FK.T(200, 159, 'LSTM', { c: 'em' })
+        + FK.A(60, 154, 148, 154, 'ld', 7) + FK.T(30, 150, 'h_{t−1}', { c: 'it', s: 11 }) + FK.T(30, 166, 'c_{t−1}', { c: 'it', s: 11 })
+        + FK.A(252, 154, 340, 154, 'ld', 7) + FK.T(348, 150, 'h_t', { a: 'start', c: 'it', s: 11 }) + FK.T(348, 166, 'c_t', { a: 'start', c: 'it', s: 11 }) + FK.T(348, 182, '다음 칸으로', { a: 'start', s: 10 })
+        + FK.A(200, 136, 200, 100, 'ax', 7)
+        + FK.R(150, 82, 100, 18, 'bm') + FK.T(290, 92, 'h_t ∈ R^d', { a: 'start', s: 11 }) + FK.T(290, 106, '연속 출력 임베딩', { a: 'start', s: 10 })
+        + FK.A(200, 80, 200, 50, 'ax', 7) + FK.T(188, 70, 'W_d', { a: 'end', c: 'lb' })
+        + cells(136, 30, 4) + FK.T(290, 38, 'x̂_{t+1} ∈ R^n', { a: 'start', s: 11 }) + FK.T(290, 52, '분류층 (소프트맥스)', { a: 'start', s: 10 })
+        + FK.A(200, 28, 200, 14, 'ax', 6) + FK.T(200, 8, '"A"', { c: 'em', s: 11 });
+      return FK.fig(560, 344, 'RNN 언어 모델의 한 칸', s,
+        R`슬라이드 26–27의 한 칸. 토큰을 원-핫 $x_t$로 바꾸고, $W_e$로 연속 임베딩 $z_t=W_ex_t+b_e$로 옮겨 LSTM에 넣습니다. LSTM이 낸 $h_t$에 $W_d$를 곱해 어휘 전체의 점수 $\hat x_{t+1}=W_dh_t+b_d$를 얻고, 소프트맥스 뒤 가장 큰 칸이 다음 토큰입니다(여기서는 &lt;SOS&gt; 다음의 “A”). $h_t,c_t$는 옆으로 다음 칸에 넘어갑니다.`);
+    },
+    // 20.4 greedy vs probabilistic decoding (slide 30); the probabilities are an illustrative example
+    sampling() {
+      const p = [0.45, 0.25, 0.15, 0.08, 0.05, 0.02];
+      const panel = (x0, greedy) => {
+        let s = FK.L(x0, 180, x0 + 6 * 34 + 6, 180, 'ax');
+        p.forEach((v, k) => {
+          const h = v * 300, x = x0 + 6 + k * 34;
+          s += FK.R(x, 180 - h, 24, h, greedy && k === 0 ? 'bm2' : 'bm') + FK.T(x + 12, 176 - h, v.toFixed(2), { s: 10 }) + FK.T(x + 12, 196, String(k + 1), { s: 10 });
+        });
+        return s;
+      };
+      let s = panel(30, true) + panel(310, false);
+      s += FK.T(130, 22, '탐욕 (결정적)', { c: 'em' }) + FK.T(130, 38, 'x_t = argmax S(x_t)', { s: 11, c: 'it' })
+        + FK.A(60, 52, 60, 62, 'rx', 5) + FK.T(130, 214, '늘 1번 토큰', { s: 11, c: 'rl' })
+        + FK.T(410, 22, '확률적', { c: 'em' }) + FK.T(410, 38, 'x_t ~ S(x_t)', { s: 11, c: 'it' })
+        + FK.T(410, 214, '확률대로 뽑는다 (0.45로 1번, 0.25로 2번 …)', { s: 11, c: 'lb' });
+      return FK.fig(560, 226, '탐욕 디코딩과 확률적 샘플링', s,
+        R`슬라이드 30. 한 칸이 낸 점수 $S(x_t)$(소프트맥스 확률, 막대 높이)에서 다음 토큰을 고르는 두 방법입니다. 탐욕은 항상 가장 높은 막대(채운 막대)를 고르고, 확률적 방법은 막대의 높이에 비례한 확률로 고릅니다. 수치는 설명을 위한 예입니다.`);
+    },
+    // 20.5 image captioning = CNN encoder + LSTM decoder (slide 34)
+    caption() {
+      const IN = ['<SOS>', 'man', 'in', 'black'], OUT = ['man', 'in', 'black', 'shirt'];
+      let s = FK.R(14, 70, 70, 56, 'bm') + FK.T(49, 94, '이미지', { c: 'em' }) + FK.T(49, 112, 'x', { c: 'it' })
+        + FK.A(86, 98, 108, 98, 'ld', 6) + FK.R(110, 70, 74, 56, 'bm2') + FK.T(147, 94, 'CNN', { c: 'em' }) + FK.T(147, 112, 'g_φ', { c: 'it' })
+        + FK.A(186, 98, 208, 98, 'ld', 6) + FK.R(210, 82, 18, 32, 'bm') + FK.T(219, 134, '특성', { s: 10 })
+        + FK.A(230, 98, 258, 98, 'ld', 6);
+      IN.forEach((w, k) => {
+        const x = 260 + k * 68, cx = x + 24;
+        s += FK.R(x, 80, 48, 36, 'bm2') + FK.T(cx, 102, 'LSTM', { s: 11, c: 'em' }) + FK.A(cx, 170, cx, 118, 'ax', 6) + FK.A(cx, 80, cx, 44, 'ax', 6)
+          + FK.T(cx, 186, w, { s: 11 }) + FK.T(cx, 34, OUT[k], { s: 11, c: 'em' });
+        if (k < 3) s += FK.A(x + 48, 98, x + 68, 98, 'ld', 6);
+      });
+      s += FK.T(534, 102, '…', { s: 18 }) + FK.T(534, 34, 'guitar .', { s: 10 })
+        + FK.T(150, 24, '1. 시각 패턴 인식 (CNN)', { s: 11, c: 'rl' })
+        + FK.T(400, 210, '2. 이미지를 조건으로 문장 생성 (RNN)', { s: 11, c: 'lb' });
+      return FK.fig(560, 222, '이미지 캡셔닝', s,
+        R`슬라이드 34. $f_\theta\big(y\mid g_\phi(x)\big)$: CNN $g_\phi$가 이미지에서 시각 특성을 뽑고(1), 그 특성을 시작 상태로 받은 LSTM이 <SOS>부터 한 단어씩 문장을 냅니다(2). 슬라이드의 예 문장은 “man in black shirt is playing guitar.”입니다. 사진은 옮기지 않고 입력 → 출력 흐름만 그렸습니다.`);
+    },
   });
 })();

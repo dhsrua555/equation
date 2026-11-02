@@ -54,6 +54,9 @@ $d=1$에서 $f(x)=e^{-\pi x^2}$의 푸리에 변환은 $\hat f(\xi)=e^{-\pi\xi^2
 $$B^s(\Omega)=\Big\{f:\Omega\to\mathbb C\ :\ \lVert f\rVert_{B^s(\Omega)}:=\inf_{f_e|_\Omega=f}\int_{\mathbb R^d}(1+|\xi|)^s|\hat f_e(\xi)|\,d\xi<\infty\Big\}.$$
 필기의 그림에서 파란 구간이 $\Omega$, 그 위의 빨간 곡선이 $f$, 밖의 초록 선이 연장한 부분입니다(“$f$의 extension 중에서 $\Omega$에서는 $f$와 같다”). 밖을 급하게 꺾어 이으면 고주파가 생겨 적분이 커지므로, 하한은 가장 부드럽게 이어 붙인 연장이 정합니다. $|2\pi\xi|\le2\pi(1+|\xi|)$이므로 $\lVert f\rVert_{B^1(\Omega)}$이 작으면 (좋은 연장에 대해) 바론 상수도 작습니다.
 
+:::fig extend
+:::
+
 :::warn 필기의 기호
 필기는 $\Gamma_{C_1}$, $C_1$처럼 아래첨자를 붙였다 뗐다 했습니다. 같은 상수이고, 이 단원은 $C$로 통일합니다. $|\xi|$는 유클리드 노름 $\lVert\xi\rVert_2$입니다.
 :::
@@ -194,6 +197,9 @@ $$\begin{aligned}f(x)-f(0)&=\int_{\mathbb R^d}|\hat f(\xi)|\big(\cos(2\pi\langle
 새 측도 $\Lambda$를 밀도 $d\Lambda(\xi)=\frac1C|2\pi\xi||\hat f(\xi)|\,d\xi$로 정의하면 $\Lambda$는 $\mathbb R^d$ 위의 확률측도이고(아래 주의 참고)
 $$f(x)-f(0)=C\int_{\mathbb R^d}q_x(\xi)\,d\Lambda(\xi),\qquad q_x(\xi):=\frac{\cos(2\pi\langle x,\xi\rangle+\kappa(\xi))-\cos\kappa(\xi)}{|2\pi\xi|}.\qquad(5)$$
 이 적분을 격자 $\theta\in\frac1n\mathbb Z^d$ 위의 합 $C\sum_\theta q_x(\theta)\Lambda(I_\theta)$로 근사합니다($I_\theta$는 $\theta$를 품는 작은 정육면체). $\Lambda(I_\theta)\ge0$이고 합이 1이므로 이 합은 함수 $x\mapsto Cq_x(\theta)$들의 **볼록 결합**입니다. 필기의 그림: 원래의 적분 $f(x)-f(0)$ ← 근사 → 볼록 결합.
+:::
+
+:::fig lattice
 :::
 
 :::warn 필기의 Λ와 “conti. even”

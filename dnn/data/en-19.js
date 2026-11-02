@@ -4,6 +4,24 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    'RNN의 다섯 가지 입출력 구조': 'The five input/output structures of an RNN',
+    '출력': 'output',
+    '은닉': 'hidden',
+    '입력': 'input',
+    '보통의 망': 'ordinary net',
+    '이미지 → 설명문': 'image → caption',
+    '동영상 분류': 'video classification',
+    '번역 (지연형)': 'translation (delayed)',
+    '동영상 분할 (동기형)': 'video segmentation',
+    '여러 단계 RNN': 'Multi-step RNN',
+    '같은 q가 매 걸음 쓰인다': 'the same q is used at every step',
+    '기울기 잘라내기의 효과': 'The effect of gradient clipping',
+    '‖g‖이 너무 커서': '‖g‖ is so large that',
+    '계곡 밖으로 튄다': 'the step leaves the valley',
+    '길이를 v로 줄여': 'shrink the length to v,',
+    '방향만 따른다': 'keep only the direction',
+    '클리핑 없음': 'without clipping',
+    '클리핑 있음': 'with clipping',
     '접은 그림': 'folded',
     '펼친 그림: 시점마다 같은 가중치': 'unrolled: the same weights at every step',
     '접은 RNN과 펼친 RNN': 'Folded and unrolled RNN',
@@ -15,6 +33,9 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '잘린 시간 역전파': 'Truncated backpropagation through time',
   });
   Object.assign(EM.en.fig, {
+    rnnshapes: R`The five structures of slides 2–3. Bottom boxes are inputs, middle boxes the hidden states (linked by right-pointing arrows, so the state is carried along in time), top boxes outputs. Delayed many to many reads the whole input first (steps $1\text{–}3$) and then starts to output (steps $4\text{–}6$). Synchronized many to many gives one output per input at every step.`,
+    rnnchain: R`The multi-cell RNN (slides 10, 13 and the notes). Starting from $h_0=0$ it repeats $h_\ell=q_{\tilde\theta}(h_{\ell-1},u_\ell)$ and produces $f_\theta(X)=Ah_L+b$ from the last state $h_L$. The recurrent parameter $\tilde\theta$ enters every $q$, so the contributions of the steps are added: $\partial\mathcal L/\partial\tilde\theta=\sum_\ell\frac{\partial\mathcal L}{\partial h_\ell}\frac{\partial h_\ell}{\partial\tilde\theta}$.`,
+    clipfig: R`The loss-surface picture of slide 15 redrawn as a 1-D cross-section. On a steep cliff beside a valley $\lVert g\rVert$ is huge (left), and one step throws the parameter out of the valley and wrecks training. On the right, $g\leftarrow\min(1,v/\lVert g\rVert)g$ shortens the step to at most the threshold $v$. The direction is unchanged, so it still descends toward the valley, only in a short step.`,
     rnnunroll: R`(Left) An RNN is a network whose hidden state $\mathbf h$ loops back into itself. (Right) Unrolling the loop along time gives a chain in which the same cell is copied at every step. In the notation of slide 6, $\mathbf h_t=\sigma(\mathbf U\mathbf h_{t-1}+\mathbf W\mathbf x_t+\mathbf b)$, $\hat{\mathbf y}_t=\mathbf W^{out}\mathbf h_t$, $\mathbf h_0=\mathbf 0$, and every step uses the **same** $\mathbf U$, $\mathbf W$, $\mathbf W^{out}$.`,
     rnn2step: R`The two-step RNN of the notes: $h_t=\tanh(Wh_{t-1}+UX_t+b)$, $Y_t=Vh_t+c$, $L_t=\frac12(Y_t-Z_t)^2$. The two arrows leaving $W$ at the bottom mean that $W$ is used at **both** steps. There are three paths from $W$ to the loss: ① $W\to h_1\to Y_1\to L_1$, ② $W\to h_2\to Y_2\to L_2$ (direct), ③ $W\to h_1\to h_2\to Y_2\to L_2$ (across time). $\partial L/\partial W$ is the sum of the chain-rule products along these three paths.`,
     tbptt: R`Truncated BPTT (slide 9). Hidden states are carried forward from the start to the end of the sequence (bottom arrow), but the loss and the backpropagation are computed only inside the chunk of the last $k$ steps (dashed box). The first state $h_{t_0}$ of the chunk is treated as a constant passed in from the previous chunk, so the gradient paths reaching further back are cut.`,
@@ -52,6 +73,9 @@ The networks so far (MLPs, CNNs) take one input of fixed size and give one outpu
 
 :::key Input–output shapes of an RNN
 An RNN reads a sequence $x_1,\dots,x_T$ one element at a time and updates its hidden state $h_t$ at every step. Depending on when it produces outputs it is one to many, many to one, or many to many (delayed, producing outputs after reading the whole input, or synchronous, producing one at every step); one to one is an ordinary network without recurrence.
+:::
+
+:::fig rnnshapes
 :::
 
 **Time marks in the notes** (slide 2). For many to one, $t=1,2,3$ is written under the inputs and the output is only at $t=3$. For the delayed many to many, the inputs are marked $t=1,2,3$ and the outputs $t=4,5,6$. It is like translation, where the first word can be chosen only after reading the sentence to the end.
@@ -239,6 +263,9 @@ With many steps the job is the same. Starting from the output, walk down the hid
 $$h_0=0,\qquad h_\ell=q_{\tilde\theta}(h_{\ell-1},u_\ell)\quad(\ell=1,\dots,L),\qquad f_\theta(X)=Ah_L+b,$$
 with $q_{\tilde\theta}:\mathbb R^n\times\mathbb R^m\to\mathbb R^n$, for example $q(h,u)=\phi(Wh+Uu+c)$. Here $\theta=(A,b,\tilde\theta)$, $A\in\mathbb R^{1\times n}$, $b\in\mathbb R$, $\tilde\theta\in\mathbb R^p$, and $f_\theta(X)\in\mathbb R$. It is a many-to-one model with a single output at the end.
 
+:::fig rnnchain
+:::
+
 **Outer parameters** (slide 10). The chain rule on the loss $\mathcal L(f_\theta(X),Y)$ gives
 $$\frac{\partial\mathcal L(f_\theta(X),Y)}{\partial\theta}=\Big(\frac{\partial\mathcal L}{\partial f}(f_\theta(X),Y)\Big)\frac{\partial f_\theta(X)}{\partial\theta},\qquad\frac{\partial f_\theta(X)}{\partial A}=h_L,\quad\frac{\partial f_\theta(X)}{\partial b}=1,\quad\frac{\partial f_\theta(X)}{\partial\tilde\theta}=A\frac{\partial h_L}{\partial\tilde\theta}.$$
 (Arranged in the same $1\times n$ shape as $A$, $\partial f/\partial A=h_L$ is $h_L^T$.)
@@ -324,6 +351,9 @@ The picture on slide 15 shows a loss $J(w,b)$ with a steep **cliff**. Without cl
 With $\mathbf g=(3,4)$ and $v=2$, what is the clipped gradient? With $v=10$?
 ---
 $\lVert\mathbf g\rVert=5>2$, so $\frac25(3,4)=(1.2,1.6)$, of size 2. With $v=10$, $5\le10$ and it stays $(3,4)$. With the slide's max, $v=10$ would give $\max(1,2)\mathbf g=(6,8)$, actually larger.
+:::
+
+:::fig clipfig
 :::
 
 **Vanishing gradients** (slide 16). Intuitively, vanishing gradients means the gradient signal does not reach the earlier layers (the distant past steps). In an RNN, $\partial\mathcal L/\partial h_L$ may not be small, but

@@ -4,6 +4,27 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    'LSTM의 W 행렬': 'The weight matrix W of an LSTM',
+    '앞 상태에 곱함': '× prev. state',
+    '입력에 곱함': '× input',
+    '활성화': 'activation',
+    '각 h개': 'h entries each',
+    'RNN 언어 모델의 한 칸': 'One slot of the RNN language model',
+    '원-핫 부호화': 'one-hot encoding',
+    '연속 단어 임베딩': 'continuous word embedding',
+    '다음 칸으로': 'to the next slot',
+    '연속 출력 임베딩': 'continuous output embedding',
+    '분류층 (소프트맥스)': 'classification layer (softmax)',
+    '탐욕 디코딩과 확률적 샘플링': 'Greedy decoding and probabilistic sampling',
+    '탐욕 (결정적)': 'greedy (deterministic)',
+    '늘 1번 토큰': 'always token 1',
+    '확률적': 'probabilistic',
+    '확률대로 뽑는다 (0.45로 1번, 0.25로 2번 …)': 'sampled by probability (token 1 with 0.45, token 2 with 0.25, …)',
+    '이미지 캡셔닝': 'Image captioning',
+    '이미지': 'image',
+    '특성': 'features',
+    '1. 시각 패턴 인식 (CNN)': '1. recognize visual patterns (CNN)',
+    '2. 이미지를 조건으로 문장 생성 (RNN)': '2. generate a sentence conditioned on the image (RNN)',
     'LSTM 셀': 'LSTM cell',
     '역전파: 셀 경로에는 f만 곱해진다': 'backprop: only f multiplies along the cell path',
     '언어 모델의 학습과 추론': 'Training and inference of a language model',
@@ -19,6 +40,10 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '요약': 'summary',
   });
   Object.assign(EM.en.fig, {
+    lstmstack: R`Slide 19. Multiplying the matrix $W\in\mathbb R^{4h\times(h+d)}$ by the stacked vector $(h_{t-1};x_t)$ once gives a vector of length $4h$. Cutting it into four pieces of $h$ entries from the top and applying $\sigma,\sigma,\sigma,\tanh$ gives $i,f,o,g$. Each piece of $W$ splits into the left $h$ columns ($U$, multiplying $h_{t-1}$) and the right $d$ columns ($W$, multiplying $x_t$).`,
+    lmstep: R`One slot from slides 26–27. A token becomes a one-hot $x_t$, is mapped by $W_e$ to the continuous embedding $z_t=W_ex_t+b_e$, and enters the LSTM. Multiplying the LSTM output $h_t$ by $W_d$ gives the scores of the whole vocabulary $\hat x_{t+1}=W_dh_t+b_d$, and after the softmax the largest entry is the next token (here “A” after <SOS>). $h_t,c_t$ pass sideways to the next slot.`,
+    sampling: R`Slide 30. Two ways of choosing the next token from the scores $S(x_t)$ (softmax probabilities, bar heights) of one slot. Greedy always takes the highest bar (filled); the probabilistic method takes each bar with probability proportional to its height. The numbers are only an illustration.`,
+    caption: R`Slide 34. $f_\theta\big(y\mid g_\phi(x)\big)$: the CNN $g_\phi$ extracts visual features from the image (1), and an LSTM that receives these features as its starting state emits the sentence from <SOS> one word at a time (2). The slide's example sentence is “man in black shirt is playing guitar.” The photo is not reproduced; only the input → output flow is drawn.`,
     lstmcell: R`The LSTM cell (slides 20–21). At the bottom $h_{t-1}$ and $x_t$ are stacked and multiplied by $W$, and $\sigma,\sigma,\tanh,\sigma$ applied to the four branches give $f,i,g,o$ (the filled box $g$ is the candidate, not a gate). On the cell path at the top, $c_{t-1}$ is multiplied by $f$ (×) and $i\odot g$ is added (+) to give $c_t$, and $\tanh(c_t)$ times $o$ is $h_t$. Red arrow: in backpropagation only $f$ multiplies along the cell path.`,
     lmunroll: R`An LSTM language model unrolled in time (slides 28–31). Slot $t$ reads the token $x_{t-1}$ and gives the scores $\hat x_t$ of the next token. In training the true tokens go in at the bottom (teacher forcing) and the cross-entropies of all slots are added; in inference the token chosen at each slot (greedy or sampled) is fed back along the dashed line as the next slot's input, stopping when <EOS> is drawn.`,
     encdec: R`Encoder–decoder translation (slide 32). The encoder LSTM reads “He loved to eat .” to the end and passes its last state $\mathbf s$ to the decoder as the starting state; the decoder, a language model starting from NULL, emits “Er liebte zu essen .” one word at a time. Putting a CNN in the encoder's place and passing image features instead of $\mathbf s$ gives image captioning.`,
@@ -67,6 +92,9 @@ $\odot$: elementwise multiplication.
 **The two notations are the same formula** (slides 18–19, 21). Cutting the big matrix $W$ into four blocks of $h$ rows, one per gate, and splitting each block into the columns multiplying $h_{t-1}$ and those multiplying $x_t$,
 $$W=\begin{pmatrix}U_i&W_i\\U_f&W_f\\U_o&W_o\\U_g&W_g\end{pmatrix},\qquad W\begin{pmatrix}h_{t-1}\\x_t\end{pmatrix}=\begin{pmatrix}U_ih_{t-1}+W_ix_t\\U_fh_{t-1}+W_fx_t\\U_oh_{t-1}+W_ox_t\\U_gh_{t-1}+W_gx_t\end{pmatrix}$$
 So an implementation gets the $4h$ pre-activations with one matrix product, cuts them into pieces of $h$ from the top, and applies $\sigma,\sigma,\sigma,\tanh$ (the picture on slide 19). Slide 21's $f_t=\sigma(W_f\cdot[h_{t-1},x_t]+b_f)$ is the same formula, where $[h_{t-1},x_t]$ is the concatenation of the two vectors and the candidate is written $\tilde C_t$.
+
+:::fig lstmstack
+:::
 
 | Symbol | Name | Activation | Range | What it does (slide 19) |
 |---|---|---|---|---|
@@ -162,9 +190,23 @@ A sentence is a sequence of symbols called words. We number the symbols and turn
 
 **Applications of RNNs** (slides 23–24). We look at two. (1) **Language modeling**: sentence generation, machine translation (“The agreement on the European Economic Area was signed in August 1992.” → French), and text summarization are all functions $f_\theta$ that take a sentence and give a sentence. (2) **Image captioning**: naive captioning and captioning with attention (Section 20.5).
 
+| Task | Input | Output (the examples on slide 24) |
+|---|---|---|
+| Sentence generation | start symbol | I am very hungry at the end of every class |
+| Machine translation | The agreement on the European Economic Area was signed in August 1992. | L'accord sur l'Espace économique européen a été signé en août 1992. |
+| Text summarization | a long document | a short summary |
+
+The slide adds “And so many more…”. In all three, one $f_\theta$ takes a token sequence and returns a token sequence.
+
 **An aside from class** (the drawing on slide 23). In class a picture was drawn of the SIRD model of epidemics (an ordinary differential equation for susceptible S, infected I, recovered R, and dead D), where coefficients such as the infection rate ($\alpha,\beta$; the “infection index” of the notes) are treated as values changing in time, estimated by an LSTM, and fed into the ODE. Read it as an example of an RNN reading the parameters hidden behind a time series; it is not the main line of the slides.
 
 **A sentence is a sequence of discrete symbols** (slide 25). If the vocabulary has size $n$ and each symbol (token) gets a number $k\in\{1,\dots,n\}$, token $k$ becomes the one-hot vector $e_k\in\mathbb R^n$ (only the $k$-th component is $1$). The slide's example “A Man is holding a bat” is a sequence of one-hot vectors $\mathbf x_0,\dots,\mathbf x_5$ with $n=8$.
+
+| token | <SOS> | A | Man | is | holding | a | bat |
+|---|---|---|---|---|---|---|---|
+| one-hot ($n=8$) | 00100000 | 00001000 | 01000000 | 00000010 | 00000100 | 00001000 | 10000000 |
+
+(The code of <SOS> is from slide 26, the others from slide 25.)
 
 :::warn The one-hot codes on the slides
 On slide 25 “A” and “a” have the same code $[00001000]$, and on slide 28 the output code of the end-of-sentence symbol <EOS> is also $[00001000]$. In a vocabulary that ignores case, “A” and “a” being the same token is natural, but <EOS> must have a number of its own for generation to be able to stop. Read the overlapping codes as a shortcut to keep the pictures simple.
@@ -175,6 +217,9 @@ On slide 25 “A” and “a” have the same code $[00001000]$, and on slide 28
 :::key The RNN language model
 $$\mathbf z_t=W_e\mathbf x_t+\mathbf b_e,\qquad\mathbf h_t=\mathrm{LSTM}(\mathbf z_t,\mathbf h_{t-1},\mathbf c_{t-1};\theta),\qquad\hat{\mathbf x}_{t+1}=W_d\mathbf h_t+\mathbf b_d$$
 $\mathbf x_t\in\mathbb R^n$ is one-hot, $W_e\in\mathbb R^{d\times n}$, $\mathbf h_t\in\mathbb R^d$, $W_d\in\mathbb R^{n\times d}$. $\softmax(\hat{\mathbf x}_{t+1})$ is the probability distribution of the next token.
+:::
+
+:::fig lmstep
 :::
 
 **An embedding picks a column.** If $\mathbf x_t=e_k$, then $W_e\mathbf x_t$ is the $k$-th column of $W_e$, so the embedding layer is a lookup table that finds one $d$-dimensional vector per token. One-hot vectors are $n$-dimensional (usually tens of thousands) and any two different words are the same distance $\sqrt2$ apart, while learned embeddings are $d$-dimensional (hundreds) and words used in similar ways can end up close.
@@ -220,6 +265,9 @@ As the red text on slide 29 says, this is a **word-level classification** at eve
 The chosen token is fed back as the next input, and generation stops when <EOS> is drawn.
 :::
 
+:::fig sampling
+:::
+
 :::ex Example 5 — the cross-entropy of one slot
 With a vocabulary of 4, logits $\hat{\mathbf x}_t=(2,1,0,0)$, and the first token correct, find the loss and the gradient of the logits.
 ---
@@ -254,6 +302,9 @@ Image captioning is $f_\theta\big(y\mid g_\phi(\mathbf x)\big)$: a CNN $g_\phi$ 
 The decoder is exactly the language model of Section 20.3, except that its starting state is the summary $\mathbf s$ of the input sentence instead of $\mathbf 0$. Training is as in Section 20.4: the true translation goes in by teacher forcing and the cross-entropies of the slots are added, and the gradient of the loss flows back through the decoder and $\mathbf s$ all the way into the encoder.
 
 **Image captioning** (slides 33–34). The task is to describe an image $\mathbf x$ with a natural-language sentence $\mathbf y$ (e.g., “man in black shirt is playing guitar.”). The work splits into two stages: (1) a **CNN** that recognizes the visual patterns in the image[[ch15:15.5|Pooling layers and fully connected layers.]], and (2) an **RNN** that generates a sentence conditioned on the image. In class this was written $f_\theta(\mathbf y\mid g_\phi(\mathbf x))$, marking that the encoder CNN ($g_\phi$) and the decoder RNN ($f_\theta$) are different functions with different parameters. The simplest method sets the RNN's starting state from the CNN's last feature vector (e.g., the 4096 dimensions just before the classification layer).
+
+:::fig caption
+:::
 
 :::warn Attention is not covered yet
 Slides 23 and 33 announce “image captioning with attention”, but the slides received (23–34) do not contain it. The motivation is clear, though: the whole of a long input has to fit into one vector of fixed size ($\mathbf s$, or one CNN feature), which creates an information bottleneck, and attention removes it by letting the decoder look again at several positions of the input at every slot.

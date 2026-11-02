@@ -13,8 +13,13 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '알고리즘 출력 → 경험적 위험 최소화 → 클래스 안의 최선 → 목표': 'algorithm output → empirical risk minimizer → best in class → target',
     '근사·일반화·최적화 오차': 'Approximation, generalization, and optimization errors',
     '시그모이드 계단 근사': 'Staircase approximation with sigmoids',
+    '조밀한 집합과 조밀하지 않은 집합': 'A dense set and a set that is not dense',
+    '공간 X': 'space X',
+    '조밀한 D: 어느 f의 둘레에도 D의 원소가 있다': 'Dense D: every f has points of D arbitrarily near',
+    '조밀하지 않은 D′: 원판이 D′에 닿지 않는다': 'Not dense D′: the disc misses D′',
   });
   Object.assign(EM.en.fig, {
+    dense: R`The left panel redraws the figure in the notes: the inside of the closed curve is the space $X$ and the dots are a subset $D$. $D$ is dense in $X$ if the disc of radius $\varepsilon$ around any $f$ (red circle), however small, contains a point of $D$. The line $D'$ on the right fails this: choose $\varepsilon$ smaller than the distance from $f$ to $D'$ and the disc holds no point of $D'$. A line is closed, so $\overline{D'}=D'\ne X$.`,
     errsplit: R`A redrawing of the figure on the first page of the notes. The box is every function our chosen architecture can build (the hypothesis class $\mathcal F$), and the function we really want, $f^*$ (the ideal target), usually lies outside the box. The distance from the function we actually get, $f_{\mathrm{alg}}$, to $f^*$ has three pieces: how far gradient descent falls short of the empirical risk minimizer $\hat f_n$ (optimization), how much worse $\hat f_n$, chosen from finite data, is than the best in the class $f_{\mathcal F}$ (generalization), and how far even the best in the class falls short of the target (approximation). This unit deals with the last arrow.`,
     stair: R`A continuous function $f$ (bold) is followed like a staircase through its values at the points $x_j=j/N$ that cut $[0,1]$ into $N$ cells: $G_N(x)=f(0)+\sum_{j=1}^N\big(f(x_j)-f(x_{j-1})\big)\sigma\big(\lambda(x-m_j)\big)$, where $m_j$ is the middle of a cell and $\sigma$ is a logistic function made steep (large $\lambda$). One hidden neuron makes one step, and increasing $N$ shrinks the maximum error. The universal approximation theorem guarantees that such an approximation is always possible in $n$ dimensions too, but this grid construction multiplies the cells across dimensions and needs about $N^n$ neurons (Unit 18).`,
   });
@@ -132,6 +137,9 @@ In $C(K)$, $\lVert f-g\rVert_\infty<\varepsilon$ is the same as $\lvert f(x)-g(x
 Let us check that the max norm satisfies the three conditions of a norm. If $\lVert f\rVert_\infty=0$, then $f(x)=0$ at every point. $\lVert cf\rVert_\infty=\max\lvert c\rvert\lvert f(x)\rvert=\lvert c\rvert\lVert f\rVert_\infty$. The triangle inequality holds pointwise, $\lvert f(x)+g(x)\rvert\le\lvert f(x)\rvert+\lvert g(x)\rvert\le\lVert f\rVert_\infty+\lVert g\rVert_\infty$, and then we take the maximum of the left side[[@em:ch17:3.1c|Norms and normed spaces.]].
 
 The **closure** $\overline D$ is every point reachable as the limit of a sequence of elements of $D$. The $\varepsilon$ condition in the definition is the same as “there is a sequence in $D$ converging to $f$,” so being dense is the same as $\overline D=X$. The figure in the notes shows a closed curve (the space $X$) traced without gaps by a red dotted line (a dense $D$), with an element of $D$ as close as we like to the blue point (any element). Also, if $U$ is a linear subspace, so is $\overline U$ (proof page).
+
+:::fig dense
+:::
 
 Convergence in the max norm is the same as **uniform convergence**[[@base:ch05:5.3|Uniform convergence.]]. So “dense in $C(I_n)$” is approximation in the strongest sense: the error $\varepsilon$ is kept **at every point of the domain at once**. A well-known example is the Weierstrass theorem (polynomials are dense in $C([a,b])$), and approximating periodic functions by trigonometric polynomials is of the same kind[[@em:ch10:11.4|Approximation by trigonometric polynomials.]]. The universal approximation theorem is this theorem with neural networks in place of polynomials.
 

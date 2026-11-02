@@ -24,7 +24,80 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '입력 토큰 x (n×d)': 'input tokens x (n×d)',
     '트랜스포머 인코더 블록': 'Transformer encoder block',
   });
+  Object.assign(EM.en.figText, {
+    "지름길: 매 칸의 입력에 이미지 특성 v를 더한다": "Shortcut: the image feature v is added to the input of every cell",
+    "첫 단어 방식: 이미지 특성 v는 첫 칸에만 들어간다": "First-word method: the image feature v enters only the first cell",
+    "이미지": "image",
+    "v → 칸 t: 거리 1": "v → cell t: distance 1",
+    "v → 칸 t: t걸음": "v → cell t: t steps",
+    "이미지 조건화: 첫 단어와 지름길": "Image conditioning: first word and shortcut",
+    "특성 지도 x": "feature map x",
+    "어텐션 α": "attention α",
+    "합 1": "sum 1",
+    ": 다음 걸음의 질의": ": the query of the next step",
+    "걸음 t마다 반복": "repeated every step t",
+    "어텐션 캡셔닝의 걸음": "One step of attention captioning",
+    "소프트": "soft",
+    "(가중 평균)": "(weighted)",
+    "하드": "hard",
+    "(한 칸 선택)": "(picks one cell)",
+    "균일": "uniform",
+    "칸이 진할수록 큰 가중치. 소프트는 합이 1인 가중치로 모든 칸을 섞고,": "Darker cells have larger weights. Soft mixes all cells with weights that sum to 1;",
+    "하드는 한 칸만 고른다": "hard picks a single cell",
+    "소프트와 하드 어텐션 지도": "Soft and hard attention maps",
+    "특성 지도": "feature map",
+    "w (0~1, 독립)": "w (0 to 1, independent)",
+    "전역 평균 풀링": "global avg. pool",
+    "FC · 시그모이드": "FC · sigmoid",
+    "채널마다 × w": "per channel × w",
+    "그대로 지나가는 U": "U passes through unchanged",
+    "스퀴즈-익사이트 블록": "Squeeze-and-excitation block",
+    "점군": "point cloud",
+    "소리": "audio",
+    "언어": "language",
+    "물체": "objects",
+    "움직임": "motion",
+    "의미": "semantics",
+    "깊이": "depth",
+    "단일 모델": "single model",
+    "어텐션": "attention",
+    "자료 형태를 가정하지 않는다": "assumes no data form",
+    "하나의 모델로 여러 자료와 과제": "One model for many data types and tasks",
+    "입력 x": "input x",
+    "키 k | 값 v": "key k | value v",
+    "질의 q": "query q",
+    "A (행마다 합 1)": "A (each row sums to 1)",
+    "출력 y": "output y",
+    "질의 q는 밖에서 오고(교차), 입력 x에서 만들면 셀프 어텐션": "q comes from outside (cross); made from the input x it is self-attention",
+    "질의가 여러 개인 교차 어텐션": "Cross-attention with several queries",
+    "이진수: 비트마다 주기가 2배": "Binary: each bit doubles the period",
+    "비트": "bit",
+    "위치 t": "position t",
+    "사인 부호화 p(t), d=16 (위: 빠른 쌍)": "Sinusoidal encoding p(t), d=16 (top: fast pairs)",
+    "차원": "dim",
+    "쌍 번호가 클수록 느리게 변하고, 위치마다 벡터 전체가 다르다": "Higher pair numbers change more slowly; each position has a different vector",
+    "위치 부호화": "positional encoding",
+    "Mask (선택)": "Mask (optional)",
+    "스케일 점곱 어텐션": "Scaled dot-product attention",
+    "스케일 점곱": "scaled dot-product",
+    "멀티헤드 어텐션": "Multi-head attention",
+    "스케일 점곱 어텐션과 멀티헤드": "Scaled dot-product attention and multi-head",
+    "채널마다 (N, H, W)를 모은다": "collects (N, H, W) per channel",
+    "샘플마다 (C, H, W)를 모은다": "collects (C, H, W) per sample",
+    "LN (트랜스포머)": "LN (Transformer)",
+    "토큰마다 C만 모은다": "collects only C per token",
+    "정규화하는 축: BN과 LN": "Normalization axes: BN and LN",
+  });
   Object.assign(EM.en.fig, {
+    capcond: R`Two ways of conditioning on the image (slides 36–41). Top: the image feature $\mathbf v$ is fed to the LSTM once as the "first word", so the path from $\mathbf v$ gets longer for later cells. Bottom: the same $\mathbf v$ is connected to the input of every cell (shortcut), so the dependency distance is $1$. Above each cell is the next word produced by the softmax; below it is the input word.`,
+    capattn: R`One step of soft-attention captioning (slides 47–51). From the feature map $\mathbf x$ and the previous hidden state $\mathbf h_{t-1}$, $f_{att}$ gives a score per cell and a softmax makes the attention $\alpha^{(t)}$ with sum $1$. The summary $\mathbf z^{(t)}$, $\mathbf x$ weighted by $\alpha^{(t)}$ and summed, enters the LSTM together with the word embedding $W_{emb}\mathbf y_t$, and the output $\mathbf h_t$ becomes the query of the next step. The darkness of a cell is its weight.`,
+    attnmaps: R`Attention maps of soft and hard attention (slides 42, 53), redrawn as a simplified $7\times7$ grid (made-up values, not the real maps over a photo). "Uniform" at the left is the case without attention (all cells equal). Soft attention moves its weight distribution to a different place for each word (bird, flying, over, body, water); hard attention picks one cell from the same distribution and uses that cell's feature as it is.`,
+    senet: R`The squeeze-and-excitation (SE) block (slide 54). Global average pooling reduces the feature map $U$ to one number per channel, $\mathbf s\in\mathbb R^C$ (squeeze); a bottleneck MLP ($C\to C/r\to C$) and a sigmoid make a per-channel weight $\mathbf w$ (excitation); then channel $c$ of the original $U$ is multiplied by $w_c$ (scale), giving $\tilde U$ of the same size. The values of $\mathbf w$ need not sum to $1$ (the shades of the bar cells are made-up values).`,
+    onemodel: R`The goal of a versatile model (slide 61): several kinds of data (image, point cloud, audio, language) go into one network that gives several outputs (objects, motion, semantic segmentation, depth). The requirement is to treat the input as a set of vectors without assuming a grid or a chain, and attention is such an operation.`,
+    crossattn: R`A general attention layer with $M$ queries and separate keys and values (slides 66–67). From the input $\mathbf x_i$ make the key $\mathbf k_i=\mathbf x_iW_k$ and the value $\mathbf v_i=\mathbf x_iW_v$; for each query $\mathbf q_j$ the scores $e_{j,i}=\mathbf q_j\cdot\mathbf k_i/\sqrt D$ form a row, the row-wise softmax gives $A$, and the output is $\mathbf y_j=\sum_ia_{j,i}\mathbf v_i$. If the queries are made from the same input, $\mathbf q=\mathbf xW_q$, this is self-attention.`,
+    posenc: R`Positional encoding (slides 69, 77). Top left: the 4-bit binary numbers $0$–$15$; the lower bits flip faster and the period doubles with each bit to the left. Top right: the values of $\mathbf p(t)=(\sin\omega_kt,\cos\omega_kt)_k$ for $d=16$ computed for $t=0,\dots,31$ (blue $+$, brown $-$); upper pairs are faster. Bottom: the curves $\sin\omega_kt$ of three pairs $k=0,1,2$ with $\omega_k=1,\ 1/3.16,\ 1/10$, so the period grows.`,
+    mha: R`Scaled dot-product attention and multi-head attention (slide 71, redrawn from the figure in Vaswani et al.). Left: $QK^T$ (MatMul) → Scale ($\div\sqrt{D_k}$) → Mask (optional) → SoftMax → MatMul with $V$. Right: $V,K,Q$ each pass through a per-head Linear layer (projection), the attention on the left runs $h$ times in parallel, and the head outputs are concatenated and fed to the last Linear layer ($W_o$).`,
+    lncube: R`The cells over which the normalization statistics are collected (blue) drawn on a box of shape $N\times C\times(H,W$ or Seq\_len$)$ (slide 79). BN collects all samples and positions of one channel, LN in a CNN collects all channels and positions of one sample, and LN in a Transformer collects only all channels of one token of one sample.`,
     attnflow: R`The computation flow of the general attention layer (slides 64–65). For each input vector $\mathbf x_i$, the score against the query $\mathbf h$ is $e_i=\mathbf h\cdot\mathbf x_i/\sqrt D$ (alignment); a softmax turns the scores into weights $a_i$ that sum to $1$; and the sum of the same inputs $\mathbf x_i$ weighted by $a_i$ (mul + add) is the context vector $\mathbf c$ (dashed).`,
     attnshape: R`The shapes of self-attention (slides 63, 68). $Q,K,V$ are built from the input $X$, and the row-wise softmax of $QK^T/\sqrt{D_k}$ gives $A\in\mathbb R^{N\times N}$, which mixes $V$ into $Y=AV$. One row of $A$ (the shaded strip) holds the weights one query gives to the $N$ values and sums to $1$. The number of output rows equals the number of queries $N$.`,
     maskmat: R`Masked self-attention (slide 70). Row $j$ is query $j$ and column $i$ is key $i$. Hiding the future entries $i>j$ with $-\infty$ (left) makes their weights $e^{-\infty}=0$ after the softmax, so $A$ is lower triangular (right); the diagonal stays, so each row sums to $1$. The first row gives weight $1$ to itself.`,
@@ -64,6 +137,9 @@ $$\text{shortcut:}\ \ \mathbf h_t=\mathrm{LSTM}(\mathbf h_{t-1},W_{emb}\mathbf y
 $$\text{attention:}\ \ \mathbf h_t=\mathrm{LSTM}(\mathbf h_{t-1},W_{emb}\mathbf y_t,\ \mathbf z^{(t)}),\quad\mathbf z^{(t)}=\text{an image summary that differs at every step (21.2)}$$
 :::
 
+:::fig capcond
+:::
+
 The third puts a summary $\mathbf z^{(t)}$ made anew at every step in the place of $\mathbf v$. It summarizes “the part related to the word about to be written”, so on top of the dependency distance $1$ of the shortcut it also chooses what to look at.
 
 :::ex Example 1 — the size of the conditioning layer
@@ -87,10 +163,20 @@ In “A bird flying over a body of water.”, when writing bird you should look 
 $$\mathbf z^{(t)}=\sum_{i,j}\alpha^{(t)}_{i,j}\,\mathbf x_{i,j}\in\mathbb R^C$$
 The two questions left by slides 45–46 are “how is the attention computed?” and “how is it used for predicting the word?”.
 
+Which layer the image feature is taken from separates the two settings (slides 35–36, 43).
+
+| Layer taken from | Shape | How it holds the image |
+|---|---|---|
+| FC layer (just before the classifier) | $1\times1\times4096$ (the later figures use $1\times1\times2048$) | the whole image is one vector; no position information |
+| conv5 layer | $14\times14\times512$ | one $512$-dimensional vector at each of $196$ positions; a weight can be given per position |
+
 **Computation** (slides 47–49). The LSTM's previous hidden state $\mathbf h_{t-1}$ expresses “what is needed now”. An attention module $f_{att}$ takes the features $\mathbf x$ and $\mathbf h_{t-1}$ and outputs a **score** $e^{(t)}_{i,j}$ at each position, and a softmax over all positions makes the weights.
 $$e^{(t)}_{i,j}=f_{att}(\mathbf x_{i,j},\mathbf h_{t-1}),\qquad\alpha^{(t)}_{i,j}=\frac{\exp(e^{(t)}_{i,j})}{\sum_{i',j'}\exp(e^{(t)}_{i',j'})}$$
 
 **Use** (slides 50–51). The summary $\mathbf z^{(t)}$ is fed as an additional input of the LSTM (Modified LSTM) and is also added at the output stage.
+
+:::fig capattn
+:::
 
 :::key Soft-attention captioning
 $$e^{(t)}_{i,j}=f_{att}(\mathbf x_{i,j},\mathbf h_{t-1}),\quad\alpha^{(t)}=\mathrm{softmax}(e^{(t)}),\quad\mathbf z^{(t)}=\sum_{i,j}\alpha^{(t)}_{i,j}\mathbf x_{i,j}$$
@@ -101,6 +187,9 @@ Since $\alpha_{i,j}>0$ and $\sum\alpha=1$, $\mathbf z$ is a **convex combination
 The slides do not fix the inside of $f_{att}$. A common example (outside the slides) is a small MLP $e_{i,j}=\mathbf w^T\tanh(W_x\mathbf x_{i,j}+W_h\mathbf h_{t-1})$, and the dot product of Section 21.4 is another choice. The output formula is written on the slide only as $\exp(\cdots)$, which we read as a softmax with the normalizing constant omitted.
 
 **Hard attention** (slide 53). Soft attention takes a weighted average of all cells, but **hard attention** picks a single cell. Draw $s_t\sim\mathrm{Categorical}(\alpha^{(t)})$ and set $\mathbf z^{(t)}=\mathbf x_{s_t}$, and the picture appears as a single point (the lower row of the slide). Soft attention is the **expectation** of this choice, $\mathbb E[\mathbf x_{s_t}]=\sum\alpha\mathbf x$, and is trained by ordinary backpropagation, whereas for hard attention the operation of picking a cell is not differentiable and other training techniques are needed (outside the slides).
+
+:::fig attnmaps
+:::
 
 :::ex Example 2 — a weighted average over three cells
 The features of three cells are $\mathbf x_1=(1,0)$, $\mathbf x_2=(0,1)$, $\mathbf x_3=(1,1)$ and the scores are $e=(0,\ln3,0)$. What are $\alpha$ and $\mathbf z$?
@@ -124,6 +213,9 @@ $$s_c=\frac1{HW}\sum_{i,j}U_{i,j,c},\qquad\mathbf w=\sigma\big(W_2\,\mathrm{ReLU
 $W_1\in\mathbb R^{(C/r)\times C}$, $W_2\in\mathbb R^{C\times(C/r)}$ ($r$: reduction ratio). Without biases there are $2C^2/r$ parameters. The weights $w_c\in(0,1)$ are independent for each channel.
 :::
 
+:::fig senet
+:::
+
 The three steps are squeeze (global average pooling, $H\times W\times C\to C$), excitation (a bottleneck MLP and a sigmoid, $C\to C/r\to C$), and scale (a per-channel product). The reduction ratio $r$ and the formulas are from the SENet paper. The ANTBlock (a mobile network) at the bottom of the slide is an example that puts the same idea inside a residual block.
 
 | | Spatial soft attention | Channel attention (SENet) |
@@ -137,10 +229,22 @@ The three steps are squeeze (global average pooling, $H\times W\times C\to C$), 
 :::key Inductive bias
 **Inductive bias** is the **set of assumptions** a learner uses when predicting outputs for **inputs it has not seen** (slide 57).
 - CNN: the **2D grid structure** of the data and **translation invariance** (relying on locality)[[ch15:15.6|Translation equivariance of convolution.]].
-- RNN: exploits the **1D chain structure** of the data (the sentence on the slide is cut off here)[[ch19:19.2|A recurrence that shares the same weights over time.]].
+- RNN: exploits the **1D chain structure** of the data and the **first-order Markov assumption** (the next state depends on the previous state)[[ch19:19.2|A recurrence that shares the same weights over time.]].
 :::
 
 Such assumptions are useful for designing efficient models, but the problem is that they **do not generalize to other forms of data** (slide 60). The last slide, 61, aims at a **general-purpose model** that feeds images, point clouds, sound, and language into one neural network to output objects, motion, meaning, and depth, and asks “what is the most important requirement for this?”, without writing the answer. The answer suggested by the flow of the following slides is “an operation that assumes nothing about the form of the data”, that is, attention, which sees the input only as a **collection of vectors** and mixes them with one another by scores[[@med:ch11:9.1|Inductive bias and invariance.]].
+
+Slides 55 and 60 collected into one table (the last column summarizes the flow of the slides).
+
+| Model | Composition (slide 55) | Assumption about the data | Data it suits |
+|---|---|---|---|
+| MLP | linear layer + nonlinearity | almost none (a separate weight per input component) | fixed-size vectors |
+| CNN | convolution + pooling + nonlinearity + MLP | 2D grid, locality, translation invariance | images |
+| RNN | MLP for the recurrence + gates | 1D chain, first-order Markov | sequences |
+| Attention / Transformer | dot-product attention + MLP | the input is just a "set of vectors" (no grid or order assumed) | many forms (order is added by positional encoding) |
+
+:::fig onemodel
+:::
 
 :::ex Example 3 — the size of an SE block
 How many parameters (without biases) does an SE block with $C=64$ and reduction ratio $r=16$ have? What is the length of the vector after global pooling?
@@ -192,6 +296,9 @@ The general attention layer uses the input $\mathbf x_i$ as the **same vector** 
 
 **Cross-attention** (slide 67). From the input $\mathbf x$ (shape $N\times D$) we make the key $\mathbf k=\mathbf xW_k$ ($D_k$-dimensional) and the value $\mathbf v=\mathbf xW_v$ ($D_v$-dimensional), and the query $\mathbf q$ (shape $M\times D_k$) comes from **outside**. The alignment is $e_{i,j}=\mathbf q_j\cdot\mathbf k_i/\sqrt D$, the attention is $\mathbf a=\mathrm{softmax}(\mathbf e)$, and the output is $\mathbf y_j=\sum_ia_{i,j}\mathbf v_i$ (shape $D_v$). Thanks to the linear layers for keys and values the input and output dimensions may differ, and, as the slide explains, attaching different FC layers to the scoring and mixing steps **adds expressive power**. The decoder of captioning or translation looking at the encoder's output is exactly this[[ch20:20.5|Relieving the bottleneck of the encoder–decoder.]].
 
+:::fig crossattn
+:::
+
 **Self-attention** (slides 63, 68). The query is also made from the same input: $\mathbf q=\mathbf xW_q$.
 $$\mathrm{Attn}(\mathbf xW_q,\mathbf xW_k,\mathbf xW_v)=\mathrm{softmax}\Big(\frac{\mathbf xW_q(\mathbf xW_k)^T}{\sqrt{d}}\Big)\mathbf xW_v,\qquad\mathbf x\in\mathbb R^{n\times d},\ A\in\mathbb R^{n\times n}$$
 The output is a **contextual encoding** of the input, and the receptive field of a single layer is the **entire** input. The conclusion of slide 68 is that this layer is **permutation equivariant**.
@@ -237,6 +344,9 @@ This agrees with the formula of slide 77, $PE_{(pos,2i)}=\sin(pos/10000^{2i/d_{m
 
 **Intuition** (the binary table on slide 69). Writing the binary numbers from $0$ to $15$, the rightmost bit flips every time and each bit further left flips twice as slowly. The sine–cosine pairs are a continuous version of these bits. The larger the index $k$, the smaller $\omega_k$ (the lower the frequency) and the slower the change, and the vector of all pairs together tells positions apart. The wavelength $2\pi/\omega_k=2\pi\cdot10000^{2k/d}$ grows geometrically.
 
+:::fig posenc
+:::
+
 **Adding versus concatenating.** Slide 69 writes that $\mathbf p_j$ is **concatenated** to $\mathbf x_j$, and slide 77 draws it as ⊕, **adding** it to the input embedding. The two are in fact the same. The next linear layer gives $[\mathbf x;\mathbf p]W=\mathbf xW_1+\mathbf pW_2$, so a linear map after concatenation is the same as “adding a linear transform of the position code”.
 
 **Masked self-attention** (slide 70). A language model must predict the next word looking only at the words before it[[ch20:20.4|Teacher forcing: training by feeding the whole true sentence at once.]]. So that it cannot see the future even when the whole true sentence is fed in, **the alignment scores of the future are set directly to $-\infty$**. With key index $i$ and query index $j$, the slide's formula is
@@ -279,6 +389,9 @@ $$\mathrm{head}_a=\mathrm{Attn}(XW_q^a,XW_k^a,XW_v^a),\qquad\mathrm{MHA}(X)=\big
 With $D_k=D_v=D/h$ there are $h\cdot3D\cdot\frac Dh+D^2=4D^2$ parameters (without biases), and since one head costs $N^2D/h$ the total is $O(N^2D)$, the same as with a single head.
 :::
 
+:::fig mha
+:::
+
 **Encoder block** (slides 72–77). The slides explain a Transformer that uses only the encoder, building it up one line at a time.
 - The input is tokenized into $\mathbf x\in\mathbb R^{n\times d}$ (72). Each token is encoded by a continuous embedding: $\mathbf h_i=\mathrm{FF}(\mathbf x_i)$ (73).
 - Multi-head attention with a skip connection gives the **contextual encoding**: $\mathbf h_i=\mathrm{LayerNorm}(\mathbf h_i+\mathrm{Attn}(\mathbf h_i,\mathbf h,\mathbf h))$ (74). Here $\mathrm{Attn}(\mathbf q,K,V)$ is self-attention in which the query $\mathbf h_i$ looks at the whole of the keys and values $\mathbf h$.
@@ -314,6 +427,9 @@ Batch normalization computes the mean and variance over “the samples having th
 :::
 
 **BN and LN** (slide 79). The slide shows in a figure which cells of a box of shape $N\times C\times(H,W\text{ or Seq\_len})$ are grouped together for normalization. **BN** picks one channel and gathers all the samples and positions ($N,H,W$) of that channel. **LN in a CNN** gathers all the channels and positions ($C,H,W$) of one sample. **LN in a Transformer** picks one sample and one token and gathers only the feature vector ($C$) of that token[[ch12:12.3|BN computes the mean and variance over the minibatch.]].
+
+:::fig lncube
+:::
 
 :::key Layer normalization
 For the features $\mathbf h\in\mathbb R^d$ of one token,

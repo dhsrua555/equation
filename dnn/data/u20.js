@@ -47,6 +47,9 @@ $\odot$: 성분별 곱(elementwise multiplication).
 $$W=\begin{pmatrix}U_i&W_i\\U_f&W_f\\U_o&W_o\\U_g&W_g\end{pmatrix},\qquad W\begin{pmatrix}h_{t-1}\\x_t\end{pmatrix}=\begin{pmatrix}U_ih_{t-1}+W_ix_t\\U_fh_{t-1}+W_fx_t\\U_oh_{t-1}+W_ox_t\\U_gh_{t-1}+W_gx_t\end{pmatrix}$$
 입니다. 그래서 구현에서는 행렬곱 한 번으로 $4h$개의 전활성값을 얻은 뒤 위에서부터 $h$개씩 잘라 $\sigma,\sigma,\sigma,\tanh$를 적용합니다(슬라이드 19의 그림). 슬라이드 21의 $f_t=\sigma(W_f\cdot[h_{t-1},x_t]+b_f)$도 같은 식으로, $[h_{t-1},x_t]$는 두 벡터를 이어 붙인 것이고 후보를 $\tilde C_t$로 씁니다.
 
+:::fig lstmstack
+:::
+
 | 기호 | 이름 | 활성화 | 값의 범위 | 하는 일 (슬라이드 19) |
 |---|---|---|---|---|
 | $i$ | 입력 게이트 | $\sigma$ | $(0,1)$ | 셀에 쓸지 |
@@ -141,9 +144,23 @@ $$\frac{\partial f_t}{\partial h_{t-1}}=\diag\big(f_t\odot(1-f_t)\big)U_f,\quad\
 
 **RNN의 응용** (슬라이드 23–24). 두 가지를 봅니다. (1) **언어 모델링**: 문장 생성, 기계 번역(“The agreement on the European Economic Area was signed in August 1992.” → 프랑스어), 텍스트 요약은 모두 문장을 받아 문장을 내는 함수 $f_\theta$입니다. (2) **이미지 캡셔닝**: 단순한 캡셔닝과 어텐션을 쓴 캡셔닝(20.5절).
 
+| 과제 | 입력 | 출력 (슬라이드 24의 예) |
+|---|---|---|
+| 문장 생성 | 시작 기호 | I am very hungry at the end of every class |
+| 기계 번역 | The agreement on the European Economic Area was signed in August 1992. | L'accord sur l'Espace économique européen a été signé en août 1992. |
+| 텍스트 요약 | 긴 문서(Document) | 짧은 요약문(Summary) |
+
+슬라이드는 이 셋에 “And so many more…”를 덧붙였습니다. 세 과제 모두 $f_\theta$ 하나가 토큰열을 받아 토큰열을 내는 틀입니다.
+
 **수업 중의 곁가지** (슬라이드 23의 그림). 수업에서는 감염병의 SIRD 모형(감수성 S, 감염 I, 회복 R, 사망 D의 상미분방정식)에서 감염률 같은 계수($\alpha,\beta$; 필기의 ‘감염지수’)를 시간에 따라 변하는 값으로 보고, 이를 LSTM으로 추정해 ODE에 넣는 그림을 그렸습니다. 시계열 뒤에 숨은 매개변수를 RNN으로 읽어 내는 예로 보면 되고, 슬라이드의 본론은 아닙니다.
 
 **문장은 이산 기호의 열** (슬라이드 25). 어휘(vocabulary)의 크기를 $n$이라 하고 각 기호(토큰)에 번호 $k\in\{1,\dots,n\}$를 붙이면, 토큰 $k$는 원-핫 벡터 $e_k\in\mathbb R^n$($k$번째 성분만 $1$)이 됩니다. 슬라이드의 예 “A Man is holding a bat”은 $n=8$짜리 원-핫 벡터 $\mathbf x_0,\dots,\mathbf x_5$의 열입니다.
+
+| 토큰 | <SOS> | A | Man | is | holding | a | bat |
+|---|---|---|---|---|---|---|---|
+| 원-핫 ($n=8$) | 00100000 | 00001000 | 01000000 | 00000010 | 00000100 | 00001000 | 10000000 |
+
+(<SOS>의 코드는 슬라이드 26에서, 나머지는 슬라이드 25에서 가져왔습니다.)
 
 :::warn 슬라이드의 원-핫 코드
 슬라이드 25에서 “A”와 “a”는 같은 코드 $[00001000]$이고, 슬라이드 28에서는 문장 끝 기호 <EOS>의 출력 코드도 $[00001000]$입니다. 대소문자를 구별하지 않는 어휘라면 “A”와 “a”가 같은 토큰인 것은 자연스럽지만, <EOS>는 반드시 자기만의 번호를 가져야 생성을 멈출 수 있습니다. 그림을 간단히 하려고 코드를 겹쳐 쓴 것으로 보면 됩니다.
@@ -154,6 +171,9 @@ $$\frac{\partial f_t}{\partial h_{t-1}}=\diag\big(f_t\odot(1-f_t)\big)U_f,\quad\
 :::key RNN 언어 모델
 $$\mathbf z_t=W_e\mathbf x_t+\mathbf b_e,\qquad\mathbf h_t=\mathrm{LSTM}(\mathbf z_t,\mathbf h_{t-1},\mathbf c_{t-1};\theta),\qquad\hat{\mathbf x}_{t+1}=W_d\mathbf h_t+\mathbf b_d$$
 $\mathbf x_t\in\mathbb R^n$은 원-핫, $W_e\in\mathbb R^{d\times n}$, $\mathbf h_t\in\mathbb R^d$, $W_d\in\mathbb R^{n\times d}$. $\softmax(\hat{\mathbf x}_{t+1})$이 다음 토큰의 확률분포이다.
+:::
+
+:::fig lmstep
 :::
 
 **임베딩은 열 고르기입니다.** $\mathbf x_t=e_k$이면 $W_e\mathbf x_t$는 $W_e$의 $k$번째 열이므로, 임베딩층은 토큰마다 $d$차원 벡터 하나를 찾아 주는 표(lookup table)입니다. 원-핫 벡터는 $n$차원(보통 수만)이고 서로 다른 두 단어 사이의 거리가 모두 $\sqrt2$로 같지만, 학습된 임베딩은 $d$차원(수백)이고 비슷하게 쓰이는 단어끼리 가까워질 수 있습니다.
@@ -199,6 +219,9 @@ $k_t$는 $t$번째 정답 토큰의 번호($\mathbf x_t=e_{k_t}$)이다. 칸마�
 뽑은 토큰을 다음 입력으로 되먹이고, <EOS>를 뽑으면 멈춘다.
 :::
 
+:::fig sampling
+:::
+
 :::ex 예제 5 — 한 칸의 교차 엔트로피
 어휘가 4개이고 로짓이 $\hat{\mathbf x}_t=(2,1,0,0)$, 정답이 첫 토큰일 때 손실과 로짓의 기울기는?
 ---
@@ -233,6 +256,9 @@ $$\mathbf s=\mathrm{Enc}(x_1,\dots,x_m),\qquad P(y_1,\dots,y_T\mid x)=\prod_{t=1
 디코더는 20.3절의 언어 모델과 똑같고, 다만 시작 상태가 $\mathbf 0$이 아니라 입력 문장의 요약 $\mathbf s$입니다. 학습도 20.4절처럼 정답 번역문을 교사 강요로 넣고 칸마다의 교차 엔트로피를 더하며, 손실의 기울기는 디코더를 지나 $\mathbf s$를 거쳐 인코더까지 역전파됩니다.
 
 **이미지 캡셔닝** (슬라이드 33–34). 과제는 이미지 $\mathbf x$를 자연어 문장 $\mathbf y$로 묘사하는 것입니다(예: “man in black shirt is playing guitar.”). 일은 두 단계로 나뉩니다. (1) 이미지의 시각적 패턴을 인식하는 **CNN**[[ch15:15.5|풀링층과 완전연결층.]], (2) 이미지를 조건으로 문장을 생성하는 **RNN**. 수업에서는 이를 $f_\theta(\mathbf y\mid g_\phi(\mathbf x))$로 적어, 인코더 CNN($g_\phi$)과 디코더 RNN($f_\theta$)이 서로 다른 매개변수를 가진 다른 함수임을 표시했습니다. 가장 단순한 방법은 CNN의 마지막 특성 벡터(예: 분류층 직전의 4096차원)로 RNN의 시작 상태를 정하는 것입니다.
+
+:::fig caption
+:::
 
 :::warn 어텐션은 아직
 슬라이드 23·33은 ‘어텐션을 쓴 이미지 캡셔닝’을 예고하지만, 받은 슬라이드(23–34)에는 그 내용이 없습니다. 다만 동기는 분명합니다. 긴 입력 전체를 고정된 크기의 벡터 하나($\mathbf s$, 또는 CNN 특성 하나)에 담아야 하므로 정보의 병목이 생기고, 어텐션은 디코더가 칸마다 입력의 여러 위치를 다시 보게 해 이 병목을 풉니다.
