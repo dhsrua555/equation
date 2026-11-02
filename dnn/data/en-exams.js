@@ -5,6 +5,7 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
   const R = String.raw;
   Object.assign(EM.en.ex, {
   x1: {
+    group: 'Weeks 1–5',
     kind: 'Weeks 1–2', title: 'Regression, Probability, Information Theory, Kernels', scopeText: 'Units 01–04',
     desc: 'The normal equations, MLE, MAP and Bayesian posteriors, KL and mutual information, ridge and kernel ridge. Checks whether you can reproduce the proofs from the class notes.',
     probs: [
@@ -60,6 +61,7 @@ $\hat\theta_{\text{MAP}}=\argmin[-\log p(D\mid\theta)-\log p(\theta)]$: the firs
     ],
   },
   x2: {
+    group: 'Weeks 1–5',
     kind: 'Week 3', title: 'Logistic, Softmax, SVM, Neural Networks', scopeText: 'Units 05–08',
     desc: 'Losses, gradients, and convexity of linear classifiers, the margin and dual problem of the SVM, and the structure of neural networks. Mostly the proofs from the Week 3 notes.',
     probs: [
@@ -113,6 +115,7 @@ $C=2$: $p_1=\frac1{1+e^{-(z_1-z_2)}}=\sigma((w_1-w_2)^Tx)$.` },
     ],
   },
   x3: {
+    group: 'Weeks 1–5',
     kind: 'Midterm-style · Weeks 1–4 combined', title: 'Derivations and Proofs Combined', scopeText: 'Units 01–13',
     desc: 'The whole range of Weeks 1–4. Checks whether you can write from scratch the theorems proved in the notes (the normal equations, KL, push-through, SVM, Xavier/He, the descent lemma).',
     probs: [
@@ -172,6 +175,7 @@ $I=H(Y)-H(Y\mid X)=H(Y)-(H(X,Y)-H(X))=H(X)+H(Y)-H(X,Y)$.` },
     ],
   },
   x4: {
+    group: 'Weeks 1–5',
     kind: 'Problem Set 1 type · proofs', title: 'Divergences, MAP, SVM Duality, Max–Min', scopeText: 'Units 02 · 03 · 07',
     desc: 'The same types as the four problems of Problem Set 1 (the JS divergence, the Gaussian MAP and bias–variance, the dual of a two-point SVM, the max–min inequality), with changed conditions. The whole solution process is graded.',
     probs: [
@@ -234,6 +238,7 @@ Inner products: those with $x_1$ are 0, $x_2^Tx_2=x_3^Tx_3=4$, $x_2^Tx_3=0$. Dua
     ],
   },
   x5: {
+    group: 'Weeks 1–5',
     kind: 'Week 5 · optimization', title: 'Descent Lemma, SGD, Momentum, Adam', scopeText: 'Units 13–14',
     desc: 'The range of the two Week 5 Monday lectures (optimization theory and practical optimization). Smoothness and the Hessian, the convergence guarantee of SGD, the condition number, and computations and proofs for momentum, Nesterov, AdaGrad, RMSProp, and Adam.',
     probs: [

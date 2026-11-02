@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Équation 심층 신경망</title>
-<meta name="description" content="심층 신경망의 수학적 기초 1–5주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta name="description" content="심층 신경망의 수학적 기초 1–9주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Équation 심층 신경망">
-<meta property="og:description" content="심층 신경망의 수학적 기초 1–5주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta property="og:description" content="심층 신경망의 수학적 기초 1–9주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:url" content="https://dhsrua555.github.io/equation/dnn/">
 <meta property="og:image" content="https://dhsrua555.github.io/equation/assets/og.png">
 <meta property="og:image:width" content="1280">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Jost:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Hahmlet:wght@400..700&display=swap">
 <link rel="stylesheet" href="../core/katex.css?v=68ce9d31">
-<link rel="stylesheet" href="../core/style.css?v=c9bde054">
+<link rel="stylesheet" href="../core/style.css?v=81d9e088">
 <link rel="stylesheet" href="../core/fields.css?v=907d5e23">
 <script src="../core/theme.js?v=ed803ab6"></script>
 <link rel="icon" href="../assets/icons/dnn-32.png" sizes="32x32">
@@ -32,9 +32,9 @@
 <div id="toast-root" aria-live="polite"></div>
 <noscript><p style="padding:24px">이 사이트는 JavaScript가 필요합니다.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="../core/net.js?v=5fa43f67"></script>
-<script src="../core/net-index.js?v=9879b0cb"></script>
-<script src="site.js?v=23261b47"></script>
+<script src="../core/net.js?v=b8b65bed"></script>
+<script src="../core/net-index.js?v=a6fdf5d9"></script>
+<script src="site.js?v=90cbd580"></script>
 <script src="../core/figkit.js?v=ddc11102"></script><script src="figs.js?v=3c9bd3ac"></script>
 <script src="data/u01.js?v=bf59fd6e"></script>
 <script src="data/u02.js?v=09e0eaf9"></script>
@@ -46,12 +46,16 @@
 <script src="data/u08.js?v=c08a5fe3"></script>
 <script src="data/u09.js?v=85753317"></script>
 <script src="data/u10.js?v=29e1f5fa"></script>
-<script src="data/u11.js?v=210d94f0"></script>
+<script src="data/u11.js?v=c114f345"></script>
 <script src="data/u12.js?v=300bffdc"></script>
 <script src="data/u13.js?v=c053361d"></script>
-<script src="data/u14.js?v=0a6da084"></script>
-<script src="data/u15.js?v=42dbf90e"></script>
-<script src="data/u16.js?v=9329525a"></script>
+<script src="data/u14.js?v=2039cd40"></script>
+<script src="data/u15.js?v=7cb62aea"></script>
+<script src="data/u16.js?v=7135f541"></script>
+<script src="data/u17.js?v=b70b5ad6"></script>
+<script src="data/u18.js?v=8095b62c"></script>
+<script src="data/u19.js?v=0033e2c9"></script>
+<script src="data/u20.js?v=25352edb"></script>
 <script src="data/proofs-a.js?v=e1798fcd"></script>
 <script src="data/proofs-b.js?v=fa0e78fd"></script>
 <script src="data/proofs-c.js?v=41111756"></script>
@@ -62,71 +66,84 @@
 <script src="data/proofs-h.js?v=e347cca9"></script>
 <script src="data/proofs-i.js?v=2d26a5e3"></script>
 <script src="data/proofs-j.js?v=2f65de5e"></script>
-<script src="data/exams.js?v=1817872d"></script>
-<script src="data/exams-2.js?v=06caeba8"></script>
+<script src="data/proofs-k.js?v=d7580dc1"></script>
+<script src="data/proofs-l.js?v=48b6060b"></script>
+<script src="data/proofs-m.js?v=8bf82cdf"></script>
+<script src="data/proofs-n.js?v=ec8baec4"></script>
+<script src="data/exams-3.js?v=758c3510"></script>
+<script src="data/exams.js?v=4427bc68"></script>
+<script src="data/exams-2.js?v=4bdeee10"></script>
 <script src="data/quiz-1.js?v=c93a7122"></script>
-<script src="data/quiz-2.js?v=7c644ce1"></script>
+<script src="data/quiz-2.js?v=b69f13d4"></script>
 <script src="data/learn-01.js?v=d934f119"></script>
 <script src="data/more-01.js?v=8e849067"></script>
 <script src="data/fig-01.js?v=cd1b3574"></script>
-<script src="data/learn-02.js?v=1b127e6d"></script>
+<script src="data/learn-02.js?v=0b51ddbd"></script>
 <script src="data/more-02.js?v=e8162927"></script>
 <script src="data/fig-02.js?v=6493d623"></script>
-<script src="data/learn-03.js?v=2728a7b0"></script>
+<script src="data/learn-03.js?v=6adc24fa"></script>
 <script src="data/more-03.js?v=26dd2e9c"></script>
 <script src="data/fig-03.js?v=95c46823"></script>
-<script src="data/learn-04.js?v=342de22c"></script>
+<script src="data/learn-04.js?v=d0a1f20e"></script>
 <script src="data/more-04.js?v=8ad008d3"></script>
 <script src="data/fig-04.js?v=2899dc46"></script>
-<script src="data/learn-05.js?v=7c844d9e"></script>
+<script src="data/learn-05.js?v=f6bc8283"></script>
 <script src="data/more-05.js?v=e8b169af"></script>
 <script src="data/fig-05.js?v=2824d8f4"></script>
 <script src="data/learn-06.js?v=c9b276e8"></script>
 <script src="data/more-06.js?v=f93f1159"></script>
 <script src="data/fig-06.js?v=6d642a37"></script>
-<script src="data/learn-07.js?v=c5aedc93"></script>
+<script src="data/learn-07.js?v=d77eccb3"></script>
 <script src="data/more-07.js?v=1f277b98"></script>
 <script src="data/fig-07.js?v=b336a646"></script>
-<script src="data/learn-08.js?v=b3850454"></script>
+<script src="data/learn-08.js?v=e581908c"></script>
 <script src="data/more-08.js?v=57fa91a6"></script>
-<script src="data/fig-08.js?v=405c680e"></script>
-<script src="data/learn-09.js?v=7d65d9ca"></script>
+<script src="data/fig-08.js?v=0c907a16"></script>
+<script src="data/learn-09.js?v=df3f82dd"></script>
 <script src="data/more-09.js?v=a42092b8"></script>
-<script src="data/fig-09.js?v=2287be34"></script>
+<script src="data/fig-09.js?v=a075e5e5"></script>
 <script src="data/learn-10.js?v=92108c09"></script>
 <script src="data/more-10.js?v=88e25050"></script>
 <script src="data/fig-10.js?v=830dc84f"></script>
-<script src="data/learn-11.js?v=8d6343d0"></script>
+<script src="data/learn-11.js?v=16561d77"></script>
 <script src="data/more-11.js?v=ed6abe50"></script>
 <script src="data/fig-11.js?v=73931153"></script>
-<script src="data/learn-12.js?v=76584d04"></script>
+<script src="data/learn-12.js?v=e526fde3"></script>
 <script src="data/more-12.js?v=962c5b6e"></script>
-<script src="data/fig-12.js?v=c25ae8a7"></script>
-<script src="data/learn-13.js?v=c3e0a30e"></script>
+<script src="data/fig-12.js?v=8fdf52d9"></script>
+<script src="data/learn-13.js?v=598029d0"></script>
 <script src="data/more-13.js?v=bf6decf2"></script>
 <script src="data/fig-13.js?v=7fce02f3"></script>
 <script src="data/fig-14.js?v=572451f9"></script>
-<script src="data/fig-15.js?v=ebcae046"></script>
-<script src="data/fig-16.js?v=245d5d6e"></script>
+<script src="data/fig-15.js?v=b843959e"></script>
+<script src="data/fig-16.js?v=1541ca5e"></script>
+<script src="data/fig-17.js?v=4047efe1"></script>
+<script src="data/fig-18.js?v=a36b6c94"></script>
+<script src="data/fig-19.js?v=cdd699db"></script>
+<script src="data/fig-20.js?v=3b86877f"></script>
 <script src="data/quizprep-a.js?v=14d6c53e"></script>
 <script src="data/quizprep-b.js?v=5aa4cea3"></script>
 <script src="data/en-01.js?v=c075464f"></script>
 <script src="data/en-figs.js?v=d045ee32"></script>
-<script src="data/en-02.js?v=8d962f99"></script>
-<script src="data/en-03.js?v=dbcb4aa8"></script>
-<script src="data/en-04.js?v=f550c09e"></script>
-<script src="data/en-05.js?v=97cb8490"></script>
+<script src="data/en-02.js?v=8683f050"></script>
+<script src="data/en-03.js?v=a8966e6a"></script>
+<script src="data/en-04.js?v=39e8c148"></script>
+<script src="data/en-05.js?v=f5b6e47f"></script>
 <script src="data/en-06.js?v=d07f4bcc"></script>
-<script src="data/en-07.js?v=7636956f"></script>
-<script src="data/en-08.js?v=595feb9b"></script>
-<script src="data/en-09.js?v=f7acff4d"></script>
+<script src="data/en-07.js?v=b8f918cc"></script>
+<script src="data/en-08.js?v=34076f24"></script>
+<script src="data/en-09.js?v=34447ce7"></script>
 <script src="data/en-10.js?v=e5a47d9d"></script>
-<script src="data/en-11.js?v=ac894670"></script>
-<script src="data/en-12.js?v=bf5b1c6e"></script>
-<script src="data/en-13.js?v=da7afaad"></script>
-<script src="data/en-14.js?v=9e4af964"></script>
-<script src="data/en-15.js?v=1026de89"></script>
-<script src="data/en-16.js?v=98b6ecca"></script>
+<script src="data/en-11.js?v=2a523638"></script>
+<script src="data/en-12.js?v=9d916b63"></script>
+<script src="data/en-13.js?v=09571f85"></script>
+<script src="data/en-14.js?v=1bc9e636"></script>
+<script src="data/en-15.js?v=cfa631e8"></script>
+<script src="data/en-16.js?v=2e245b56"></script>
+<script src="data/en-17.js?v=9e4fbdef"></script>
+<script src="data/en-18.js?v=c504f6ff"></script>
+<script src="data/en-19.js?v=1c9b381f"></script>
+<script src="data/en-20.js?v=505ae7f0"></script>
 <script src="data/en-proofs-a.js?v=89fe1b1e"></script>
 <script src="data/en-proofs-b.js?v=6f2fe3e9"></script>
 <script src="data/en-proofs-c.js?v=279cffc3"></script>
@@ -137,13 +154,18 @@
 <script src="data/en-proofs-h.js?v=a67ec9e5"></script>
 <script src="data/en-proofs-i.js?v=909f8640"></script>
 <script src="data/en-proofs-j.js?v=842e05cf"></script>
-<script src="data/en-exams.js?v=b86089d6"></script>
-<script src="data/en-quiz.js?v=6a793486"></script>
+<script src="data/en-proofs-k.js?v=f67dd1c1"></script>
+<script src="data/en-proofs-l.js?v=f8e49f05"></script>
+<script src="data/en-proofs-m.js?v=f04c28e3"></script>
+<script src="data/en-proofs-n.js?v=f1b9569d"></script>
+<script src="data/en-exams.js?v=73de3c03"></script>
+<script src="data/en-exams-3.js?v=36a03d3c"></script>
+<script src="data/en-quiz.js?v=c9a257eb"></script>
 <script src="data/map-01.js?v=957540b0"></script>
 <script src="data/map-02.js?v=53f68b4e"></script>
 <script src="data/map-03.js?v=b0b0bad9"></script>
 <script src="data/map-04.js?v=354d2d16"></script>
-<script src="data/map-05.js?v=d6dc9867"></script>
+<script src="data/map-05.js?v=bd7005c0"></script>
 <script src="data/map-06.js?v=3789d478"></script>
 <script src="data/map-07.js?v=c128fa58"></script>
 <script src="data/map-08.js?v=3b28e311"></script>
@@ -153,14 +175,22 @@
 <script src="data/map-12.js?v=18b0f3a7"></script>
 <script src="data/map-13.js?v=2489b042"></script>
 <script src="data/map-14.js?v=6cd65a78"></script>
-<script src="data/map-15.js?v=a22840ed"></script>
+<script src="data/map-15.js?v=893093bf"></script>
 <script src="data/map-16.js?v=b1b77b5f"></script>
+<script src="data/map-17.js?v=3ebb20e3"></script>
+<script src="data/map-18.js?v=732e7276"></script>
+<script src="data/map-19.js?v=9b2d1933"></script>
+<script src="data/map-20.js?v=0891f2b6"></script>
 <script src="data/plan-a.js?v=29cc2ace"></script>
 <script src="data/plan-b.js?v=80dd36b8"></script>
+<script src="data/plan-c.js?v=c7b1306c"></script>
+<script src="data/plan-d.js?v=481409c4"></script>
+<script src="data/plan-e.js?v=a32c9d12"></script>
+<script src="data/plan-f.js?v=5624249f"></script>
 <script src="../core/calc.js?v=b965d12c"></script>
 <script src="../core/plots.js?v=342f3884"></script>
-<script src="plots.js?v=a221d7bf"></script>
+<script src="plots.js?v=ba24f83b"></script>
 <script src="../core/ambient.js?v=13ddb6c9"></script>
-<script src="../core/app.js?v=0cff37c6"></script>
+<script src="../core/app.js?v=f2c5315e"></script>
 </body>
 </html>

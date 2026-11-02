@@ -4,7 +4,7 @@ window.EM = window.EM || { chapters: [], exams: [] };
   const R = String.raw;
   EM.exams.push(
   {
-    id: 'x4', roman: 'IV', kind: 'Problem Set 1 유형 · 증명', title: '발산, MAP, SVM 쌍대, 최대-최소', scopeText: '02·03·07 단원',
+    id: 'x4', roman: 'IV', group: '1–5주차 범위', kind: 'Problem Set 1 유형 · 증명', title: '발산, MAP, SVM 쌍대, 최대-최소', scopeText: '02·03·07 단원',
     desc: 'Problem Set 1의 네 문제(JS 발산, 가우시안 MAP과 편향-분산, 두 점 SVM의 쌍대, 최대-최소 부등식)와 같은 유형을 조건만 바꿔 냈습니다. 풀이 과정 전체를 채점합니다.',
     minutes: 100, plot: 'entropy',
     problems: [
@@ -67,7 +67,7 @@ $m_\lambda\ge0$, 합 $\lambda+(1-\lambda)=1$. $p(x)>0$이면 $m_\lambda(x)\ge\la
     ],
   },
   {
-    id: 'x5', roman: 'V', kind: '5주차 범위 · 최적화', title: '하강 보조정리, SGD, 모멘텀, Adam', scopeText: '13–14 단원',
+    id: 'x5', roman: 'V', group: '1–5주차 범위', kind: '5주차 범위 · 최적화', title: '하강 보조정리, SGD, 모멘텀, Adam', scopeText: '13–14 단원',
     desc: '5주차 월요일의 두 강의(최적화 이론과 실전 최적화) 범위입니다. 매끄러움과 헤시안, SGD의 수렴 보장, 조건수, 모멘텀·네스테로프·AdaGrad·RMSProp·Adam의 계산과 증명.',
     minutes: 90, plot: 'momentum',
     problems: [
