@@ -204,7 +204,31 @@ With $C=256$ channels, compare the weights of one $7\times7$ convolution layer a
 $7\times7$: $49\cdot256^2=3{,}211{,}264$. Three $3\times3$ layers: $27\cdot256^2=1{,}769{,}472$. The ratio $27/49\approx0.55$ saves about 45% with the same $7\times7$ receptive field, and ReLU enters three times instead of once, expressing more complex functions.
 :::
 
+**From AlexNet to ZFNet** (slide 24). The changes in one table:
+
+| | AlexNet | ZFNet |
+|---|---|---|
+| Conv1 | $11\times11$, stride 4, 96 filters | $7\times7$, stride 2, 96 filters (output $110\times110$) |
+| Filters in Conv3, 4, 5 | 384, 384, 256 | 512, 1024, 512 |
+| Everything else | unchanged | unchanged |
+| Top-5 error | 16.4% | 11.7% |
+
+**VGG-16 layout** (every convolution is $3\times3$, stride 1, padding 1, so sizes shrink only at pooling. The layout is the standard one of the original paper and is a supplement not on the slides). For a $224\times224\times3$ input:
+
+| Stage | Convolutions | Output after pooling |
+|---|---|---|
+| 1 | $3\times3$, 64 filters, twice | $112\times112\times64$ |
+| 2 | $3\times3$, 128 filters, twice | $56\times56\times128$ |
+| 3 | $3\times3$, 256 filters, three times | $28\times28\times256$ |
+| 4 | $3\times3$, 512 filters, three times | $14\times14\times512$ |
+| 5 | $3\times3$, 512 filters, three times | $7\times7\times512$ |
+| End | fully connected 4096, 4096, 1000 | 1000 classes |
+
+At the end of each stage a $2\times2$ max pooling halves the width and height, and the channels double from stage to stage (the last two stay at 512).
+
 ### Going deeper
+
+VGG-16 has### Going deeper
 
 VGG-16 has about 138 million parameters, more than AlexNet, and again most are in the first fully connected layer ($7\cdot7\cdot512\cdot4096\approx1.03\times10^8$). Because the structure is simple, it is still often used as a feature extractor or as the base network for style transfer[[@med:ch13:10.2f|Deep convolution and representative architectures (Medical AI).]].
 ` },
@@ -249,6 +273,9 @@ The total is $346{,}112$, about 32% of the naive module's $1{,}089{,}536$. The b
 The slide gives the bottleneck module's parameters as “about 330k”. Adding all six convolutions gives $346{,}112\approx346$k as above; 330k ($329{,}728$) is the sum with one $1\times1\times256\times64$ (16,384) left out. The naive module's “about 1090k” is correct: $1{,}089{,}536$.
 :::
 
+:::fig googlenet
+:::
+
 **The overall GoogLeNet architecture** (slides 41–42). A stack of simple convolution layers for the initial layers (the stem), then a stack of inception modules in higher layers with occasional downsamplings (stride-2 pooling). It ends with global average pooling instead of fully connected layers[[ch15:15.5|Global average pooling.]].
 
 ### Going deeper
@@ -261,6 +288,9 @@ Stacking more layers made things worse **starting with the training error**. Get
 :::
 
 **Depth vs. performance** (slides 45–46). Comparing a plain 20-layer network with a plain 56-layer network on CIFAR-10, the 56-layer network has **higher test error**. Is it overfitting due to the increased number of parameters? But the 56-layer network also has **higher training error**. It fits even the training data worse, so **it is not an overfitting problem**.
+
+:::fig depthfail
+:::
 
 **Why does the deeper network perform worse?** (slide 47). In theory, a deeper network should be at least as good as the shallow one in fitting the training data: copy the shallow network and make the remaining layers identity mappings. However, larger networks are **much more difficult to optimize**. There are two potential problems in deeper networks.
 - **Gradient vanishing** (the gradient norm approaches zero): in the chain rule of backpropagation, Jacobians are multiplied together.
@@ -307,6 +337,9 @@ This is a way to ask “which pixels played the biggest role in deciding that th
 **Saliency** (slide 52). The quality of being particularly noticeable or important; prominence — the state or quality by which an item stands out from its neighbors. Saliency detection is considered to be a key attentional mechanism that enables organisms to focus their limited perceptual and cognitive resources on the most pertinent subset of the available sensory data.
 
 **Visualizing the saliency map** (slides 53–55). We want to understand which part of an image contributes the most to make a prediction. Feeding an image $I$ to the network (forward) gives the score $S_c(I)$ of class $c$ (e.g. “dog”). The **sensitivity of the score changes with respect to the changes in pixels**, that is, the gradient $\frac{\partial S_c(I)}{\partial I}$, gives the contributions of pixels for classification. It is computed by backpropagation.
+
+:::fig saliency
+:::
 
 :::key Saliency map
 $$\frac{\partial S_c(I)}{\partial I}=\frac{\partial F^{(L)}}{\partial F^{(L-1)}}\,\frac{\partial F^{(L-1)}}{\partial F^{(L-2)}}\cdots\frac{\partial F^{(1)}}{\partial I}\qquad(S_c=\text{the }c\text{-th component of }F^{(L)})$$
@@ -385,4 +418,29 @@ Gradient-based saliency maps are noisy and have limits, such as regions of zero 
 - The linear model case — 1 pt` },
     ],
   };
+})();
+
+(function () {
+  const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '층을 쌓았더니 오차가 늘었다': 'Stacking layers made the error grow',
+    '오차 (%)': 'error (%)',
+    '(a) 일반 망 (CIFAR-10)': '(a) Plain network (CIFAR-10)', '(b) 잔차 망': '(b) Residual network',
+    '56층 시험': '56-layer test', '20층 시험': '20-layer test', '56층 훈련': '56-layer train', '20층 훈련': '20-layer train',
+    '110층 시험': '110-layer test', '110층 훈련': '110-layer train',
+    'GoogLeNet의 전체 구조': 'The whole GoogLeNet',
+    '합성곱 줄기': 'conv stem', '+ 풀링': '+ pooling', '인셉션': 'inception',
+    '풀링': 'pool', '평균': 'avg', '선형': 'linear', '+ 소프트맥스': '+ softmax',
+    '입력 224×224×3 → 합성곱 줄기 → 인셉션 9개 → 전역 평균 풀링 → 선형 → 클래스': 'input 224×224×3 → conv stem → 9 inception modules → global average pooling → linear → classes',
+    '큰 완전연결층이 없어 매개변수가 AlexNet의 약 1/12': 'No big fully connected layers: about 1/12 of AlexNet’s parameters',
+    '현저성 지도의 계산 흐름': 'How a saliency map is computed',
+    '이미지': 'image', '점수': 'score', '순전파: 이미지 → 클래스 점수': 'Forward: image → class score',
+    '역전파: 점수에서 시작해 입력 화소까지 연쇄법칙': 'Backward: chain rule from the score down to the input pixels',
+    '를 화소마다 그린 것이 현저성 지도': 'plotted at each pixel is the saliency map',
+  });
+  Object.assign(EM.en.fig, {
+    depthfail: R`A schematic redrawing of the shapes of the curves on slides 45–46 and 51 (values are for illustration). (a) A plain stack of 56 layers has higher **test** error than 20 layers, and also higher **training** error (dashed): it is not overfitting but a harder optimization. (b) With residual connections, the deeper network (110 layers) has lower training and test error. The horizontal axis is the number of iterations (×10⁴), and the sudden drops are where the learning rate is cut.`,
+    googlenet: R`A summary of the structure on slides 41–42. The early part is a few simple convolution layers (the stem); higher up, inception modules are stacked with occasional pooling for downsampling. The end is global average pooling and one linear layer, so there is no AlexNet-style giant fully connected layer, and with 22 layers it has about one twelfth of AlexNet’s parameters. The grouping of modules (3a–3b, 4a–4e, 5a–5b) follows the original paper.`,
+    saliency: R`The diagram of slides 53–55. An image $I$ passes through layers $F^{(1)},\dots,F^{(L)}$ to become the class score $S_c(I)$ (forward, top). The same chain rule applied backwards gives the gradient $\frac{\partial S_c}{\partial I}$ from the score down to the input pixels (backward, bottom). Unlike training, the weights stay fixed and only the gradient with respect to the input is computed.`,
+  });
 })();

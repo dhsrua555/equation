@@ -104,3 +104,56 @@
     },
   });
 })();
+
+/* 16 보충 그림: 깊이와 오차 곡선(슬라이드 45–46, 51), GoogLeNet 전체 구조(슬라이드 41–42), 현저성 계산 흐름(슬라이드 53–55) */
+(function () {
+  const R = String.raw;
+  const FK = window.FK;
+  // schematic learning curve: error decays to a floor, which drops after the learning rate is cut at t = 3.2
+  const curve = (start, floor, tau) => Array.from({ length: 61 }, (_, k) => { const t = k / 10; const fl = t < 3.2 ? floor : floor * 0.62; return [t, fl + (start - fl) * Math.exp(-t / tau)]; });
+  const panelOpt = { x: [0, 6], y: [0, 20], xl: '', yl: '오차 (%)', xt: [[0, '0'], [2, '2'], [4, '4'], [6, '6']], yt: [[0, '0'], [10, '10'], [20, '20']] };
+
+  window.SITE_FIGS = Object.assign(window.SITE_FIGS || {}, {
+    // 16.6 plain networks get worse with depth even on the training set; residual networks do not (slides 45–46, 51)
+    depthfail() {
+      const P = (ox, title, series) => Object.assign({ ox, w: 280, h: 230, title, m: [26, 10, 34, 36] }, panelOpt, {
+        c: series.map(([pts, c]) => ({ pts, c })),
+        extra: (X, Y) => FK.legend(X(2.9), Y(19), series.map(([pts, c, lab]) => [c, lab])) });
+      return FK.G2(560, 230, '층을 쌓았더니 오차가 늘었다', [
+        P(0, '(a) 일반 망 (CIFAR-10)', [[curve(20, 11, 0.7), 'ld', '56층 시험'], [curve(18, 6, 0.7), 'rx', '20층 시험'], [curve(18, 8.5, 0.8), 'ld ds', '56층 훈련'], [curve(16, 3, 0.7), 'rx ds', '20층 훈련']]),
+        P(280, '(b) 잔차 망', [[curve(20, 8, 0.7), 'rx', '20층 시험'], [curve(20, 6, 0.7), 'ld', '110층 시험'], [curve(16, 3, 0.7), 'rx ds', '20층 훈련'], [curve(16, 1, 0.7), 'ld ds', '110층 훈련']])],
+        R`슬라이드 45–46, 51의 곡선을 모양만 본떠 새로 그린 개념도입니다(수치는 보기용). (a) 단순히 쌓은 망은 56층이 20층보다 **시험** 오차뿐 아니라 **훈련** 오차(점선)도 높습니다. 과적합이 아니라 최적화가 어려운 것입니다. (b) 잔차 연결을 넣으면 깊을수록(110층) 훈련·시험 오차가 모두 낮습니다. 가로축은 반복 횟수(×10⁴)이고, 오차가 갑자기 내려가는 곳은 학습률을 줄인 시점입니다.`);
+    },
+    // 16.5 GoogLeNet as a whole: conv stem, nine inception modules in three groups, global pooling, one linear layer (slides 41–42)
+    googlenet() {
+      const blk = (x, w, t, sub, c) => FK.R(x, 70, w, 76, c || 'bm') + FK.T(x + w / 2, 104, t, { s: 11, c: 'em' }) + (sub ? FK.T(x + w / 2, 120, sub, { s: 10 }) : '');
+      let b = blk(6, 92, '합성곱 줄기', '7×7, 3×3')
+        + FK.T(52, 134, '+ 풀링', { s: 10 })
+        + blk(112, 76, '인셉션', '3a, 3b', 'bm2') + blk(202, 18, '', '', 'bm') + blk(234, 112, '인셉션', '4a, 4b, 4c, 4d, 4e', 'bm2') + blk(360, 18, '', '', 'bm')
+        + blk(392, 76, '인셉션', '5a, 5b', 'bm2') + blk(482, 34, '', '', 'bm');
+      b += FK.T(211, 160, '풀링', { s: 10 }) + FK.T(369, 160, '풀링', { s: 10 }) + FK.T(499, 160, '평균', { s: 10 }) + FK.T(499, 174, '풀링', { s: 10 })
+        + FK.T(530, 104, '선형', { s: 10, a: 'start' }) + FK.T(530, 120, '+ 소프트맥스', { s: 9, a: 'start' });
+      b += FK.T(300, 30, '입력 224×224×3 → 합성곱 줄기 → 인셉션 9개 → 전역 평균 풀링 → 선형 → 클래스', { s: 11, c: 'em' })
+        + FK.T(300, 214, '큰 완전연결층이 없어 매개변수가 AlexNet의 약 1/12', { s: 11, c: 'lb' });
+      for (const [x1, x2] of [[98, 112], [188, 202], [220, 234], [346, 360], [378, 392], [468, 482], [516, 528]]) b += FK.A(x1, 108, x2, 108, 'ax', 5);
+      return FK.fig(560, 228, 'GoogLeNet의 전체 구조', b,
+        R`슬라이드 41–42의 구조를 요약한 도식입니다. 초반은 단순한 합성곱층 몇 개(줄기)이고, 위쪽은 인셉션 모듈을 쌓되 가끔 풀링으로 다운샘플링합니다. 끝은 전역 평균 풀링과 선형층 하나라 AlexNet식의 거대한 완전연결층이 없고, 22층인데도 매개변수가 AlexNet의 약 12분의 1입니다. 모듈 묶음의 개수는 원 논문의 구성(3a–3b, 4a–4e, 5a–5b)을 따랐습니다.`);
+    },
+    // 16.7 saliency: forward pass to the class score, backward pass to the pixels (slides 53–55)
+    saliency() {
+      const names = ['I', 'F(1)', 'F(2)', '⋯', 'F(L−1)', 'F(L)'];
+      const xs = [40, 130, 220, 310, 400, 490];
+      let b = '';
+      xs.forEach((x, k) => { b += FK.R(x - 28, 84, 56, 40, k === 0 ? 'bm2' : 'bm') + FK.T(x, 108, names[k], { c: 'em' }); });
+      for (let k = 0; k < 5; k++) b += FK.A(xs[k] + 30, 96, xs[k + 1] - 30, 96, 'ax', 7) + FK.A(xs[k + 1] - 30, 114, xs[k] + 30, 114, 'rx', 7);
+      b += FK.T(40, 66, '이미지', { s: 11 }) + FK.T(466, 66, '점수', { s: 11 }) + FK.T(496, 66, 'S_{c}', { s: 11 })
+        + FK.T(330, 40, '순전파: 이미지 → 클래스 점수', { c: 'em', a: 'end' }) + FK.T(336, 40, 'S_{c}(I)', { c: 'em', a: 'start' })
+        + FK.T(270, 162, '역전파: 점수에서 시작해 입력 화소까지 연쇄법칙', { c: 'rl' });
+      b += FK.T(85, 138, '∂F(1)/∂I', { s: 10 }) + FK.T(175, 138, '∂F(2)/∂F(1)', { s: 10 }) + FK.T(445, 138, '∂F(L)/∂F(L−1)', { s: 10 })
+        + FK.T(270, 192, '∂S_{c}/∂I = ∂F(L)/∂F(L−1) ⋯ ∂F(2)/∂F(1) · ∂F(1)/∂I', { c: 'lb' })
+        + FK.T(150, 212, '|∂S_{c}/∂I|', { s: 11, a: 'start' }) + FK.T(222, 212, '를 화소마다 그린 것이 현저성 지도', { s: 11, a: 'start' });
+      return FK.fig(560, 224, '현저성 지도의 계산 흐름', b,
+        R`슬라이드 53–55의 도식입니다. 이미지 $I$가 층 $F^{(1)},\dots,F^{(L)}$를 지나 클래스 점수 $S_{c}(I)$가 됩니다(순전파, 위). 같은 연쇄법칙을 거꾸로 적용해 점수에서 입력 화소까지 기울기 $\frac{\partial S_{c}}{\partial I}$를 구합니다(역전파, 아래). 가중치는 고정하고 입력에 대한 기울기만 구하는 점이 학습과 다릅니다.`);
+    },
+  });
+})();

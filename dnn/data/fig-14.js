@@ -57,3 +57,50 @@
     },
   });
 })();
+
+/* 14 보충 그림: 슬라이드 3의 세 가지 어려움, 필기의 1차원 네스테로프 예. */
+(function () {
+  const R = String.raw;
+  const FK = window.FK;
+  const poly = (f, x0, x1, X, Y, n = 60) => 'M' + Array.from({ length: n + 1 }, (_, k) => { const x = x0 + ((x1 - x0) * k) / n; return X(x).toFixed(1) + ',' + Y(f(x)).toFixed(1); }).join('L');
+
+  window.SITE_FIGS = Object.assign(window.SITE_FIGS || {}, {
+    // 14.1 slide 3: local minimum, saddle point, poor conditioning
+    landscape() {
+      let b = '';
+      // (a) local minimum: a shallow dip next to a deeper valley; the ball sits in the shallow one
+      const f1 = (x) => 0.9 * Math.pow(x * x - 1, 2) + 0.25 * x;
+      const X1 = (x) => 20 + (x + 1.6) * 52, Y1 = (y) => 150 - y * 34;
+      b += FK.P(poly(f1, -1.6, 1.6, X1, Y1), 'ld') + FK.C(X1(0.95), Y1(f1(0.95)) - 6, 5, 'nd')
+        + FK.T(100, 20, '(a) 국소 최소', { c: 'em' }) + FK.T(X1(-1.0), 178, '더 깊은 골짜기', { s: 11 }) + FK.T(X1(0.95), 178, '갇힌 곳', { s: 11 });
+      // (b) saddle: slice along one axis is a hill, slice along the other a valley
+      const ox = 200;
+      const X2 = (x) => ox + 10 + (x + 1.5) * 52, Y2 = (y) => 110 - y * 30;
+      b += FK.P(poly((x) => 0.35 * x * x, -1.5, 1.5, X2, Y2), 'ld') + FK.P(poly((x) => -0.35 * x * x + 0.0, -1.5, 1.5, X2, (y) => 110 - y * 30 + 0), 'rx')
+        + FK.C(X2(0), Y2(0) - 6, 5, 'nd') + FK.T(ox + 100, 20, '(b) 안장점', { c: 'em' })
+        + FK.T(ox + 100, 168, '자주색 선: 오르막', { s: 11, c: 'lb' }) + FK.T(ox + 100, 184, '초록 선: 내리막 · 기울기 0', { s: 11, c: 'rl' });
+      // (c) poor conditioning: elongated contours and a zigzag path
+      const ox3 = 400, cx = ox3 + 90, cy = 100;
+      for (const k of [0.5, 0.8, 1.1]) b += `<ellipse class="dm" cx="${cx}" cy="${cy}" rx="${(80 * k).toFixed(1)}" ry="${(22 * k).toFixed(1)}"/>`;
+      let d = 'M' + (cx - 78) + ',' + (cy + 12);
+      for (let k = 1; k <= 8; k++) d += 'L' + (cx - 78 + k * 9.5) + ',' + (cy + (k % 2 ? -12 : 12) * (1 - k / 10));
+      b += FK.P(d, 'rx') + FK.C(cx, cy, 3, 'nd') + FK.T(ox3 + 90, 20, '(c) 나쁜 조건수', { c: 'em' })
+        + FK.T(ox3 + 90, 168, '가파른 쪽으로 튀고', { s: 11 }) + FK.T(ox3 + 90, 184, '완만한 쪽은 느림', { s: 11 });
+      return FK.fig(600, 200, 'GD가 어려워하는 세 곳', b,
+        R`슬라이드 3의 세 그림을 다시 그린 개념도입니다(수치는 보기용). (a) 기울기가 0이지만 최소가 아닌 얕은 골짜기에 갇힌 국소 최소. (b) 한 방향으로는 올라가고 다른 방향으로는 내려가는 안장점: 기울기가 0이어서 GD가 거의 멈춥니다. (c) 등고선이 길쭉한 타원(조건수가 큼)이면 GD는 가파른 쪽으로 좌우로 튀며 완만한 쪽으로 느리게 갑니다. 모멘텀은 이 세 곳 모두에서 속도로 밀고 나가도록 돕습니다.`);
+    },
+    // 14.2 handwritten 1-D Nesterov example: f = x^2/2, x_t = 1, v_t = -2, rho = 0.9, alpha = 0.1
+    nest1d() {
+      const X = (x) => 280 + x * 120, Y = (y) => 120 - y * 90;
+      let b = FK.P(poly((x) => x * x / 2, -1.25, 1.25, X, Y, 80), 'dm') + FK.L(30, 120, 530, 120, 'dm ds')
+        + FK.T(X(0), 138, '최솟점 0', { s: 11 });
+      const pt = (x, lab, c, dy, o = {}) => FK.C(X(x), Y(x * x / 2), 5, c) + FK.T(X(x) + (o.dx || 0), Y(x * x / 2) + dy, lab, Object.assign({ s: 11, c: 'em' }, o.a ? { a: o.a } : {}));
+      b += pt(1, 'x_t = 1', 'nd', -10, { dx: -10, a: 'end' }) + pt(-0.8, 'y_t = −0.8', 'sp', -10, { dx: 12, a: 'start' })
+        + FK.C(X(-0.9), 120, 4, 'nd') + FK.C(X(-0.72), 120, 4, 'sp')
+        + FK.T(X(-0.9) - 8, 150, '모멘텀: −0.9', { s: 11, c: 'rl', a: 'end' }) + FK.T(X(-0.72) + 8, 150, '네스테로프: −0.72', { s: 11, c: 'lb', a: 'start' })
+        + FK.A(X(1), 178, X(-0.8) + 4, 178, 'ld', 8) + FK.T(X(0.1), 196, 'ρv_t = −1.8', { s: 11, c: 'lb' });
+      return FK.fig(560, 208, '1차원 예: 모멘텀과 네스테로프', b,
+        R`$f(x)=x^2/2$, $x_t=1$, $v_t=-2$, $\rho=0.9$, $\alpha=0.1$(수업 필기의 값). 속도 $\rho v_t=-1.8$만큼 가면 앞 지점 $y_t=-0.8$에 닿습니다. 모멘텀은 지나온 $x_t=1$의 기울기 $f'(1)=1$로 $-0.1$ 더 밀어 $-0.9$에 이르고, 네스테로프는 앞 지점의 기울기 $f'(-0.8)=-0.8$로 $+0.08$ 되돌려 $-0.72$에 이릅니다. 최솟점 0에 더 가까운 쪽은 네스테로프입니다.`);
+    },
+  });
+})();

@@ -3,7 +3,20 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '(최소제곱)': '(least squares)',
+    '차수에 따른 훈련·검증 오차': 'Training and validation error against the degree',
+    '훈련 자료 (10개)': 'training data (10 points)', '검증 자료 (200개)': 'validation data (200 points)',
+    '자료 수에 따른 M=9 다항식': 'Degree-9 polynomial for different data sizes',
+    '릿지 회귀의 규제 세기': 'Strength of the ridge penalty',
+    '대 ln λ': 'against ln λ', '훈련': 'training', '검증': 'validation',
+    'q에 따른 규제 영역': 'Regularization regions for different q',
+  });
   Object.assign(EM.en.fig, {
+    rmsm: R`Example: $E_{\mathrm{RMS}}=\sqrt{f(\hat\beta)/n}$ measured on the 10 training points and on 200 fresh validation points from the same curve (computed by me with fixed noise, so the numbers differ from the slide's). The training error (dots) keeps falling as $M$ grows and is $0$ at $M=9$. The validation error (open circles) is lowest at $M=3$ (about $0.38$) and does not fall afterwards; for $M\ge5$ the gap to the training error widens, and at $M=9$ the validation error is the largest (about $0.47$). The degree with the smallest validation error is the one to pick.`,
+    ndata: R`With the same $M=9$ and $\lambda=0$, 10 data points are interpolated exactly and the curve oscillates (left), but 100 points keep the fit close to the true curve (dotted; right). This is what the rule of thumb “about 10 data points per parameter” means. Both are examples computed with fixed noise.`,
+    ridgefit: R`Ridge on the $M=9$ polynomial (the 10 points of §4.2, computed by me). Left: at $\ln\lambda=-7$ the curve roughly follows the points yet oscillates less than at $\lambda=0$. Middle: at $\ln\lambda=0$ the coefficients are pressed too hard and the curve underfits. Right: as $\lambda$ grows the training error (lower curve) rises while the validation error (upper curve) falls and then rises; the open circle marks the best $\ln\lambda$ ($\ln\lambda=-7$, validation error about $0.39$ versus about $0.47$ without regularization). On the slide the best point of the analogous plot is near $\ln\lambda\approx-17$; the position differs because the data and noise differ.`,
+    lqball: R`The shape of $\lvert\beta_1\rvert^q+\lvert\beta_2\rvert^q=1$. For $q<1$ it is a star pinched towards the axes (not convex), $q=1$ is the diamond (lasso), $q=2$ the circle (ridge), and $q=4$ a square with rounded corners. The sharper the corners, the more likely the solution sits on an axis, making a coefficient exactly $0$.`,
     polyfit: R`The dashed curve is the true function $\sin2\pi x$ that generated the data, the dots are 10 noisy training points, and the solid curve is the least-squares polynomial. $M=1$ is too simple to follow the shape, while $M=9$ passes exactly through the 10 points with 10 parameters (zero training error) but oscillates wildly between the points, especially at both ends, and mispredicts new data.`,
     l1l2: R`The regularized problem is the same as minimizing the squared error under the constraint “the coefficients must lie in the shaded region”. The ellipses are level sets of the squared error, and the solution is the point where a level set first touches the region (the filled dot). The circle (ridge) has no corners, so it is usually touched where both coefficients are nonzero; the diamond (lasso) tends to be touched at a **corner** on an axis, making one coefficient exactly 0.`,
     lift: R`(a) The inner points (filled circles) and the outer points (open circles) cannot be separated by any line. (b) Adding the new coordinate $z=x_1^2+x_2^2$ (the squared distance from the origin) puts the inner points below and the outer points above, so the single horizontal line $z=1$ separates them. With the slide's $\varphi(x)=(x_1^2,x_2^2,\sqrt2x_1x_2)$, the plane $z_1+z_2=1$ does the same job.`,
@@ -78,6 +91,12 @@ With $M=9$, the 10 parameters pass exactly through the 10 points and the trainin
 - The difference between the training curve and the test (validation) curve increases as $M$ increases for $M\ge5$. We choose the $M$ with the smallest validation error (around 5 here).
 - With more data, the same $M=9$ overfits less ($n=10$ versus $n=100$). Rule of thumb: about 10 data points per parameter.
 
+:::fig rmsm
+:::
+
+:::fig ndata
+:::
+
 **Why $M=9$ passes exactly through the points.** For 10 distinct $x_i$, the $10\times10$ design matrix built from $1,x,\dots,x^9$ (a Vandermonde matrix) is invertible, so some $\beta$ solves $X\beta=y$ exactly. Zero residual, zero training MSE — but it is the result of fitting the noise too.
 
 :::ex Example 2 — Splitting into training and validation
@@ -109,11 +128,22 @@ An overfitted model has very large coefficients. The slide's table of coefficien
 | | $\ln\lambda=-36.8$ | $\ln\lambda=-16.1$ | $\ln\lambda=0$ |
 |---|---|---|---|
 | $\beta_0$ | 0.0595 | 0.4318 | 0.0518 |
-| $\beta_2$ | 769.8 | −19.60 | −0.432 |
-| $\beta_6$ | 130036.2 | −36.51 | 0.0575 |
-| $\beta_9$ | −1437.7 | −48.28 | 0.2105 |
+| $\beta_1$ | −27.5030 | 8.5115 | −0.4515 |
+| $\beta_2$ | 769.8333 | −19.6029 | −0.4321 |
+| $\beta_3$ | −6789.6970 | −9.8102 | −0.2839 |
+| $\beta_4$ | 30751.1791 | 48.0982 | −0.1423 |
+| $\beta_5$ | −81239.8240 | −29.9223 | −0.0291 |
+| $\beta_6$ | 130036.20 | −36.5120 | 0.0575 |
+| $\beta_7$ | −12413.7379 | 29.0027 | 0.1229 |
+| $\beta_8$ | 65022.7529 | 58.4866 | 0.1726 |
+| $\beta_9$ | −1437.6592 | −48.2849 | 0.2105 |
+
+(Copied from the table on slide 54.) At $\ln\lambda=-36.8$ the coefficients are in the tens of thousands to hundreds of thousands, with signs alternating and cancelling so that the curve is forced through the points; at $\ln\lambda=-16.1$ they shrink to tens and the curve is close to the true one; at $\ln\lambda=0$ every coefficient is pressed inside $\pm0.5$ and the curve is nearly flat.
 
 As $\lambda\to0$ ($\ln\lambda\to-\infty$) the model overfits; at $\ln\lambda=0$ it is pressed down too much and underfits. With regularization the test (validation) and training errors show a similar trend.
+
+:::fig ridgefit
+:::
 
 :::key Regularized objective
 $$J=\frac12f(\beta)+\frac\lambda2\sum_{j=0}^M\lvert\beta_j\rvert^q$$
@@ -152,6 +182,9 @@ With noise $\N(0,\sigma^2)$ and prior $\beta\sim\N(0,\tau^2I)$, the log posterio
 With $q=1$ the penalty $\lvert\beta_j\rvert$ is not differentiable at 0, so there is no one-line solution, but instead it makes **some coefficients exactly 0** (variable selection). The easiest way to see why is a picture. In terms of Lagrange multipliers, the regularized problem is the same as “minimizing the squared error inside the region $\sum\lvert\beta_j\rvert^q\le t$”.
 
 :::fig l1l2
+:::
+
+:::fig lqball
 :::
 
 It can also be seen by computation in one dimension. The solution of $\min_\beta\frac12(\beta-z)^2+\lambda\lvert\beta\rvert$ is the **soft threshold** $\hat\beta=\operatorname{sign}(z)\max(\lvert z\rvert-\lambda,0)$: exactly 0 if $\lvert z\rvert\le\lambda$. The ridge version of the same problem, $\frac12(\beta-z)^2+\frac\lambda2\beta^2$, has solution $\hat\beta=\frac z{1+\lambda}$, which only shrinks and never becomes 0.

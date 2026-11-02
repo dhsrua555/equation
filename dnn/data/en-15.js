@@ -141,6 +141,21 @@ In mathematics and signal processing, convolution flips the filter: $\sum w[i,j]
 
 **A filter is a shape detector.** Slides 66–68 apply a $4\times4$ filter shaped like a vertical bar (the middle two columns are 1, the outer columns 0) to a handwritten digit 9. The output is large (High) where the vertical stroke overlaps the filter shape and small (low) elsewhere. If the digit moves to the right, the same filter gives the same large value on the moved stroke. In the words of the slides, **filtering works the same way under translation**, and one filter can handle an object at any position (Section 15.6 shows that, precisely, it is “equivariant”).
 
+:::fig filterresp
+:::
+
+**What each layer sees** (slides 51–52). The preview slide takes VGG-16 as the example: a CNN builds low-level features into mid- and high-level features, and a linear classifier then decides.
+
+| Layer (VGG-16) | What its filters respond to | Region seen |
+|---|---|---|
+| Conv1_1 (low) | edges, oriented strokes, color blobs | small |
+| Conv3_2 (mid) | textures, repeated patterns, combinations of edges | medium |
+| Conv5_3 (high) | object parts (wheels, eyes), object-like shapes | large |
+| Last | a linear classifier combines these features into class scores (car, truck, …) | whole image |
+
+:::fig featurehier
+:::
+
 ### Going deeper
 
 A moving average is a **low-pass** filter that passes only low frequencies, and a difference filter such as $w=\begin{pmatrix}-1&0&1\end{pmatrix}$ is a **high-pass** filter that gives large values only where the values change (edges). Classical image processing designed such filters by hand, but a CNN learns the filter entries $w[i,j]$ themselves by gradient descent. Visualizing first-layer filters indeed shows edge and color-contrast detectors[[@med:ch13:10.2b|The convolution operation and translation equivariance (Medical AI).]].
@@ -170,6 +185,9 @@ The parameter count is **independent** of the input width and height $N$.
 
 **Stacking layers** (slides 37–38). A ConvNet is a sequence of convolution layers interspersed with activation functions. $32\times32\times3$ → (CONV, ReLU: 6 filters of $5\times5\times3$) → $28\times28\times6$ → (CONV, ReLU: 10 filters of $5\times5\times6$) → $24\times24\times10$ → ⋯. The filters of the second layer must have depth 6 (the input depth).
 
+:::fig convchain
+:::
+
 :::fig convex
 :::
 
@@ -189,6 +207,9 @@ What do we get by applying the filters $W_1=\begin{pmatrix}1&1&0\\0&1&-1\\0&0&0\
 Since $4-3+1=2$, each filter makes one $2\times2$ feature map, so the output is $2\times2\times2$.
 $$W_1:\ \begin{pmatrix}-2&5\\-5&3\end{pmatrix},\qquad W_2:\ \begin{pmatrix}-2&5\\2&-4\end{pmatrix}$$
 For example, the bottom right of $W_2$ is the dot product with the patch $\begin{pmatrix}-1&2&0\\0&4&2\\3&0&1\end{pmatrix}$: $(-1)(-1)+1\cdot2+(-1)\cdot4+(-1)\cdot3+1\cdot0=-4$.
+:::
+
+:::fig filters2
 :::
 
 :::warn One cell of slides 47–50
@@ -217,6 +238,9 @@ A ruler of length $K$ can be placed on a row of length $N$ in $N-K+1$ ways. Skip
 :::fig stridepad
 :::
 
+:::fig zeropad
+:::
+
 :::key Output size formula
 With input $N\times N\times C$, filter size $K$, stride $S$, padding $P$, and $D$ filters, the output is $N'\times N'\times C'$ with
 $$N'=\frac{N-K+2P}{S}+1$$
@@ -225,6 +249,19 @@ With stride 1 and $P=\frac{K-1}2$ ($K$ odd), $N'=N$ (size-preserving padding).
 :::
 
 **Derivation.** The padded row has length $N+2P$. The first cell of the filter can be at $0,S,2S,\dots,mS$, and at the last position the filter must not go past the end: $mS+K\le N+2P$. The largest $m$ is $\big\lfloor\frac{N+2P-K}{S}\big\rfloor$ and the number of positions is $m+1$, so when the division is exact, $N'=\frac{N-K+2P}{S}+1$. When it is not exact, the last few cells go unused (the slides' “doesn't fit”), and libraries take the floor $\lfloor\cdot\rfloor$.
+
+**Size computations at a glance.** Plugging into $N'=\frac{N-K+2P}{S}+1$ (slides 21–34, 40–42, and AlexNet of Unit 16):
+
+| Input $N$ | Kernel $K$ | Stride $S$ | Padding $P$ | Output $N'$ | Note |
+|---|---|---|---|---|---|
+| 7 | 3 | 1 | 0 | 5 | slide 21 |
+| 7 | 3 | 2 | 0 | 3 | slide 26 |
+| 7 | 3 | 3 | 0 | $2.33$ | does not fit (slide 30) |
+| 7 | 3 | 1 | 1 | 7 | size preserved |
+| 32 | 5 | 1 | 0 | 28 | slides 19–20 |
+| 52 | 3 | 1 | 1 | 52 | slide 41 |
+| 52 | 4 | 2 | 1 | 26 | slide 42 |
+| 227 | 11 | 4 | 0 | 55 | AlexNet Conv1 |
 
 :::ex Example 1 — The computations of slides 41–42
 For an input $52\times52\times128$, what is the output of (a) kernel 3, stride 1, padding 1, 256 filters (b) kernel 4, stride 2, padding 1, 256 filters?
@@ -263,6 +300,9 @@ $$\text{global average pooling}:\ H\times W\times C\to1\times1\times C$$
 
 **Global average pooling (GAP)** (slide 59). Average the whole activation map of each channel into a single number. $H\times W\times C$ becomes a $C$-dimensional vector, so using it after the last convolution layer instead of a huge fully connected layer cuts the parameters greatly (how GoogLeNet of Unit 16 removed the fully connected layers).
 
+:::fig gap
+:::
+
 **Fully connected layer** (slides 60–61). Stretch a $32\times32\times3$ image to $3072\times1$ and multiply by $10\times3072$ weights $W$ to get 10 activations. One output is the dot product of one row of $W$ with the input (a 3072-dimensional dot product). A CNN usually classifies the features made by convolution and pooling with fully connected layers and a softmax at the end[[ch06:6.1|The multiclass model of softmax regression.]].
 
 :::fig fcstretch
@@ -292,7 +332,20 @@ In a fully connected layer every neuron has its own weights that look at the who
 :::fig fcconv
 :::
 
+The three layer types side by side:
+
+| | Fully connected | Convolution | Pooling |
+|---|---|---|---|
+| Connections | every input → every output | local (neighbors within the kernel) | local (window) |
+| Weights | separate for each connection | shared across positions | none |
+| Parameters | $d_{\text{in}}d_{\text{out}}+d_{\text{out}}$ | $K^2C_{\text{in}}C_{\text{out}}+C_{\text{out}}$ | 0 |
+| Grows with input size | yes | no | no |
+| Under translation | not equivariant | equivariant | approximately invariant |
+
 **$1\times1$ convolution** (slide 53). “$1\times1$ convolution layers make perfect sense.” With 32 $1\times1$ filters on a $56\times56\times64$ input, each filter has size $1\times1\times64$, computes one 64-dimensional dot product at each position, and the output is $56\times56\times32$. The answer to the slide's question “is it the same as an FC layer?”: **looking at a single pixel**, it is the same as a fully connected layer $y_{ij}=Wx_{ij}+b$ ($W\in\mathbb R^{32\times64}$) sending a 64-dimensional vector to 32 dimensions, and the difference is that the **same** $W$ is shared by every pixel $(i,j)$. The parameters number $64\cdot32+32=2080$.
+
+:::fig onebyone
+:::
 
 **Equivariance and invariance** (slides 69–70). Writing $g\cdot x$ for an element $g$ of a set of transformations $G$ (here, translations) acting on the input,
 
@@ -471,4 +524,41 @@ $\texttt{CrossEntropyLoss}$ takes logits rather than probabilities for numerical
 - (3) Explanation that the biases break homogeneity, and the correct fix — 2 points` },
     ],
   };
+})();
+
+(function () {
+  const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '필터 두 개: 입력 4×4 → 출력 2×2×2': 'Two filters: 4×4 input → 2×2×2 output',
+    '입력 4×4': 'input 4×4', '필터 1': 'filter 1', '필터 2': 'filter 2', '특성 맵 1': 'feature map 1', '특성 맵 2': 'feature map 2',
+    '출력 부피': 'output volume', '필터마다 맵 한 장': 'one map per filter',
+    '제로 패딩: 5×5 입력에서 5×5 출력': 'Zero padding: 5×5 input gives 5×5 output',
+    '입력 + 0 테두리 7×7': 'input + zero border 7×7', '필터 3×3': 'filter 3×3', '특성 맵 5×5': 'feature map 5×5',
+    '전역 평균 풀링': 'Global average pooling',
+    '채널 1': 'channel 1', '채널 2': 'channel 2', '채널 3': 'channel 3', '합 45 ÷ 9': 'sum 45 ÷ 9', '합 27 ÷ 9': 'sum 27 ÷ 9', '합 36 ÷ 9': 'sum 36 ÷ 9',
+    '채널마다 한 수': 'one number per channel', '매개변수 없음': 'no parameters',
+    '필터 하나의 반응은 이미지와 함께 움직인다': 'One filter’s response moves with the image',
+    '획이 왼쪽에': 'stroke on the left', '같은 획, 오른쪽으로 2칸': 'shifted right by 2', '필터 반응 5×5': 'response 5×5',
+    '필터 4×4: 가운데 두 열이 1(아랫줄은 0.9), 바깥 열은 0': 'Filter 4×4: middle two columns 1 (bottom row 0.9), outer columns 0',
+    '진한 칸 = 큰 반응. 획이 옮겨 가면 반응도 따라간다': 'Darker = larger response. It follows the stroke when it moves',
+    '1×1 합성곱': '1×1 convolution', '입력 56×56×64': 'input 56×56×64', '출력 56×56×32': 'output 56×56×32',
+    '1×1 합성곱, 필터 32개': '1×1 conv, 32 filters', '필터 하나 = 1×1×64': 'one filter = 1×1×64', '= 64차원 내적 + 편향': '= 64-dim dot product + bias',
+    '한 화소: 64차원 벡터 → W (32×64) → 32차원 벡터, 같은 W를 모든 화소에': 'One pixel: 64-dim vector → W (32×64) → 32-dim vector, the same W at every pixel',
+    '합성곱층 쌓기': 'Stacking convolution layers',
+    '5×5×3 필터 6개': 'six 5×5×3 filters', '5×5×6 필터 10개': 'ten 5×5×6 filters',
+    '필터의 깊이는 항상 앞 층의 깊이와 같다 (3, 6, …)': 'A filter’s depth always equals the depth of the previous layer (3, 6, …)',
+    '깊이에 따라 달라지는 특성': 'Features change with depth',
+    '낮은 층': 'low layers', '모서리·색 얼룩': 'edges, color blobs', '중간 층': 'middle layers', '질감·무늬': 'textures, patterns',
+    '높은 층': 'high layers', '물체의 부분': 'object parts', '선형 분류기': 'linear classifier', '클래스 점수': 'class scores',
+    '작은 영역': 'small region', '더 넓은 영역': 'wider region', '더 넓고 추상적': 'wider, more abstract',
+  });
+  Object.assign(EM.en.fig, {
+    filters2: R`The $3\times3$ filters are applied to the $4\times4$ input with stride 1 and no padding (slides 47–50). The filled upper-left patch is dotted with each filter to give the upper-left cell of its feature map. Moving the window one cell right and down fills the rest, and with two filters the output is $2\times2\times2$. The lower-right cell of filter 2 is $-4$ by calculation, not the $-5$ printed on the slide.`,
+    zeropad: R`Padding the same $5\times5$ input with a one-cell border of zeros (the bold frame is the original input) gives $7\times7$, and $7-3+1=5$, so the output stays $5\times5$ (slide 46). Without padding it was $3\times3$. The filled upper-left patch holds five zeros, so its value is $2\cdot7+4\cdot4-2\cdot5+1=21$.`,
+    gap: R`Each channel’s whole activation map is averaged into one number, so an $H\times W\times C$ volume becomes a $C$-dimensional vector. (Slide 59 uses $6\times6$ maps; here three $3\times3$ maps with easy-to-compute values are chosen as the example.)`,
+    filterresp: R`The response of a vertical-bar filter (the $4\times4$ filter of slides 66–67) at every position of an $8\times8$ stroke image (the image is a made-up example). Darker cells mean a larger response. Shifting the same stroke two cells right shifts the response map two cells right: this is the translation equivariance of convolution (slide 69).`,
+    onebyone: R`Applying 32 filters of size $1\times1\times64$ to one pixel of the $56\times56\times64$ input (the 64 values marked with a line) gives 32 numbers. At a single pixel this is a fully connected layer with $W\in\mathbb R^{32\times64}$; the difference is that the same $W$ is used at every pixel (slide 53). Width and height are unchanged and only the depth drops from 64 to 32.`,
+    convchain: R`Convolution layers are stacked with activation functions between them (slides 37–38). Six $5\times5\times3$ filters turn $32\times32\times3$ into $28\times28\times6$, and ten $5\times5\times6$ filters turn that into $24\times24\times10$. The parameter counts $C_{\text{out}}(K^2C_{\text{in}}+1)$ are $456$ and $1{,}510$, independent of the input’s width and height.`,
+    featurehier: R`CNN features see wider regions and become more abstract with depth (slides 51–52: filters and activations of VGG-16’s Conv1_1, Conv3_2, Conv5_3). Low layers catch edges and color blobs, middle layers textures and repeated patterns, high layers object parts such as wheels, and the final linear classifier combines them into class scores. The glyphs are a schematic drawing.`,
+  });
 })();

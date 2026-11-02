@@ -228,6 +228,18 @@ MLE는 “$\theta$는 하나의 정해진 값이고, 그 값을 맞힌다”는 
 $$p(\theta\mid x)=\frac{p(x,\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{\int p(x\mid\theta)p(\theta)\,d\theta}$$
 사후분포 $\propto$ 가능도 $\times$ 사전분포이고, 분모 $p(x)$(증거)는 $\theta$와 무관한 정규화 상수입니다. 2.2절의 베이즈 정리에서 분할 $\{E_i\}$를 연속적인 $\theta$로, 합을 적분으로 바꾼 것입니다.
 
+:::fig bayesflow
+:::
+
+각 항의 이름은 다음과 같습니다(슬라이드 27).
+
+| 기호 | 이름 | 뜻 |
+|---|---|---|
+| $P(\theta)$ | 사전분포 (prior) | 자료를 보기 전 $\theta$에 대한 믿음 |
+| $P(\theta\mid\mathcal D)$ | 사후분포 (posterior) | 자료 $\mathcal D$를 본 뒤 다듬은 믿음 |
+| $P(\mathcal D\mid\theta)$ | 가능도 (likelihood) | 모수가 $\theta$일 때 자료 $\mathcal D$가 나올 확률 |
+| $P(\mathcal D)$ | 증거 (evidence) | 가능한 모든 $\theta$를 고려해 자료가 나올 확률 |
+
 :::key 베타분포와 베타함수
 $$\operatorname{Beta}(\theta\mid a,b)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1},$$
 $$B(a,b)=\int_0^1t^{a-1}(1-t)^{b-1}dt=\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}$$

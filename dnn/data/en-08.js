@@ -4,12 +4,93 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   EM.en.figText = Object.assign(EM.en.figText || {}, {
+    "지각": "Perception",
+    "관측을 기계가 이해하는": "turn the observation into",
+    "형태로 바꾼다": "a machine-readable form",
+    "추론": "Reason",
+    "데이터와 출력 사이의": "design a mapping between",
+    "사상을 설계한다": "data and output",
+    "행동": "Action",
+    "과제를 이루기 위한": "define decisions to",
+    "결정을 내린다": "achieve the task",
+    "이미지(관측)": "image (observation)",
+    "W는 자료에서 학습하는 파라미터": "W: parameters learned from data",
+    "오른쪽으로 돌기": "turn right",
+    "왼쪽으로 돌기": "turn left",
+    "앞으로 가기": "go forward",
+    "뒤로 가기": "go backward",
+    "멈춤": "stop",
+    "결정 경계": "decision boundary",
+    "입력 공간이 결정 영역으로": "the input space is divided into",
+    "나뉘고, 각 영역의 점은 그 영역에": "decision regions; a point in a region",
+    "해당하는 클래스로 분류된다": "gets that region's class",
+    "컴퓨터가 보는 것: 화소 값의 표": "What the computer sees: a table of pixel values",
+    "이미지 분류기": "image classifier",
+    "클래스별 확률": "probability per class",
+    "고양이": "cat",
+    "개": "dog",
+    "모자": "hat",
+    "머그잔": "mug",
+    "훈련 단계": "Training",
+    "테스트 단계": "Testing",
+    "훈련 이미지": "training images",
+    "훈련 레이블 y": "training labels y",
+    "학습": "training",
+    "이미지 특징과 분류기": "image features & classifier",
+    "테스트 이미지 x": "test image x",
+    "“학습된” 특징·분류기": "“learned” features & classifier",
+    "예측": "prediction",
+    "학습된 f′ 복사": "copy of the learned f′",
+    "가중치 수": "number of weights",
+    "파라미터가 많으면 작은 자료를": "with so many parameters, small data",
+    "외워 버려 과적합하기 쉽다": "get memorized (overfitting)",
+    "입력": "input",
+    "은닉": "hidden",
+    "출력": "output",
+    "은닉 1": "hidden 1",
+    "은닉층 1": "hidden layer 1",
+    "은닉층 2": "hidden layer 2",
+    "은닉 2": "hidden 2",
+    "2층 신경망 (은닉층 1개)": "2-layer net (1 hidden layer)",
+    "3층 신경망 (은닉층 2개)": "3-layer net (2 hidden layers)",
+    "이웃한 층의 모든 뉴런이 연결된 완전연결층": "fully-connected layers: every neuron connects to the next layer",
+    "양성": "positive",
+    "음성": "negative",
+    "새 점": "new point",
+    "(a) 직선 경계: 한쪽에 섞인다": "(a) a line: the classes stay mixed",
+    "(b) 비선형 경계: 나눈다": "(b) a nonlinear boundary separates",
+    "비선형 활성화 함수": "nonlinear activation function",
+    "입력과 편향": "inputs and bias",
+    "g를 빼면 앞의 선형 모델이 된다": "without g it is the earlier linear model",
+    "12 × 12로 줄여 그린 숫자 9": "The digit 9 drawn at 12 × 12",
+    "펼치기": "flatten",
+    "실제 이미지는": "a real image is",
+    "28 × 28 = 784차원 벡터": "a 28 × 28 = 784-dim vector",
+    "화소마다 0과 1 사이의 값": "one value in [0, 1] per pixel",
+    "입력층: 화소 784개": "input: 784 pixels",
+    "출력층: 숫자 0–9": "output: digits 0–9",
+    "추상화된 특징들의": "told apart by a",
+    "조합으로 구별한다": "combination of abstract features",
     '활성화 없음': 'no activation',
     '매개변수 6,196,225개가 어느 행렬에 있는가': 'Which matrix holds the 6,196,225 parameters',
     'A₃ 4.8% · A₄ 0.01% →': 'A₃ 4.8% · A₄ 0.01% →',
     'CIFAR10용 다층 퍼셉트론의 구조': 'Structure of the MLP for CIFAR10',
   });
   Object.assign(EM.en.fig, {
+    aipipe: R`The goal of AI is to model the components of intelligence as computable functions. Perception turns the observation $x$ (a camera image in self-driving) into numbers the machine can handle; the middle function $f(x;W)$ maps the input to the output (a neural network plays this role, and $W$ is learned from data); the output $y$ is the action (the decision).`,
+    decregions: R`Classification is a function sending an input $x\in\mathcal X=\mathbb R^2$ to one of the classes $\mathcal Y=\{C_1,C_2,C_3\}$. Any decision rule divides the input space into decision regions $R_1,R_2,R_3$, and the lines separating the regions are the decision boundaries (here three segments).`,
+    imgcls: R`On the left is how the computer sees an image: a big table of brightness numbers, one per pixel (the numbers only illustrate the look). The classifier takes this table and outputs a probability for each class (the slide's values: cat 82%, dog 15%, hat 2%, mug 1%); the class with the largest probability is the prediction.`,
+    e2e: R`Deep learning learns feature extraction and the classifier together instead of building them separately (end-to-end). Training on images and labels gives the “learned features + classifier” $f'(x)=g(f(x))$, and feeding a test image $x$ to it gives the prediction $\hat y$.`,
+    twolayer: R`$f(x)=W_2\max(0,W_1x)$. The input $x\in\mathbb R^{3072}$ becomes a 100-dimensional hidden vector $h$ through $W_1\in\mathbb R^{100\times3072}$, and $W_2\in\mathbb R^{10\times100}$ produces 10 class scores $s$. The height of a bar is the length of the vector.`,
+    nnarch: R`Each circle is a neuron and each line a weight. (Left) With 3 inputs, 4 hidden units, and 2 outputs the network has one hidden layer, so it is a “2-layer neural network” (the input layer is not counted); its formula is $f(x)=\softmax(W_2\max(0,W_1x))$. (Right) With two hidden layers it is a “3-layer neural network” of the form $f(x)=W_3\max(0,W_2\max(0,W_1x))$. A network with many layers and millions of parameters is called a deep neural network.`,
+    perceptron: R`Multiplying the inputs $x_1,x_2$ and the constant 1 by the weights $w_1,w_2,b$ and adding them at $\Sigma$ gives the linear score $z=w_1x_1+w_2x_2+b$ (slide 26: positive if $z>0$). Putting a nonlinear activation $g$ on top, $\hat y=g(w^Tx+b)$, is the perceptron (slide 30), and stacking these gives a neural network.`,
+    planar: R`Positive (filled points) and negative (open points) are separated by the sign of $\hat y=w_1x_1+w_2x_2+b$. The decision boundary is the line $w_1x_1+w_2x_2+b=0$; above it $\hat y>0$ (positive), below it $\hat y<0$ (negative). A new point $x^*=(x_1^*,x_2^*)$ is classified by feeding it to the model and looking at the sign of $\hat y$. (The example takes $w=(1,1)$, $b=-3.4$.)`,
+    planes3: R`Level lines of $\hat y=w_1x_1+w_2x_2+b$ (points of equal value). The bold line is the decision boundary $\hat y=0$, and the shaded side is $\hat y>0$. The level lines are all parallel, and the arrow $w$ is perpendicular to the boundary, in the direction in which $\hat y$ grows fastest. Changing the parameters changes the slope and position of the boundary. The three planes of slide 21 are these level lines.`,
+    nonlin: R`Filled points are positive and open points negative. (a) When the positives sit in the middle and the negatives surround them, no line (for example a vertical one) separates the regions correctly (× marks the misclassified points). (b) A curved boundary (dashed) gets everything right. Most real data are like this, not linearly separable, so nonlinearity is necessary. The points are made up for illustration.`,
+    digitvec: R`A gray-scale image has a value from 0 (black) to 1 (white) at each pixel, so laying the rows end to end gives a vector. The figure is a $12\times12$ reduction; a real MNIST image is $28\times28=784$-dimensional. This vector is the input layer of the neural network.`,
+    digitnet: R`The 784 pixels enter the input layer, pass through two hidden layers, and become 10 outputs (the digits 0–9). The most activated output (here 7) is the prediction. The numbers of hidden neurons are reduced for display; the network on the slide (3Blue1Brown) has 784 inputs, 16 and 16 hidden units, and 10 outputs.`,
+    clusters: R`Plotting a learned hidden-layer embedding in two dimensions, the same digits gather in one cluster, apart from the others (digits 0–9). So a linear classifier is enough for the last layer. The positions of the points are a mock-up made to show this phenomenon, not real data.`,
+    compose: R`People tell digits apart by combinations of abstract features: 9 = upper circle + vertical stroke, 8 = circle + circle, 4 = vertical stroke + short vertical stroke + horizontal stroke. Each neuron of the last hidden layer responds to one such part, and an output neuron turns on when its parts turn on together. (The shapes are a schematic for explanation.)`,
     mlparch: R`The network $3072\to1536\to768\to384\to1$ of Example 5. Bar height shows the layer width, the size above each arrow is the weight matrix $A_\ell\in\mathbb R^{n_\ell\times n_{\ell-1}}$, and the number on the second line below the arrow is that layer's parameter count $(n_{\ell-1}+1)n_\ell$. ReLU follows every hidden layer and the last layer has no activation. As the band below shows, the first matrix alone holds 76% of all parameters.`,
     actfns: R`(a) The sigmoid confines values to $(0,1)$ and tanh to $(-1,1)$, and both flatten out at the ends (saturation: gradient ≈ 0). (b) ReLU has slope 1 for positive inputs, so it does not saturate there, and it is the cheapest to compute. On the negative side ReLU is 0 (gradient 0), Leaky ReLU has a small slope 0.1, and ELU approaches $-1$ smoothly.`,
     xorfig: R`(a) The filled points $(0,1),(1,0)$ have label 1 and the open points $(0,0),(1,1)$ label 0. No single line can separate them, but the network $f=\max(0,x_1+x_2)-2\max(0,x_1+x_2-1)$ has $f>\tfrac12$ in the band between two parallel lines (shaded), which gets XOR right. (b) $f$ is a function of $s=x_1+x_2$ alone; the “bent line” made by the two hidden units (dashed) peaks at $s=1$.`,
@@ -39,9 +120,28 @@ The goal of AI is “to model the components of intelligence as computable funct
 - **Reason**: a mapping $f(x;W)$ from data to outputs. In deep learning it is a neural network, and the parameters $W$ are learned from data
 - **Action**: a decision (turn right/left, etc.)
 
+:::fig aipipe
+:::
+
 **Classification** is the problem $f:\mathcal X\to\mathcal Y$ of assigning input data to one of two or more classes (e.g., $\mathcal X=\mathbb R^2$, $\mathcal Y=\{C_1,C_2,C_3\}$). Any decision rule divides the input space into **decision regions** $R_1,R_2,\dots$ separated by **decision boundaries**. Logistic and softmax regression were classifiers whose decision boundaries are hyperplanes[[ch06:6.1|Choosing the largest of the class scores $w_k^Tx$ makes the boundary a union of pieces of hyperplanes.]].
 
+:::fig decregions
+:::
+
 In image classification (cs231n: cat 82%, dog 15%, …), what the computer sees is a big table of pixel values. The traditional approach extracted **hand-crafted features** such as color (quantized RGB values) and texture (filter banks) and trained a classifier separately. Such features have a hard time achieving **invariance** to translation, scale, rotation, and occlusion. Deep learning is an **end-to-end** approach that learns the features and the classifier together: from the training images and training labels it builds the “learned image features & classifier” $f'(x)$ at once, and outputs a prediction $\hat y$ on a test image.
+
+:::fig imgcls
+:::
+
+The invariances of the two hand-made features are summarized in the table below (slide 7). Both are weak against occlusion, and their behavior under scale changes is unclear.
+
+| Hand-made feature | Translation | Scale | Rotation | Occlusion |
+|---|---|---|---|---|
+| Color: histogram of quantized RGB values | invariant | unclear | invariant | not invariant |
+| Texture: filter banks | invariant | unclear | unclear (in-plane rotation) | not invariant |
+
+:::fig e2e
+:::
 
 :::ex Example 1 — How many numbers is an image?
 How many dimensions does a $32\times32$ color image (CIFAR10) and a $28\times28$ gray-scale image (MNIST) have as a vector?
@@ -69,6 +169,9 @@ CIFAR10 example: $x\in\mathbb R^{3072}$ ($32\times32\times3$), a 100-dimensional
 
 - Number of weights: $3072\times100+100\times10=308{,}200$ ($+100+10$ counting the biases)
 - Lots of parameters make it easy to **memorize** small data (rote learning) and overfit.
+
+:::fig twolayer
+:::
 
 **A matrix product is “many neurons”.** The $j$-th row $w_j^T$ of $W_1$ is the weight of hidden neuron $j$, and $(W_1x)_j=w_j^Tx$ is that neuron's input sum. One matrix product is 100 neurons computing their weighted sums **at the same time**.
 
@@ -111,6 +214,9 @@ Turn the scores $[-1,\ 3]$ into probabilities.
 $e^{-1}\approx0.3679$, $e^3\approx20.0855$. Dividing by the sum $20.4534$ gives $[0.01799,\ 0.98201]$.
 :::
 
+:::fig nnarch
+:::
+
 ### Computing a forward pass by hand
 
 The forward pass (numpy example): $h_1=f(W_1x+b_1)$, $h_2=f(W_2h_1+b_2)$, $\text{out}=W_3h_2+b_3$. Deep networks typically have many layers and potentially millions of parameters. The code on the slide is a “3-layer network” with 3 inputs, two hidden layers (4 units each), and 1 output ($W_1:4\times3$, $W_2:4\times4$, $W_3:1\times4$), with sigmoid activations.
@@ -140,8 +246,22 @@ A problem that one line can split is handled by a linear classifier. But data cr
 
 We want to classify two-dimensional points into either the positive or the negative class with the linear model $\hat y=f(x;w,b)=w_1x_1+w_2x_2+b$. The parameters $[w_1,w_2,b]$ characterize the function (the slide's examples $[-1,-5,-1]$, $[3,3,-1]$, $[3,-2,1]$ — planes with different slopes). The decision boundary is the line $w_1x_1+w_2x_2+b=0$; the side with $\hat y>0$ is positive and the side with $\hat y<0$ negative. A new point $[x_1^*,x_2^*]$ is fed into the model and classified by the sign of $w_1x_1^*+w_2x_2^*+b$.
 
-**Issue.** Most real-world data is **not linearly separable**. If no line can separate the regions correctly, nonlinearity is necessary. The perceptron puts a nonlinear activation $g$ on top of the linear expression.
+:::fig planes3
+:::
+
+:::fig planar
+:::
+
+**Issue.** Most real-world data is **not linearly separable**. If no line can separate the regions correctly, nonlinearity is necessary.
+
+:::fig nonlin
+:::
+
+The perceptron puts a nonlinear activation $g$ on top of the linear expression.
 $$\hat y=g\Big(b+\sum_iw_ix_i\Big)=g(w^Tx+b)$$
+:::fig perceptron
+:::
+
 Still, if $g$ is monotone, the decision boundary of a single-layer perceptron is a line ($w^Tx+b=$ const). As long as the data are linearly separable, the perceptron learning rule stops after finitely many updates[[@ml:ch07:9.1b|The perceptron convergence theorem: number of updates ≤ (RB)².]].
 
 :::key The limit of the perceptron
@@ -171,7 +291,19 @@ As on slides 32–33, in the 3D space made by the hidden layer, the red points (
 
 **Handwritten digits.** A $28\times28$ gray-scale image is represented as a $784$-dimensional vector (each pixel has value between 0 and 1), and forward propagation through the hidden layers produces 10 outputs (0–9). A 2D visualization of the learned embedding of MNIST digits shows the digits clustering.
 
+:::fig digitvec
+:::
+
+:::fig digitnet
+:::
+
+:::fig clusters
+:::
+
 **Recognition viewpoint.** How does the human distinguish between different digits? By combinations of abstracted features (9 = upper loop + right vertical stroke, 8 = loop + loop, 4 = vertical stroke + short vertical stroke + horizontal stroke). A neural network also learns **multiple levels of abstraction**: edges → parts (the eyes and nose of a face) → whole. One neuron of the last hidden layer responds to an “upper loop”, another to a “vertical stroke”, and the output neuron “9” turns on when both are on.
+
+:::fig compose
+:::
 
 :::tip Summary (slide 47)
 - Perceptron: a simple non-linear function
@@ -216,6 +348,14 @@ The first layer accounts for 76% of the total. When the input is large, as with 
 
 :::fig mlparch
 :::
+
+CIFAR10 on slide 50 is a data set of $32\times32$ color photos in 10 classes. Each class has a number (0–9), and the output layer produces 10 scores.
+
+| Index | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Class | airplane | automobile | bird | cat | deer | dog | frog | horse | ship | truck |
+
+The network of Example 5 is a simplification whose last layer outputs a single scalar; to separate all 10 classes, make the output 10-dimensional and add a softmax.
 
 **A tip for checking matrix sizes.** In $y_\ell=W_\ell y_{\ell-1}$, $y_{\ell-1}$ is $n_{\ell-1}\times1$ and the result must be $n_\ell\times1$, so $W_\ell$ is $n_\ell\times n_{\ell-1}$ — “(number of outputs) × (number of inputs)”. To compute many samples at once, multiply $W_\ell$ by $Y_{\ell-1}\in\mathbb R^{n_{\ell-1}\times B}$ with the samples stacked as columns, and add the bias to every column (broadcasting).
 

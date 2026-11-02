@@ -4,6 +4,7 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
   Object.assign(EM.en.fig, {
+    sepmany: R`If the two classes are linearly separable, there are infinitely many lines (hyperplanes) that classify every point correctly (three are drawn). Every one satisfies $y_i(x_i^Tw+b)\ge0$, but some pass close to the points and are fragile for new data. SVM picks the one farthest from both classes (the maximum-margin hyperplane).`,
     distance: R`$\mathbf x_p=\mathbf x-\mathbf d$ lies on the plane and $\mathbf d$ is parallel to the normal $\mathbf w$. From this we get $\alpha=(\mathbf w^T\mathbf x+b)/\mathbf w^T\mathbf w$, and the distance is $\lvert\mathbf w^T\mathbf x+b\rvert/\lVert\mathbf w\rVert_2$.`,
     margin: R`The support vectors (circled points) lie on $\mathbf w^T\mathbf x+b=\pm1$, each at distance $1/\lVert\mathbf w\rVert$ from the decision plane $H_0$. The full width of the margin is $2/\lVert\mathbf w\rVert$.`,
     svm2pt: R`The two points of Problem 3 of Problem Set 1, $x_1=(0,0)$ (open circle, $y=-1$) and $x_2=(2,2)$ ($y=+1$). The maximum-margin hyperplane is the perpendicular bisector $x_1+x_2=2$ (solid line) of the segment joining the two points, and the dashed lines $x_1+x_2=0$ and $x_1+x_2=4$ are $H_-$ and $H_+$. The short segment is the margin $\sqrt2$. Adding a third point $x_3=(4,1)$ changes nothing: it lies outside $H_+$, so $\alpha_3=0$ and the solution stays the same.`,
@@ -39,7 +40,21 @@ The left side is the **length of the projection** of $x$ onto the unit vector $w
 
 Suppose the training data $\{(x_k,y_k)\}_{k=1}^K$ are linearly separable. Writing the four cases of prediction $\hat y=\sign(f(x))$ versus label (positive or negative label × right or wrong) in one formula, the condition for classifying every point correctly is
 $$y_i(x_i^Tw+b)\ge0\qquad\forall i.$$
-(This is why we write the labels as $\pm1$: when correct, $y_i$ and $f(x_i)$ have the same sign, so the product is positive.) Infinitely many hyperplanes satisfy this condition. Which is the best among them?
+(This is why we write the labels as $\pm1$: when correct, $y_i$ and $f(x_i)$ have the same sign, so the product is positive.) Before the classifier is trained, the prediction $\hat y=\sign(f(x))$ may differ from the label $y$. Since both are $\pm1$, there are only four cases.
+
+| Case | Input $(x,y)$ | Output $\hat y=\sign(f(x))$ | sign of $y\,f(x)$ | Result |
+|---|---|---|---|---|
+| 1 | $(x,\,y=1)$ | $\hat y=1=y$ | $+$ | correct |
+| 2 | $(x,\,y=-1)$ | $\hat y=1\ne y$ | $-$ | incorrect |
+| 3 | $(x,\,y=1)$ | $\hat y=-1\ne y$ | $-$ | incorrect |
+| 4 | $(x,\,y=-1)$ | $\hat y=-1=y$ | $+$ | correct |
+
+In the correct cases (1, 4) $y$ and $f(x)$ have the same sign, so $y\,f(x)>0$; in the incorrect cases (2, 3) $y\,f(x)<0$. So every point is correct exactly when $y_i(x_i^Tw+b)\ge0$ for all $i$.
+
+Infinitely many hyperplanes satisfy this condition. Which is the best among them?
+
+:::fig sepmany
+:::
 
 :::ex Example 1 — Classifying by the sign
 With $w=(1,-1)$ and $b=0.5$, on which side are $x=(2,1)$ and $x'=(0,3)$? What is the distance from the origin to the plane?

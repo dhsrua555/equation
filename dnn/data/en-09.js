@@ -17,8 +17,41 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '선 위: 순전파 값': 'above a line: forward value',
     '선 아래: 역전파 기울기 ∂L/∂(·)': 'below a line: gradient ∂L/∂(·)',
     '게이트별 기울기 흐름': 'Gradient flow through each gate',
+    '뉴런 하나와 역전파의 방향': 'One neuron and the direction of backpropagation',
+    '입력': 'inputs',
+    '가중치': 'weights',
+    '순입력의 합': 'net input (sum)',
+    '활성화 함수 φ': 'activation φ',
+    '출력(활성화)': 'output (activation)',
+    '임계값 θ': 'threshold θ',
+    '순전파': 'forward',
+    '역전파': 'backward',
+    '경사하강법의 걸음과 손실': 'Gradient descent steps and the loss',
+    '(a) 그릇 위의 걸음': '(a) steps on a bowl',
+    '(b) 반복마다의 손실': '(b) loss per iteration',
+    '처음엔 빨리, 나중엔 천천히': 'fast at first, slow later',
+    '노드 하나의 상류·국소·하류 기울기': 'Upstream, local and downstream gradient at one node',
+    '국소 기울기': 'local gradient',
+    '상류 기울기 ∂L/∂z': 'upstream gradient ∂L/∂z',
+    '하류 = 상류 × 국소': 'downstream = upstream × local',
+    '하류: ∂L/∂x = ∂L/∂z · ∂z/∂x': 'downstream: ∂L/∂x = ∂L/∂z · ∂z/∂x',
+    '하류: ∂L/∂y = ∂L/∂z · ∂z/∂y': 'downstream: ∂L/∂y = ∂L/∂z · ∂z/∂y',
+    '성분별 ReLU의 벡터 역전파': 'Vector backpropagation through an elementwise ReLU',
+    '입력 x': 'input x',
+    '출력 y': 'output y',
+    '성분별': 'elementwise',
+    '마스크 [1, 0, 1, 0]를': 'multiply by the mask',
+    '성분별로 곱함': '[1, 0, 1, 0] elementwise',
+    '야코비안 ∂y/∂x': 'Jacobian ∂y/∂x',
+    '대각선, 나머지는 항상 0': 'diagonal; all else always 0',
+    '야코비안을 만들지 않고': 'no need to build the Jacobian:',
+    '성분별 곱으로 처리': 'just multiply elementwise',
   });
   Object.assign(EM.en.fig, {
+    neuron: R`The neuron of slide 52. The inputs $x_i$ are multiplied by the weights $w_{ij}$ and summed into $\mathrm{net}_j=\sum_iw_{ij}x_i$, which goes through the activation function $\varphi$ (threshold $\theta_j$) to give the output $o_j$ (forward pass). Backpropagation follows the same arrows **backwards** (the returning arrows below), multiplying the local gradient of $\varphi$ and then the local gradients of the weights.`,
+    gdsteps: R`An example with $L(\theta)=\theta^2$, learning rate $\alpha=0.3$, starting at $\theta^0=-2.6$: $\theta^{k+1}=\theta^k-\alpha\nabla L(\theta^k)=0.4\,\theta^k$ (values chosen for illustration). (a) The larger the slope, the longer the step, and the steps shrink together with the slope near the bottom. (b) So the loss falls fast at first and slowly later; stop when $k\ge N$ or $\lVert\theta^{k+1}-\theta^k\rVert<\epsilon$.`,
+    localgrad: R`The node $f$ of slides 65–68 (inputs $x,y$, output $z$). A node can compute its **local gradients** $\partial z/\partial x,\ \partial z/\partial y$ from its own inputs and output alone. When the **upstream gradient** $\partial L/\partial z$ arrives from behind (the returning arrow), the **downstream gradient** sent to each input is upstream × local. Repeating this one line at every node is backpropagation.`,
+    vecrelu: R`The example of slides 87–88. The upper numbers are the forward pass: $x=(1,-2,3,-1)\mapsto y=\max(0,x)=(1,0,3,0)$. The lower numbers are the backward pass: the upstream $\partial L/\partial y=(4,-1,5,9)$ passes only where $x_i>0$ (entries 1 and 3), the rest become 0, so $\partial L/\partial x=(4,0,5,0)$. The Jacobian $\partial y/\partial x$ is the diagonal matrix $\mathrm{diag}(1,0,1,0)$, which is **sparse**, so instead of building it and multiplying, multiply the mask elementwise.`,
     gates: R`The four kinds of nodes on slide 84. The number above a line is the forward value and the number below it is the gradient $\partial L/\partial(\cdot)$ coming back. Addition hands the upstream gradient to both inputs unchanged, multiplication multiplies it by the **other** input's value, a variable used in two places adds the gradients that come back, and max sends the gradient only to the winning input (5).`,
     graph1: R`The upper numbers are the forward-pass values, and the lower numbers are $\partial f/\partial(\cdot)$ obtained by backpropagation. A multiplication node sends the gradients across, swapping the inputs.`,
     graph2: R`$f(\mathbf w,\mathbf x)=1/(1+e^{-(w_0x_0+w_1x_1+w_2)})$. The upper numbers are forward-pass values, and the lower numbers are backpropagated gradients. Grouping the $+,\ \times(-1)$, $\exp$, $+1$, $1/x$ nodes gives a single sigmoid gate, whose local gradient is $\sigma(1-\sigma)=0.73\times0.27\approx0.20$.`,
@@ -52,7 +85,13 @@ We learn the weights by optimization. On the loss surface, different starting po
 3. Repeat until the stop condition is satisfied: $k\ge N$ or $\lVert\theta^{k+1}-\theta^k\rVert<\epsilon$
 :::
 
+:::fig gdsteps
+:::
+
 Notes: the iterations were counted in **epochs**, with a picture of the loss going down unevenly. (Strictly, an epoch is “one pass over the whole training data”, and one update is an iteration. In full-batch gradient descent the two coincide[[ch10:10.3|In minibatch SGD, one epoch contains many updates.]].) Backpropagation was proposed by Werbos (1974) and by Rumelhart, Hinton, and Williams (1986). As in the slide's figure, a neuron multiplies the inputs $x_i$ by weights $w_{ij}$, sums them into $\mathrm{net}_j$, and feeds it to the activation function $\varphi$ to output $o_j$; backpropagation follows these arrows in reverse to send the gradients.
+
+:::fig neuron
+:::
 
 **Why backpropagation.** For the 2-layer network $s=f(x;W_1,W_2)=W_2\max(0,W_1x)$, the SVM loss $L_i=\sum_{j\ne y_i}\max(0,s_j-s_{y_i}+1)$, the regularizer $R(W)=\sum_kW_k^2$, and the total loss
 $$L=\frac1N\sum_{i=1}^NL_i+\lambda R(W_1)+\lambda R(W_2),$$
@@ -87,6 +126,9 @@ $f(x,y,z)=(x+y)z$, inputs $(x,y,z)=(-2,5,-4)$. We introduce the intermediate val
 When the upstream gradient $\dfrac{\partial L}{\partial z}$ arrives from behind at a node $z=f(x,y)$,
 $$\underbrace{\frac{\partial L}{\partial x}}_{\text{downstream}}=\underbrace{\frac{\partial L}{\partial z}}_{\text{upstream}}\ \underbrace{\frac{\partial z}{\partial x}}_{\text{local}},\qquad \frac{\partial L}{\partial y}=\frac{\partial L}{\partial z}\frac{\partial z}{\partial y}$$
 If a variable flows into several nodes, the gradients of the paths are **added**.
+:::
+
+:::fig localgrad
 :::
 
 Each node can compute its local gradient knowing only its own inputs and output, so however complex the whole graph is, the computation finishes node by node. This is the heart of backpropagation. Remember also that the input values of each node must be **stored** during the forward pass so that the local gradients can be computed in the backward pass (the memory cost).
@@ -190,6 +232,9 @@ $x=(1,-2,3,-1)$, $y=\max(0,x)$ (elementwise), upstream gradient $\frac{\partial 
 ---
 $y=(1,0,3,0)$. The Jacobian is the diagonal $\diag(1,0,1,0)$ (an elementwise function, so all off-diagonal entries are 0), hence
 $$\frac{\partial L}{\partial x}=\diag(1,0,1,0)\begin{pmatrix}4\\-1\\5\\9\end{pmatrix}=\begin{pmatrix}4\\0\\5\\0\end{pmatrix}.$$
+:::
+
+:::fig vecrelu
 :::
 
 :::key Backprop with vectors

@@ -3,7 +3,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '가능도': 'Likelihood', '자료': 'Data', '사전분포': 'Prior', '베이즈 정리': "Bayes' theorem", '사후분포': 'Posterior',
+    '사후 ∝ 가능도 × 사전': 'posterior ∝ likelihood × prior', '베이즈 모델의 흐름': 'Flow of a Bayesian model',
+  });
   Object.assign(EM.en.fig, {
+    bayesflow: R`The likelihood, the data and the prior combine in Bayes' theorem to give the posterior. The lower right overlays an example on one scale: the prior $\operatorname{Beta}(5,5)$ (dashed), the likelihood $\theta^7(1-\theta)^3$ (thin solid), and the posterior $\operatorname{Beta}(12,8)$ (solid). The posterior lies between the prior and the likelihood and is sharper than both.`,
     betapost: R`Seven heads in 10 tosses. Multiplying the prior (“probably fair”, high near 0.5) by the likelihood and normalizing gives the posterior $\operatorname{Beta}(9,5)$. The peak of the posterior (MAP, $\approx0.667$) is pulled slightly from the peak of the likelihood (MLE, $0.7$) toward the prior (0.5). (The likelihood curve is rescaled only to show its shape.)`,
     sellers: R`The posterior of seller 1, with 100 reviews, is concentrated narrowly near 0.89, while the posterior of seller 2, with 2 reviews, $3\theta^2$, is spread out widely. Seller 2's MLE is 1, but it is quite possible that the true value is near 0.5. Comparing the two gives $P(\theta_1>\theta_2\mid D)\approx0.713$.`,
     shrinkmse: R`With $n=4$ and $\tau^2=0.5$. The MSE of the sample mean is $1/n=0.25$ regardless of $\theta$. The MSE of MAP $\hat\theta=a\bar X$ ($a=\tfrac23$) is bias² $(1-a)^2\theta^2$ + variance $a^2/n$, a parabola in $\theta$. If the true value is near 0 ($\theta^2\lt2\tau^2+1/n=1.25$) MAP wins; far away it loses because of its bias.`,
@@ -234,6 +239,18 @@ The MLE takes the attitude “$\theta$ is a fixed value, and we try to hit it”
 In the Bayesian view, the parameter $\theta$ is also a random variable, and the belief before seeing the data is the **prior** $p(\theta)$.
 $$p(\theta\mid x)=\frac{p(x,\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{p(x)}=\frac{p(x\mid\theta)\,p(\theta)}{\int p(x\mid\theta)p(\theta)\,d\theta}$$
 The posterior $\propto$ likelihood $\times$ prior, and the denominator $p(x)$ (the evidence) is a normalizing constant independent of $\theta$. It is Bayes' theorem of §2.2 with the partition $\{E_i\}$ replaced by the continuous $\theta$ and the sum by an integral.
+
+:::fig bayesflow
+:::
+
+The terms are named as follows (slide 27).
+
+| Symbol | Name | Meaning |
+|---|---|---|
+| $P(\theta)$ | prior | belief about $\theta$ before seeing data |
+| $P(\theta\mid\mathcal D)$ | posterior | belief about $\theta$ refined by the data $\mathcal D$ |
+| $P(\mathcal D\mid\theta)$ | likelihood | probability of getting the data $\mathcal D$ when the parameter is $\theta$ |
+| $P(\mathcal D)$ | evidence | probability of the data when all possible $\theta$ are taken into account |
 
 :::key Beta distribution and Beta function
 $$\operatorname{Beta}(\theta\mid a,b)=\frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\theta^{a-1}(1-\theta)^{b-1},$$

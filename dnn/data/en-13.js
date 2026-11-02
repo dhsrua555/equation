@@ -3,7 +3,15 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '학습률과 한 걸음당 감소량': 'Learning rate and decrease per step',
+    '(a) 보장되는 감소 계수': '(a) guaranteed decrease coefficient',
+    '최대 (η = 1/β)': 'max (η = 1/β)',
+    '0 (η = 2/β)': '0 (η = 2/β)',
+    '(b) 이차함수에서의 손실': '(b) loss on a quadratic',
+  });
   Object.assign(EM.en.fig, {
+    etadecr: R`(a) The decrease guaranteed by the descent lemma is $f(x_{t+1})\le f(x_t)-\big(\eta-\frac{\beta\eta^2}{2}\big)\lVert\nabla f(x_t)\rVert^2$. Multiplied by $\beta$, the coefficient $\eta\beta-\frac{(\eta\beta)^2}2$ peaks at $\eta=1/\beta$ (value 0.5), is $0$ at $\eta=2/\beta$, and is negative beyond, where the guarantee disappears. (b) For $f=\frac\beta2x^2$, $f(x_t)=(1-\eta\beta)^{2t}f(x_0)$. At $\eta\beta=1$ the loss hits $0$ in one step, $0.3$ and $1.7$ shrink at the same rate (factor $0.49$), and $\eta\beta=2.05>2$ grows (values chosen as an example).`,
     quadub: R`The first-order approximation at the point $x$ (dashed, the tangent) can be above or below $f$, but the parabola obtained by adding $\frac\beta2\lVert y-x\rVert^2$ covers $f$ **always from above**. One step of gradient descent is the same as moving to the minimizer $y=x-\frac1\beta\nabla f(x)$ of this parabola; the bottom of the parabola is $\frac1{2\beta}\lVert\nabla f(x)\rVert^2$ below $f(x)$, so $f$ goes down at least that much.`,
     sgdbound: R`The upper bound $\frac{f(x_0)-f^*}{\eta T}+\frac L2\eta G$ on $\frac1T\sum\E\lVert\nabla f(x_t)\rVert^2$ for $f(x_0)-f^*=10$, $L=1$, $G=4$, $T=100$. With a small learning rate the first term (not getting far from the start) is large, and with a large one the second term (noise) is large. The sum is minimized at $\eta^*=\sqrt{\frac{2(f(x_0)-f^*)}{LGT}}\propto\frac1{\sqrt T}$, with minimum $2\sqrt{\frac{(f(x_0)-f^*)LG}{2T}}=O(1/\sqrt T)$.`,
   });
@@ -194,6 +202,9 @@ Even without convexity, the gradient approaches 0 at the rate $O(1/\sqrt T)$ (co
 Applying GD to $f(x)=\frac\beta2x^2$ ($x\in\mathbb R$) gives $x_{t+1}=(1-\eta\beta)x_t$. When does it converge?
 ---
 $\lvert1-\eta\beta\rvert<1\iff0<\eta<2/\beta$. With $\eta=2/\beta$, $x_{t+1}=-x_t$ oscillates in place, and anything larger diverges. The lemma's condition $\eta<2/\beta$ is **exactly** the best possible in this case.
+:::
+
+:::fig etadecr
 :::
 
 ### A stronger conclusion under convexity (mentioned in the Week 5 notes)

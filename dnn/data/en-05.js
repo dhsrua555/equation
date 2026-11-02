@@ -3,7 +3,13 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '초평면 wᵀx = 0과 법선 벡터': 'The hyperplane wᵀx = 0 and its normal vector',
+    '경사하강법의 걸음': 'Steps of gradient descent',
+  });
   Object.assign(EM.en.fig, {
+    hyperplane: R`The hyperplane $w^Tx=0$ (solid line) splits the input space in two. The coefficient vector $w$ (arrow) is the normal of this hyperplane and points toward the side of label 1. If $w^Tx_i>0$, classify $y_i=1$ (filled point); if $w^Tx_i<0$, $y_i=0$ (open point). The example takes $x=(1,x_1,x_2)$ and $w=(w_0,w_1,w_2)=(-3.2,\,1,\,1)$.`,
+    gdstep: R`Repeated steps $w\leftarrow w-\alpha J'(w)$ on a convex loss $J(w)$ (example with $\alpha=1.5$, $w_0=-3$). Where the slope is steep the step is large; as the slope shrinks near the bottom the steps shrink and pile up near the minimum. Because the loss is convex, every starting point leads to the same bottom.`,
     sigmoid: R`$\sigma$ is an S-shaped curve that sends the whole real line into $(0,1)$ and passes through $\tfrac12$ at $z=0$. Its derivative attains its maximum $\tfrac14$ at $z=0$ and approaches 0 as $\lvert z\rvert$ grows (**saturation**). This fact is the root of the vanishing-gradient problem in Unit 10.`,
     logcontour: R`The points with equal $P(y=1\mid x)=\sigma(w_0+w_1x_1+w_2x_2)$ lie on lines $w^Tx=\text{const}$, so they are all parallel to the decision boundary ($p=0.5$, solid line). Filled dots have label 1, open dots label 0. The farther from the decision boundary, the closer the probability is to 0 or 1.`,
     bceloss: R`When the label is 1 but the score $z$ is very negative (confidently wrong), the cross-entropy loss keeps growing almost like a straight line and gives a strong gradient. The squared error $(1-\sigma(z))^2$ flattens out in the same situation (gradient $\approx0$), so learning stalls, and it is not even convex in $z$.`,
@@ -47,6 +53,19 @@ Solving $z=\operatorname{logit}(p)$ for $p$ gives $e^z=\frac p{1-p}$, $p=\frac{e
 :::fig sigmoid
 :::
 
+Comparing a few values of the probability $p$ with the odds and the logit gives a feel for them. When $p$ becomes $1-p$, the odds are inverted and the logit only changes sign (the table is symmetric top to bottom).
+
+| $p$ | odds $\frac p{1-p}$ | logit $\log\frac p{1-p}$ | how to read |
+|---|---|---|---|
+| 0.1 | 0.111 | $-2.197$ | 1 to 9 |
+| 0.2 | 0.25 | $-1.386$ | 1 to 4 |
+| 0.5 | 1 | 0 | even |
+| 0.8 | 4 | 1.386 | 4 to 1 |
+| 0.9 | 9 | 2.197 | 9 to 1 |
+| 0.99 | 99 | 4.595 | 99 to 1 |
+
+$p$ is trapped in $(0,1)$, but the logit keeps growing (about $4.6$ already at $0.99$), so it can match the value of the linear expression $w^Tx$, which ranges over all reals.
+
 :::ex Example 1 — Converting back and forth
 (a) The odds and logit of $p=0.8$. (b) The probability whose logit is $-2$.
 ---
@@ -68,6 +87,9 @@ $$\Longrightarrow\ p=P(y=1\mid x,w)=\frac1{1+e^{-w^Tx}}=\sigma(w^Tx)$$
 The one-dimensional version on the slide is $z=\beta_0+\beta_1x$, $\text{odds}=e^{\beta_0+\beta_1x}$, $p=\frac{e^z}{e^z+1}$.
 
 **Decision boundary.** The hyperplane $w^Tx=w_0+\sum_iw_ix_i=0$ separates the two labels. If $w^Tx_i>0$ then $p>\tfrac12$, so we classify $y_i=1$; if $w^Tx_i<0$, we classify $y_i=0$. If needed, the threshold $\tfrac12$ can be changed to another value (e.g., lower for a cancer test).
+
+:::fig hyperplane
+:::
 
 **Probability contours.** $\sigma$ is strictly increasing, so $\{x:\sigma(w^Tx)=c\}=\{x:w^Tx=\operatorname{logit}(c)\}$; that is, points with equal probability lie on **hyperplanes parallel** to the decision boundary. This is why, in the slide's 2D figure, the contours $0.334,\ 0.5,\ 0.666$ are all parallel lines. Points below the blue contour have probability greater than $0.666$ and are classified as 1.
 
@@ -151,6 +173,9 @@ The first equality comes from $\nabla_w\log(1+e^{-w^Tx})=\dfrac{-e^{-w^Tx}}{1+e^
 In the notes, the loss of a single sample $l_i(w)=-[y_i\log p_i+(1-y_i)\log(1-p_i)]$ was differentiated by the chain rule, giving the same result $\nabla_wl_i=(\sigma(z_i)-y_i)x_i$ ($z_i=w^Tx_i$). The shape **(prediction − label) × input** is exactly that of the linear regression gradient $-(y_i-\hat y_i)x_i$, and it recurs in softmax regression.
 
 **The chain-rule computation in the notes.** $\frac{\partial l_i}{\partial p_i}=-\frac{y_i}{p_i}+\frac{1-y_i}{1-p_i}=\frac{p_i-y_i}{p_i(1-p_i)}$, $\frac{\partial p_i}{\partial z_i}=p_i(1-p_i)$, $\nabla_wz_i=x_i$. Multiplying, $p_i(1-p_i)$ cancels and we get $(p_i-y_i)x_i$.
+
+:::fig gdstep
+:::
 
 :::ex Example 4 — One step of gradient descent
 Starting from $w=(0,0)$ with data $((1,2),1)$, $((1,-1),0)$ (the first component is the 1 for the intercept) and $\alpha=0.1$, what is $w$ after one step?

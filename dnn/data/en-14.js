@@ -67,6 +67,9 @@ $x_1$ shrinks by a factor $(1-0.019)=0.981$ each step and barely moves, while $x
 - **Saddle points**: points where the gradient is zero but the function goes up in some directions and down in others (e.g., the origin of $f=x^2-y^2$). In high-dimensional neural networks, saddle points and the **flat regions** around them are far more common than local minima, and GD becomes very slow there because the gradient is small.
 - On top of that, our gradients come from minibatches, so they can be **noisy**, making the path even more jagged.
 
+:::fig landscape
+:::
+
 Momentum helps with all three problems: the accumulated velocity carries it over flat regions and small bumps, and components bouncing left and right cancel (next section).
 
 ### Going deeper: Newton's method and preconditioning
@@ -133,6 +136,9 @@ Inertia $\rho v_t=-1.8$, look-ahead point $y_t=1-1.8=-0.8$.
 | $x_{t+1}$ | $1-1.8-0.1=-0.9$ | $-0.8+0.08=-0.72$ |
 
 Because of the velocity both overshoot the minimizer 0, but momentum uses the gradient at **the place already passed** (the right, $x=1$) and pushes further left to $-0.9$, while Nesterov sees at **the place it will arrive** ($-0.8$) a gradient saying “already overshot”, pulls back to the right, and stops at $-0.72$ — closer to 0.
+:::
+
+:::fig nest1d
 :::
 
 The figure on slide 9 (the paths of SGD, SGD+momentum, and Nesterov) shows the same picture: momentum swings wide, overshoots, and comes back, while Nesterov overshoots less.
@@ -350,4 +356,20 @@ The bias correction divides by the same constants, so $\frac{\hat m_t^{(c)}}{\sq
 - The two first steps and the condition-number interpretation — 2 pts` },
     ],
   };
+})();
+
+(function () {
+  const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    'GD가 어려워하는 세 곳': 'Three places where GD struggles',
+    '(a) 국소 최소': '(a) Local minimum', '더 깊은 골짜기': 'deeper valley', '갇힌 곳': 'trapped here',
+    '(b) 안장점': '(b) Saddle point', '자주색 선: 오르막': 'purple: uphill', '초록 선: 내리막 · 기울기 0': 'green: downhill · gradient 0',
+    '(c) 나쁜 조건수': '(c) Poor conditioning', '가파른 쪽으로 튀고': 'bounces on the steep side', '완만한 쪽은 느림': 'slow on the shallow side',
+    '1차원 예: 모멘텀과 네스테로프': '1-D example: momentum vs Nesterov',
+    '최솟점 0': 'minimum at 0', '모멘텀: −0.9': 'Momentum: −0.9', '네스테로프: −0.72': 'Nesterov: −0.72',
+  });
+  Object.assign(EM.en.fig, {
+    landscape: R`A schematic redrawing of the three pictures on slide 3 (values are for illustration). (a) A local minimum: a shallow valley where the gradient is zero but which is not the lowest point. (b) A saddle point: the function goes up along one direction and down along another, and the zero gradient nearly stops GD. (c) With long, thin elliptical contours (large condition number) GD bounces left and right along the steep direction and crawls along the shallow one. Momentum helps in all three: the accumulated velocity carries it through.`,
+    nest1d: R`$f(x)=x^2/2$, $x_t=1$, $v_t=-2$, $\rho=0.9$, $\alpha=0.1$ (the values in the class notes). Going by the velocity, $\rho v_t=-1.8$, reaches the look-ahead point $y_t=-0.8$. Momentum uses the gradient at the point left behind, $f'(1)=1$, and pushes $0.1$ further to $-0.9$; Nesterov uses the gradient at the look-ahead point, $f'(-0.8)=-0.8$, and pulls back by $0.08$ to $-0.72$. Nesterov ends closer to the minimum at 0.`,
+  });
 })();

@@ -11,10 +11,38 @@ EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
     '(b) 낮음': '(b) low',
     '(c) 높음': '(c) high',
     '(d) 좋음': '(d) good',
+    '(a) 큰 학습률로 그릇 오가기': '(a) bouncing across the bowl at a large rate',
+    '벽에서 벽으로': 'wall to wall',
+    '(b) 걸음마다의 위치': '(b) position at each step',
+    '여기서 학습률 줄임': 'rate reduced here',
+    '계속 큰 학습률': 'rate kept large',
+    '학습률 감소': 'rate decay',
+    '(a) 계단 감소': '(a) step decay',
+    '(b) 코사인 감소': '(b) cosine decay',
+    '(a) 층 쌓기': '(a) layer stack',
+    '완전연결·합성곱 층 뒤,': 'after an FC or conv layer,',
+    '비선형 앞에 넣음': 'before the nonlinearity',
+    '(b) 학습 시: 배치 통계량': '(b) Training: batch statistics',
+    '미니배치': 'minibatch',
+    '열마다 평균·분산': 'column mean, var.',
+    '정규화한 뒤': 'normalize, then',
+    '이동평균 갱신': 'update running avg.',
+    '(모멘텀 m)': '(momentum m)',
+    '(c) 테스트 시: 저장된 통계량': '(c) Test: stored statistics',
+    'x: 표본 하나도': 'x: one sample',
+    '가능 (N = 1)': 'works (N = 1)',
+    '이동평균 μ': 'running μ',
+    '(상수)': '(constants)',
+    '(특성별 선형)': '(per-feature linear)',
+    '저장': 'store',
+    '앞의 FC에 합침': 'fuse into prior FC',
   });
   Object.assign(EM.en.fig, {
     lrcurves: R`The four curves of slide 27 redrawn (the shapes are illustrative). (a) Too large: the loss explodes. (b) Too small: it goes down steadily but slowly. (c) Large: it falls fast at first and then stalls at a high value. (d) Just right: it goes down fast and low. The learning rates are in the order b < d < c < a.`,
     lrsched: R`(a) Step drops the rate to one tenth at fixed epochs (30, 60, 90); cosine decreases slowly at the start and end and quickly in the middle, reaching 0 at $T$; linear decreases at a constant speed. (b) Inverse square root drops quickly at first and then slowly. Warmup raises the rate linearly from 0 to $\alpha_0$ over the first few epochs and then decays it, preventing the loss from exploding under a large early learning rate.`,
+    lrbowl: R`Gradient descent on $f(x)=\frac\beta2x^2$ ($\beta=1$) from $x_0=1.7$, $x_{t+1}=(1-\eta\beta)x_t$ (values chosen as an example). (a) With $\eta=1.8/\beta$, close to the threshold $2/\beta$, each step jumps to the opposite wall of the bowl and shrinks by only a factor $|1-\eta\beta|=0.8$. (b) Keeping the rate (hollow dots) keeps oscillating; cutting it to $\eta=0.9/\beta$ after 6 steps (filled dots) makes the factor $0.1$, and the iterate settles at the bottom. This is the handwritten sketch beside slides 28-29.`,
+    lrloss: R`The training-loss curves of slides 29-30 redrawn (shapes only, illustrative; the jagged line is minibatch noise, the bold line its mean). (a) Multiplying the rate by $0.1$ at epochs 30, 60, 90 makes the loss drop like a staircase, and the noise shrinks as the rate does. (b) The cosine schedule lets the loss slide smoothly to near $0$ at the end, where the rate approaches $0$, and the noise vanishes.`,
+    bnstack: R`Slides 40-42 on one page. (a) BN usually goes after an FC or conv layer and before the nonlinearity. (b) In training it normalizes with the per-feature minibatch mean and variance $\mu_B,\sigma_B$, restores scale with $\gamma,\beta$, and uses the same statistics to update running averages. (c) At test time the batch may be small or a single sample, so the stored running averages are used as **constants**: BN becomes the per-feature linear map $y=a\,x+b$ with $a_j=\gamma_j/\sqrt{\sigma_j^2+\varepsilon}$, $b_j=\beta_j-a_j\mu_j$. It folds into the preceding FC layer $Wx+b_0$ as $W'=\mathrm{diag}(a)W$, $b'=\mathrm{diag}(a)b_0+b$, so inference costs nothing extra.`,
     bnln: R`The shaded cells are the values used to compute one mean and variance. BN computes the statistics per feature (D of them), LN per sample (N of them).`,
   });
   EM.en.ch[12] = {
@@ -49,6 +77,9 @@ Sorted by learning rate in ascending order: **b < d < c < a**. Going down fast w
 
 **Why (c) stalls high.** Two reasons overlap. (1) A deterministic reason: in a direction with curvature $\beta$, if $\eta$ is close to $2/\beta$, every step jumps across the wall and barely decreases[[ch13:13.4|For $f=\frac\beta2x^2$, $x_{t+1}=(1-\eta\beta)x_t$.]]. (2) A stochastic reason: because of SGD's noise, the loss cannot go below a “noise floor” of about $\frac L2\eta G$[[ch13:13.6|SGD with a fixed learning rate stays at a noise floor.]]. In both cases, reducing $\eta$ solves it.
 
+:::fig lrbowl
+:::
+
 :::ex Example 1 — Comparing learning rates in a bowl
 For $f(x)=\frac12x^2$ ($\beta=1$), $x_0=1$, what happens after 5 steps of GD $x\leftarrow x-\eta x$ with $\eta=0.1,\ 1,\ 1.9,\ 2.1$?
 ---
@@ -75,6 +106,9 @@ With initial learning rate $\alpha_0$ and total number of epochs (or iterations)
 :::
 
 The cosine schedule is $\alpha_0$ at $t=0$, $\alpha_0/2$ at $t=T/2$, and 0 at $t=T$, changing slowly near the start and end (Loshchilov & Hutter, SGDR, 2017). Warmup is especially important when training with large batches (Goyal et al., 2017). The loss curve of the step schedule on the slide drops **like a staircase** every time the learning rate is reduced (because the “noise floor” that plateaued under the high learning rate is lowered).
+
+:::fig lrloss
+:::
 
 :::fig lrsched
 :::
@@ -159,6 +193,17 @@ $a=\gamma/\sqrt4=1$, $b=\beta-\gamma\mu/2=1-3=-2$. The fused row is $w'^T=a\,w^T
 :::fig bnln
 :::
 
+:::fig bnstack
+:::
+
+| | Training | Test (inference) |
+|---|---|---|
+| Statistics used | $\mu_B,\sigma_B$ of the current minibatch | Stored running averages $\mu^{\text{run}},\sigma^{\text{run}}$ (constants) |
+| Dependence between samples | Yes (other samples in the batch affect the output) | No (each sample independent) |
+| Form of the operation | Nonlinear, depends on batch statistics | Per-feature affine $y=ax+b$ |
+| Batch size 1 | Variance is 0, unusable | No problem |
+| Fusing with the previous layer | Impossible | Possible: $W'=\mathrm{diag}(a)W$ |
+
 :::warn Training mode and inference mode
 If the training mode (batch statistics) is mistakenly used at inference, the output for the same input depends on the other samples that came with it, and with batch size 1 the variance is 0, so every output becomes $\beta$. The library's model.eval() is this switch.
 :::
@@ -195,6 +240,12 @@ Scaling the weights before BN by $\alpha>0$ leaves the output the same: $\mathrm
 - Original hypothesis (Ioffe & Szegedy, 2015): BN ⇒ reduced ICS ⇒ improved training
 - Experiments (Santurkar et al., 2018): training improves consistently **even though BN does not reduce** the measured ICS (BN ⇏ reduced ICS, but BN ⇒ improved training)
 - Alternative explanation: BN ⇒ **a smoother loss landscape** ⇒ easier optimization ⇒ improved training. This connects to the $\beta$-smoothness of Unit 13[[ch13:13.2|The smaller $\beta$, the larger the learning rate $\eta<2/\beta$ that can be used.]].
+
+| Hypothesis | Claim | Source / evidence |
+|---|---|---|
+| Reduced internal covariate shift (ICS) | BN ⇒ less ICS ⇒ better training | Original explanation, Ioffe & Szegedy (2015) |
+| Objection | Training improves consistently even when the measured ICS does not shrink (BN ⇏ less ICS) | Experiments of Santurkar et al. (2018) |
+| Smoother loss landscape | BN ⇒ smoother landscape ⇒ easier optimization ⇒ better training | Connects to $\beta$-smoothness in unit 13 |
 
 ### Going deeper: normalization that does not rely on the batch
 
