@@ -4,7 +4,15 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '(a) 최소제곱 직선 y': '(a) least-squares line y',
+    '(a) 수평 기준선': '(a) horizontal benchmark',
+    '(b) 조금 회전한 직선': '(b) slightly rotated line',
+    '(c) 최소제곱 직선': '(c) least-squares line',
+    '기준선, 회전한 직선, 최소제곱 직선의 제곱오차합': 'Sum of squared errors: benchmark, rotated, and least-squares lines',
+  });
   Object.assign(EM.en.fig, {
+    ninept: R`Nine-point data set from slides 8–9 (approximate coordinates read off the plot: $y=1,2,0.5,3.2,2.8,1.2,3.8,4.5,5.5$). The vertical segments are the residuals. (a) The horizontal line $y=2.5$ has a sum of squared errors of $23.46$ (the slide says 24.62; the difference comes from my approximate reading). (b) Rotating the line slightly lowers it to $13.77$ (the slide says 16.5), and (c) turning it further to the least-squares line $y\approx0.21+0.50x$ gives the smallest value, $7.92$. Rotating beyond that makes it grow again.`,
     lsqfit: R`The vertical segments are the residuals $y_i-\hat y_i$. (a) The sum of squared errors of the least-squares line is $0.01+0.04+0.49+0.16=0.70$; (b) the horizontal line that predicts every point by the mean $\bar y=2.25$ has sum of squared errors $4.75$. Giving the line a slope reduces the error from $4.75\to0.70$, and the ratio $1-0.70/4.75\approx0.85$ is called the coefficient of determination $R^2$.`,
     sseslope: R`Rotating a line through the centroid $(1.5,\,2.25)$ by slope $m$ and plotting the sum of squared errors gives $\mathrm{SSE}(m)=4.75-9m+5m^2$, a **parabola opening upward**. Starting from the horizontal line ($m=0$), the SSE first decreases, reaches its minimum $0.70$ at $m=0.9$, and then increases again. This is exactly the slide's picture: “if we slightly rotate the line, the SSE drops from 24.62 to 16.5, and then it increases again”.`,
     gdpath: R`Thin curves are points with equal sum of squared errors (level sets); the open circle is the minimizer $(0.9,\,0.9)$. We start at $(0,0)$ with the slide's rule $\beta\leftarrow\beta+\alpha X^T(y-X\beta)$. Because the level sets are elongated ellipses, (a) the iterates come down the steep direction quickly but crawl slowly along the flat long axis, and (b) with a learning rate close to the limit $2/\lambda_{\max}(X^TX)\approx0.119$ they zigzag across the steep direction on the way down.`,
@@ -219,6 +227,9 @@ In machine learning, “the line that explains the data set well” is defined a
 - If we plot the SSE for each rotated line, then it **first decreases and then increases** → the lowest point is the best line
 
 So the objective function is the sum of squared errors (SSE); the normal equations of §1.3 compute this lowest point in one shot, and the gradient descent of §1.5 walks down toward it little by little. The SSE is bowl-shaped, “first decreasing and then increasing”, because $f$ is convex.
+
+:::fig ninept
+:::
 
 :::fig sseslope
 :::

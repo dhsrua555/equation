@@ -3,7 +3,28 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '세 방법의 학습 곡선': 'Learning curves of the three methods',
+    '걸음 수': 'steps',
+    '손실(로그 눈금)': 'loss (log scale)',
+    '배치 GD': 'batch GD',
+    '← 최솟값': '← minimum',
+    '활성화 함수와 도함수': 'Activation functions and their derivatives',
+    '(a) 시그모이드': '(a) sigmoid',
+    '0 중심이 아닌 입력과 지그재그': 'Non-zero-centered inputs and the zigzag',
+    '갱신 가능 (+, +)': 'allowed update (+, +)',
+    '갱신 가능 (−, −)': 'allowed update (−, −)',
+    '불가능: (+, −)': 'impossible: (+, −)',
+    '불가능: (−, +)': 'impossible: (−, +)',
+    '목표 (+1, −1)': 'target (+1, −1)',
+    '직선: 필요한 방향': 'straight arrow: needed direction',
+    '꺾은선: 가능한 걸음만': 'zigzag line: path made only',
+    '이어 만든 경로': 'of allowed steps',
+  });
   Object.assign(EM.en.fig, {
+    sgdcurve: R`Loss (vertical axis on a log scale) over 80 steps from the same point with the same learning rate ($0.5$) on the least-squares problem of Section 10.1. All three start by falling quickly in much the same way. Batch GD descends smoothly to the minimum (dotted line) and stays there; minibatch SGD jitters a little and the single-sample SGD jitters a lot, circling above the minimum. This is where the sawtooth SGD learning curve at the upper right of the slide comes from.`,
+    actfns: R`The five activation functions $g(z)$ of slides 8–15 and their derivatives $g'(z)$. (a) The sigmoid ranges over $(0,1)$; its derivative is at most $\frac14$ and 0 at both ends. (b) tanh ranges over $(-1,1)$, is zero-centered, and its derivative is at most 1 but also 0 at both ends. (c) ReLU has $g'=1$ for $z>0$, so no saturation, and $g'=0$ for $z<0$. (d) Leaky ReLU keeps a slope of $0.01$ on the negative side. (e) ELU saturates smoothly on the negative side as $\alpha(e^z-1)$, so the mean output is near 0 (drawn with $\alpha=1$).`,
+    zigzag: R`When all inputs are positive ($x_i>0$), the weight gradients $\frac{\partial L}{\partial w_i}=\frac{\partial L}{\partial s}x_i$ of a neuron all have the same sign, so an update $(\Delta w_1,\Delta w_2)$ can only go into the $(+,+)$ or $(-,-)$ quadrant (shaded). If the best direction is $(+1,-1)$, the path cannot go straight from the origin; it approaches like a staircase by alternating steps in the two quadrants. The step sizes are chosen only to show the shape.`,
     sgdpaths: R`Paths of 40 steps each from the same point with the same learning rate ($0.5$) on the least-squares loss (contours) of 40 data points. Batch GD moves smoothly, minibatch wobbles a little, and single-sample SGD wobbles strongly on its way to near the minimizer (open circle). The gradients of the three methods have the same expectation and differ only in **variance**. SGD cannot stay still even after reaching the minimizer and hovers around it (the noise floor).`,
     actderiv: R`These are the values multiplied at each layer in backpropagation. The sigmoid is at most $\tfrac14$, so the gradient shrinks by at least a factor of 4 at every layer, and for $\lvert z\rvert\gt4$ or so it is almost 0 (saturation). tanh is 1 at 0 but also 0 at both ends. ReLU is exactly 1 on the positive side, so it does not shrink, and exactly 0 on the negative side (dead ReLU).`,
   });
@@ -46,6 +67,14 @@ There are $N=10^6$ data points, and computing the gradient of one sample takes $
 Batch GD: one step is $10^6\,\mu s=1$ second → 1 step per second. Minibatch: one step is $100\,\mu s$ → 10,000 steps per second. A minibatch step is less accurate, but being able to correct 10,000 times in the same time is overwhelming. (In practice a GPU processes a batch in parallel, which changes the ratio, but the direction is the same.)
 :::
 
+The three methods at a glance ($N$: number of data points, $B$: minibatch size).
+
+| Method | Data used per step | Gradient | Cost per step | Path | Updates per epoch |
+|---|---|---|---|---|---|
+| Full (batch) GD | all $N$ | exact (the value itself, not just the mean) | very large | smooth | $1$ |
+| Stochastic (SGD) | 1 | unbiased, variance $\Sigma$ | very small | wobbles a lot | $N$ |
+| Minibatch SGD | $B$ | unbiased, variance $\Sigma/B$ | medium | wobbles a little | $\lceil N/B\rceil$ |
+
 :::fig sgdpaths
 :::
 ` },
@@ -55,6 +84,9 @@ In a poll, asking 100 people makes the result swing a lot from one survey to the
 :::
 
 The gradients of the three methods all have expectation identical to the full gradient. The difference is the **variance**. On the contour plot, batch GD goes to the minimizer smoothly, minibatch in a slight zigzag, and SGD with heavy wobbling. The SGD learning curve is jagged.
+
+:::fig sgdcurve
+:::
 
 :::key Variance of the minibatch gradient
 $g_i=\nabla f_i(x)$, $\Sigma=\frac1N\sum_i(g_i-\nabla f)(g_i-\nabla f)^T$ (the covariance of a single-sample gradient). If the minibatch indices $k_1,\dots,k_B$ are drawn **with replacement** (i.i.d. uniform),
@@ -122,6 +154,9 @@ $\tanh(z)=2\sigma(2z)-1$.
 :::fig actderiv
 :::
 
+:::fig actfns
+:::
+
 **Sigmoid** $g(z)=\frac1{1+e^{-z}}$
 - Pros: bounds the activation value range to $[0,1]$
 - Cons 1: **zero gradient on saturated neurons**. When $\lvert z\rvert$ is large, $\sigma'(z)\approx0$ and the backpropagated signal vanishes. For example, $\sigma'(4)\approx0.0177$, $\sigma'(10)\approx4.5\times10^{-5}$.
@@ -133,6 +168,9 @@ For a neuron $s=\sum_iw_ix_i+b$ with all $x_i>0$, the sign of $\frac{\partial L}
 
 **An example of the zigzag.** Suppose there are two weights and the optimal direction is $(+1,-1)$ (one must grow and the other shrink). If the inputs are all positive, each update $-\eta\frac{\partial L}{\partial s}(x_1,x_2)$ points only into the first or the third quadrant, so the weights must approach $(+1,-1)$ in a staircase, alternating between the $(+,+)$ and $(-,-)$ directions. Making the inputs mean 0 (tanh, input normalization, BN) removes this problem.
 
+:::fig zigzag
+:::
+
 **tanh**: outputs in $[-1,1]$, **zero-centered (symmetric)**. But the gradient is still 0 in the saturated regions.
 
 **ReLU** $g(z)=\max(0,z)$
@@ -142,6 +180,16 @@ For a neuron $s=\sum_iw_ix_i+b$ with all $x_i>0$, the sign of $\frac{\partial L}
 **An example of a dead ReLU.** If the learning rate is too large and one update makes the bias very negative ($b=-100$), then $w^Tx+b<0$ for almost every input → output 0, gradient 0 → the weights are never updated again. A small positive initial bias or Leaky ReLU is the remedy.
 
 **Others**: Leaky ReLU $\max(0.01x,x)$ (a small slope on the negative side as well), ELU $x\ (x>0)$, $\alpha(e^x-1)\ (x\le0)$ (saturates smoothly on the negative side, with mean close to 0). The default in practice is ReLU, and only the output layer is chosen for the purpose (sigmoid: binary probability, softmax: multiclass).
+
+**Comparison of the activation functions** (the pros and cons of slides 8–15, together with the values read off the formulas).
+
+| Function | Formula | Output range | Derivative range | Saturation (zero gradient) | Zero-centered | In a word |
+|---|---|---|---|---|---|---|
+| Sigmoid | $\frac1{1+e^{-z}}$ | $(0,1)$ | $(0,\tfrac14]$ | saturates at both ends | no | used for binary probabilities; in hidden layers the gradient vanishes |
+| tanh | $\frac{e^z-e^{-z}}{e^z+e^{-z}}$ | $(-1,1)$ | $(0,1]$ | saturates at both ends | yes | better than the sigmoid, but saturation remains |
+| ReLU | $\max(0,z)$ | $[0,\infty)$ | $\{0,1\}$ | none for $z>0$, zero gradient for $z<0$ | no | the simplest, the default; beware of dead ReLUs |
+| Leaky ReLU | $\max(0.01z,z)$ | $\mathbb R$ | $\{0.01,1\}$ | none | no | keeps a small slope on the negative side |
+| ELU | $z\ (z>0),\ \alpha(e^z-1)\ (z\le0)$ | $(-\alpha,\infty)$ | $\le1$ ($\alpha=1$) | saturates on the negative side only | nearly | the mean output is close to 0 |
 
 ### Going deeper: the link between gradient flow and initialization
 

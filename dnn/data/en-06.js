@@ -3,7 +3,14 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '점수, 소프트맥스, 정답': 'Scores, softmax, and the label',
+    '점수 z = Wx': 'scores z = Wx',
+    '확률 p = softmax(z)': 'probabilities p = softmax(z)',
+    '정답 y (원-핫)': 'label y (one-hot)',
+  });
   Object.assign(EM.en.fig, {
+    softpipe: R`The worked example from the text: $C=3$ classes, input $x\in\mathbb R^4$. The left panel shows the scores $z=(1.71,-0.44,-0.18)$ produced by $W\in\mathbb R^{3\times4}$; softmax turns them into probabilities $p\approx(0.789,0.092,0.119)$ that sum to 1 (the largest score takes a disproportionately larger share). If the correct class is 1, the label is $y=(1,0,0)$ and the loss is $-\log p_1\approx0.237$.`,
     softtemp: R`$\softmax(z/T)$ applied to the same logits $z=(2,\,1,\,0.1)$. When the temperature $T$ is small, the probability concentrates on the largest logit (close to argmax); when it is large, it spreads toward the uniform distribution. $T=1$ is the ordinary softmax. In every case the order (1 > 2 > 3) does not change.`,
   });
   EM.en.ch[6] = {
@@ -72,6 +79,9 @@ $z_1=0.51+0.70+0.42+0.08=1.71$, $z_2=-1.53+0.35+0.70+0.04=-0.44$, $z_3=1.02-1.40
 $e^{z}\approx(5.529,\ 0.644,\ 0.835)$, sum $\approx7.008$.
 $$p\approx(0.789,\ 0.092,\ 0.119)$$
 Since the label is one-hot, $\prod_kp_k^{y_k}=p_1\approx0.789$, and the loss is $-\log p_1\approx0.237$. The log-sum-exp form also gives $-1.71+\log7.008\approx-1.71+1.947=0.237$.
+:::
+
+:::fig softpipe
 :::
 
 ### Going deeper: label smoothing and KL

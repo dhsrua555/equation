@@ -3,7 +3,12 @@ window.EM = window.EM || { chapters: [], exams: [] };
 EM.en = EM.en || { ch: {}, pf: {}, ex: {}, qz: {}, fig: {} };
 (function () {
   const R = String.raw;
+  EM.en.figText = Object.assign(EM.en.figText || {}, {
+    '층별 활성화의 히스토그램': 'Histograms of the activations layer by layer',
+    '층 1': 'layer 1', '층 2': 'layer 2', '층 3': 'layer 3', '층 4': 'layer 4', '층 5': 'layer 5', '층 6': 'layer 6',
+  });
   Object.assign(EM.en.fig, {
+    inithist: R`The experiment of slides 17–25 (4096 hidden units, 6 layers, input randn, horizontal axis from $-1$ to $1$) drawn as the distribution of the activations layer by layer. In a very wide layer the input sum $z$ is Gaussian with mean 0 and variance $v_\ell$, and $v_{\ell+1}=D_{in}\sigma_w^2\,\E[\varphi(z)^2]$, so the picture is computed from this formula without running random numbers (the std below each panel nearly equals the values printed on the slides). The bar heights are scaled to the tallest bar of each panel. **tanh with $0.01\times$**: narrows toward 0 layer by layer (vanishing). **tanh with $0.05\times$**: piles up at the ends $\pm1$ (saturation). **Xavier**: the bell shape is kept in every layer. **ReLU + Xavier**: collapses toward 0. **ReLU + He**: shape and scale are nearly the same in every layer In the ReLU rows the bar at 0 holds all the values with $z<0$ that were set to 0, so it is cut off at the panel height..`,
     initstd: R`The standard deviation of the activations measured at each layer in the slide's experiment (4096 hidden units, 6 layers, randn input). (a) tanh: scaled small by $0.01$, it shrinks at every layer toward 0; scaled large by $0.05$, it piles up at $\pm1$ and saturates (the standard deviation stalls at 0.85); Xavier stays moderate. (b) ReLU: Xavier shrinks at every layer, while He initialization keeps almost the same value at every layer.`,
   });
   EM.en.ch[11] = {
@@ -40,6 +45,19 @@ we have $\sigma'\approx0$ (almost zero gradient due to saturation in the nonline
 
 :::fig initstd
 :::
+
+:::fig inithist
+:::
+
+Standard deviation of the activations layer by layer (the values of slides 17–25):
+
+| Setting | Layer 1 | Layer 2 | Layer 3 | Layer 4 | Layer 5 | Layer 6 | Result |
+|---|---|---|---|---|---|---|---|
+| tanh, $0.01\times$randn | 0.49 | 0.29 | 0.18 | 0.11 | 0.07 | 0.05 | vanishes to 0 |
+| tanh, $0.05\times$randn | 0.87 | 0.85 | 0.85 | 0.85 | 0.85 | 0.85 | saturates at $\pm1$ |
+| tanh, Xavier | 0.63 | 0.49 | 0.41 | 0.36 | 0.32 | 0.30 | stays reasonable |
+| ReLU, Xavier | 0.58 | 0.41 | 0.30 | 0.21 | 0.15 | 0.10 | collapses to 0 |
+| ReLU, He | 0.83 | 0.83 | 0.83 | 0.81 | 0.81 | 0.81 | stays (“just right”) |
 
 **Why 0.01 shrinks and 0.05 saturates.** The standard deviation of a neuron's input sum $\sum_{i=1}^{4096}w_ix_i$ is roughly $\sqrt{4096}\times(\text{weight standard deviation})\times(\text{input size})=64\times0.01\times(\cdot)=0.64\times(\cdot)$. It shrinks by about 0.64 at every layer (tanh shrinks it a little more). With $0.05$ it grows by $64\times0.05=3.2$, the input sums are around $\pm3$, and $\tanh$ sticks to $\pm1$. Xavier uses $1/\sqrt{4096}=1/64$, exactly a factor of 1 — the next section does this computation exactly.
 
@@ -150,6 +168,16 @@ Every hidden output is $\max(0,0)=0$ and ReLU$'(0)=0$ (by convention), so the $\
 :::
 
 Research on initialization (slide 26): Glorot & Bengio (2010), He et al. (2015), Saxe et al. (2013, exact dynamics of deep linear networks), Sussillo & Abbott (2014, random walk initialization). Batch normalization (Unit 12) makes training less sensitive to initialization.
+
+**Comparison of the initialization schemes.**
+
+| Scheme | $\Var(w)$ | Std | Suitable activation | Reason |
+|---|---|---|---|---|
+| $0.01\times$randn | $10^{-4}$ | $0.01$ | (unsuitable for any) | with $D=4096$ about 0.64× per layer → the signal vanishes |
+| $0.05\times$randn | $2.5\times10^{-3}$ | $0.05$ | (unsuitable for any) | about 3.2× per layer → saturation |
+| Xavier | $1/D_{in}$ | $1/\sqrt{D_{in}}$ | zero-centered symmetric ones such as tanh | $\Var(y)=D_{in}\sigma^2v=v$ |
+| Glorot compromise | $2/(D_{in}+D_{out})$ | $\sqrt{2/(D_{in}+D_{out})}$ | tanh etc. | balances the forward and backward variances together |
+| He (Kaiming) | $2/D_{in}$ | $\sqrt{2/D_{in}}$ | ReLU | the second moment halves after a ReLU → double the variance |
 
 ### Going deeper: biases and the output layer
 

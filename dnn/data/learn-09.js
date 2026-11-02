@@ -29,7 +29,13 @@ EM.learn = EM.learn || [];
 3. 정지 조건이 만족될 때까지 반복: $k\ge N$ 또는 $\lVert\theta^{k+1}-\theta^k\rVert<\epsilon$
 :::
 
+:::fig gdsteps
+:::
+
 필기: 반복 횟수를 **에폭**(epoch)으로 세며 손실이 들쭉날쭉 내려가는 그림을 그렸습니다. (엄밀히는 에폭은 “훈련 자료 전체를 한 번 훑음”이고, 한 번의 갱신은 반복(iteration)입니다. 전체 배치 경사하강법에서는 둘이 같습니다[[ch10:10.3|미니배치 SGD에서는 에폭 하나에 여러 번 갱신합니다.]].) 역전파는 Werbos(1974), Rumelhart·Hinton·Williams(1986)가 제안했습니다. 슬라이드의 그림처럼 한 뉴런은 입력 $x_i$에 가중치 $w_{ij}$를 곱해 더한 $\mathrm{net}_j$를 활성화 함수 $\varphi$에 넣어 $o_j$를 내고, 역전파는 이 화살표를 거꾸로 따라 기울기를 보냅니다.
+
+:::fig neuron
+:::
 
 **왜 역전파인가.** 2층 신경망 $s=f(x;W_1,W_2)=W_2\max(0,W_1x)$, SVM 손실 $L_i=\sum_{j\ne y_i}\max(0,s_j-s_{y_i}+1)$, 규제 $R(W)=\sum_kW_k^2$, 전체 손실
 $$L=\frac1N\sum_{i=1}^NL_i+\lambda R(W_1)+\lambda R(W_2)$$
@@ -64,6 +70,9 @@ $f(x,y,z)=(x+y)z$, 입력 $(x,y,z)=(-2,5,-4)$. 중간값 $q=x+y$를 둡니다.
 노드 $z=f(x,y)$에 뒤쪽에서 $\dfrac{\partial L}{\partial z}$(상류 기울기)가 들어오면
 $$\underbrace{\frac{\partial L}{\partial x}}_{\text{하류}}=\underbrace{\frac{\partial L}{\partial z}}_{\text{상류}}\ \underbrace{\frac{\partial z}{\partial x}}_{\text{국소}},\qquad \frac{\partial L}{\partial y}=\frac{\partial L}{\partial z}\frac{\partial z}{\partial y}$$
 한 변수가 여러 노드로 흘러가면 각 경로의 기울기를 **더한다**.
+:::
+
+:::fig localgrad
 :::
 
 각 노드는 자기 입력·출력만 알면 국소 기울기를 계산할 수 있으므로, 전체 그래프가 아무리 복잡해도 노드 단위로 계산이 끝납니다. 이것이 역전파의 핵심입니다. 순방향에서 각 노드의 입력값을 **저장**해 두어야 역방향에서 국소 기울기를 계산할 수 있다는 점도 기억하세요(메모리 비용).
@@ -167,6 +176,9 @@ $x=(1,-2,3,-1)$, $y=\max(0,x)$ (성분별), 상류 기울기 $\frac{\partial L}{
 ---
 $y=(1,0,3,0)$. 야코비안은 대각 $\diag(1,0,1,0)$(성분별 함수라 비대각은 모두 0)이므로
 $$\frac{\partial L}{\partial x}=\diag(1,0,1,0)\begin{pmatrix}4\\-1\\5\\9\end{pmatrix}=\begin{pmatrix}4\\0\\5\\0\end{pmatrix}.$$
+:::
+
+:::fig vecrelu
 :::
 
 :::key 벡터 역전파

@@ -27,6 +27,37 @@
   // degree 9 through ten points = the interpolating polynomial (Lagrange form is stable)
   const lagr = (x) => X.reduce((s, xi, i) => { let l = 1; X.forEach((xj, j) => { if (j !== i) l *= (x - xj) / (xi - xj); }); return s + Y[i] * l; }, 0);
 
+
+  // ---- experiments for 4.2-4.3 (own fixed noise; the lecture's exact data are not reproduced) ----
+  let seed = 7;
+  const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  const gauss = () => { let s = 0; for (let k = 0; k < 12; k++) s += rnd(); return s - 6; };
+  const SD = 0.3;
+  const truth = (x) => Math.sin(2 * Math.PI * x);
+  const mkset = (n, noisy) => { const xs = Array.from({ length: n }, (_, i) => i / (n - 1)); return [xs, xs.map((x) => truth(x) + (noisy ? SD * gauss() : 0))]; };
+  const TX = Array.from({ length: 200 }, (_, i) => (i + 0.5) / 200), TY = TX.map((x) => truth(x) + SD * gauss());
+  // ridge/least squares of degree M on (xs, ys): solves (BtB + lam I) c = Bt y in the basis t^k, t = 2x - 1 when lam = 0 (better conditioned), monomials otherwise
+  const polyfit2 = (xs, ys, M, lam) => {
+    const t = (x) => (lam === 0 ? 2 * x - 1 : x), n = M + 1, A = [], b = [];
+    for (let r = 0; r < n; r++) {
+      A.push([]); b.push(xs.reduce((s, x, i) => s + Math.pow(t(x), r) * ys[i], 0));
+      for (let c = 0; c < n; c++) A[r].push(xs.reduce((s, x) => s + Math.pow(t(x), r + c), 0) + (r === c ? lam : 0));
+    }
+    for (let k = 0; k < n; k++) {
+      let p = k; for (let r = k + 1; r < n; r++) if (Math.abs(A[r][k]) > Math.abs(A[p][k])) p = r;
+      [A[k], A[p]] = [A[p], A[k]]; [b[k], b[p]] = [b[p], b[k]];
+      for (let r = k + 1; r < n; r++) { const f = A[r][k] / A[k][k]; for (let c = k; c < n; c++) A[r][c] -= f * A[k][c]; b[r] -= f * b[k]; }
+    }
+    const c = Array(n).fill(0);
+    for (let k = n - 1; k >= 0; k--) { let s = b[k]; for (let j = k + 1; j < n; j++) s -= A[k][j] * c[j]; c[k] = s / A[k][k]; }
+    return (x) => c.reduce((s, ck, k) => s + ck * Math.pow(t(x), k), 0);
+  };
+  const [X10, Y10] = mkset(10, true);
+  const erms = (f, xs, ys) => Math.sqrt(xs.reduce((s, x, i) => s + (f(x) - ys[i]) ** 2, 0) / xs.length);
+  // M = 9 through ten points is the interpolating polynomial; use Lagrange form there
+  const lag10 = (x) => X10.reduce((s, xi, i) => { let l = 1; X10.forEach((xj, j) => { if (j !== i) l *= (x - xj) / (xi - xj); }); return s + Y10[i] * l; }, 0);
+  const fitM = (M) => (M >= 9 ? lag10 : polyfit2(X10, Y10, M, 0));
+
   window.SITE_FIGS = Object.assign(window.SITE_FIGS || {}, {
     // 4.2 under- and overfitting
     polyfit() {
@@ -34,6 +65,48 @@
         c: [{ f: (x) => Math.sin(2 * Math.PI * x), c: 'dm ds' }, { f, c: 'ld' }], extra: (Xp, Yp) => X.map((x, i) => dot(Xp, Yp, x, Y[i])).join('') });
       return G2(560, 210, '다항회귀의 차수와 과적합', [panel(0, fit(1), 'M = 1 (과소적합)'), panel(186.7, fit(3), 'M = 3 (적당)'), panel(373.4, lagr, 'M = 9 (과적합)')],
         R`점선이 자료를 만든 참 함수 $\sin2\pi x$, 점이 잡음이 섞인 훈련 자료 10개, 실선이 최소제곱 다항식입니다. $M=1$은 너무 단순해 모양을 못 따라가고, $M=9$는 모수 10개로 10개의 점을 정확히 지나지만(훈련오차 0) 점 사이, 특히 양 끝에서 크게 출렁여 새 자료를 잘못 예측합니다.`);
+    },
+    // 4.2 training vs validation E_RMS against the degree M
+    rmsm() {
+      const Ms = Array.from({ length: 10 }, (_, i) => i);
+      const tr = Ms.map((M) => [M, erms(fitM(M), X10, Y10)]), te = Ms.map((M) => [M, erms(fitM(M), TX, TY)]);
+      const top = Math.ceil(Math.max(...te.map((p) => Math.min(p[1], 1.6))) * 5) / 5;
+      return G({ w: 560, h: 240, x: [-0.4, 9.6], y: [0, 1], xl: 'M', yl: 'E_RMS', label: '차수에 따른 훈련·검증 오차', m: [14, 18, 26, 40],
+        xt: Ms.map((M) => [M, String(M)]), yt: [[0, '0'], [0.25, '0.25'], [0.5, '0.5'], [0.75, '0.75'], [1, '1']],
+        c: [{ pts: tr, c: 'ld' }, { pts: te.map((p) => [p[0], Math.min(p[1], 1.2)]), c: 'rx' }],
+        extra: (X, Y) => tr.map((p) => dot(X, Y, p[0], p[1])).join('') + te.map((p) => dot(X, Y, p[0], Math.min(p[1], 1.2), true)).join('')
+          + legend(X(5.3), Y(0.9), [['ld', '훈련 자료 (10개)'], ['rx', '검증 자료 (200개)']]),
+        cap: R`예: 훈련 자료 10개와 같은 곡선에서 새로 뽑은 검증 자료 200개로 $E_{\mathrm{RMS}}=\sqrt{f(\hat\beta)/n}$을 잰 것입니다(고정한 잡음으로 직접 계산한 예시이며 슬라이드의 숫자와는 다릅니다). 훈련오차(점)는 $M$이 커질수록 계속 줄어 $M=9$에서 $0$이 됩니다. 검증오차(빈 원)는 $M=3$에서 가장 낮고(약 $0.38$) 그 뒤로는 줄지 않으며, $M\ge5$에서 훈련오차와의 격차가 크게 벌어져 $M=9$에서 가장 큽니다(약 $0.47$). 검증오차가 최저인 차수가 고를 차수입니다.` });
+    },
+    // 4.2 the same M = 9 fit with n = 10 and n = 100 points
+    ndata() {
+      const [X100, Y100] = mkset(100, true);
+      const panel = (ox, xs, ys, f, title) => ({ ox, w: 280, h: 220, x: [-0.03, 1.03], y: [-1.7, 1.7], title, m: [22, 14, 8, 6], axes: false,
+        c: [{ f: truth, c: 'dm ds' }, { f: (x) => Math.max(-1.55, Math.min(1.55, f(x))), c: 'ld' }], extra: (Xp, Yp) => xs.map((x, i) => dot(Xp, Yp, x, ys[i])).join('') });
+      return G2(560, 220, '자료 수에 따른 M=9 다항식', [
+        panel(0, X10, Y10, lag10, 'n = 10 (M = 9)'), panel(280, X100, Y100, polyfit2(X100, Y100, 9, 0), 'n = 100 (M = 9)')],
+        R`같은 $M=9$, $\lambda=0$이라도 자료가 10개이면 점을 모두 지나며 출렁이지만(왼쪽), 100개이면 거의 참 곡선(점선)을 따릅니다(오른쪽). 모수 하나당 자료 10개 정도라는 경험칙의 뜻입니다. 두 경우 모두 고정한 잡음으로 직접 계산한 예시입니다.`);
+    },
+    // 4.3 ridge on M = 9: the fits for ln λ = -16 and 0, and the errors against ln λ
+    ridgefit() {
+      const ridge = (lnl) => polyfit2(X10, Y10, 9, Math.exp(lnl));
+      const panel = (ox, f, title) => ({ ox, w: 186.7, h: 210, x: [-0.03, 1.03], y: [-1.7, 1.7], title, m: [22, 6, 8, 6], axes: false,
+        c: [{ f: truth, c: 'dm ds' }, { f, c: 'ld' }], extra: (Xp, Yp) => X10.map((x, i) => dot(Xp, Yp, x, Y10[i])).join('') });
+      const ls = Array.from({ length: 26 }, (_, i) => -25 + i);
+      const tr = ls.map((l) => [l, erms(ridge(l), X10, Y10)]), te = ls.map((l) => [l, erms(ridge(l), TX, TY)]);
+      const best = te.reduce((a, p) => (p[1] < a[1] ? p : a));
+      return G2(560, 210, '릿지 회귀의 규제 세기', [
+        panel(0, ridge(-7), 'ln λ = −7'), panel(186.7, ridge(0), 'ln λ = 0'),
+        { ox: 373.4, w: 186.7, h: 210, x: [-26, 1], y: [0, 0.8], title: 'E_RMS 대 ln λ', xl: 'ln λ', ay0: -26, m: [26, 8, 24, 36], xt: [[-20, '−20'], [-10, '−10'], [0, '0']], yt: [[0.2, '0.2'], [0.4, '0.4'], [0.6, '0.6']],
+          c: [{ pts: tr, c: 'ld' }, { pts: te, c: 'rx' }], extra: (X, Y) => dot(X, Y, best[0], best[1], true) + FK.T(X(-25), Y(0.74), '훈련', { a: 'start', c: 'lb' }) + FK.T(X(-25), Y(0.66), '검증', { a: 'start', c: 'rl' }) }],
+        R`$M=9$ 다항식에 릿지를 적용한 예(자료는 4.2절의 10점, 직접 계산). 왼쪽: $\ln\lambda=-7$이면 곡선이 점들을 대체로 따라가면서도 $\lambda=0$일 때보다 덜 출렁이고, 가운데: $\ln\lambda=0$이면 계수가 너무 눌려 과소적합입니다. 오른쪽: $\lambda$를 키울수록 훈련오차(아래쪽 곡선)는 늘고 검증오차(위쪽 곡선)는 내려갔다 올라가며, 빈 원이 검증오차가 최소인 $\ln\lambda$입니다 ($\ln\lambda=-7$, 검증오차 약 $0.39$, 규제 없을 때는 약 $0.47$). 슬라이드에서는 같은 방식의 그림에서 $\ln\lambda\approx-17$ 근처가 가장 좋았습니다(자료와 잡음이 달라 위치는 다릅니다).`);
+    },
+    // 4.3 unit balls |b1|^q + |b2|^q = 1
+    lqball() {
+      const ball = (q) => Array.from({ length: 401 }, (_, k) => { const t = (2 * Math.PI * k) / 400, c = Math.cos(t), s = Math.sin(t); return [Math.sign(c) * Math.pow(Math.abs(c), 2 / q), Math.sign(s) * Math.pow(Math.abs(s), 2 / q)]; });
+      const panel = (ox, q) => ({ ox, w: 140, h: 150, x: [-1.4, 1.4], y: [-1.4, 1.4], title: 'q = ' + q, m: [22, 6, 8, 6], xt: [], yt: [], c: [{ pts: ball(q), c: 'ld' }] });
+      return G2(560, 150, 'q에 따른 규제 영역', [panel(0, 0.5), panel(140, 1), panel(280, 2), panel(420, 4)],
+        R`$\lvert\beta_1\rvert^q+\lvert\beta_2\rvert^q=1$의 모양입니다. $q<1$이면 축 위로 뾰족하게 파인 별 모양(볼록하지 않음), $q=1$은 마름모(라쏘), $q=2$는 원(릿지), $q=4$는 모서리가 둥근 네모입니다. 모서리가 뾰족할수록 해가 축 위에 걸려 계수가 정확히 0이 되기 쉽습니다.`);
     },
     // 4.3 why L1 gives sparse solutions: level sets touching the constraint region
     l1l2() {

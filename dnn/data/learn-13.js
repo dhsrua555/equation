@@ -191,6 +191,9 @@ $f(x)=\frac\beta2x^2$ ($x\in\mathbb R$)에 GD를 쓰면 $x_{t+1}=(1-\eta\beta)x_
 $\lvert1-\eta\beta\rvert<1\iff0<\eta<2/\beta$. $\eta=2/\beta$이면 $x_{t+1}=-x_t$로 제자리에서 진동, 그보다 크면 발산합니다. 보조정리의 조건 $\eta<2/\beta$가 이 경우 **정확히** 최선입니다.
 :::
 
+:::fig etadecr
+:::
+
 ### 볼록이면 더 강한 결론 (5주차 필기의 언급)
 
 5주차 필기는 “$f(x_{t+1})-f(x^*)$, $x_{t+1}\to x^*$는 **볼록 최적화**의 주제”라며 Bubeck의 교재(Convex Optimization: Algorithms and Complexity)를 소개했습니다. 요지만 적으면: $f$가 볼록이고 $\beta$-매끄러우면 $\eta=1/\beta$의 GD가
