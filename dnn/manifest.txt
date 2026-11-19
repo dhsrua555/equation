@@ -19,6 +19,8 @@ u18.js
 u19.js
 u20.js
 u21.js
+u22.js
+u23.js
 proofs-a.js
 proofs-b.js
 proofs-c.js
@@ -34,6 +36,9 @@ proofs-l.js
 proofs-m.js
 proofs-n.js
 proofs-o.js
+proofs-p.js
+proofs-q.js
+exams-4.js
 exams-3.js
 exams.js
 exams-2.js
@@ -86,6 +91,8 @@ fig-18.js
 fig-19.js
 fig-20.js
 fig-21.js
+fig-22.js
+fig-23.js
 quizprep-a.js
 quizprep-b.js
 en-01.js
@@ -110,6 +117,8 @@ en-18.js
 en-19.js
 en-20.js
 en-21.js
+en-22.js
+en-23.js
 en-proofs-a.js
 en-proofs-b.js
 en-proofs-c.js
@@ -125,7 +134,10 @@ en-proofs-l.js
 en-proofs-m.js
 en-proofs-n.js
 en-proofs-o.js
+en-proofs-p.js
+en-proofs-q.js
 en-exams.js
+en-exams-4.js
 en-exams-3.js
 en-quiz.js
 map-01.js
@@ -149,6 +161,8 @@ map-18.js
 map-19.js
 map-20.js
 map-21.js
+map-22.js
+map-23.js
 plan-a.js
 plan-b.js
 plan-c.js
@@ -156,3 +170,5 @@ plan-d.js
 plan-e.js
 plan-f.js
 plan-g.js
+plan-h.js
+plan-i.js
