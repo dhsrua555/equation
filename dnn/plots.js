@@ -310,6 +310,26 @@
       [4, 16, 64, 256].forEach((D, i) => { ctx.strokeStyle = c.a; ctx.globalAlpha = 0.4 + 0.18 * i; draw(soft(Math.sqrt(D))); });
       ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.4; draw(soft(1));
     },
+    // 22 — cost of one layer against the token count N (C = 96): global 4NC² + 2N²C bends up, windowed 4NC² + 2NM²C (M = 4, 7, 14) stays a line
+    attncost(ctx, w, h, c) {
+      const C = 96, cost = (N, m) => (4 * N * C * C + 2 * N * (m ? m * m : N) * C) / 1e9;
+      const T = frame(w, h, 0, 3136, -0.05, 2.1);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1; line(ctx, T, 0, 0, 3136, 0);
+      ctx.lineWidth = 1.3;
+      [4, 7, 14].forEach((M, i) => { ctx.strokeStyle = c.a; ctx.globalAlpha = 0.45 + 0.2 * i; curve(ctx, (N) => cost(N, M), 0, 3136, 60, T); });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.4; curve(ctx, (N) => cost(N, 0), 0, 3136, 300, T);
+    },
+    // 23 — ELBO(m) for q = N(m, s²) with z ~ N(0,1), x|z ~ N(z,1), x = 2: every curve stays under log p(x) (faint line) and s² = 1/2 touches it at the posterior mean m = 1
+    elbo(ctx, w, h, c) {
+      const logp = -0.5 * Math.log(4 * Math.PI) - 1;
+      const el = (s2) => (m) => logp - (0.5 * Math.log(0.5 / s2) + s2 + (m - 1) ** 2 - 0.5);
+      const T = frame(w, h, -1, 3, logp - 3, logp + 0.35);
+      ctx.strokeStyle = c.faint; ctx.lineWidth = 1.2; line(ctx, T, -1, logp, 3, logp);
+      ctx.lineWidth = 1.2;
+      [0.09, 0.25, 1].forEach((s2, i) => { ctx.strokeStyle = c.a; ctx.globalAlpha = 0.45 + 0.2 * i; curve(ctx, el(s2), -1, 3, 200, T); });
+      ctx.globalAlpha = 1; ctx.strokeStyle = c.b; ctx.lineWidth = 2.4; curve(ctx, el(0.5), -1, 3, 200, T);
+      ctx.fillStyle = c.b; dot(ctx, T, 1, logp, 3.2);
+    },
     // exam covers
     exam(ctx, w, h, c) {
       const T = frame(w, h, 0, 10, -1.3, 1.3);

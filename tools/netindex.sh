@@ -10,7 +10,7 @@ ROOTW="$(pwd -W | sed 's# #%20#g')"
 TMP="$(mktemp -d)"
 unhtml() { sed -e 's/&lt;/</g' -e 's/&gt;/>/g' -e 's/&quot;/"/g' -e "s/&#39;/'/g" -e 's/&amp;/\&/g'; }
 run() { # $1 field → $TMP/$1.html
-  "$CHROME" --headless=new --disable-gpu --no-first-run --user-data-dir="$TMP/prof-$1" --allow-file-access-from-files \
+  "$CHROME" --headless=new --disable-ipc-flooding-protection --disable-gpu --no-first-run --user-data-dir="$TMP/prof-$1" --allow-file-access-from-files \
     --virtual-time-budget=90000 --dump-dom "file:///$ROOTW/tools/test-$1.html" 2>/dev/null > "$TMP/$1.html" || true
 }
 pick() { # $1 file, $2 pre id

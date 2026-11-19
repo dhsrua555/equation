@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Équation 심층 신경망</title>
-<meta name="description" content="심층 신경망의 수학적 기초 1–10주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM, 어텐션·트랜스포머. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta name="description" content="심층 신경망의 수학적 기초 1–11주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM, 어텐션·트랜스포머, 선형 어텐션·ViT, 생성 모델·VAE. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Équation 심층 신경망">
-<meta property="og:description" content="심층 신경망의 수학적 기초 1–10주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM, 어텐션·트랜스포머. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
+<meta property="og:description" content="심층 신경망의 수학적 기초 1–11주차: 회귀·확률·정보이론(JS 발산), MAP과 편향-분산, 로지스틱·소프트맥스·SVM과 쌍대성, 역전파·초기화·배치 정규화, 하강 보조정리와 SGD 수렴, 모멘텀·Adam, CNN과 PyTorch 실습, 보편 근사 정리·바론 정리·라데마허 복잡도, RNN·시간 역전파·LSTM, 어텐션·트랜스포머, 선형 어텐션·ViT, 생성 모델·VAE. 개념 정리, 강의 필기 증명, 연습문제, 모의고사">
 <meta property="og:url" content="https://dhsrua555.github.io/equation/dnn/">
 <meta property="og:image" content="https://dhsrua555.github.io/equation/assets/og.png">
 <meta property="og:image:width" content="1280">
@@ -32,9 +32,9 @@
 <div id="toast-root" aria-live="polite"></div>
 <noscript><p style="padding:24px">이 사이트는 JavaScript가 필요합니다.</p></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
-<script src="../core/net.js?v=3dcbcbf5"></script>
-<script src="../core/net-index.js?v=98ec22c9"></script>
-<script src="site.js?v=1dfd1fb1"></script>
+<script src="../core/net.js?v=f35bfbe2"></script>
+<script src="../core/net-index.js?v=d7430247"></script>
+<script src="site.js?v=d96e3fd5"></script>
 <script src="../core/figkit.js?v=ddc11102"></script><script src="figs.js?v=3c9bd3ac"></script>
 <script src="data/u01.js?v=bf59fd6e"></script>
 <script src="data/u02.js?v=09e0eaf9"></script>
@@ -57,6 +57,8 @@
 <script src="data/u19.js?v=faac24fc"></script>
 <script src="data/u20.js?v=4d5b6ae9"></script>
 <script src="data/u21.js?v=cd8fe1c0"></script>
+<script src="data/u22.js?v=2929f29a"></script>
+<script src="data/u23.js?v=9a909025"></script>
 <script src="data/proofs-a.js?v=e1798fcd"></script>
 <script src="data/proofs-b.js?v=fa0e78fd"></script>
 <script src="data/proofs-c.js?v=41111756"></script>
@@ -72,6 +74,9 @@
 <script src="data/proofs-m.js?v=8bf82cdf"></script>
 <script src="data/proofs-n.js?v=ec8baec4"></script>
 <script src="data/proofs-o.js?v=490d8de6"></script>
+<script src="data/proofs-p.js?v=85212581"></script>
+<script src="data/proofs-q.js?v=f035fb7f"></script>
+<script src="data/exams-4.js?v=31f9e328"></script>
 <script src="data/exams-3.js?v=7c08fadf"></script>
 <script src="data/exams.js?v=4427bc68"></script>
 <script src="data/exams-2.js?v=4bdeee10"></script>
@@ -124,6 +129,8 @@
 <script src="data/fig-19.js?v=c361d75c"></script>
 <script src="data/fig-20.js?v=06122e7d"></script>
 <script src="data/fig-21.js?v=9b0ddf7a"></script>
+<script src="data/fig-22.js?v=fbca36f3"></script>
+<script src="data/fig-23.js?v=4971e685"></script>
 <script src="data/quizprep-a.js?v=14d6c53e"></script>
 <script src="data/quizprep-b.js?v=5aa4cea3"></script>
 <script src="data/en-01.js?v=f8dc4399"></script>
@@ -148,6 +155,8 @@
 <script src="data/en-19.js?v=0f83b75f"></script>
 <script src="data/en-20.js?v=0bc1095d"></script>
 <script src="data/en-21.js?v=ea6a51d3"></script>
+<script src="data/en-22.js?v=c0625fd4"></script>
+<script src="data/en-23.js?v=c83d32fd"></script>
 <script src="data/en-proofs-a.js?v=89fe1b1e"></script>
 <script src="data/en-proofs-b.js?v=6f2fe3e9"></script>
 <script src="data/en-proofs-c.js?v=279cffc3"></script>
@@ -163,7 +172,10 @@
 <script src="data/en-proofs-m.js?v=f04c28e3"></script>
 <script src="data/en-proofs-n.js?v=f1b9569d"></script>
 <script src="data/en-proofs-o.js?v=05ed8c49"></script>
+<script src="data/en-proofs-p.js?v=5a1a07dc"></script>
+<script src="data/en-proofs-q.js?v=e0d63004"></script>
 <script src="data/en-exams.js?v=73de3c03"></script>
+<script src="data/en-exams-4.js?v=b6391cc1"></script>
 <script src="data/en-exams-3.js?v=9724daa4"></script>
 <script src="data/en-quiz.js?v=c9a257eb"></script>
 <script src="data/map-01.js?v=957540b0"></script>
@@ -187,6 +199,8 @@
 <script src="data/map-19.js?v=9b2d1933"></script>
 <script src="data/map-20.js?v=0891f2b6"></script>
 <script src="data/map-21.js?v=1325077d"></script>
+<script src="data/map-22.js?v=6884a463"></script>
+<script src="data/map-23.js?v=7dcba0c8"></script>
 <script src="data/plan-a.js?v=29cc2ace"></script>
 <script src="data/plan-b.js?v=80dd36b8"></script>
 <script src="data/plan-c.js?v=c7b1306c"></script>
@@ -194,9 +208,11 @@
 <script src="data/plan-e.js?v=a32c9d12"></script>
 <script src="data/plan-f.js?v=5624249f"></script>
 <script src="data/plan-g.js?v=fa9dcdd0"></script>
+<script src="data/plan-h.js?v=199c3b1f"></script>
+<script src="data/plan-i.js?v=3347586c"></script>
 <script src="../core/calc.js?v=b965d12c"></script>
 <script src="../core/plots.js?v=342f3884"></script>
-<script src="plots.js?v=d5fd8acb"></script>
+<script src="plots.js?v=ea335d4e"></script>
 <script src="../core/ambient.js?v=13ddb6c9"></script>
 <script src="../core/app.js?v=f2c5315e"></script>
 </body>
